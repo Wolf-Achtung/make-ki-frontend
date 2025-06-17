@@ -1,0 +1,219 @@
+<!-- WICHTIG: Du kannst diesen Code direkt in Netlify oder GitHub ersetzen -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KI-Check Pro – Jetzt rechtssicher handeln</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      margin: 0;
+      background: #f9fafc;
+      color: #0c2d48;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 2rem;
+      background: white;
+    }
+    h1, h2 {
+      color: #0c2d48;
+    }
+    a.button, .sticky-button {
+      background: #0c2d48;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .logo-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+      margin: 2rem 0;
+    }
+    .logo-grid img {
+      height: 70px;
+      object-fit: contain;
+    }
+    .price-box, .payment-box {
+      background: #e6f0ff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 2rem 0;
+    }
+    .price-box h3, .payment-box h3 {
+      margin-top: 0;
+    }
+    .risk-table {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      margin: 2rem 0;
+    }
+    .risk-table div {
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 6px;
+    }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+    }
+    .close {
+      float: right;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .testimonial {
+      background: white;
+      padding: 1.5rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      margin-top: 1rem;
+    }
+    footer {
+      text-align: center;
+      margin: 3rem 0 1rem;
+      color: #666;
+    }
+    .sticky-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #0c2d48;
+      text-align: center;
+      padding: 0.75rem;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Zertifiziert. Dokumentiert. KI-konform.</h1>
+  <p>
+    Der <strong>KI-Check Pro</strong> liefert Ihnen in wenigen Minuten eine strukturierte Einschätzung 
+    Ihres KI-Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.
+  </p>
+
+  <div class="logo-grid">
+    <img src="badges/tuev-logo-transparent.png" alt="TÜV Austria">
+    <img src="badges/dsgvo.svg" alt="DSGVO konform">
+    <img src="badges/eu-ai.svg" alt="EU AI Act">
+    <img src="badges/KI-READY.png" alt="KI-Ready Badge">
+  </div>
+
+  <ul>
+    <li>✓ DSGVO- & EU AI Act-konform</li>
+    <li>✓ Risikoanalyse mit Ampel-Logik</li>
+    <li>✓ PDF-Zertifikat mit „KI-Ready 2025“-Badge</li>
+    <li>✓ TÜV-zertifizierte Beratung</li>
+  </ul>
+
+  <a href="#" class="button" onclick="document.getElementById('popup').style.display='flex'"> Jetzt KI-Check starten</a>
+
+  <div class="price-box">
+    <h3>Was kostet der KI-Check Pro?</h3>
+    <p><strong>✔ 49 € netto – einmalig</strong></p>
+    <ul>
+      <li>PDF-Zertifikat inkl. Empfehlungen & Badge</li>
+      <li>Automatisch erzeugt – sofort verfügbar</li>
+      <li><strong>Steuerlich absetzbar</strong> als Dokumentation & Beratung</li>
+    </ul>
+  </div>
+
+  <div class="payment-box">
+    <h3>Zahlungsmöglichkeiten</h3>
+    <p>Sie können aktuell per PayPal, Kreditkarte oder auf Rechnung bezahlen.</p>
+    <p><em>(Die Integration erfolgt in Kürze – aktuell erfolgt der Versand des Formulars ohne direkte Zahlung.)</em></p>
+    <a href="#" class="button">Demnächst verfügbar</a>
+  </div>
+
+  <div class="price-box" style="background:#fffbe6; border-left: 6px solid #ffc107;">
+    <h3>💡 Pro-Tipp für Profis</h3>
+    <p>
+      Nutzen Sie das PDF-Zertifikat als Beilage in Angeboten, Pitches oder Datenschutzunterlagen. 
+      Es signalisiert KI-Verantwortung und schafft sofort Vertrauen bei Kunden, Partnern und Prüfern.
+    </p>
+  </div>
+
+  <div class="risk-table">
+    <div><strong>❌ Keine Dokumentation</strong><br>→ Reputationsrisiko & Rechtsunsicherheit</div>
+    <div><strong>⚠️ Kein Audit-Trail</strong><br>→ Verstoß gegen AI Act möglich</div>
+    <div><strong>🛑 Fehlende Risikobewertung</strong><br>→ Bußgelder oder Projektverbot</div>
+    <div><strong>🔐 Kein Verantwortlicher definiert</strong><br>→ keine Rechtssicherheit im Fall von Prüfungen</div>
+  </div>
+
+  <section>
+    <h2>Was unsere Kunden sagen</h2>
+    <div class="testimonial" id="carousel">
+      <p id="quote">„Schnell, klar, rechtssicher: Genau so ein Zertifikat hat mir für Kundenprojekte gefehlt.“</p>
+      <span id="author">– Julia F., Freelancerin UX</span>
+    </div>
+  </section>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="popup">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('popup').style.display='none'">✖</span>
+    <h2>KI-Check Pro starten</h2>
+    <p>Bitte beantworten Sie 10 kurze Fragen. Ihre Auswertung erfolgt sofort im Anschluss als PDF.</p>
+    <a href="/formular/" class="button">Zum Formular</a>
+  </div>
+</div>
+
+<div class="sticky-bar">
+  <a href="#" class="sticky-button" onclick="document.getElementById('popup').style.display='flex'"> KI-Check starten</a>
+</div>
+
+<footer>
+  Zertifiziert durch TÜV Austria | DSGVO-konform | www.ki-sicherheit.jetzt
+</footer>
+
+<script>
+  const quotes = [
+    { text: "„Schnell, klar, rechtssicher: Genau so ein Zertifikat hat mir für Kundenprojekte gefehlt.“", author: "– Julia F., Freelancerin UX" },
+    { text: "„Ideal für kleinere Unternehmen ohne IT- oder Rechtsabteilung – das PDF hängt jetzt in jedem Angebot.“", author: "– Martin G., Digitalberater" },
+    { text: "„Endlich kann ich unseren KI-Einsatz auch nach außen dokumentieren.“", author: "– Miriam T., Agenturleitung" },
+    { text: "„Wir setzen den Check verpflichtend für alle Abteilungen ein – einfach und effektiv.“", author: "– Jan W., CISO Mittelstand" },
+    { text: "„Das KI-Ready-Badge bringt uns als Startup echten Vertrauensvorschuss.“", author: "– Lara S., Gründerin" }
+  ];
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % quotes.length;
+    document.getElementById('quote').innerText = quotes[i].text;
+    document.getElementById('author').innerText = quotes[i].author;
+  }, 6000);
+</script>
+
+</body>
+</html>

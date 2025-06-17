@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vielen Dank</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #f4f7fb;
+      color: #0e2b4f;
+      padding: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    .logo {
+      max-height: 70px;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 28pt;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 15pt;
+      max-width: 600px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .info-box {
+      margin-top: 30px;
+      background-color: #eaf0f7;
+      border-left: 5px solid #003366;
+      padding: 25px;
+      border-radius: 8px;
+    }
+
+    .info-box p {
+      margin: 0;
+    }
+    .small {
+      font-size: 0.9rem;
+      color: #777;
+      margin-top: 1rem;
+
+  </style>
+</head>
+<body>
+
+  <img class="logo" src="https://check.ki-sicherheit.jetzt/badges/ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" />
+
+  <h1>Vielen Dank für Ihre Angaben!</h1>
+  <p>Ihr strategisches KI-Briefing wird jetzt erstellt. Das kann einen Moment dauern.</p>
+
+  <div class="info-box">
+    <p>Sie erhalten das PDF-Dokument automatisch an die angegebene E-Mail-Adresse, sobald die Auswertung abgeschlossen ist.</p>
+<p class="small">
+      Dieses Dokument ist steuerlich absetzbar und dient als<br>
+      offizieller Nachweis gegenüber Kunden & Behörden.
+    </p>
+    <p class="small">Sie werden in wenigen Sekunden automatisch zurückgeleitet.</p>
+  </div>
+<script>
+  const ergebnis = JSON.parse(localStorage.getItem("kiErgebnis"));
+
+  if (ergebnis?.pdf_url) {
+    const box = document.createElement("div");
+    box.className = "info-box";
+    box.innerHTML = `
+      <p><strong>📄 Ihr PDF-Briefing ist fertig!</strong></p>
+      <p><a href="${ergebnis.pdf_url}" target="_blank" style="color:#003366;font-weight:bold;">Hier klicken, um das PDF herunterzuladen</a></p>
+    `;
+    document.body.appendChild(box);
+  }
+
+  const restartBtn = document.createElement("button");
+  restartBtn.textContent = "🔄 Briefing erneut starten";
+  restartBtn.style = `
+    margin-top: 40px;
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #003366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  `;
+  restartBtn.onclick = () => {
+    localStorage.removeItem("kiErgebnis");
+    window.location.href = "index.html";  // oder deine Startseite
+  };
+  document.body.appendChild(restartBtn);
+</script>
+
+</body>
+</html>

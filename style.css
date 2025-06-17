@@ -1,0 +1,146 @@
+/* IBM Plex Mono einbinden */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap');
+
+body {
+  font-family: 'IBM Plex Mono', monospace;
+  background-color: #ffffff;
+  color: #0c2d48;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #0c2d48;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+form ol {
+  list-style: none;
+  padding: 0;
+}
+
+form li {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #0c2d48;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.button:hover {
+  background-color: #09304a;
+}
+
+footer {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #555555;
+}.hidden {
+  display: none;
+}
+.trust-box {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  background-color: #eef4f7;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 2rem 0;
+  font-size: 1.1rem;
+}
+.trust-item {
+  background-color: white;
+  border: 1px solid #cbd5e1;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  min-width: 220px;
+  text-align: center;
+  font-weight: 600;
+}
+.testimonial-section {
+  background: #f9fafc;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.testimonial-carousel {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.testimonial {
+  display: none;
+  font-style: italic;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #dbe4ea;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.testimonial.active {
+  display: block;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.testimonial span {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #0c2d48;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.sticky-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #0c2d48;
+  padding: 0.75rem;
+  text-align: center;
+  z-index: 999;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+.sticky-button {
+  display: inline-block;
+  background-color: #1e90ff;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.sticky-button:hover {
+  background-color: #1575d0;
+}

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KI-Sicherheits-Check</title>
+
+  <!-- Schrift & Design -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Favicon (optional) -->
+  <link rel="icon" href="https://check.ki-sicherheit.jetzt/badges/ki-sicherheit-logo.png" type="image/png" />
+
+  <!-- CSS-Styling (optional via extern oder eingebettet) -->
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafc;
+      color: #1a1a1a;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #002649;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0;
+    }
+
+    form {
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: 600;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .form-submit {
+      background-color: #002649;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .form-submit:hover {
+      background-color: #004080;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://check.ki-sicherheit.jetzt/badges/ki-sicherheit-logo.png" alt="Logo" style="max-height: 60px;" />
+    <h1>KI-Sicherheits-Check PRO</h1>
+    <p>Ihr strategischer Schnellcheck für sichere KI-Einführung</p>
+  </header>
+
+  <form id="kiForm">
+
+    <!-- Name / Firma -->
+    <label for="name">Ihr Name *</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="unternehmen">Ihr Unternehmen *</label>
+    <input type="text" id="unternehmen" name="unternehmen" required />
+
+    <!-- Branche -->
+    <label for="branche">Ihre Branche *</label>
+    <select id="branche" name="branche" required>
+      <option value="">Bitte wählen</option>
+      <option value="Gesundheit & Pflege">Gesundheit & Pflege</option>
+      <option value="Industrie & Produktion">Industrie & Produktion</option>
+      <option value="Handwerk">Handwerk</option>
+      <option value="Medien & Kommunikation">Medien & Kommunikation</option>
+      <option value="Bildung & Forschung">Bildung & Forschung</option>
+      <option value="IT & Technologie">IT & Technologie</option>
+      <option value="Sonstige">Sonstige</option>
+    </select>
+
+    <label for="branche_sonstige">Falls „Sonstige“ – bitte konkretisieren:</label>
+    <input type="text" id="branche_sonstige" name="branche_sonstige" />
+
+    <!-- Selbstständig -->
+    <label for="selbststaendig">Sind Sie selbstständig oder freiberuflich tätig?</label>
+    <select id="selbststaendig" name="selbststaendig" required>
+      <option value="">Bitte wählen</option>
+      <option value="Ja">Ja</option>
+      <option value="Nein">Nein</option>
+    </select>
+
+    <!-- Fragen 1–10 -->
+    <h2 style="margin-top: 30px;">Bewertung Ihres Unternehmens</h2>
+
+    <p><strong>Bitte beantworten Sie die folgenden 10 Fragen mit einer Skala von 1 (trifft nicht zu) bis 4 (trifft voll zu):</strong></p>
+
+    <!-- Schleifenersatz: statisch -->
+    <label for="frage1">1. Wir haben klare Ziele für den KI-Einsatz definiert.</label>
+    <select id="frage1" name="frage1" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage2">2. Wir verfügen über geeignete Daten zur Umsetzung.</label>
+    <select id="frage2" name="frage2" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage3">3. Wir haben einen konkreten Anwendungsfall identifiziert.</label>
+    <select id="frage3" name="frage3" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage4">4. Unser Team ist mit KI vertraut oder geschult.</label>
+    <select id="frage4" name="frage4" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage5">5. Es existieren Prozesse zum Umgang mit KI-Risiken.</label>
+    <select id="frage5" name="frage5" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage6">6. Wir berücksichtigen rechtliche Aspekte (DSGVO, Urheberrecht etc.).</label>
+    <select id="frage6" name="frage6" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage7">7. KI ist Teil unserer Strategie und Geschäftsprozesse.</label>
+    <select id="frage7" name="frage7" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage8">8. Wir messen Erfolge von KI-Einsätzen aktiv.</label>
+    <select id="frage8" name="frage8" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage9">9. Wir nutzen Tools, Plattformen oder Schnittstellen für KI.</label>
+    <select id="frage9" name="frage9" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <label for="frage10">10. Wir haben interne oder externe Expertise für KI.</label>
+    <select id="frage10" name="frage10" required>
+      <option value="">Bitte wählen</option>
+      <option value="1">1 – trifft nicht zu</option>
+      <option value="2">2 – trifft manchmal zu</option>
+      <option value="3">3 – trifft häufig zu</option>
+      <option value="4">4 – trifft voll zu</option>
+    </select>
+
+    <!-- Freitextfelder -->
+    <label for="massnahmen">Planen Sie konkrete Maßnahmen?</label>
+    <textarea id="massnahmen" name="massnahmen" rows="3"></textarea>
+
+    <label for="tools">Welche Tools oder Plattformen setzen Sie bereits ein?</label>
+    <textarea id="tools" name="tools" rows="3"></textarea>
+
+    <label for="herausforderung">Wo liegt Ihre größte Herausforderung?</label>
+    <textarea id="herausforderung" name="herausforderung" rows="3"></textarea>
+
+    <label for="ziel">Welches Ziel möchten Sie schnell durch KI erreichen?</label>
+    <textarea id="ziel" name="ziel" rows="3"></textarea>
+
+    <!-- Absenden -->
+    <button type="submit" class="form-submit">zur Auswertung</button>
+  </form>
+  <!-- Formular-Logik -->
+  <script defer src="form.js"></script>
+</body>
