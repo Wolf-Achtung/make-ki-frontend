@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (error) {
       console.error("❌ Fehler bei der Analyse:", error);
-      alert("Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.");
+      alert("Leider ist ein Fehler aufgetreten. Bitte später erneut versuchen.");
     }
   });
 });
