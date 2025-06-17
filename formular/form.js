@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = {};
 
     for (let [key, value] of formData.entries()) {
-      if (/frage_\\d+/.test(key)) {
+      if (/frage_\d+/.test(key)) {
         data[key] = parseInt(value); // Skalenfragen als Zahl
       } else {
         data[key] = value.trim(); // Freitextfelder bereinigen
@@ -15,8 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     try {
-      const response = await fetch("https://glorious-reverence-production.up.railway.app/analyze", {
-
+      const response = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: data })
@@ -32,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (error) {
       console.error("❌ Fehler bei der Analyse:", error);
-      alert("Leider ist ein Fehler aufgetreten. Bitte später erneut versuchen.");
+      alert("Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.");
     }
   });
 });
