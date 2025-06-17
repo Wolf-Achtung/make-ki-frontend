@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KI-Check Vorschau</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f5f5; padding: 2rem; }
+    .box { background: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; box-shadow: 0 0 8px #ddd; }
+    .score { font-size: 2rem; font-weight: bold; color: #008000; }
+    .gamechanger { background: #e0f7fa; padding: 1rem; border-left: 4px solid #00acc1; }
+    h2 { margin-top: 0; }
+    ul { padding-left: 1.2rem; }
+  </style>
+</head>
+<body>
+  <h1>🧠 KI-Check Vorschau</h1>
+  <div id="content">Lade...</div>
+
+  <script>
+    const data = JSON.parse(sessionStorage.getItem("kiCheckResult"));
+    const c = document.getElementById("content");
+
+    if (!data) {
+      c.innerHTML = "<p>❌ Keine Daten gefunden.</p>";
+    } else {
+      c.innerHTML = `
+        <div class="box">
+          <div class="score">Score: ${data.score} (${data.status})</div>
+          <p><strong>Bewertung:</strong> ${data.bewertung}</p>
+        </div>
+
+        <div class="box">
+          <h2>Executive Summary</h2>
+          <p>${data.executive_summary}</p>
+        </div>
+
+        <div class="box">
+          <h2>Gamechanger</h2>
+          <div class="gamechanger">
+            <strong>${data.gamechanger.idee}</strong><br/>
+            <em>${data.gamechanger.begründung}</em><br/>
+            <small>Potenzial: ${data.gamechanger.potenzial}</small>
+          </div>
+        </div>
+
+        <div class="box">
+          <h2>Empfehlungen</h2>
+          <ul>
+            ${data.empfehlungen.map(emp => `<li><strong>${emp.titel}</strong>: ${emp.beschreibung} (Tool: ${emp.tool})</li>`).join("")}
+          </ul>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

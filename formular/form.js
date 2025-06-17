@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("kiForm");
   form.addEventListener("submit", async function (e) {
@@ -18,22 +19,13 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({ answers: data })
       });
 
-      if (!response.ok) {
-        throw new Error("Serverfehler: " + response.status);
-      }
+      if (!response.ok) throw new Error("Serverfehler: " + response.status);
 
       const result = await response.json();
-
-      // Ergebnis optional loggen
       console.log("GPT-Ergebnis:", result);
 
-      // Vorschau (optional): Zeige Gamechanger-Idee
-      if (result.gamechanger && result.gamechanger.idee) {
-        alert("🧠 Gamechanger-Vorschlag:\n" + result.gamechanger.idee);
-      }
-
-      // Weiterleitung zur Danke-Seite (später mit PDF-Link möglich)
-      window.location.href = "/formular/danke.html";
+      sessionStorage.setItem("kiCheckResult", JSON.stringify(result));
+      window.location.href = "/formular/vorschau.html";
 
     } catch (error) {
       console.error("Fehler bei der Analyse:", error);
