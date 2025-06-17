@@ -14,11 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const partner = params.get("partner") || "default";
-
     try {
-      const response = await fetch(`https://glorious-reverence-production.up.railway.app/analyze?partner=${partner}`, {
+      const response = await fetch("https://glorious-reverence-production.up.railway.app/analyze", {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: data })
