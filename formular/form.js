@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("✅ GPT-Ergebnis oder Dummy:", result);
 
       sessionStorage.setItem("kiCheckResult", JSON.stringify(result));
-
+sessionStorage.setItem("email", data.email); // 👈 DAS FEHLTE
       // Weiterleitung zur Danke-Seite
       window.location.href = "/formular/vorschau.html";
 
