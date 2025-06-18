@@ -19,7 +19,7 @@
   </style>
 </head>
 <body>
-  <h1>💼 Executive Briefing freischalten</h1>
+  <h1>Executive Briefing freischalten</h1>
   <p>Sie erhalten ein vollständiges PDF-Dokument mit Handlungsempfehlungen,<br>
      Fördertipps, Toolvorschlägen und einer visionären KI-Strategie.</p>
   <p><strong>Preis: 19 € (zzgl. MwSt.)</strong></p>
@@ -27,26 +27,48 @@
   <button onclick="completePayment()">Bezahlung abschließen</button>
 
   <script>
-    async function completePayment() {
-      const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
-      if (!result) {
-        alert("Fehler: Keine Analyse-Daten gefunden.");
-        return;
-      }
+  async function completePayment() {
+    const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
+    const email = sessionStorage.getItem("email") || "";
 
-      const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+    if (!result || !email) {
+      alert("Fehler: Keine Analyse-Daten oder E-Mail gefunden.");
+      return;
+    }
+
+    try {
+      // PDF erstellen
+      const pdfResponse = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(result)
       });
 
-      const data = await response.json();
-      if (data.pdf_url) {
-        sessionStorage.setItem("pdf_url", data.pdf_url);
-      }
+      const pdfData = await pdfResponse.json();
+      const pdfUrl = pdfData.pdf_url;
+      if (!pdfUrl) throw new Error("PDF-Link fehlt");
 
+      sessionStorage.setItem("pdf_url", pdfUrl);
+
+      // E-Mail via Make senden
+      await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          pdf_url: pdfUrl
+        })
+      });
+
+      // Weiterleitung zur Danke-Seite
       window.location.href = "/formular/danke.html";
+
+    } catch (err) {
+      console.error("Fehler bei Zahlung oder Versand:", err);
+      alert("Ein Fehler ist aufgetreten. Bitte später erneut versuchen.");
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
