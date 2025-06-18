@@ -2,47 +2,32 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zahlung (fiktiv)</title>
+  <title>Zahlung</title>
 </head>
 <body>
-  <h1>💳 Bezahlung (Demo-Modus)</h1>
-  <p>Durch Klick auf den Button wird Ihr Executive Briefing erstellt und per E-Mail versendet.</p>
-
-  <button id="submit">Bezahlung abschließen & Briefing senden</button>
+  <h1>Executive Briefing</h1>
+  <p>Vielen Dank für Ihr Interesse. Mit dem Klick unten starten Sie die Generierung Ihres persönlichen PDF-Briefings.</p>
+  <button id="generate">Bezahlung abschließen</button>
 
   <script>
-    document.getElementById("submit").addEventListener("click", async () => {
-      const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
-      if (!result || !result.email) {
-        alert("Fehler: Kein Ergebnis oder keine E-Mail gefunden.");
-        return;
-      }
+    document.getElementById("generate").addEventListener("click", async () => {
+      const data = JSON.parse(sessionStorage.getItem("gpt_result"));
+      const res = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      sessionStorage.setItem("pdf_url", result.pdf_url);
 
-      try {
-        // PDF erzeugen
-        const res = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(result)
-        });
+      // Webhook zur E-Mail-Zustellung (Dummy aktuell)
+      await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ pdf_url: result.pdf_url, email: data.email })
+      });
 
-        const { pdf_url } = await res.json();
-        if (!pdf_url) throw new Error("Kein PDF-Link erhalten");
-
-        // Mail via Make senden
-        await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: result.email, pdf_url })
-        });
-
-        sessionStorage.setItem("pdf_url", pdf_url);
-        window.location.href = "danke.html";
-      } catch (err) {
-        console.error("❌ Fehler bei PDF oder Versand:", err);
-        alert("Erstellung oder Versand des Briefings fehlgeschlagen.");
-      }
+      window.location.href = "danke.html";
     });
   </script>
 </body>

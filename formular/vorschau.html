@@ -2,33 +2,22 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vorschau: KI-Briefing</title>
+  <title>Vorschau</title>
 </head>
 <body>
-  <h1>🧠 KI-Briefing Vorschau</h1>
-  <div id="summary"></div>
-
-  <button id="next">Executive Briefing freischalten</button>
+  <h1>Ihre KI-Analyse (Vorschau)</h1>
+  <div id="preview"></div>
+  <button onclick="window.location.href='zahlung.html'">Executive Briefing jetzt freischalten</button>
 
   <script>
-    const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
-
-    if (!result) {
-      document.body.innerHTML = '<p>Keine Daten gefunden. Bitte Formular erneut ausfüllen.</p>';
-    } else {
-      document.getElementById("summary").innerHTML = `
-        <p><strong>Unternehmen:</strong> ${result.unternehmen}</p>
-        <p><strong>Score:</strong> ${result.score} (${result.bewertung})</p>
-        <p><strong>Executive Summary:</strong> ${result.executive_summary}</p>
-        <p><strong>Empfehlung 1:</strong> ${result.empfehlung1.titel} – ${result.empfehlung1.beschreibung}</p>
-        <p><strong>Vision:</strong> ${result.visionaer}</p>
-      `;
-    }
-
-    document.getElementById("next").addEventListener("click", () => {
-      window.location.href = "zahlung.html";
-    });
+    const result = JSON.parse(sessionStorage.getItem("gpt_result"));
+    document.getElementById("preview").innerHTML = `
+      <p><strong>Name:</strong> ${result.name}</p>
+      <p><strong>Unternehmen:</strong> ${result.unternehmen}</p>
+      <p><strong>Score:</strong> ${result.score}</p>
+      <p><strong>Bewertung:</strong> ${result.bewertung}</p>
+      <p><strong>Trendreport:</strong> ${result.trendreport}</p>
+    `;
   </script>
 </body>
 </html>
