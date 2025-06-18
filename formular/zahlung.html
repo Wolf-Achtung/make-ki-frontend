@@ -2,73 +2,69 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Zahlung – Executive Briefing</title>
+  <title>Zahlung Debug</title>
   <style>
-    body { font-family: sans-serif; margin: 2rem; text-align: center; }
-    h1 { color: #005b99; }
-    p { font-size: 1.2rem; margin-bottom: 2rem; }
-    button {
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      background-color: #005b99;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    body { font-family: sans-serif; margin: 2rem; }
+    .error { color: red; margin-top: 1rem; }
+    .log { background: #eee; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; font-family: monospace; }
+    button { margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 1rem; }
   </style>
 </head>
 <body>
-  <h1>Executive Briefing freischalten</h1>
-  <p>Sie erhalten ein vollständiges PDF-Dokument mit Handlungsempfehlungen,<br>
-     Fördertipps, Toolvorschlägen und einer visionären KI-Strategie.</p>
-  <p><strong>Preis: 19 € (zzgl. MwSt.)</strong></p>
-
+  <h1>💳 Zahlung abschließen (Debug)</h1>
+  <p>Sie erhalten nach dem Klick eine PDF-Erstellung, eine E-Mail und eine Weiterleitung zur Danke-Seite.</p>
   <button onclick="completePayment()">Bezahlung abschließen</button>
 
+  <div class="error" id="error"></div>
+  <div class="log" id="log"></div>
+
   <script>
-  async function completePayment() {
-    const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
-    const email = sessionStorage.getItem("email") || "";
+    async function completePayment() {
+      const resultRaw = sessionStorage.getItem("kiCheckResult");
+      const email = sessionStorage.getItem("email") || "";
+      const errorBox = document.getElementById("error");
+      const logBox = document.getElementById("log");
 
-    if (!result || !email) {
-      alert("Fehler: Keine Analyse-Daten oder E-Mail gefunden.");
-      return;
+      errorBox.textContent = "";
+      logBox.textContent = `▶️ Email: ${email}\n▶️ KI-Ergebnis (roh):\n${resultRaw}`;
+
+      if (!resultRaw || !email) {
+        errorBox.textContent = "❌ Fehler: Keine Analyse-Daten oder E-Mail gefunden.";
+        return;
+      }
+
+      let result;
+      try {
+        result = JSON.parse(resultRaw);
+      } catch (e) {
+        errorBox.textContent = "❌ JSON-Parsing fehlgeschlagen.";
+        return;
+      }
+
+      try {
+        const res = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(result)
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.pdf_url) throw new Error("PDF-Erstellung fehlgeschlagen");
+
+        logBox.textContent += `\n\n✅ PDF-Link: ${data.pdf_url}`;
+
+        await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, pdf_url: data.pdf_url })
+        });
+
+        window.location.href = "/formular/danke.html";
+      } catch (err) {
+        console.error("Fehler bei der Ausführung:", err);
+        errorBox.textContent = "❌ Fehler bei PDF oder Versand: " + err.message;
+      }
     }
-
-    try {
-      // PDF erstellen
-      const pdfResponse = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result)
-      });
-
-      const pdfData = await pdfResponse.json();
-      const pdfUrl = pdfData.pdf_url;
-      if (!pdfUrl) throw new Error("PDF-Link fehlt");
-
-      sessionStorage.setItem("pdf_url", pdfUrl);
-
-      // E-Mail via Make senden
-      await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email,
-          pdf_url: pdfUrl
-        })
-      });
-
-      // Weiterleitung zur Danke-Seite
-      window.location.href = "/formular/danke.html";
-
-    } catch (err) {
-      console.error("Fehler bei Zahlung oder Versand:", err);
-      alert("Ein Fehler ist aufgetreten. Bitte später erneut versuchen.");
-    }
-  }
-</script>
-
+  </script>
 </body>
 </html>
