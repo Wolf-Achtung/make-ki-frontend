@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Webhook Testseite</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    label { display: block; margin-top: 1rem; }
+    input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #0073b1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔗 Webhook-Test (Make)</h1>
+  <p>Hier kannst du manuell eine Testnachricht an den Make-Webhook senden.</p>
+
+  <label for="email">Test-E-Mail-Adresse</label>
+  <input type="email" id="email" placeholder="z. B. test@example.com" required>
+
+  <label for="pdf">PDF-Link</label>
+  <input type="url" id="pdf" placeholder="z. B. https://pdfmonkey.io/...">
+
+  <button onclick="sendTest()">Webhook testen</button>
+
+  <script>
+    async function sendTest() {
+      const email = document.getElementById("email").value;
+      const pdf = document.getElementById("pdf").value;
+
+      if (!email || !pdf) {
+        alert("Bitte E-Mail und PDF-Link angeben.");
+        return;
+      }
+
+      try {
+        const res = await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, pdf_url: pdf })
+        });
+
+        if (res.ok) {
+          alert("✅ Webhook erfolgreich ausgelöst!");
+        } else {
+          const error = await res.text();
+          alert("Fehler beim Webhook:
+" + error);
+        }
+      } catch (e) {
+        alert("Fehler beim Senden:
+" + e.message);
+      }
+    }
+  </script>
+</body>
+</html>
