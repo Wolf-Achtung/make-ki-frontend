@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = {};
 
     for (let [key, value] of formData.entries()) {
-      if (/frage_\d+/.test(key)) {
+      if (/frage_\\d+/.test(key)) {
         data[key] = parseInt(value); // Skalenfragen als Zahl
       } else {
         data[key] = value.trim(); // Freitextfelder bereinigen
@@ -24,10 +24,12 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) throw new Error("Serverfehler: " + response.status);
 
       const result = await response.json();
-      console.log("✅ GPT-Ergebnis:", result);
+      console.log("✅ GPT-Ergebnis oder Dummy:", result);
 
       sessionStorage.setItem("kiCheckResult", JSON.stringify(result));
-      window.location.href = "/formular/vorschau.html";
+
+      // Weiterleitung zur Danke-Seite
+      window.location.href = "/formular/danke.html";
 
     } catch (error) {
       console.error("❌ Fehler bei der Analyse:", error);

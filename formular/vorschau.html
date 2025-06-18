@@ -1,58 +1,64 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KI-Check Vorschau</title>
   <style>
-    body { font-family: sans-serif; background: #f5f5f5; padding: 2rem; }
-    .box { background: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; box-shadow: 0 0 8px #ddd; }
-    .score { font-size: 2rem; font-weight: bold; color: #008000; }
-    .gamechanger { background: #e0f7fa; padding: 1rem; border-left: 4px solid #00acc1; }
-    h2 { margin-top: 0; }
-    ul { padding-left: 1.2rem; }
+    body { font-family: sans-serif; margin: 2rem; }
+    .score { font-size: 1.5rem; color: green; margin-bottom: 1rem; }
+    .block { margin-bottom: 2rem; padding: 1rem; border-radius: 8px; background: #f8f8f8; }
+    .block h3 { margin-top: 0; }
+    #pdf-link { margin-top: 2rem; display: none; }
   </style>
 </head>
 <body>
   <h1>🧠 KI-Check Vorschau</h1>
-  <div id="content">Lade...</div>
+  <div id="preview-container"></div>
+  <div id="pdf-link" class="block">
+    <strong>✅ PDF erstellt:</strong>
+    <p><a href="#" target="_blank" id="pdf-url">PDF öffnen</a></p>
+  </div>
 
   <script>
-    const data = JSON.parse(sessionStorage.getItem("kiCheckResult"));
-    const c = document.getElementById("content");
+    const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
+    const container = document.getElementById("preview-container");
 
-    if (!data) {
-      c.innerHTML = "<p>❌ Keine Daten gefunden.</p>";
-    } else {
-      c.innerHTML = `
-        <div class="box">
-          <div class="score">Score: ${data.score} (${data.status})</div>
-          <p><strong>Bewertung:</strong> ${data.bewertung}</p>
-        </div>
+    const block = (title, content) => `
+      <div class="block">
+        <h3>${title}</h3>
+        <div>${content}</div>
+      </div>
+    `;
 
-        <div class="box">
-          <h2>Executive Summary</h2>
-          <p>${data.executive_summary}</p>
-        </div>
+    container.innerHTML = `
+      <div class="score">Score: ${result.score} (${result.status})</div>
+      ${block("Executive Summary", result.executive_summary)}
+      ${block("Gamechanger", `
+        <strong>${result.gamechanger.idee}</strong><br/>
+        <em>${result.gamechanger.begründung}</em><br/>
+        Potenzial: ${result.gamechanger.potenzial}
+      `)}
+      ${block("Empfehlungen", result.empfehlungen.map(e => `
+        <strong>${e.titel}</strong>: ${e.beschreibung} <em>(Tool: ${e.tool})</em>
+      `).join("<br/>"))}
+    `;
 
-        <div class="box">
-          <h2>Gamechanger</h2>
-          <div class="gamechanger">
-            <strong>${data.gamechanger.idee}</strong><br/>
-            <em>${data.gamechanger.begründung}</em><br/>
-            <small>Potenzial: ${data.gamechanger.potenzial}</small>
-          </div>
-        </div>
-
-        <div class="box">
-          <h2>Empfehlungen</h2>
-          <ul>
-            ${data.empfehlungen.map(emp => `<li><strong>${emp.titel}</strong>: ${emp.beschreibung} (Tool: ${emp.tool})</li>`).join("")}
-          </ul>
-        </div>
-      `;
-    }
+    // PDF automatisch erzeugen
+    fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(result)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.pdf_url) {
+        const linkBox = document.getElementById("pdf-link");
+        const a = document.getElementById("pdf-url");
+        a.href = data.pdf_url;
+        linkBox.style.display = "block";
+      }
+    })
+    .catch(err => console.error("PDF-Fehler:", err));
   </script>
 </body>
 </html>
