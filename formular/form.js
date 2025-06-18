@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
       sessionStorage.setItem("kiCheckResult", JSON.stringify(result));
 
       // Weiterleitung zur Danke-Seite
-      window.location.href = "/formular/danke.html";
+      window.location.href = "/formular/vorschau.html";
 
     } catch (error) {
       console.error("❌ Fehler bei der Analyse:", error);
