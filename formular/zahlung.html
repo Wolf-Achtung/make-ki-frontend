@@ -45,7 +45,7 @@
         const res = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(result)
+          body: JSON.stringify({ values: result })
         });
 
         const data = await res.json();
