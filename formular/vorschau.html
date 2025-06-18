@@ -8,16 +8,23 @@
     .score { font-size: 1.5rem; color: green; margin-bottom: 1rem; }
     .block { margin-bottom: 2rem; padding: 1rem; border-radius: 8px; background: #f8f8f8; }
     .block h3 { margin-top: 0; }
-    #pdf-link { margin-top: 2rem; display: none; }
+    .btn {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background-color: #005b99;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
   <h1>🧠 KI-Check Vorschau</h1>
   <div id="preview-container"></div>
-  <div id="pdf-link" class="block">
-    <strong>✅ PDF erstellt:</strong>
-    <p><a href="#" target="_blank" id="pdf-url">PDF öffnen</a></p>
-  </div>
+
+  <a class="btn" href="/formular/zahlung.html">Executive Briefing jetzt freischalten</a>
 
   <script>
     const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
@@ -42,23 +49,6 @@
         <strong>${e.titel}</strong>: ${e.beschreibung} <em>(Tool: ${e.tool})</em>
       `).join("<br/>"))}
     `;
-
-    // PDF automatisch erzeugen
-    fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(result)
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.pdf_url) {
-        const linkBox = document.getElementById("pdf-link");
-        const a = document.getElementById("pdf-url");
-        a.href = data.pdf_url;
-        linkBox.style.display = "block";
-      }
-    })
-    .catch(err => console.error("PDF-Fehler:", err));
   </script>
 </body>
 </html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Zahlung – Executive Briefing</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; text-align: center; }
+    h1 { color: #005b99; }
+    p { font-size: 1.2rem; margin-bottom: 2rem; }
+    button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      background-color: #005b99;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>💼 Executive Briefing freischalten</h1>
+  <p>Sie erhalten ein vollständiges PDF-Dokument mit Handlungsempfehlungen,<br>
+     Fördertipps, Toolvorschlägen und einer visionären KI-Strategie.</p>
+  <p><strong>Preis: 19 € (zzgl. MwSt.)</strong></p>
+
+  <button onclick="completePayment()">Bezahlung abschließen</button>
+
+  <script>
+    async function completePayment() {
+      const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
+      if (!result) {
+        alert("Fehler: Keine Analyse-Daten gefunden.");
+        return;
+      }
+
+      const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(result)
+      });
+
+      const data = await response.json();
+      if (data.pdf_url) {
+        sessionStorage.setItem("pdf_url", data.pdf_url);
+      }
+
+      window.location.href = "/formular/danke.html";
+    }
+  </script>
+</body>
+</html>

@@ -2,11 +2,11 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Danke für Ihre Teilnahme</title>
+  <title>Danke – Ihr Executive Briefing</title>
   <style>
     body { font-family: sans-serif; margin: 2rem; text-align: center; }
     h1 { color: #2d7b2d; }
-    p { font-size: 1.2rem; margin-bottom: 2rem; }
+    p { font-size: 1.2rem; margin-bottom: 1.5rem; }
     a.btn {
       display: inline-block;
       padding: 0.8rem 1.5rem;
@@ -19,14 +19,25 @@
   </style>
 </head>
 <body>
-  <h1>✅ Vielen Dank!</h1>
-  <p>Ihre Angaben wurden erfolgreich übermittelt.<br />
-     Sie können nun direkt Ihre individuelle Auswertung ansehen oder den Schnell-Check erneut starten.</p>
+  <h1>✅ Vielen Dank für Ihren Kauf!</h1>
+  <p>Ihr Executive Briefing wurde erfolgreich erstellt.</p>
 
-  <p>
-    <a href="/formular/vorschau.html" class="btn">Vorschau ansehen</a>
-    <a href="/formular/index.html" class="btn">Check erneut durchführen</a>
-    <a href="/" class="btn">Zurück zur Startseite</a>
-  </p>
+  <div id="pdf-section" style="display: none;">
+    <p><strong>📄 PDF herunterladen:</strong></p>
+    <p><a href="#" target="_blank" class="btn" id="pdf-link">Jetzt öffnen</a></p>
+  </div>
+
+  <p><a href="/formular/index.html" class="btn">Check erneut durchführen</a></p>
+  <p><a href="/" class="btn">Zurück zur Startseite</a></p>
+
+  <script>
+    const pdfUrl = sessionStorage.getItem("pdf_url");
+    if (pdfUrl) {
+      const pdfSection = document.getElementById("pdf-section");
+      const link = document.getElementById("pdf-link");
+      link.href = pdfUrl;
+      pdfSection.style.display = "block";
+    }
+  </script>
 </body>
 </html>
