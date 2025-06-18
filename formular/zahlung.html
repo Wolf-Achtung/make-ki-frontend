@@ -1,71 +1,49 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Zahlung Debug</title>
-  <style>
-    body { font-family: sans-serif; margin: 2rem; }
-    .error { color: red; margin-top: 1rem; }
-    .log { background: #eee; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; font-family: monospace; }
-    button { margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 1rem; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zahlung (fiktiv)</title>
 </head>
 <body>
-  <h1>💳 Zahlung abschließen (Debug)</h1>
-  <p>Sie erhalten nach dem Klick eine PDF-Erstellung, eine E-Mail und eine Weiterleitung zur Danke-Seite.</p>
-  <button onclick="completePayment()">Bezahlung abschließen</button>
+  <h1>💳 Bezahlung (Demo-Modus)</h1>
+  <p>Durch Klick auf den Button wird Ihr Executive Briefing erstellt und per E-Mail versendet.</p>
 
-  <div class="error" id="error"></div>
-  <div class="log" id="log"></div>
+  <button id="submit">Bezahlung abschließen & Briefing senden</button>
 
   <script>
-    async function completePayment() {
-      const resultRaw = sessionStorage.getItem("kiCheckResult");
-      const email = sessionStorage.getItem("email") || "";
-      const errorBox = document.getElementById("error");
-      const logBox = document.getElementById("log");
-
-      errorBox.textContent = "";
-      logBox.textContent = `▶️ Email: ${email}\n▶️ KI-Ergebnis (roh):\n${resultRaw}`;
-
-      if (!resultRaw || !email) {
-        errorBox.textContent = "❌ Fehler: Keine Analyse-Daten oder E-Mail gefunden.";
-        return;
-      }
-
-      let result;
-      try {
-        result = JSON.parse(resultRaw);
-      } catch (e) {
-        errorBox.textContent = "❌ JSON-Parsing fehlgeschlagen.";
+    document.getElementById("submit").addEventListener("click", async () => {
+      const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
+      if (!result || !result.email) {
+        alert("Fehler: Kein Ergebnis oder keine E-Mail gefunden.");
         return;
       }
 
       try {
+        // PDF erzeugen
         const res = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(result)
-
         });
 
-        const data = await res.json();
-        if (!res.ok || !data.pdf_url) throw new Error("PDF-Erstellung fehlgeschlagen");
+        const { pdf_url } = await res.json();
+        if (!pdf_url) throw new Error("Kein PDF-Link erhalten");
 
-        logBox.textContent += `\n\n✅ PDF-Link: ${data.pdf_url}`;
-
+        // Mail via Make senden
         await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email, pdf_url: data.pdf_url })
+          body: JSON.stringify({ email: result.email, pdf_url })
         });
 
-        window.location.href = "/formular/danke.html";
+        sessionStorage.setItem("pdf_url", pdf_url);
+        window.location.href = "danke.html";
       } catch (err) {
-        console.error("Fehler bei der Ausführung:", err);
-        errorBox.textContent = "❌ Fehler bei PDF oder Versand: " + err.message;
+        console.error("❌ Fehler bei PDF oder Versand:", err);
+        alert("Erstellung oder Versand des Briefings fehlgeschlagen.");
       }
-    }
+    });
   </script>
 </body>
 </html>

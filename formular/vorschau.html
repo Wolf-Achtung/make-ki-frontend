@@ -2,53 +2,33 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>KI-Check Vorschau</title>
-  <style>
-    body { font-family: sans-serif; margin: 2rem; }
-    .score { font-size: 1.5rem; color: green; margin-bottom: 1rem; }
-    .block { margin-bottom: 2rem; padding: 1rem; border-radius: 8px; background: #f8f8f8; }
-    .block h3 { margin-top: 0; }
-    .btn {
-      display: inline-block;
-      padding: 1rem 2rem;
-      background-color: #005b99;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      margin-top: 2rem;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vorschau: KI-Briefing</title>
 </head>
 <body>
-  <h1>🧠 KI-Check Vorschau</h1>
-  <div id="preview-container"></div>
+  <h1>🧠 KI-Briefing Vorschau</h1>
+  <div id="summary"></div>
 
-  <a class="btn" href="/formular/zahlung.html">Executive Briefing jetzt freischalten</a>
+  <button id="next">Executive Briefing freischalten</button>
 
   <script>
     const result = JSON.parse(sessionStorage.getItem("kiCheckResult"));
-    const container = document.getElementById("preview-container");
 
-    const block = (title, content) => `
-      <div class="block">
-        <h3>${title}</h3>
-        <div>${content}</div>
-      </div>
-    `;
+    if (!result) {
+      document.body.innerHTML = '<p>Keine Daten gefunden. Bitte Formular erneut ausfüllen.</p>';
+    } else {
+      document.getElementById("summary").innerHTML = `
+        <p><strong>Unternehmen:</strong> ${result.unternehmen}</p>
+        <p><strong>Score:</strong> ${result.score} (${result.bewertung})</p>
+        <p><strong>Executive Summary:</strong> ${result.executive_summary}</p>
+        <p><strong>Empfehlung 1:</strong> ${result.empfehlung1.titel} – ${result.empfehlung1.beschreibung}</p>
+        <p><strong>Vision:</strong> ${result.visionaer}</p>
+      `;
+    }
 
-    container.innerHTML = `
-      <div class="score">Score: ${result.score} (${result.status})</div>
-      ${block("Executive Summary", result.executive_summary)}
-      ${block("Gamechanger", `
-        <strong>${result.gamechanger.idee}</strong><br/>
-        <em>${result.gamechanger.begründung}</em><br/>
-        Potenzial: ${result.gamechanger.potenzial}
-      `)}
-      ${block("Empfehlungen", result.empfehlungen.map(e => `
-        <strong>${e.titel}</strong>: ${e.beschreibung} <em>(Tool: ${e.tool})</em>
-      `).join("<br/>"))}
-    `;
+    document.getElementById("next").addEventListener("click", () => {
+      window.location.href = "zahlung.html";
+    });
   </script>
 </body>
 </html>

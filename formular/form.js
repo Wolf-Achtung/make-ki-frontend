@@ -1,39 +1,35 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("kiForm");
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+// form.js
 
-    const formData = new FormData(form);
-    const data = {};
+async function submitForm(event) {
+  event.preventDefault();
 
-    for (let [key, value] of formData.entries()) {
-      if (/frage_\\d+/.test(key)) {
-        data[key] = parseInt(value); // Skalenfragen als Zahl
-      } else {
-        data[key] = value.trim(); // Freitextfelder bereinigen
-      }
-    }
+  const formData = new FormData(event.target);
+  const data = Object.fromEntries(formData.entries());
 
-    try {
-      const response = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: data })
-      });
+  // Datum erzeugen, falls nicht vorhanden
+  if (!data.datum) {
+    const today = new Date().toISOString().slice(0, 10);
+    data.datum = today;
+  }
 
-      if (!response.ok) throw new Error("Serverfehler: " + response.status);
+  try {
+    const res = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
 
-      const result = await response.json();
-      console.log("✅ GPT-Ergebnis oder Dummy:", result);
-
+    const result = await res.json();
+    if (res.ok) {
       sessionStorage.setItem("kiCheckResult", JSON.stringify(result));
-sessionStorage.setItem("email", data.email); // 👈 DAS FEHLTE
-      // Weiterleitung zur Danke-Seite
-      window.location.href = "/formular/vorschau.html";
-
-    } catch (error) {
-      console.error("❌ Fehler bei der Analyse:", error);
-      alert("Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.");
+      window.location.href = "vorschau.html";
+    } else {
+      alert("Fehler bei der Analyse: " + result.error);
     }
-  });
-});
+  } catch (err) {
+    console.error("❌ Fehler beim Absenden:", err);
+    alert("Verbindung zum Server fehlgeschlagen.");
+  }
+}
+
+document.querySelector("form").addEventListener("submit", submitForm);
