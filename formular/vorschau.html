@@ -39,6 +39,11 @@
   </div>
 
   <div class="section">
+    <h2>Compliance-Check: DSGVO & EU-AI-Act</h2>
+    <p id="compliance"></p>
+  </div>
+
+  <div class="section">
     <h2>Branchenvergleich</h2>
     <p id="branchenvergleich"></p>
   </div>
@@ -73,6 +78,11 @@
     <p id="vision"></p>
   </div>
 
+  <div class="section">
+    <h2>Beratungsempfehlung</h2>
+    <p id="beratung"></p>
+  </div>
+
   <script>
     try {
       const data = JSON.parse(sessionStorage.getItem("gpt_result"));
@@ -82,13 +92,15 @@
       document.getElementById("analyse").innerText = data.analyse || "Keine Analyse verfügbar.";
 
       const empDiv = document.getElementById("empfehlungen");
-      if (Array.isArray(data.empfehlungen)) {
+      if (Array.isArray(data.empfehlungen) && data.empfehlungen.length) {
         data.empfehlungen.forEach((emp, i) => {
           const block = document.createElement("div");
           block.className = "empfehlung";
           block.innerHTML = `<strong>${i + 1}. ${emp.titel || "Keine Empfehlung"}</strong><br>${emp.beschreibung || "-"}<br><em>Nächster Schritt:</em> ${emp.next_step || "-"}<br><em>Tool:</em> ${emp.tool || "-"}`;
           empDiv.appendChild(block);
         });
+      } else {
+        empDiv.innerHTML = "<p>Keine Empfehlungen verfügbar.</p>";
       }
 
       document.getElementById("risiko-klasse").innerText = data.risikoprofil?.risikoklasse || "-";
@@ -101,13 +113,15 @@
       });
 
       document.getElementById("branchenvergleich").innerText = data.branchenvergleich || "-";
+      document.getElementById("compliance").innerText = data.compliance || "-";
+      document.getElementById("beratung").innerText = data.beratungsempfehlung || "-";
 
       const trendDiv = document.getElementById("trendreport");
       if (Array.isArray(data.trendreport)) {
         data.trendreport.forEach(t => {
           const d = document.createElement("div");
           d.className = "trend";
-          d.innerHTML = `<strong>${t.titel || "Trend"}</strong><br>${t.beschreibung || "-"}`;
+          d.innerHTML = `<strong>${t.titel || "Trend"}</strong><br>${t.beschreibung || "-"}<br><a href='${t.link || "#"}' target="_blank">Link</a>`;
           trendDiv.appendChild(d);
         });
       }
@@ -117,7 +131,7 @@
         data.toolkompass.forEach(t => {
           const d = document.createElement("div");
           d.className = "tool";
-          d.innerHTML = `<strong>${t.titel || "Tool"}</strong><br>${t.beschreibung || "-"}`;
+          d.innerHTML = `<strong>${t.titel || "Tool"}</strong><br>${t.beschreibung || "-"}<br><a href='${t.link || "#"}' target="_blank">Link</a>`;
           toolDiv.appendChild(d);
         });
       }
