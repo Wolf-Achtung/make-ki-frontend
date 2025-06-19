@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KI-Check Vorschau</title>
+  <title>KI-Check Vorschau & GPT-Test</title>
   <style>
     body { font-family: sans-serif; padding: 2rem; background: #f9fafc; }
-    h1 { color: #002649; }
+    h1, h2 { color: #002649; }
     .section { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 0 5px rgba(0,0,0,0.05); }
     .meta { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
     pre { background: #f1f1f1; padding: 1rem; border-radius: 6px; overflow-x: auto; }
     .empfehlung { margin-bottom: 1rem; }
+    textarea { width: 100%; height: 100px; margin-top: 0.5rem; font-family: monospace; }
+    .test-output { white-space: pre-wrap; background: #f0f0f0; padding: 1rem; border-radius: 6px; }
   </style>
 </head>
 <body>
@@ -39,28 +41,66 @@
     <ul id="risiko-pflichten"></ul>
   </div>
 
+  <div class="section">
+    <h2>🔧 GPT-Test: Freier Prompt</h2>
+    <textarea id="prompt" placeholder="Gib einen GPT-Prompt ein..."></textarea><br>
+    <button onclick="testGPT()">Senden</button>
+    <div id="test-result" class="test-output"></div>
+  </div>
+
   <script>
-    const data = JSON.parse(sessionStorage.getItem("gpt_result"));
+    try {
+      const data = JSON.parse(sessionStorage.getItem("gpt_result"));
 
-    document.getElementById("meta").innerText = `Name: ${data.name} | Unternehmen: ${data.unternehmen} | Score: ${data.score} Punkte | Bewertung: ${data.bewertung}`;
-    document.getElementById("executive").innerText = data.executive_summary;
-    document.getElementById("analyse").innerText = data.analyse;
+      document.getElementById("meta").innerText = `Name: ${data.name || "-"} | Unternehmen: ${data.unternehmen || "-"} | Score: ${data.score || "-"} Punkte | Bewertung: ${data.bewertung || "-"}`;
+      document.getElementById("executive").innerText = data.executive_summary || "Keine Zusammenfassung vorhanden.";
+      document.getElementById("analyse").innerText = data.analyse || "Keine Analyse verfügbar.";
 
-    const empDiv = document.getElementById("empfehlungen");
-    data.empfehlungen.forEach((emp, i) => {
-      const block = document.createElement("div");
-      block.className = "empfehlung";
-      block.innerHTML = `<strong>${i + 1}. ${emp.titel}</strong><br>${emp.beschreibung}<br><em>Nächster Schritt:</em> ${emp.next_step}<br><em>Tool:</em> ${emp.tool}`;
-      empDiv.appendChild(block);
-    });
+      const empDiv = document.getElementById("empfehlungen");
+      if (Array.isArray(data.empfehlungen)) {
+        data.empfehlungen.forEach((emp, i) => {
+          const block = document.createElement("div");
+          block.className = "empfehlung";
+          block.innerHTML = `<strong>${i + 1}. ${emp.titel || "Keine Empfehlung"}</strong><br>${emp.beschreibung || "-"}<br><em>Nächster Schritt:</em> ${emp.next_step || "-"}<br><em>Tool:</em> ${emp.tool || "-"}`;
+          empDiv.appendChild(block);
+        });
+      } else {
+        empDiv.innerHTML = "<p>Keine Empfehlungen verfügbar.</p>";
+      }
 
-    document.getElementById("risiko-klasse").innerText = data.risikoprofil.risikoklasse;
-    document.getElementById("risiko-begruendung").innerText = data.risikoprofil.begruendung;
-    data.risikoprofil.pflichten.forEach(p => {
-      const li = document.createElement("li");
-      li.textContent = p;
-      document.getElementById("risiko-pflichten").appendChild(li);
-    });
+      if (data.risikoprofil) {
+        document.getElementById("risiko-klasse").innerText = data.risikoprofil.risikoklasse || "-";
+        document.getElementById("risiko-begruendung").innerText = data.risikoprofil.begruendung || "-";
+        if (Array.isArray(data.risikoprofil.pflichten)) {
+          data.risikoprofil.pflichten.forEach(p => {
+            const li = document.createElement("li");
+            li.textContent = p;
+            document.getElementById("risiko-pflichten").appendChild(li);
+          });
+        }
+      } else {
+        document.getElementById("risiko-klasse").innerText = "Keine Angabe";
+        document.getElementById("risiko-begruendung").innerText = "Keine Daten verfügbar.";
+      }
+    } catch (err) {
+      document.body.innerHTML = "<p style='color:red'>Fehler beim Laden der Vorschau. Bitte erneut versuchen.</p>";
+      console.error("Fehler beim Parsen der Vorschau:", err);
+    }
+
+    async function testGPT() {
+      const prompt = document.getElementById("prompt").value;
+      const resultDiv = document.getElementById("test-result");
+      resultDiv.innerText = "⏳ Anfrage wird verarbeitet...";
+
+      const res = await fetch("https://make-ki-backend-production.up.railway.app/gpt-analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+
+      const result = await res.text();
+      resultDiv.innerText = result;
+    }
   </script>
 </body>
 </html>
