@@ -3,16 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KI-Check Vorschau & GPT-Test</title>
+  <title>KI-Check Vorschau</title>
   <style>
     body { font-family: sans-serif; padding: 2rem; background: #f9fafc; }
     h1, h2 { color: #002649; }
     .section { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 0 5px rgba(0,0,0,0.05); }
     .meta { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
-    pre { background: #f1f1f1; padding: 1rem; border-radius: 6px; overflow-x: auto; }
     .empfehlung { margin-bottom: 1rem; }
-    textarea { width: 100%; height: 100px; margin-top: 0.5rem; font-family: monospace; }
-    .test-output { white-space: pre-wrap; background: #f0f0f0; padding: 1rem; border-radius: 6px; }
   </style>
 </head>
 <body>
@@ -39,13 +36,6 @@
     <p><strong>Risikoklasse:</strong> <span id="risiko-klasse"></span></p>
     <p id="risiko-begruendung"></p>
     <ul id="risiko-pflichten"></ul>
-  </div>
-
-  <div class="section">
-    <h2>🔧 GPT-Test: Freier Prompt</h2>
-    <textarea id="prompt" placeholder="Gib einen GPT-Prompt ein..."></textarea><br>
-    <button onclick="testGPT()">Senden</button>
-    <div id="test-result" class="test-output"></div>
   </div>
 
   <script>
@@ -85,21 +75,6 @@
     } catch (err) {
       document.body.innerHTML = "<p style='color:red'>Fehler beim Laden der Vorschau. Bitte erneut versuchen.</p>";
       console.error("Fehler beim Parsen der Vorschau:", err);
-    }
-
-    async function testGPT() {
-      const prompt = document.getElementById("prompt").value;
-      const resultDiv = document.getElementById("test-result");
-      resultDiv.innerText = "⏳ Anfrage wird verarbeitet...";
-
-      const res = await fetch("https://make-ki-backend-production.up.railway.app/gpt-analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
-      });
-
-      const result = await res.text();
-      resultDiv.innerText = result;
     }
   </script>
 </body>

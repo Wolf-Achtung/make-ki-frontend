@@ -1,5 +1,10 @@
 document.getElementById("kiForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  const button = document.querySelector("button[type=submit]");
+  button.disabled = true;
+  button.textContent = "⏳ wird ausgewertet ...";
+
   const data = Object.fromEntries(new FormData(e.target).entries());
 
   // Score berechnen aus frage1–frage10
@@ -17,3 +22,4 @@ document.getElementById("kiForm").addEventListener("submit", async (e) => {
   sessionStorage.setItem("gpt_result", JSON.stringify(result));
   window.location.href = "vorschau.html";
 });
+
