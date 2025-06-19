@@ -1,23 +1,66 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Vorschau</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KI-Check Vorschau</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f9fafc; }
+    h1 { color: #002649; }
+    .section { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 0 5px rgba(0,0,0,0.05); }
+    .meta { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
+    pre { background: #f1f1f1; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    .empfehlung { margin-bottom: 1rem; }
+  </style>
 </head>
 <body>
-  <h1>Ihre KI-Analyse (Vorschau)</h1>
-  <div id="preview"></div>
-  <button onclick="window.location.href='zahlung.html'">Executive Briefing jetzt freischalten</button>
+  <h1>🧠 Vorschau: KI-Briefing für Ihr Unternehmen</h1>
+
+  <div class="section">
+    <div class="meta" id="meta"></div>
+    <h2>Executive Summary</h2>
+    <p id="executive"></p>
+  </div>
+
+  <div class="section">
+    <h2>Strategische Analyse</h2>
+    <p id="analyse"></p>
+  </div>
+
+  <div class="section">
+    <h2>Empfehlungen</h2>
+    <div id="empfehlungen"></div>
+  </div>
+
+  <div class="section">
+    <h2>Risikoprofil</h2>
+    <p><strong>Risikoklasse:</strong> <span id="risiko-klasse"></span></p>
+    <p id="risiko-begruendung"></p>
+    <ul id="risiko-pflichten"></ul>
+  </div>
 
   <script>
-    const result = JSON.parse(sessionStorage.getItem("gpt_result"));
-    document.getElementById("preview").innerHTML = `
-      <p><strong>Name:</strong> ${result.name}</p>
-      <p><strong>Unternehmen:</strong> ${result.unternehmen}</p>
-      <p><strong>Score:</strong> ${result.score}</p>
-      <p><strong>Bewertung:</strong> ${result.bewertung}</p>
-      <p><strong>Trendreport:</strong> ${result.trendreport}</p>
-    `;
+    const data = JSON.parse(sessionStorage.getItem("gpt_result"));
+
+    document.getElementById("meta").innerText = `Name: ${data.name} | Unternehmen: ${data.unternehmen} | Score: ${data.score} Punkte | Bewertung: ${data.bewertung}`;
+    document.getElementById("executive").innerText = data.executive_summary;
+    document.getElementById("analyse").innerText = data.analyse;
+
+    const empDiv = document.getElementById("empfehlungen");
+    data.empfehlungen.forEach((emp, i) => {
+      const block = document.createElement("div");
+      block.className = "empfehlung";
+      block.innerHTML = `<strong>${i + 1}. ${emp.titel}</strong><br>${emp.beschreibung}<br><em>Nächster Schritt:</em> ${emp.next_step}<br><em>Tool:</em> ${emp.tool}`;
+      empDiv.appendChild(block);
+    });
+
+    document.getElementById("risiko-klasse").innerText = data.risikoprofil.risikoklasse;
+    document.getElementById("risiko-begruendung").innerText = data.risikoprofil.begruendung;
+    data.risikoprofil.pflichten.forEach(p => {
+      const li = document.createElement("li");
+      li.textContent = p;
+      document.getElementById("risiko-pflichten").appendChild(li);
+    });
   </script>
 </body>
 </html>
