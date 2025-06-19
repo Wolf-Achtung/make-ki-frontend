@@ -9,7 +9,7 @@
     h1, h2 { color: #002649; }
     .section { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 0 5px rgba(0,0,0,0.05); }
     .meta { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
-    .empfehlung { margin-bottom: 1rem; }
+    .empfehlung, .trend, .tool { margin-bottom: 1rem; }
   </style>
 </head>
 <body>
@@ -38,6 +38,41 @@
     <ul id="risiko-pflichten"></ul>
   </div>
 
+  <div class="section">
+    <h2>Branchenvergleich</h2>
+    <p id="branchenvergleich"></p>
+  </div>
+
+  <div class="section">
+    <h2>Trendreport</h2>
+    <div id="trendreport"></div>
+  </div>
+
+  <div class="section">
+    <h2>Toolkompass</h2>
+    <div id="toolkompass"></div>
+  </div>
+
+  <div class="section">
+    <h2>Förderprogramme</h2>
+    <p id="foerderung"></p>
+  </div>
+
+  <div class="section">
+    <h2>Ressourcen & Weiterbildung</h2>
+    <p id="ressourcen"></p>
+  </div>
+
+  <div class="section">
+    <h2>Zukunftsausblick</h2>
+    <p id="zukunft"></p>
+  </div>
+
+  <div class="section">
+    <h2>Visionärer Gamechanger</h2>
+    <p id="vision"></p>
+  </div>
+
   <script>
     try {
       const data = JSON.parse(sessionStorage.getItem("gpt_result"));
@@ -54,24 +89,44 @@
           block.innerHTML = `<strong>${i + 1}. ${emp.titel || "Keine Empfehlung"}</strong><br>${emp.beschreibung || "-"}<br><em>Nächster Schritt:</em> ${emp.next_step || "-"}<br><em>Tool:</em> ${emp.tool || "-"}`;
           empDiv.appendChild(block);
         });
-      } else {
-        empDiv.innerHTML = "<p>Keine Empfehlungen verfügbar.</p>";
       }
 
-      if (data.risikoprofil) {
-        document.getElementById("risiko-klasse").innerText = data.risikoprofil.risikoklasse || "-";
-        document.getElementById("risiko-begruendung").innerText = data.risikoprofil.begruendung || "-";
-        if (Array.isArray(data.risikoprofil.pflichten)) {
-          data.risikoprofil.pflichten.forEach(p => {
-            const li = document.createElement("li");
-            li.textContent = p;
-            document.getElementById("risiko-pflichten").appendChild(li);
-          });
-        }
-      } else {
-        document.getElementById("risiko-klasse").innerText = "Keine Angabe";
-        document.getElementById("risiko-begruendung").innerText = "Keine Daten verfügbar.";
+      document.getElementById("risiko-klasse").innerText = data.risikoprofil?.risikoklasse || "-";
+      document.getElementById("risiko-begruendung").innerText = data.risikoprofil?.begruendung || "-";
+      const pflichten = data.risikoprofil?.pflichten || [];
+      pflichten.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = p;
+        document.getElementById("risiko-pflichten").appendChild(li);
+      });
+
+      document.getElementById("branchenvergleich").innerText = data.branchenvergleich || "-";
+
+      const trendDiv = document.getElementById("trendreport");
+      if (Array.isArray(data.trendreport)) {
+        data.trendreport.forEach(t => {
+          const d = document.createElement("div");
+          d.className = "trend";
+          d.innerHTML = `<strong>${t.titel || "Trend"}</strong><br>${t.beschreibung || "-"}`;
+          trendDiv.appendChild(d);
+        });
       }
+
+      const toolDiv = document.getElementById("toolkompass");
+      if (Array.isArray(data.toolkompass)) {
+        data.toolkompass.forEach(t => {
+          const d = document.createElement("div");
+          d.className = "tool";
+          d.innerHTML = `<strong>${t.titel || "Tool"}</strong><br>${t.beschreibung || "-"}`;
+          toolDiv.appendChild(d);
+        });
+      }
+
+      document.getElementById("foerderung").innerText = data.foerderung || "-";
+      document.getElementById("ressourcen").innerText = data.ressourcen || "-";
+      document.getElementById("zukunft").innerText = data.zukunft || "-";
+      document.getElementById("vision").innerText = data.vision || "-";
+
     } catch (err) {
       document.body.innerHTML = "<p style='color:red'>Fehler beim Laden der Vorschau. Bitte erneut versuchen.</p>";
       console.error("Fehler beim Parsen der Vorschau:", err);
