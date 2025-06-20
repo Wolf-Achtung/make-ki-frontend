@@ -1,33 +1,43 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Zahlung</title>
+  <title>Bezahlung</title>
 </head>
 <body>
-  <h1>Executive Briefing</h1>
-  <p>Vielen Dank für Ihr Interesse. Mit dem Klick unten starten Sie die Generierung Ihres persönlichen PDF-Briefings.</p>
-  <button id="generate">Bezahlung abschließen</button>
+  <h1>Zahlung (Dummy)</h1>
+  <p>Vielen Dank! Klicken Sie unten, um den Vorgang abzuschließen.</p>
+  <button id="finish">Bezahlung abschließen</button>
+  <div id="status"></div>
 
   <script>
-    document.getElementById("generate").addEventListener("click", async () => {
-      const data = JSON.parse(sessionStorage.getItem("gpt_result"));
+    document.getElementById("finish").addEventListener("click", async () => {
+      const data = JSON.parse(sessionStorage.getItem("userData") || "{}");
+
+      document.getElementById("status").innerText = "PDF wird erstellt...";
+
       const res = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
-      const result = await res.json();
-      sessionStorage.setItem("pdf_url", result.pdf_url);
 
-      // Webhook zur E-Mail-Zustellung (Dummy aktuell)
-      await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ pdf_url: result.pdf_url, email: data.email })
-      });
+      const json = await res.json();
+      if (json.pdf_url) {
+        sessionStorage.setItem("pdfUrl", json.pdf_url);
 
-      window.location.href = "danke.html";
+        // Mailversand via Make anstoßen
+        await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, pdf_url: json.pdf_url })
+        });
+
+        window.location.href = "danke.html";
+      } else {
+        document.getElementById("status").innerText = "Fehler bei der PDF-Erstellung.";
+      }
     });
   </script>
 </body>

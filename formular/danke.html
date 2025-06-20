@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -6,13 +7,22 @@
 </head>
 <body>
   <h1>Vielen Dank!</h1>
-  <p>Ihr Executive Briefing wurde erstellt und per E-Mail versendet.</p>
-  <p><a href="#" onclick="window.location.href='index.html'">Zurück zur Startseite</a></p>
-  <p><a id="pdfLink" href="#" target="_blank">PDF jetzt ansehen</a></p>
+  <p>Ihr persönliches PDF wurde erfolgreich erstellt und per E-Mail versendet.</p>
+  <p>
+    <a id="pdfLink" href="#" target="_blank">🔗 PDF jetzt öffnen</a>
+  </p>
+  <p>
+    <a href="index.html">⏪ Zurück zur Startseite</a>
+  </p>
 
   <script>
-    const url = sessionStorage.getItem("pdf_url");
-    if (url) document.getElementById("pdfLink").href = url;
+    const pdfUrl = sessionStorage.getItem("pdfUrl");
+    if (pdfUrl) {
+      document.getElementById("pdfLink").href = pdfUrl;
+    } else {
+      document.getElementById("pdfLink").textContent = "PDF-Link nicht verfügbar.";
+      document.getElementById("pdfLink").removeAttribute("href");
+    }
   </script>
 </body>
 </html>
