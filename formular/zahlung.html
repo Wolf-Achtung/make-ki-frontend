@@ -45,13 +45,14 @@
       }
 
       const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...fullData,
-          template_variant: "full"
-        })
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    ...fullData,
+    template_variant: "full"
+  })
+});
+
 
       const result = await response.json();
       if (result.pdf_url) {
