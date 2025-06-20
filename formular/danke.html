@@ -1,28 +1,34 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Danke</title>
+  <meta charset="UTF-8">
+  <title>Vielen Dank – Auswertung bereit</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; padding: 2em; }
+    .container { background: #fff; padding: 2em; border-radius: 8px; max-width: 700px; margin: auto; text-align: center; }
+    h1 { color: #002649; }
+    p { margin: 1em 0; }
+    .button {
+      display: inline-block;
+      background: #002649;
+      color: white;
+      padding: 1em 2em;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1.1em;
+      margin-top: 2em;
+    }
+    .button:hover { background: #004080; }
+  </style>
 </head>
 <body>
-  <h1>Vielen Dank!</h1>
-  <p>Ihr persönliches PDF wurde erfolgreich erstellt und per E-Mail versendet.</p>
-  <p>
-    <a id="pdfLink" href="#" target="_blank">🔗 PDF jetzt öffnen</a>
-  </p>
-  <p>
-    <a href="index.html">⏪ Zurück zur Startseite</a>
-  </p>
+  <div class="container">
+    <h1>🎉 Vielen Dank!</h1>
+    <p>Ihre Zahlung war erfolgreich und Ihre Auswertung ist jetzt verfügbar.</p>
+    <p>Sie erhalten zusätzlich eine E-Mail mit dem PDF-Dokument und weiteren Empfehlungen.</p>
 
-  <script>
-    const pdfUrl = sessionStorage.getItem("pdfUrl");
-    if (pdfUrl) {
-      document.getElementById("pdfLink").href = pdfUrl;
-    } else {
-      document.getElementById("pdfLink").textContent = "PDF-Link nicht verfügbar.";
-      document.getElementById("pdfLink").removeAttribute("href");
-    }
-  </script>
+    <!-- Download-Link (Platzhalter) -->
+    <a href="pdf/ki-auswertung.pdf" class="button" download>📄 PDF-Auswertung herunterladen</a>
+  </div>
 </body>
 </html>

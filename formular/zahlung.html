@@ -1,44 +1,38 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Bezahlung</title>
+  <meta charset="UTF-8">
+  <title>Zahlung & Freischaltung</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; padding: 2em; }
+    .container { background: #fff; padding: 2em; border-radius: 8px; max-width: 600px; margin: auto; }
+    h1 { color: #002649; }
+    .info { margin-bottom: 2em; }
+    .button-container { text-align: center; margin-top: 2em; }
+    .button {
+      background: #002649;
+      color: white;
+      padding: 1em 2em;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 1.1em;
+    }
+    .button:hover { background: #004080; }
+  </style>
 </head>
 <body>
-  <h1>Zahlung (Dummy)</h1>
-  <p>Vielen Dank! Klicken Sie unten, um den Vorgang abzuschließen.</p>
-  <button id="finish">Bezahlung abschließen</button>
-  <div id="status"></div>
+  <div class="container">
+    <h1>🔐 Freischaltung der Vollauswertung</h1>
+    <div class="info">
+      <p>Ihre individuelle Auswertung ist fast fertig! Für den Zugang zur Vollversion inkl. PDF-Download und Empfehlungen bitten wir um eine einmalige Freischaltungspauschale.</p>
+      <p><strong>Preis:</strong> 29,00 € (inkl. MwSt)</p>
+      <p>Nach der Zahlung erhalten Sie die Auswertung sofort per E-Mail und können sie auch direkt herunterladen.</p>
+    </div>
 
-  <script>
-    document.getElementById("finish").addEventListener("click", async () => {
-      const data = JSON.parse(sessionStorage.getItem("userData") || "{}");
-
-      document.getElementById("status").innerText = "PDF wird erstellt...";
-
-      const res = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      const json = await res.json();
-      if (json.pdf_url) {
-        sessionStorage.setItem("pdfUrl", json.pdf_url);
-
-        // Mailversand via Make anstoßen
-        await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, pdf_url: json.pdf_url })
-        });
-
-        window.location.href = "danke.html";
-      } else {
-        document.getElementById("status").innerText = "Fehler bei der PDF-Erstellung.";
-      }
-    });
-  </script>
+    <!-- Platzhalter für Payment-Integration -->
+    <div class="button-container">
+      <a href="danke.html" class="button">Zahlung abgeschlossen – weiter zur Auswertung</a>
+    </div>
+  </div>
 </body>
 </html>
