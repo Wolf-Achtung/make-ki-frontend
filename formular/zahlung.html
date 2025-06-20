@@ -2,65 +2,33 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Zahlung & Freischaltung</title>
-  <style>
-    body { font-family: sans-serif; background: #f4f4f4; padding: 2em; }
-    .container { background: #fff; padding: 2em; border-radius: 8px; max-width: 600px; margin: auto; }
-    h1 { color: #002649; }
-    .info { margin-bottom: 2em; }
-    .button-container { text-align: center; margin-top: 2em; }
-    .button {
-      background: #002649;
-      color: white;
-      padding: 1em 2em;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 1.1em;
-      cursor: pointer;
-      display: inline-block;
-    }
-    .button:hover { background: #004080; }
-  </style>
+  <title>Zahlung</title>
 </head>
 <body>
-  <div class="container">
-    <h1>🔐 Freischaltung der Vollauswertung</h1>
-    <div class="info">
-      <p>Ihre individuelle Auswertung ist fast fertig! Für den Zugang zur Vollversion inkl. PDF-Download und Empfehlungen bitten wir um eine einmalige Freischaltungspauschale.</p>
-      <p><strong>Preis:</strong> 29,00 € (inkl. MwSt)</p>
-      <p>Nach der Zahlung erhalten Sie die Auswertung sofort per E-Mail und können sie auch direkt herunterladen.</p>
-    </div>
-
-    <div class="button-container">
-      <span class="button" onclick="generatePDF()">Zahlung abgeschlossen – weiter zur Auswertung</span>
-    </div>
-  </div>
+  <h1>Executive Briefing</h1>
+  <p>Vielen Dank für Ihr Interesse. Mit dem Klick unten starten Sie die Generierung Ihres persönlichen PDF-Briefings.</p>
+  <button id="generate">Bezahlung abschließen</button>
 
   <script>
-    async function generatePDF() {
-      const fullData = JSON.parse(sessionStorage.getItem("gpt_result"));
-      if (!fullData) {
-        alert("Keine gespeicherten Daten gefunden.");
-        return;
-      }
+    document.getElementById("generate").addEventListener("click", async () => {
+      const data = JSON.parse(sessionStorage.getItem("gpt_result"));
+      const res = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      sessionStorage.setItem("pdf_url", result.pdf_url);
 
-      const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    ...fullData,
-    template_variant: "full"
-  })
-});
+      // Webhook zur E-Mail-Zustellung (Dummy aktuell)
+      await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ pdf_url: result.pdf_url, email: data.email })
+      });
 
-
-      const result = await response.json();
-      if (result.pdf_url) {
-        window.location.href = `danke.html?pdf=${encodeURIComponent(result.pdf_url)}`;
-      } else {
-        alert("PDF konnte nicht erstellt werden.");
-      }
-    }
+      window.location.href = "danke.html";
+    });
   </script>
 </body>
 </html>

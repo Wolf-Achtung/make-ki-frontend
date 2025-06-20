@@ -1,60 +1,23 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>KI-Check Vorschau</title>
-  <style>
-    body { font-family: sans-serif; background: #f4f4f4; padding: 2em; }
-    .container { background: #fff; padding: 2em; border-radius: 8px; max-width: 800px; margin: auto; }
-    h1 { color: #002649; }
-    .teaser {
-      background: #e6f2ff;
-      padding: 1em;
-      margin-top: 1.5em;
-      border-left: 5px solid #0077cc;
-    }
-    .cta {
-      margin-top: 2.5em;
-      text-align: center;
-    }
-    a.button {
-      background: #002649;
-      color: white;
-      padding: 1em 2em;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 1.1em;
-    }
-    a.button:hover {
-      background: #004080;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Vorschau</title>
 </head>
 <body>
-  <div class="container">
-    <h1>🔍 Ihre KI-Auswertung – Vorschau</h1>
-    <p>Vielen Dank für Ihre Angaben! Hier erhalten Sie einen ersten Einblick in Ihre individuelle Bewertung.</p>
+  <h1>Ihre KI-Analyse (Vorschau)</h1>
+  <div id="preview"></div>
+  <button onclick="window.location.href='zahlung.html'">Executive Briefing jetzt freischalten</button>
 
-    <div class="teaser">
-      <strong>📊 KI-Readiness (Strategische Vorbereitung):</strong><br>
-      Ihre Antworten zeigen, dass erste Grundlagen für KI-Projekte vorhanden sind. Besonders positiv: Klare Zielvorstellungen und strukturierte Daten.
-    </div>
-
-    <div class="teaser">
-      <strong>🔐 AI-Compliance (Rechtliche Aspekte):</strong><br>
-      Sie haben ein Bewusstsein für Datenschutz und Regularien. Eine detaillierte Prüfung Ihrer eingesetzten Tools ist empfehlenswert.
-    </div>
-
-    <div class="teaser">
-      <strong>🚀 Use Case & Umsetzung:</strong><br>
-      Sie haben ein mögliches Ziel mit KI identifiziert. In der Vollauswertung zeigen wir Ihnen passende Anwendungsfelder und Tools.
-    </div>
-
-    <p>🔒 Die vollständige Auswertung enthält konkrete Empfehlungen, Tool-Vorschläge und Hinweise zur Umsetzung.</p>
-
-    <div class="cta">
-      <a href="zahlung.html" class="button">Jetzt freischalten & PDF-Auswertung erhalten</a>
-    </div>
-  </div>
+  <script>
+    const result = JSON.parse(sessionStorage.getItem("gpt_result"));
+    document.getElementById("preview").innerHTML = `
+      <p><strong>Name:</strong> ${result.name}</p>
+      <p><strong>Unternehmen:</strong> ${result.unternehmen}</p>
+      <p><strong>Score:</strong> ${result.score}</p>
+      <p><strong>Bewertung:</strong> ${result.bewertung}</p>
+      <p><strong>Trendreport:</strong> ${result.trendreport}</p>
+    `;
+  </script>
 </body>
 </html>
