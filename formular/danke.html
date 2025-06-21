@@ -1,22 +1,32 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Vielen Dank!</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; }
+    .info { margin: 2rem auto; max-width: 600px; }
+    a.download { display: inline-block; margin-top: 1.5rem; background: #0066cc; color: white; padding: 1rem 2rem; border-radius: 6px; text-decoration: none; }
+    a.download:hover { background: #004999; }
+  </style>
 </head>
 <body>
-  <h1>🎉 Vielen Dank für Ihre Bestellung!</h1>
-  <p>Ihre vollständige KI-Auswertung wurde erstellt und per E-Mail an Sie gesendet.</p>
-
-  <p>Falls Sie das PDF sofort einsehen möchten:</p>
-  <a id="full-pdf-link" href="#" target="_blank">📄 Vollständige PDF-Auswertung anzeigen</a>
+  <h1>🎉 Vielen Dank für Ihre Freischaltung!</h1>
+  <div class="info">
+    <p>Ihre vollständige, personalisierte KI-Auswertung steht nun bereit.</p>
+    <p>Sie können den Bericht jetzt als PDF herunterladen.</p>
+    <a class="download" id="pdfDownload" href="#" target="_blank">PDF herunterladen</a>
+  </div>
 
   <script>
-    const fullURL = sessionStorage.getItem("fullURL");
-    if (fullURL) {
-      document.getElementById("full-pdf-link").href = fullURL;
+    const fullPdfUrl = sessionStorage.getItem("fullPdfUrl");
+    const link = document.getElementById("pdfDownload");
+    if (fullPdfUrl) {
+      link.href = fullPdfUrl;
     } else {
-      document.getElementById("full-pdf-link").textContent = "PDF-Auswertung derzeit nicht verfügbar.";
+      link.innerText = "PDF derzeit nicht verfügbar";
+      link.style.backgroundColor = "#ccc";
+      link.removeAttribute("href");
     }
   </script>
 </body>

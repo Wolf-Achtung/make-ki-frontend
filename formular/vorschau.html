@@ -2,48 +2,31 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Vorschau Ihrer KI-Auswertung</title>
+  <title>Ihre Vorschau</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      background-color: #f5f5f5;
-      text-align: center;
-    }
-    .info-box {
-      background: #fff;
-      border-radius: 8px;
-      padding: 2rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: inline-block;
-    }
-    .error {
-      color: #b00020;
-    }
+    body { font-family: sans-serif; text-align: center; padding: 2rem; }
+    iframe { width: 90%; height: 700px; border: 1px solid #ccc; }
+    .hinweis { margin-top: 2rem; font-size: 0.95rem; color: #666; }
   </style>
 </head>
 <body>
-  <div class="info-box" id="messageBox">
-    <h2>🚀 Bitte einen Moment Geduld...</h2>
-    <p>Sie werden in Kürze zur Vorschau Ihrer Auswertung weitergeleitet.</p>
+  <h1>Vorschau Ihrer KI-Auswertung</h1>
+  <div id="vorschau-bereich">
+    <p>⏳ PDF-Vorschau wird geladen...</p>
+  </div>
+  <div class="hinweis">
+    <p>Um die vollständige Auswertung mit individuellen Empfehlungen freizuschalten, klicken Sie bitte auf „Jetzt Bericht freischalten“.</p>
+    <a href="zahlung.html">Jetzt Bericht freischalten</a>
   </div>
 
   <script>
-    const previewUrl = sessionStorage.getItem('previewUrl');
-    const messageBox = document.getElementById('messageBox');
+    const pdfUrl = sessionStorage.getItem("previewUrl");
+    const container = document.getElementById("vorschau-bereich");
 
-    if (previewUrl) {
-      console.log("➡️ Weiterleitung zur PDF-Vorschau:", previewUrl);
-      setTimeout(() => {
-        window.location.href = previewUrl;
-      }, 2000); // 2 Sekunden warten vor der Weiterleitung
+    if (pdfUrl) {
+      container.innerHTML = `<iframe src="${pdfUrl}" frameborder="0"></iframe>`;
     } else {
-      console.warn("⚠️ Keine Vorschau-URL im sessionStorage gefunden.");
-      messageBox.innerHTML = `
-        <h2 class="error">⚠️ Vorschau nicht verfügbar</h2>
-        <p>Die Auswertung konnte nicht geladen werden. Bitte starten Sie den Prozess erneut.</p>
-        <a href="index.html">Zurück zum Formular</a>
-      `;
+      container.innerHTML = "<p>❌ Leider konnte keine Vorschau geladen werden.</p>";
     }
   </script>
 </body>
