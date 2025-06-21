@@ -1,32 +1,21 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Ihre Vorschau</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 2rem; }
-    iframe { width: 90%; height: 700px; border: 1px solid #ccc; }
-    .hinweis { margin-top: 2rem; font-size: 0.95rem; color: #666; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vorschau Ihrer KI-Auswertung</title>
 </head>
 <body>
   <h1>Vorschau Ihrer KI-Auswertung</h1>
-  <div id="vorschau-bereich">
-    <p>⏳ PDF-Vorschau wird geladen...</p>
-  </div>
-  <div class="hinweis">
-    <p>Um die vollständige Auswertung mit individuellen Empfehlungen freizuschalten, klicken Sie bitte auf „Jetzt Bericht freischalten“.</p>
-    <a href="zahlung.html">Jetzt Bericht freischalten</a>
-  </div>
+  <p>Die PDF-Vorschau wurde erfolgreich erstellt. <br />
+  <a id="pdfLink" href="#" target="_blank">Hier Vorschau öffnen</a></p>
 
   <script>
-    const pdfUrl = sessionStorage.getItem("previewUrl");
-    const container = document.getElementById("vorschau-bereich");
-
-    if (pdfUrl) {
-      container.innerHTML = `<iframe src="${pdfUrl}" frameborder="0"></iframe>`;
+    const previewUrl = sessionStorage.getItem("previewUrl");
+    if (previewUrl) {
+      document.getElementById("pdfLink").href = previewUrl;
     } else {
-      container.innerHTML = "<p>❌ Leider konnte keine Vorschau geladen werden.</p>";
+      document.body.innerHTML += "<p>Fehler: Keine Vorschau-URL gefunden.</p>";
     }
   </script>
 </body>
