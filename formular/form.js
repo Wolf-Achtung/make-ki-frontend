@@ -4,9 +4,8 @@ document.getElementById("kiForm").addEventListener("submit", async function(even
   const formData = new FormData(this);
   const payload = {};
 
-  // Alle Felder erfassen
+  // Alle Felder erfassen – inkl. Mehrfachauswahl
   formData.forEach((value, key) => {
-    // Unterstützung für Mehrfachwerte wie Checkboxen oder Listen
     if (payload[key]) {
       if (Array.isArray(payload[key])) {
         payload[key].push(value);
@@ -18,7 +17,7 @@ document.getElementById("kiForm").addEventListener("submit", async function(even
     }
   });
 
-  console.log("📦 Sende folgende Daten an Backend:", payload);
+  console.log("📦 Daten an Backend:", payload);
 
   try {
     const response = await fetch("/generate-pdf", {
@@ -32,15 +31,15 @@ document.getElementById("kiForm").addEventListener("submit", async function(even
     const result = await response.json();
 
     if (response.ok && result.preview) {
-      console.log("✅ Vorschau-URL erhalten:", result.preview);
+      console.log("✅ Vorschau-Link erhalten:", result.preview);
       sessionStorage.setItem("previewUrl", result.preview);
       window.location.href = "vorschau.html";
     } else {
-      console.error("⚠️ Fehlerhafte Server-Antwort:", result);
-      alert("❌ Fehler beim Erzeugen der Vorschau: " + (result.message || "Unbekannter Fehler"));
+      console.error("⚠️ Serverfehler:", result);
+      alert("Fehler beim Erzeugen der Vorschau: " + (result.message || "Unbekannter Fehler"));
     }
   } catch (error) {
-    console.error("🚨 Netzwerkfehler oder Server nicht erreichbar:", error);
-    alert("❌ Netzwerk-/Serverfehler: " + error.message);
+    console.error("🚨 Netzwerkfehler:", error);
+    alert("Netzwerkfehler oder Server nicht erreichbar: " + error.message);
   }
 });
