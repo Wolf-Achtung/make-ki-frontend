@@ -1,18 +1,116 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>KI-Check Pro</title>
-  <script src="form.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KI-Zertifikat Testformular</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 1rem;
+      line-height: 1.6;
+    }
+    h2 { margin-top: 2rem; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      background: #0044cc;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .success, .error {
+      margin-top: 2rem;
+      font-weight: bold;
+    }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
 </head>
 <body>
-  <h1>KI-Check Pro: Jetzt starten</h1>
-  <form id="fragebogen-formular">
-    <label>Unternehmen: <input type="text" name="unternehmen" required></label><br>
-    <label>Email: <input type="email" name="email" required></label><br>
-    <label>Branche: <input type="text" name="branche"></label><br>
-    <label>Selbstständig? <select name="selbststaendig"><option>ja</option><option>nein</option></select></label><br>
-    <button type="submit">Vorschau anzeigen</button>
+  <h1>KI-Zertifikat Testformular</h1>
+
+  <form id="ki-form">
+    <h2>🧑 Über dich</h2>
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" />
+
+    <label for="unternehmen">Unternehmen *</label>
+    <input type="text" id="unternehmen" name="unternehmen" required />
+
+    <label for="email">E-Mail *</label>
+    <input type="email" id="email" name="email" required />
+
+    <h2>🏢 Dein Geschäftsfeld</h2>
+    <label for="branche">Branche</label>
+    <input type="text" id="branche" name="branche" />
+
+    <label for="bereich">Bereich</label>
+    <input type="text" id="bereich" name="bereich" />
+
+    <label for="tools">Genutzte Tools</label>
+    <input type="text" id="tools" name="tools" />
+
+    <h2>🎯 Dein Ziel mit KI</h2>
+    <label for="ziel">Ziel(e) mit KI</label>
+    <textarea id="ziel" name="ziel"></textarea>
+
+    <button type="submit">Zertifikat anfordern</button>
   </form>
+
+  <div id="response" class="success" style="display:none;">Anfrage erfolgreich gesendet!</div>
+  <div id="error" class="error" style="display:none;">Fehler beim Senden. Bitte später erneut versuchen.</div>
+
+  <script>
+    const form = document.getElementById("ki-form");
+    const webhookURL = "https://hook.eu2.make.com/l6w1fmnncbtfxxpwjl62yi6ddx7isdf4";
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        version: "full",
+        payload: {
+          name: form.name.value,
+          unternehmen: form.unternehmen.value,
+          email: form.email.value,
+          branche: form.branche.value,
+          bereich: form.bereich.value,
+          tools: form.tools.value,
+          ziel: form.ziel.value
+        }
+      };
+
+      try {
+        const res = await fetch(webhookURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          document.getElementById("response").style.display = "block";
+          document.getElementById("error").style.display = "none";
+          form.reset();
+        } else {
+          throw new Error("Serverfehler");
+        }
+      } catch (err) {
+        document.getElementById("response").style.display = "none";
+        document.getElementById("error").style.display = "block";
+      }
+    });
+  </script>
 </body>
 </html>
