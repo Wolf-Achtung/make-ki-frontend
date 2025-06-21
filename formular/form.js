@@ -9,10 +9,11 @@ document.getElementById("formular").addEventListener("submit", async function (e
     payload[key] = value;
   });
 
-  console.log("📦 Sende folgende Daten:", payload);
+  console.log("Sende folgende Daten:", payload);
 
   try {
-    const response = await fetch("/generate-pdf", {
+    const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -23,7 +24,7 @@ document.getElementById("formular").addEventListener("submit", async function (e
     const result = await response.json();
 
     if (response.ok && result.preview) {
-      console.log("✅ PDF-Vorschau erhalten:", result.preview);
+      console.log("PDF-Vorschau erhalten:", result.preview);
       sessionStorage.setItem("previewUrl", result.preview);
       window.location.href = "vorschau.html";
     } else {
