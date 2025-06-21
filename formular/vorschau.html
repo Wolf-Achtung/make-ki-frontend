@@ -1,23 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Vorschau</title>
+    <meta charset="UTF-8">
+    <title>Vorschau Ihrer Auswertung</title>
 </head>
 <body>
-  <h1>Ihre KI-Analyse (Vorschau)</h1>
-  <div id="preview"></div>
-  <button onclick="window.location.href='zahlung.html'">Executive Briefing jetzt freischalten</button>
-
-  <script>
-    const result = JSON.parse(sessionStorage.getItem("gpt_result"));
-    document.getElementById("preview").innerHTML = `
-      <p><strong>Name:</strong> ${result.name}</p>
-      <p><strong>Unternehmen:</strong> ${result.unternehmen}</p>
-      <p><strong>Score:</strong> ${result.score}</p>
-      <p><strong>Bewertung:</strong> ${result.bewertung}</p>
-      <p><strong>Trendreport:</strong> ${result.trendreport}</p>
-    `;
-  </script>
+    <h1>Vorschau Ihrer Auswertung</h1>
+    <p>Vielen Dank für Ihre Angaben. Hier sehen Sie einen ersten Auszug aus Ihrer individuellen Bewertung:</p>
+    <div id="preview-container">
+        <p><strong>Executive Summary (Beispiel):</strong></p>
+        <p>Ihr Unternehmen zeigt eine hohe Bereitschaft, KI sinnvoll einzusetzen. Erste Schritte wie der Einsatz von ChatGPT oder Notion AI sind vielversprechend.</p>
+    </div>
+    <a href="zahlung.html"><button>Zur Bezahlung & vollständigen Auswertung</button></a>
 </body>
 </html>
