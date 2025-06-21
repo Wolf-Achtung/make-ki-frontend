@@ -1,47 +1,37 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('fragebogen');
-
-  form.addEventListener('submit', async function (event) {
+document.querySelector('form').addEventListener('submit', async function (event) {
     event.preventDefault();
-    console.log("📨 Formular-Absenden gestartet...");
 
-    const formData = new FormData(form);
+    const formData = new FormData(event.target);
     const jsonData = {};
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
 
-    for (const [key, value] of formData.entries()) {
-      jsonData[key] = value;
-    }
-
-    console.log("📦 Daten gesammelt:", jsonData);
+    console.log("📤 Sende Daten an /generate-pdf", jsonData);
 
     try {
-      const response = await fetch('https://make-ki-backend-production.up.railway.app/generate-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(jsonData)
-      });
+        const response = await fetch('https://make-ki-backend-production.up.railway.app/generate-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        });
 
-      if (!response.ok) {
-        console.error("❌ Fehler vom Server:", response.status, response.statusText);
-        alert("⚠️ Fehler bei der Auswertung: Ein Dienst hat versagt.");
-        return;
-      }
+        const result = await response.json();
 
-      const result = await response.json();
-      console.log("✅ Antwort erhalten:", result);
+        console.log("✅ Antwort erhalten:", result);
 
-      if (result.preview) {
-        sessionStorage.setItem('previewUrl', result.preview);
-        window.location.href = 'vorschau.html';
-      } else {
-        alert("⚠️ Kein PDF-Link in der Antwort gefunden.");
-        console.warn("⚠️ Unerwartetes Antwortformat:", result);
-      }
+        if (response.ok && result.preview) {
+            sessionStorage.setItem('previewText', result.preview);
+            sessionStorage.setItem('fullText', result.full);
+            alert("✅ Auswertung erfolgreich erstellt. Vorschau wird geöffnet.");
+            window.location.href = 'vorschau.html';
+        } else {
+            alert(`⚠️ Fehler bei der Auswertung: ${result.error || 'Unbekannter Fehler'}`);
+        }
     } catch (error) {
-      console.error("❌ Netzwerk- oder Serverfehler:", error);
-      alert("⚠️ Fehler beim Senden des Formulars: Netzwerkproblem oder Backendfehler.");
+        console.error("❌ Netzwerk- oder Serverfehler:", error);
+        alert("❌ Netzwerkfehler oder kein Server erreichbar.\n" + error);
     }
-  });
 });
