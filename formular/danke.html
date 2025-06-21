@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Vielen Dank!</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Vielen Dank!</title>
 </head>
 <body>
-    <h1>Vielen Dank für Ihre Bestellung!</h1>
-    <p>Ihre vollständige KI-Auswertung wurde per E-Mail an Sie versendet.</p>
-    <p>Sie können das PDF auch direkt hier herunterladen:</p>
-    <a href="#" id="pdfLink"><button>Auswertung herunterladen</button></a>
+  <h1>🎉 Vielen Dank für Ihre Bestellung!</h1>
+  <p>Ihre vollständige KI-Auswertung wurde erstellt und per E-Mail an Sie gesendet.</p>
 
-    <script>
-        // Optional: PDF-Link dynamisch setzen, falls du ihn lokal speichern möchtest
-        const pdfUrl = sessionStorage.getItem("pdfUrl");
-        if (pdfUrl) {
-            document.getElementById("pdfLink").href = pdfUrl;
-        } else {
-            document.getElementById("pdfLink").textContent = "PDF wird vorbereitet...";
-        }
-    </script>
+  <p>Falls Sie das PDF sofort einsehen möchten:</p>
+  <a id="full-pdf-link" href="#" target="_blank">📄 Vollständige PDF-Auswertung anzeigen</a>
+
+  <script>
+    const fullURL = sessionStorage.getItem("fullURL");
+    if (fullURL) {
+      document.getElementById("full-pdf-link").href = fullURL;
+    } else {
+      document.getElementById("full-pdf-link").textContent = "PDF-Auswertung derzeit nicht verfügbar.";
+    }
+  </script>
 </body>
 </html>

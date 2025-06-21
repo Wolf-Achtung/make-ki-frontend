@@ -1,19 +1,29 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Bezahlen & Auswertung erhalten</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Bezahlen & Freischalten</title>
 </head>
 <body>
-    <h1>Freischaltung Ihrer vollständigen KI-Auswertung</h1>
-    <p>Die ausführliche Analyse inkl. Handlungsempfehlungen, Roadmap, Fördertipps und Compliance-Hinweisen steht bereit.</p>
-    <p>Einmalzahlung: <strong>49 € (netto)</strong></p>
+  <h1>Freischaltung Ihrer vollständigen KI-Auswertung</h1>
+  <p>Sie erhalten:</p>
+  <ul>
+    <li>📄 Detaillierte Empfehlungen</li>
+    <li>🚀 Tool- & Fördertipps</li>
+    <li>🔐 Compliance-Check</li>
+    <li>🧠 Strategische Roadmap</li>
+  </ul>
 
-    <!-- Beispielbutton – hier sollte Stripe o.ä. eingebunden werden -->
-    <a href="danke.html">
-        <button>Jetzt bezahlen & PDF erhalten</button>
-    </a>
+  <p>Preis: <strong>49 €</strong> (inkl. MwSt)</p>
+
+  <!-- Beispielbutton – je nach Zahlungsanbieter anpassen -->
+  <button onclick="weiter()">Jetzt bezahlen</button>
+
+  <script>
+    function weiter() {
+      // Simuliere Bezahlabschluss – in Realität: Stripe, Digistore24 etc.
+      window.location.href = "danke.html";
+    }
+  </script>
 </body>
 </html>
