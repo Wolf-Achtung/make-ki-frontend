@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -9,16 +8,26 @@
 <body>
     <h1>Ihre KI-Auswertung – Vorschau</h1>
     <p>Basierend auf Ihren Angaben haben wir eine erste Einschätzung erstellt:</p>
-    <div id="previewText" style="border: 1px solid #ccc; padding: 1em; margin-top: 1em;"></div>
+
+    <div style="margin-top: 1em; margin-bottom: 2em;">
+        <a id="preview-link" href="#" target="_blank" style="font-weight: bold; font-size: 1.2em;">
+            📄 Vorschau-PDF öffnen
+        </a>
+    </div>
 
     <p>Für die vollständige Auswertung inkl. Handlungsempfehlungen, Tools & Fördertipps, führen Sie bitte die Bezahlung fort:</p>
+
     <a href="zahlung.html">
-        <button>Jetzt freischalten</button>
+        <button style="padding: 0.7em 1.5em; font-size: 1em;">Jetzt freischalten</button>
     </a>
 
     <script>
-        const preview = sessionStorage.getItem("previewText");
-        document.getElementById("previewText").textContent = preview || "Keine Vorschau verfügbar.";
+        const previewURL = sessionStorage.getItem("previewURL");
+        if (previewURL) {
+            document.getElementById("preview-link").href = previewURL;
+        } else {
+            document.getElementById("preview-link").textContent = "Vorschau nicht verfügbar.";
+        }
     </script>
 </body>
 </html>
