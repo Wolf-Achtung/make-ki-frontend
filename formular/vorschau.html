@@ -1,40 +1,50 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>KI-Auswertung – Vorschau</title>
+  <meta charset="UTF-8">
+  <title>Vorschau Ihrer KI-Auswertung</title>
   <style>
     body {
-      font-family: sans-serif;
-      margin: 2rem;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f5f5f5;
+      text-align: center;
     }
-    iframe {
-      width: 100%;
-      height: 90vh;
-      border: 1px solid #ccc;
+    .info-box {
+      background: #fff;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: inline-block;
+    }
+    .error {
+      color: #b00020;
     }
   </style>
 </head>
 <body>
-  <h1>Ihre KI-Auswertung – Vorschau</h1>
-  <p>Hier sehen Sie einen Auszug Ihrer Analyse. Für die vollständige Version inkl. Empfehlungen und Roadmap steht Ihnen der Report nach der Freischaltung zur Verfügung.</p>
-
-  <div id="feedback"></div>
-  <iframe id="pdfFrame" src="" style="display: none;"></iframe>
+  <div class="info-box" id="messageBox">
+    <h2>🚀 Bitte einen Moment Geduld...</h2>
+    <p>Sie werden in Kürze zur Vorschau Ihrer Auswertung weitergeleitet.</p>
+  </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const previewUrl = sessionStorage.getItem('previewText');
+    const previewUrl = sessionStorage.getItem('previewUrl');
+    const messageBox = document.getElementById('messageBox');
 
-      if (previewUrl) {
-        document.getElementById('pdfFrame').src = previewUrl;
-        document.getElementById('pdfFrame').style.display = 'block';
-        document.getElementById('feedback').innerText = "✅ Vorschau wird geladen...";
-      } else {
-        document.getElementById('feedback').innerText =
-          "⚠️ Keine Vorschau verfügbar. Bitte gehen Sie zurück und senden Sie das Formular erneut.";
-      }
-    });
+    if (previewUrl) {
+      console.log("➡️ Weiterleitung zur PDF-Vorschau:", previewUrl);
+      setTimeout(() => {
+        window.location.href = previewUrl;
+      }, 2000); // 2 Sekunden warten vor der Weiterleitung
+    } else {
+      console.warn("⚠️ Keine Vorschau-URL im sessionStorage gefunden.");
+      messageBox.innerHTML = `
+        <h2 class="error">⚠️ Vorschau nicht verfügbar</h2>
+        <p>Die Auswertung konnte nicht geladen werden. Bitte starten Sie den Prozess erneut.</p>
+        <a href="index.html">Zurück zum Formular</a>
+      `;
+    }
   </script>
 </body>
 </html>
