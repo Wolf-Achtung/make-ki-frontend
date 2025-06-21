@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Vorschau</title>
+  <meta charset="UTF-8">
+  <title>Ihre Vorschau</title>
 </head>
 <body>
-  <h1>Ihre KI-Analyse (Vorschau)</h1>
-  <div id="preview"></div>
-  <button onclick="window.location.href='zahlung.html'">Executive Briefing jetzt freischalten</button>
-
-  <script>
-    const result = JSON.parse(sessionStorage.getItem("gpt_result"));
-    document.getElementById("preview").innerHTML = `
-      <p><strong>Name:</strong> ${result.name}</p>
-      <p><strong>Unternehmen:</strong> ${result.unternehmen}</p>
-      <p><strong>Score:</strong> ${result.score}</p>
-      <p><strong>Bewertung:</strong> ${result.bewertung}</p>
-      <p><strong>Trendreport:</strong> ${result.trendreport}</p>
-    `;
-  </script>
+  <h1>Ihr KI-Briefing – Vorschau</h1>
+  <p>Basierend auf Ihren Angaben erhalten Sie einen ersten Überblick Ihrer KI-Reife.</p>
+  <p><strong>Executive Summary (Auszug):</strong> ...</p>
+  <form action="https://make-ki-backend-production.up.railway.app/generate-pdf" method="POST">
+    <input type="hidden" name="version" value="full">
+    <input type="hidden" name="payload" id="payload-json">
+    <button type="submit">Kompletten Report freischalten</button>
+  </form>
 </body>
 </html>

@@ -1,14 +1,24 @@
-document.getElementById("kiForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
+// form.js – wandelt Formulardaten in JSON um und übergibt sie an die Vorschau
 
-  const res = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
+document.getElementById('fragebogen-formular')?.addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const formData = new FormData(event.target);
+  const payload = {};
+
+  formData.forEach((value, key) => {
+    payload[key] = value;
   });
 
-  const result = await res.json();
-  sessionStorage.setItem("gpt_result", JSON.stringify(result));
+  // Vorschau anzeigen (simuliert clientseitige Logik)
+  localStorage.setItem("payload", JSON.stringify(payload));
   window.location.href = "vorschau.html";
 });
+
+// Auf der vorschau.html laden
+if (window.location.pathname.includes("vorschau.html")) {
+  const data = localStorage.getItem("payload");
+  if (data) {
+    document.getElementById("payload-json").value = data;
+  }
+}
