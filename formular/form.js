@@ -1,35 +1,33 @@
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("fragebogen-formular");
 
-document.getElementById("ki-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
-    // Optional: Ergänze zusammengesetzte Felder
-    if (data["branche"] === "Sonstige") {
-        data["branche"] = data["branche_sonstige"] || "Sonstige";
-    }
-    delete data["branche_sonstige"];
-
-    if (data["use_case"] === "Sonstiges") {
-        data["use_case"] = data["use_case_sonstiges"] || "Sonstiges";
-    }
-    delete data["use_case_sonstiges"];
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
 
     try {
-        const response = await fetch("/generate-pdf", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
+      const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
 
-        if (response.ok) {
-            window.location.href = "vorschau.html";
-        } else {
-            alert("Es gab ein Problem beim Generieren der Auswertung.");
-        }
+      const result = await response.json();
+      if (result.message === "PDF wird generiert") {
+        window.location.href = "vorschau.html";
+      } else {
+        alert("Es gab ein Problem beim Generieren der Auswertung.");
+      }
     } catch (error) {
-        console.error("Fehler beim Absenden:", error);
-        alert("Verbindungsfehler beim Absenden des Formulars.");
+      console.error("Fehler:", error);
+      alert("Fehler beim Senden des Formulars.");
     }
+  });
 });
