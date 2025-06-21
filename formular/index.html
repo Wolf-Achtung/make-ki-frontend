@@ -2,93 +2,54 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KI-Check: Fragebogen</title>
-  <script defer src="form.js"></script>
+  <title>KI-Auswertung starten</title>
 </head>
 <body>
-  <h1>KI-Check: Fragebogen</h1>
-
+  <h1>🧠 Digitale KI-Auswertung</h1>
   <form id="kiForm">
-    <fieldset>
-      <legend>Allgemeine Informationen</legend>
-      <label>Name: <input name="name" required /></label><br />
-      <label>Unternehmen: <input name="unternehmen" required /></label><br />
-      <label>E-Mail: <input name="email" type="email" required /></label><br />
-      <label>Selbstständig: 
-        <select name="selbststaendig">
-          <option>Nein</option><option>Ja</option>
-        </select>
-      </label><br />
-      <label>Branche: 
-        <select name="branche">
-          <option>Marketing</option><option>Gesundheitswesen</option><option>IT</option>
-          <option>Produktion</option><option>Finanzen</option><option>Andere</option>
-        </select>
-      </label><br />
-      <label>Sonstige Branche: <input name="branche_sonstige" /></label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Modul 1: KI-Readiness</legend>
-      <label>Gibt es ein Ziel für den KI-Einsatz? 
-        <select name="ziel_ki"><option>Ja</option><option>Nein</option></select>
-      </label><br />
-      <label>Gibt es Verständnis im Team?
-        <select name="tech_verstaendnis"><option>Ja</option><option>Nein</option></select>
-      </label><br />
-      <label>Wer ist für KI verantwortlich? <input name="ki_verantwortung" /></label><br />
-      <label>Wie digital ist Ihr Unternehmen?
-        <select name="digital_level">
-          <option>Kaum digitalisiert</option>
-          <option>Teilweise digital</option>
-          <option>Vollständig digitalisiert</option>
-        </select>
-      </label><br />
-      <label>Datenqualität:
-        <select name="datenqualitaet">
-          <option>Unstrukturiert</option>
-          <option>Teilweise strukturiert</option>
-          <option>Gut strukturiert</option>
-        </select>
-      </label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Modul 2: AI-Compliance</legend>
-      <label>Werden personenbezogene Daten verarbeitet?
-        <select name="personenbezogen"><option>Ja</option><option>Nein</option></select>
-      </label><br />
-      <label>Nutzen Sie bereits KI-Tools?
-        <select name="ki_tools_nutzung"><option>Ja</option><option>Nein</option></select>
-      </label><br />
-      <label>Sind Risiken dokumentiert?
-        <select name="risikobewusstsein"><option>Ja</option><option>Nein</option></select>
-      </label><br />
-      <label>Gibt es Governance-Prozesse?
-        <select name="governance"><option>Ja</option><option>Nein</option></select>
-      </label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Modul 3: Umsetzung</legend>
-      <label>Use Case: 
-        <select name="use_case">
-          <option>Texterstellung</option>
-          <option>Automatisierung</option>
-          <option>Analyse</option>
-        </select>
-      </label><br />
-      <label>Sonstige Use Cases: <input name="use_case_sonstiges" /></label><br />
-      <label>Welche Tools im Einsatz: <input name="tools_im_einsatz" /></label><br />
-      <label>Ziel kurzfristig: <input name="ziel_ki_kurzfristig" /></label><br />
-      <label>Herausforderung: <input name="herausforderung" /></label><br />
-      <label>Planen Sie Maßnahmen?
-        <select name="massnahmen_geplant"><option>Ja</option><option>Nein</option></select>
-      </label>
-    </fieldset>
-
-    <button type="submit">Absenden</button>
+    <label>Name: <input type="text" name="name" required></label><br>
+    <label>Unternehmen: <input type="text" name="unternehmen" required></label><br>
+    <label>Branche: <input type="text" name="branche" required></label><br>
+    <label>Technisches Verständnis:
+      <select name="tech_verstaendnis" required>
+        <option value="">Bitte wählen</option>
+        <option>niedrig</option>
+        <option>mittel</option>
+        <option>hoch</option>
+      </select>
+    </label><br>
+    <label>KI-Verantwortung:
+      <select name="ki_verantwortung" required>
+        <option value="">Bitte wählen</option>
+        <option>IT-Abteilung</option>
+        <option>Management</option>
+        <option>Extern</option>
+      </select>
+    </label><br>
+    <label>Selbstständig:
+      <select name="selbststaendig" required>
+        <option value="">Bitte wählen</option>
+        <option>ja</option>
+        <option>nein</option>
+      </select>
+    </label><br>
+    <label>Ziel (kurzfristig):
+      <input type="text" name="ziel_ki_kurzfristig">
+    </label><br>
+    <label>Ziel (mittelfristig):
+      <input type="text" name="ziel_ki_mittelfristig">
+    </label><br>
+    <label>Ziel (langfristig):
+      <input type="text" name="ziel_ki_langfristig">
+    </label><br>
+    <label>Kommentar / Freitext:
+      <textarea name="kommentar"></textarea>
+    </label><br>
+    <button type="submit">KI-Auswertung starten</button>
   </form>
+
+  <p id="feedback"></p>
+
+  <script src="form.js"></script>
 </body>
 </html>
