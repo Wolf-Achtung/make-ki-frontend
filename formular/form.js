@@ -1,35 +1,37 @@
-
-document.getElementById("formular").addEventListener("submit", async function (event) {
+document.querySelector('form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
-    const data = {};
+    const jsonData = {};
     formData.forEach((value, key) => {
-        data[key] = value;
+        jsonData[key] = value;
     });
 
+    console.log("📤 Sende Daten an /generate-pdf", jsonData);
+
     try {
-        const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
-            method: "POST",
+        const response = await fetch('https://make-ki-backend-production.up.railway.app/generate-pdf', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(jsonData)
         });
 
         const result = await response.json();
 
-        if (response.ok && result && result.preview) {
-            // Vorschau anzeigen
-            sessionStorage.setItem("previewURL", result.preview);
-            sessionStorage.setItem("fullURL", result.full);
-            window.location.href = "vorschau.html";
+        console.log("✅ Antwort erhalten:", result);
+
+        if (response.ok && result.preview) {
+            sessionStorage.setItem('previewText', result.preview);
+            sessionStorage.setItem('fullText', result.full);
+            alert("✅ Auswertung erfolgreich erstellt. Vorschau wird geöffnet.");
+            window.location.href = 'vorschau.html';
         } else {
-            alert("Fehler beim Generieren der Auswertung (Ungültige Antwort).");
-            console.error("Serverantwort:", result);
+            alert(`⚠️ Fehler bei der Auswertung: ${result.error || 'Unbekannter Fehler'}`);
         }
     } catch (error) {
-        alert("Es gab ein Problem beim Generieren der Auswertung.");
-        console.error("Fehler beim Absenden:", error);
+        console.error("❌ Netzwerk- oder Serverfehler:", error);
+        alert("❌ Netzwerkfehler oder kein Server erreichbar.\n" + error);
     }
 });

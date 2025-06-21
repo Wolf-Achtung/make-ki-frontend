@@ -1,33 +1,40 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>KI-Check Vorschau</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>KI-Auswertung – Vorschau</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+    }
+    iframe {
+      width: 100%;
+      height: 90vh;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
-    <h1>Ihre KI-Auswertung – Vorschau</h1>
-    <p>Basierend auf Ihren Angaben haben wir eine erste Einschätzung erstellt:</p>
+  <h1>Ihre KI-Auswertung – Vorschau</h1>
+  <p>Hier sehen Sie einen Auszug Ihrer Analyse. Für die vollständige Version inkl. Empfehlungen und Roadmap steht Ihnen der Report nach der Freischaltung zur Verfügung.</p>
 
-    <div style="margin-top: 1em; margin-bottom: 2em;">
-        <a id="preview-link" href="#" target="_blank" style="font-weight: bold; font-size: 1.2em;">
-            📄 Vorschau-PDF öffnen
-        </a>
-    </div>
+  <div id="feedback"></div>
+  <iframe id="pdfFrame" src="" style="display: none;"></iframe>
 
-    <p>Für die vollständige Auswertung inkl. Handlungsempfehlungen, Tools & Fördertipps, führen Sie bitte die Bezahlung fort:</p>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const previewUrl = sessionStorage.getItem('previewText');
 
-    <a href="zahlung.html">
-        <button style="padding: 0.7em 1.5em; font-size: 1em;">Jetzt freischalten</button>
-    </a>
-
-    <script>
-        const previewURL = sessionStorage.getItem("previewURL");
-        if (previewURL) {
-            document.getElementById("preview-link").href = previewURL;
-        } else {
-            document.getElementById("preview-link").textContent = "Vorschau nicht verfügbar.";
-        }
-    </script>
+      if (previewUrl) {
+        document.getElementById('pdfFrame').src = previewUrl;
+        document.getElementById('pdfFrame').style.display = 'block';
+        document.getElementById('feedback').innerText = "✅ Vorschau wird geladen...";
+      } else {
+        document.getElementById('feedback').innerText =
+          "⚠️ Keine Vorschau verfügbar. Bitte gehen Sie zurück und senden Sie das Formular erneut.";
+      }
+    });
+  </script>
 </body>
 </html>
