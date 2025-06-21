@@ -1,33 +1,32 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("fragebogen-formular");
 
-  form.addEventListener("submit", async function (event) {
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('ki-form');
+  form.addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const formData = new FormData(form);
-    const data = {};
+    const jsonData = {};
     formData.forEach((value, key) => {
-      data[key] = value;
+      jsonData[key] = value;
     });
 
     try {
-      const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
-        method: "POST",
+      const response = await fetch('https://make-ki-backend-production.up.railway.app/generate-pdf', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(jsonData),
       });
 
-      const result = await response.json();
-      if (result.message === "PDF wird generiert") {
-        window.location.href = "vorschau.html";
+      if (response.ok) {
+        alert('Auswertung erfolgreich generiert.');
       } else {
-        alert("Es gab ein Problem beim Generieren der Auswertung.");
+        alert('Fehler beim Generieren der Auswertung.');
       }
     } catch (error) {
-      console.error("Fehler:", error);
-      alert("Fehler beim Senden des Formulars.");
+      console.error('Fehler beim Senden des Formulars:', error);
+      alert('Es gab ein Problem beim Generieren der Auswertung.');
     }
   });
 });
