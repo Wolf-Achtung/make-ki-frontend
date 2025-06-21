@@ -2,11 +2,17 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vielen Dank</title>
+  <title>Danke</title>
 </head>
 <body>
-  <h1>Vielen Dank für Ihre Teilnahme!</h1>
-  <p>Ihre Antworten wurden erfolgreich übermittelt und die Auswertung gestartet.</p>
+  <h1>Vielen Dank!</h1>
+  <p>Ihr Executive Briefing wurde erstellt und per E-Mail versendet.</p>
+  <p><a href="#" onclick="window.location.href='index.html'">Zurück zur Startseite</a></p>
+  <p><a id="pdfLink" href="#" target="_blank">PDF jetzt ansehen</a></p>
+
+  <script>
+    const url = sessionStorage.getItem("pdf_url");
+    if (url) document.getElementById("pdfLink").href = url;
+  </script>
 </body>
 </html>

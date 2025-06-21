@@ -2,53 +2,16 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>KI-Auswertung starten</title>
+  <title>KI-Check starten</title>
 </head>
 <body>
-  <h1>🧠 Digitale KI-Auswertung</h1>
+  <h1>KI-Sicherheits-Check</h1>
   <form id="kiForm">
-    <label>Name: <input type="text" name="name" required></label><br>
-    <label>Unternehmen: <input type="text" name="unternehmen" required></label><br>
-    <label>Branche: <input type="text" name="branche" required></label><br>
-    <label>Technisches Verständnis:
-      <select name="tech_verstaendnis" required>
-        <option value="">Bitte wählen</option>
-        <option>niedrig</option>
-        <option>mittel</option>
-        <option>hoch</option>
-      </select>
-    </label><br>
-    <label>KI-Verantwortung:
-      <select name="ki_verantwortung" required>
-        <option value="">Bitte wählen</option>
-        <option>IT-Abteilung</option>
-        <option>Management</option>
-        <option>Extern</option>
-      </select>
-    </label><br>
-    <label>Selbstständig:
-      <select name="selbststaendig" required>
-        <option value="">Bitte wählen</option>
-        <option>ja</option>
-        <option>nein</option>
-      </select>
-    </label><br>
-    <label>Ziel (kurzfristig):
-      <input type="text" name="ziel_ki_kurzfristig">
-    </label><br>
-    <label>Ziel (mittelfristig):
-      <input type="text" name="ziel_ki_mittelfristig">
-    </label><br>
-    <label>Ziel (langfristig):
-      <input type="text" name="ziel_ki_langfristig">
-    </label><br>
-    <label>Kommentar / Freitext:
-      <textarea name="kommentar"></textarea>
-    </label><br>
-    <button type="submit">KI-Auswertung starten</button>
+    <label>Name: <input name="name" required></label><br>
+    <label>Unternehmen: <input name="unternehmen" required></label><br>
+    <label>E-Mail: <input name="email" type="email" required></label><br>
+    <button type="submit">Analyse starten</button>
   </form>
-
-  <p id="feedback"></p>
 
   <script src="form.js"></script>
 </body>

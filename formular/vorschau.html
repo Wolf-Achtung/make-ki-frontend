@@ -2,21 +2,22 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vorschau Ihrer KI-Auswertung</title>
+  <title>Vorschau</title>
 </head>
 <body>
-  <h1>Vorschau Ihrer KI-Auswertung</h1>
-  <p>Die PDF-Vorschau wurde erfolgreich erstellt. <br />
-  <a id="pdfLink" href="#" target="_blank">Hier Vorschau öffnen</a></p>
+  <h1>Ihre KI-Analyse (Vorschau)</h1>
+  <div id="preview"></div>
+  <button onclick="window.location.href='zahlung.html'">Executive Briefing jetzt freischalten</button>
 
   <script>
-    const previewUrl = sessionStorage.getItem("previewUrl");
-    if (previewUrl) {
-      document.getElementById("pdfLink").href = previewUrl;
-    } else {
-      document.body.innerHTML += "<p>Fehler: Keine Vorschau-URL gefunden.</p>";
-    }
+    const result = JSON.parse(sessionStorage.getItem("gpt_result"));
+    document.getElementById("preview").innerHTML = `
+      <p><strong>Name:</strong> ${result.name}</p>
+      <p><strong>Unternehmen:</strong> ${result.unternehmen}</p>
+      <p><strong>Score:</strong> ${result.score}</p>
+      <p><strong>Bewertung:</strong> ${result.bewertung}</p>
+      <p><strong>Trendreport:</strong> ${result.trendreport}</p>
+    `;
   </script>
 </body>
 </html>
