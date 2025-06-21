@@ -3,15 +3,22 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Vorschau Ihrer Auswertung</title>
+    <title>KI-Check Vorschau</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>Vorschau Ihrer Auswertung</h1>
-    <p>Vielen Dank für Ihre Angaben. Hier sehen Sie einen ersten Auszug aus Ihrer individuellen Bewertung:</p>
-    <div id="preview-container">
-        <p><strong>Executive Summary (Beispiel):</strong></p>
-        <p>Ihr Unternehmen zeigt eine hohe Bereitschaft, KI sinnvoll einzusetzen. Erste Schritte wie der Einsatz von ChatGPT oder Notion AI sind vielversprechend.</p>
-    </div>
-    <a href="zahlung.html"><button>Zur Bezahlung & vollständigen Auswertung</button></a>
+    <h1>Ihre KI-Auswertung – Vorschau</h1>
+    <p>Basierend auf Ihren Angaben haben wir eine erste Einschätzung erstellt:</p>
+    <div id="previewText" style="border: 1px solid #ccc; padding: 1em; margin-top: 1em;"></div>
+
+    <p>Für die vollständige Auswertung inkl. Handlungsempfehlungen, Tools & Fördertipps, führen Sie bitte die Bezahlung fort:</p>
+    <a href="zahlung.html">
+        <button>Jetzt freischalten</button>
+    </a>
+
+    <script>
+        const preview = sessionStorage.getItem("previewText");
+        document.getElementById("previewText").textContent = preview || "Keine Vorschau verfügbar.";
+    </script>
 </body>
 </html>

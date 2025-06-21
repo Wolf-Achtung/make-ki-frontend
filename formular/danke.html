@@ -3,15 +3,23 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Danke für Ihre Teilnahme</title>
+    <title>Vielen Dank!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>Vielen Dank!</h1>
-    <p>Ihre Auswertung wurde erstellt und an Ihre E-Mail-Adresse gesendet.</p>
-    <p><a id="download-link" href="#" download>Auswertung herunterladen</a></p>
+    <h1>Vielen Dank für Ihre Bestellung!</h1>
+    <p>Ihre vollständige KI-Auswertung wurde per E-Mail an Sie versendet.</p>
+    <p>Sie können das PDF auch direkt hier herunterladen:</p>
+    <a href="#" id="pdfLink"><button>Auswertung herunterladen</button></a>
+
     <script>
-        // Optional: URL für den direkten PDF-Download setzen
-        document.getElementById("download-link").href = "/output.pdf";
+        // Optional: PDF-Link dynamisch setzen, falls du ihn lokal speichern möchtest
+        const pdfUrl = sessionStorage.getItem("pdfUrl");
+        if (pdfUrl) {
+            document.getElementById("pdfLink").href = pdfUrl;
+        } else {
+            document.getElementById("pdfLink").textContent = "PDF wird vorbereitet...";
+        }
     </script>
 </body>
 </html>

@@ -19,8 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
         body: JSON.stringify(jsonData),
       });
 
-      if (response.ok) {
-        alert('Auswertung erfolgreich generiert.');
+      const result = await response.json();
+
+      if (response.ok && result && result.preview) {
+        sessionStorage.setItem("previewText", result.preview);
+        window.location.href = 'vorschau.html';
       } else {
         alert('Fehler beim Generieren der Auswertung.');
       }
