@@ -1,4 +1,4 @@
-// form.js – wandelt Formulardaten in JSON um und übergibt sie an die Vorschau
+// form.js – wandelt Formulardaten in JSON um und speichert sie im LocalStorage
 
 document.getElementById('fragebogen-formular')?.addEventListener('submit', function(event) {
   event.preventDefault();
@@ -10,15 +10,7 @@ document.getElementById('fragebogen-formular')?.addEventListener('submit', funct
     payload[key] = value;
   });
 
-  // Vorschau anzeigen (simuliert clientseitige Logik)
+  // Speichern für Vorschau
   localStorage.setItem("payload", JSON.stringify(payload));
   window.location.href = "vorschau.html";
 });
-
-// Auf der vorschau.html laden
-if (window.location.pathname.includes("vorschau.html")) {
-  const data = localStorage.getItem("payload");
-  if (data) {
-    document.getElementById("payload-json").value = data;
-  }
-}

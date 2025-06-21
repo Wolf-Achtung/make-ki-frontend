@@ -8,10 +8,32 @@
   <h1>Ihr KI-Briefing – Vorschau</h1>
   <p>Basierend auf Ihren Angaben erhalten Sie einen ersten Überblick Ihrer KI-Reife.</p>
   <p><strong>Executive Summary (Auszug):</strong> ...</p>
-  <form action="https://make-ki-backend-production.up.railway.app/generate-pdf" method="POST">
-    <input type="hidden" name="version" value="full">
-    <input type="hidden" name="payload" id="payload-json">
-    <button type="submit">Kompletten Report freischalten</button>
-  </form>
+  <button id="submit-btn">Kompletten Report freischalten</button>
+
+  <script>
+    const payload = JSON.parse(localStorage.getItem("payload"));
+    const button = document.getElementById("submit-btn");
+
+    button?.addEventListener("click", async () => {
+      const response = await fetch("https://make-ki-backend-production.up.railway.app/generate-pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          version: "full",
+          payload
+        })
+      });
+
+      const result = await response.json();
+      if (result.status === "ok") {
+        window.location.href = "danke.html";
+      } else {
+        alert("Fehler bei der Analyse oder PDF-Erstellung.");
+        console.error(result);
+      }
+    });
+  </script>
 </body>
 </html>
