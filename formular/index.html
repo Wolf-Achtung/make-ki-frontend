@@ -1,45 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KI-Zertifikat Testformular</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KI-Zertifikat Komplettformular</title>
   <style>
-    body {
-      font-family: sans-serif;
-      max-width: 700px;
-      margin: 40px auto;
-      padding: 0 1rem;
-      line-height: 1.6;
-    }
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 1rem; line-height: 1.6; }
     h2 { margin-top: 2rem; }
     label { display: block; margin-top: 1rem; font-weight: bold; }
     input, textarea, select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      box-sizing: border-box;
+      width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box;
     }
     button {
-      margin-top: 2rem;
-      padding: 0.8rem 1.2rem;
-      font-size: 1rem;
-      background: #0044cc;
-      color: #fff;
-      border: none;
-      cursor: pointer;
+      margin-top: 2rem; padding: 0.8rem 1.2rem; font-size: 1rem;
+      background: #0044cc; color: #fff; border: none; cursor: pointer;
     }
-    .success, .error {
-      margin-top: 2rem;
-      font-weight: bold;
-    }
+    .success, .error { margin-top: 2rem; font-weight: bold; }
     .success { color: green; }
     .error { color: red; }
   </style>
 </head>
 <body>
-  <h1>KI-Zertifikat Testformular</h1>
+  <h1>KI-Zertifikat Formular (komplett)</h1>
 
   <form id="ki-form">
     <h2>🧑 Über dich</h2>
@@ -52,21 +34,65 @@
     <label for="email">E-Mail *</label>
     <input type="email" id="email" name="email" required />
 
-    <h2>🏢 Dein Geschäftsfeld</h2>
+    <label for="selbststaendig">Selbstständig/Freiberuflich</label>
+    <select id="selbststaendig" name="selbststaendig">
+      <option value="">Bitte wählen</option>
+      <option value="ja">Ja</option>
+      <option value="nein">Nein</option>
+    </select>
+
+    <h2>🏢 Geschäftsfeld & Readiness</h2>
     <label for="branche">Branche</label>
     <input type="text" id="branche" name="branche" />
 
     <label for="bereich">Bereich</label>
     <input type="text" id="bereich" name="bereich" />
 
-    <label for="tools">Genutzte Tools</label>
+    <label for="strategie">Strategie</label>
+    <input type="text" id="strategie" name="strategie" />
+
+    <label for="prozesse">Prozesse</label>
+    <input type="text" id="prozesse" name="prozesse" />
+
+    <label for="infrastruktur">Infrastruktur</label>
+    <input type="text" id="infrastruktur" name="infrastruktur" />
+
+    <label for="knowhow">Knowhow</label>
+    <input type="text" id="knowhow" name="knowhow" />
+
+    <h2>📜 Compliance</h2>
+    <label for="datenschutz">Datenschutz</label>
+    <input type="text" id="datenschutz" name="datenschutz" />
+
+    <label for="dokumentation">Dokumentation</label>
+    <input type="text" id="dokumentation" name="dokumentation" />
+
+    <label for="risikobewertung">Risikobewertung</label>
+    <input type="text" id="risikobewertung" name="risikobewertung" />
+
+    <label for="verantwortung">Verantwortung</label>
+    <input type="text" id="verantwortung" name="verantwortung" />
+
+    <h2>🔧 Use Cases</h2>
+    <label for="einsatzbereiche">Einsatzbereiche</label>
+    <input type="text" id="einsatzbereiche" name="einsatzbereiche" />
+
+    <label for="tools">Tools</label>
     <input type="text" id="tools" name="tools" />
 
-    <h2>🎯 Dein Ziel mit KI</h2>
-    <label for="ziel">Ziel(e) mit KI</label>
+    <label for="herausforderung">Herausforderungen</label>
+    <textarea id="herausforderung" name="herausforderung"></textarea>
+
+    <label for="ziel">Ziel(e)</label>
     <textarea id="ziel" name="ziel"></textarea>
 
-    <button type="submit">Zertifikat anfordern</button>
+    <label for="massnahmen">Maßnahmen</label>
+    <textarea id="massnahmen" name="massnahmen"></textarea>
+
+    <label for="foerderung">Förderung</label>
+    <textarea id="foerderung" name="foerderung"></textarea>
+
+    <button type="submit">✅ Absenden & Analyse starten</button>
   </form>
 
   <div id="response" class="success" style="display:none;">Anfrage erfolgreich gesendet!</div>
@@ -79,16 +105,35 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const data = {
+      const payload = {
         version: "full",
         payload: {
           name: form.name.value,
           unternehmen: form.unternehmen.value,
           email: form.email.value,
+          selbststaendig: form.selbststaendig.value,
           branche: form.branche.value,
           bereich: form.bereich.value,
-          tools: form.tools.value,
-          ziel: form.ziel.value
+          readiness_fragen: {
+            strategie: form.strategie.value,
+            prozesse: form.prozesse.value,
+            infrastruktur: form.infrastruktur.value,
+            knowhow: form.knowhow.value
+          },
+          compliance_fragen: {
+            datenschutz: form.datenschutz.value,
+            dokumentation: form.dokumentation.value,
+            risikobewertung: form.risikobewertung.value,
+            verantwortung: form.verantwortung.value
+          },
+          usecase_fragen: {
+            einsatzbereiche: form.einsatzbereiche.value,
+            tools: form.tools.value,
+            herausforderung: form.herausforderung.value,
+            ziel: form.ziel.value,
+            massnahmen: form.massnahmen.value,
+            foerderung: form.foerderung.value
+          }
         }
       };
 
@@ -96,7 +141,7 @@
         const res = await fetch(webhookURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
+          body: JSON.stringify(payload)
         });
 
         if (res.ok) {
@@ -104,7 +149,7 @@
           document.getElementById("error").style.display = "none";
           form.reset();
         } else {
-          throw new Error("Serverfehler");
+          throw new Error("Serverfehler: " + res.status);
         }
       } catch (err) {
         document.getElementById("response").style.display = "none";
