@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KI-Zertifikat Komplettformular</title>
+  <title>KI-Briefing: Fragen mit System</title>
   <style>
     body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 1rem; line-height: 1.6; }
     h2 { margin-top: 2rem; }
@@ -11,92 +11,109 @@
     input, textarea, select {
       width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box;
     }
+    input::placeholder, textarea::placeholder {
+      color: #999;
+    }
     button {
       margin-top: 2rem; padding: 0.8rem 1.2rem; font-size: 1rem;
       background: #0044cc; color: #fff; border: none; cursor: pointer;
     }
-    .success, .error { margin-top: 2rem; font-weight: bold; }
-    .success { color: green; }
-    .error { color: red; }
   </style>
 </head>
 <body>
-  <h1>KI-Zertifikat Formular (komplett)</h1>
-
+  <h1>KI-Briefing: So nutzen Sie Ihr Potenzial</h1>
   <form id="ki-form">
-    <h2>🧑 Über dich</h2>
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" />
+    <h2>👤 Über dich</h2>
+    <label for="name">Wie dürfen wir Sie ansprechen?</label>
+    <input type="text" id="name" name="name" placeholder="Max Mustermann" />
 
-    <label for="unternehmen">Unternehmen *</label>
-    <input type="text" id="unternehmen" name="unternehmen" required />
+    <label for="unternehmen">Wie heißt Ihr Unternehmen? *</label>
+    <input type="text" id="unternehmen" name="unternehmen" required placeholder="Beispiel GmbH" />
 
-    <label for="email">E-Mail *</label>
-    <input type="email" id="email" name="email" required />
+    <label for="email">E-Mail-Adresse für den Report *</label>
+    <input type="email" id="email" name="email" required placeholder="max@beispiel.de" />
 
-    <label for="selbststaendig">Selbstständig/Freiberuflich</label>
+    <label for="selbststaendig">Sind Sie selbstständig oder freiberuflich tätig?</label>
     <select id="selbststaendig" name="selbststaendig">
-      <option value="">Bitte wählen</option>
+      <option value="">Bitte auswählen</option>
       <option value="ja">Ja</option>
       <option value="nein">Nein</option>
     </select>
 
-    <h2>🏢 Geschäftsfeld & Readiness</h2>
-    <label for="branche">Branche</label>
-    <input type="text" id="branche" name="branche" />
+    <h2>🏢 Ihr Geschäftsfeld</h2>
+    <label for="branche">Welche Branche beschreibt Ihr Tätigkeitsfeld am besten?</label>
+    <select id="branche" name="branche">
+      <option value="">Bitte auswählen</option>
+      <option>Steuer- und Finanzdienstleistungen</option>
+      <option>Beratungsleistungen</option>
+      <option>IT & Telekommunikation</option>
+      <option>Marketing & Werbung</option>
+      <option>Medien</option>
+      <option>andere</option>
+    </select>
 
-    <label for="bereich">Bereich</label>
-    <input type="text" id="bereich" name="bereich" />
+    <label for="bereich">Welcher Bereich steht im Mittelpunkt?</label>
+    <input type="text" id="bereich" name="bereich" placeholder="z. B. interne Kommunikation, Kundengewinnung, Rechnungswesen" />
 
-    <label for="strategie">Strategie</label>
-    <input type="text" id="strategie" name="strategie" />
+    <h2>🚦 Aktueller KI-Reifegrad</h2>
+    <label for="strategie">Gibt es bereits eine KI-Strategie?</label>
+    <select id="strategie" name="strategie">
+      <option value="">Bitte auswählen</option>
+      <option value="gar nicht">Nein, bisher nicht</option>
+      <option value="in Planung">Teilweise / in Planung</option>
+      <option value="ja">Ja, vollständig vorhanden</option>
+    </select>
 
-    <label for="prozesse">Prozesse</label>
-    <input type="text" id="prozesse" name="prozesse" />
+    <label for="prozesse">Wie stark sind Ihre Prozesse digitalisiert?</label>
+    <select id="prozesse" name="prozesse">
+      <option value="">Bitte auswählen</option>
+      <option>gar nicht</option>
+      <option>teilweise</option>
+      <option>weitgehend automatisiert</option>
+    </select>
 
-    <label for="infrastruktur">Infrastruktur</label>
-    <input type="text" id="infrastruktur" name="infrastruktur" />
+    <label for="infrastruktur">Wie sieht Ihre technische Infrastruktur aus?</label>
+    <input type="text" id="infrastruktur" name="infrastruktur" placeholder="z. B. Cloud-basiert, Serverlösung, Excel & E-Mail" />
 
-    <label for="knowhow">Knowhow</label>
-    <input type="text" id="knowhow" name="knowhow" />
+    <label for="knowhow">Wie gut kennen sich Ihre Teams mit KI aus?</label>
+    <select id="knowhow" name="knowhow">
+      <option value="">Bitte auswählen</option>
+      <option>keine Erfahrung</option>
+      <option>erste Tests mit Tools</option>
+      <option>regelmäßige Nutzung</option>
+      <option>Expertenteam vorhanden</option>
+    </select>
 
-    <h2>📜 Compliance</h2>
-    <label for="datenschutz">Datenschutz</label>
-    <input type="text" id="datenschutz" name="datenschutz" />
+    <h2>📋 Rechtliches & Verantwortung</h2>
+    <label for="datenschutz">Datenschutz im Unternehmen</label>
+    <select id="datenschutz" name="datenschutz">
+      <option value="">Bitte auswählen</option>
+      <option>unklar / nicht geregelt</option>
+      <option>teilweise geregelt</option>
+      <option>vollständig DSGVO-konform</option>
+    </select>
 
-    <label for="dokumentation">Dokumentation</label>
-    <input type="text" id="dokumentation" name="dokumentation" />
+    <label for="verantwortung">Wer ist für KI-Themen verantwortlich?</label>
+    <input type="text" id="verantwortung" name="verantwortung" placeholder="z. B. Geschäftsführung, Datenschutzbeauftragte, niemand benannt" />
 
-    <label for="risikobewertung">Risikobewertung</label>
-    <input type="text" id="risikobewertung" name="risikobewertung" />
+    <h2>🎯 Ziele & Herausforderungen</h2>
+    <label for="ziel">Was möchten Sie durch KI erreichen?</label>
+    <textarea id="ziel" name="ziel" placeholder="z. B. Prozesse beschleunigen, Kosten senken, bessere Angebote erstellen"></textarea>
 
-    <label for="verantwortung">Verantwortung</label>
-    <input type="text" id="verantwortung" name="verantwortung" />
+    <label for="herausforderung">Was hindert Sie aktuell daran?</label>
+    <textarea id="herausforderung" name="herausforderung" placeholder="z. B. fehlendes Wissen, Unsicherheit bei Tools, Datenschutzbedenken"></textarea>
 
-    <h2>🔧 Use Cases</h2>
-    <label for="einsatzbereiche">Einsatzbereiche</label>
-    <input type="text" id="einsatzbereiche" name="einsatzbereiche" />
+    <label for="massnahmen">Gibt es erste Maßnahmen?</label>
+    <input type="text" id="massnahmen" name="massnahmen" placeholder="z. B. Testphase mit Pilotteam" />
 
-    <label for="tools">Tools</label>
-    <input type="text" id="tools" name="tools" />
+    <label for="tools">Welche Tools oder Plattformen setzen Sie (testweise) ein?</label>
+    <input type="text" id="tools" name="tools" placeholder="z. B. ChatGPT, Notion AI, DeepL, Midjourney" />
 
-    <label for="herausforderung">Herausforderungen</label>
-    <textarea id="herausforderung" name="herausforderung"></textarea>
+    <label for="foerderung">Gibt es Förderanträge oder Beratungen?</label>
+    <textarea id="foerderung" name="foerderung" placeholder="z. B. Beratung beantragt, Interesse an go-digital oder BMWK" ></textarea>
 
-    <label for="ziel">Ziel(e)</label>
-    <textarea id="ziel" name="ziel"></textarea>
-
-    <label for="massnahmen">Maßnahmen</label>
-    <textarea id="massnahmen" name="massnahmen"></textarea>
-
-    <label for="foerderung">Förderung</label>
-    <textarea id="foerderung" name="foerderung"></textarea>
-
-    <button type="submit">✅ Absenden & Analyse starten</button>
+    <button type="submit">✅ Analyse starten</button>
   </form>
-
-  <div id="response" class="success" style="display:none;">Anfrage erfolgreich gesendet!</div>
-  <div id="error" class="error" style="display:none;">Fehler beim Senden. Bitte später erneut versuchen.</div>
 
   <script>
     const form = document.getElementById("ki-form");
@@ -104,7 +121,6 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const payload = {
         version: "full",
         payload: {
@@ -122,38 +138,27 @@
           },
           compliance_fragen: {
             datenschutz: form.datenschutz.value,
-            dokumentation: form.dokumentation.value,
-            risikobewertung: form.risikobewertung.value,
             verantwortung: form.verantwortung.value
           },
           usecase_fragen: {
-            einsatzbereiche: form.einsatzbereiche.value,
-            tools: form.tools.value,
-            herausforderung: form.herausforderung.value,
             ziel: form.ziel.value,
+            herausforderung: form.herausforderung.value,
             massnahmen: form.massnahmen.value,
+            tools: form.tools.value,
             foerderung: form.foerderung.value
           }
         }
       };
-
-      try {
-        const res = await fetch(webhookURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-          document.getElementById("response").style.display = "block";
-          document.getElementById("error").style.display = "none";
-          form.reset();
-        } else {
-          throw new Error("Serverfehler: " + res.status);
-        }
-      } catch (err) {
-        document.getElementById("response").style.display = "none";
-        document.getElementById("error").style.display = "block";
+      const res = await fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert("✅ Analyse wurde gestartet!");
+        form.reset();
+      } else {
+        alert("❌ Fehler beim Senden.");
       }
     });
   </script>
