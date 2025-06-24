@@ -127,7 +127,7 @@
       const formData = new FormData(form);
       const payload = {};
       formData.forEach((value, key) => payload[key] = value);
-      const response = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
+      const response = await fetch("https://hook.eu2.make.com/gxydz1j89buq91wl1o26noto0eciax5h", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
