@@ -2,143 +2,145 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KI-Briefing: So nutzen Sie Ihr Potenzial</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: auto;
-      padding: 2rem;
-    }
-    fieldset {
-      margin-bottom: 2rem;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      padding: 0.5rem 1rem;
-      border: none;
-      cursor: pointer;
-    }
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 1rem; background: #f9f9f9; }
+    h1 { color: #333; }
+    fieldset { margin-bottom: 2rem; padding: 1rem; border: 1px solid #ccc; background: #fff; }
+    legend { font-weight: bold; }
+    label, input, select, textarea { display: block; width: 100%; margin-bottom: 1rem; }
+    button { background: #0070f3; color: white; border: none; padding: 0.75rem 1.5rem; cursor: pointer; }
+    button:hover { background: #005bb5; }
+    #result { margin-top: 2rem; padding: 1rem; background: #e0ffe0; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
   <h1>KI-Briefing: So nutzen Sie Ihr Potenzial</h1>
+  <form id="fragebogen-formular">
 
-  <form id="briefing-form">
     <fieldset>
       <legend>👤 Über dich</legend>
-      <label>Wie dürfen wir Sie ansprechen?<input name="name" required></label>
-      <label>Wie heißt Ihr Unternehmen? *<input name="unternehmen" required></label>
-      <label>E-Mail-Adresse für den Report *<input type="email" name="email" required></label>
-      <label>Sind Sie selbstständig oder freiberuflich tätig?
-        <select name="selbststaendig">
-          <option>Bitte auswählen</option>
-          <option>ja</option>
-          <option>nein</option>
-        </select>
-      </label>
+      <label for="name">Wie dürfen wir Sie ansprechen?</label>
+      <input type="text" id="name" name="name">
+
+      <label for="unternehmen">Wie heißt Ihr Unternehmen? *</label>
+      <input type="text" id="unternehmen" name="unternehmen" required>
+
+      <label for="email">E-Mail-Adresse für den Report *</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="freiberuflich">Sind Sie selbstständig oder freiberuflich tätig?</label>
+      <select id="freiberuflich" name="freiberuflich">
+        <option>Ja</option>
+        <option>Nein</option>
+      </select>
     </fieldset>
 
     <fieldset>
       <legend>🏢 Ihr Geschäftsfeld</legend>
-      <label>Welche Branche beschreibt Ihr Tätigkeitsfeld am besten?
-        <select name="branche">
-          <option>Bitte auswählen</option>
-          <option>Steuer- und Finanzdienstleistungen</option>
-          <option>Beratungsleistungen</option>
-          <option>IT & Telekommunikation</option>
-          <option>Marketing & Werbung</option>
-          <option>Medien</option>
-          <option>andere</option>
-        </select>
-      </label>
-      <label>Welcher Bereich steht im Mittelpunkt?<input name="bereich" placeholder="z. B. Interne Kommunikation, Kundengewinnung, Rechnungswesen"></label>
+      <label for="branche">Welche Branche beschreibt Ihr Tätigkeitsfeld am besten?</label>
+      <select id="branche" name="branche">
+        <option>Marketing & Werbung</option>
+        <option>IT & Software</option>
+        <option>Beratung</option>
+        <option>Gesundheit & Soziales</option>
+        <option>Handwerk</option>
+        <option>Einzelhandel</option>
+      </select>
+
+      <label for="bereich">Welcher Bereich steht im Mittelpunkt?</label>
+      <input type="text" id="bereich" name="bereich">
     </fieldset>
 
     <fieldset>
       <legend>🧠 Aktueller KI-Reifegrad</legend>
-      <label>Gibt es bereits eine KI-Strategie?
-        <select name="strategie">
-          <option>Bitte auswählen</option>
-          <option>Ja</option>
-          <option>In Planung</option>
-          <option>Nein</option>
-        </select>
-      </label>
-      <label>Wie stark sind Ihre Prozesse digitalisiert?
-        <select name="prozesse">
-          <option>Bitte auswählen</option>
-          <option>Vollständig automatisiert</option>
-          <option>Teilweise automatisiert</option>
-          <option>Manuell</option>
-        </select>
-      </label>
-      <label>Wie sieht Ihre technische Infrastruktur aus?<input name="infrastruktur" placeholder="z. B. Cloud-basiert, Serverlösung, Excel & E-Mail"></label>
-      <label>Wie gut kennen sich Ihre Teams mit KI aus?
-        <select name="knowhow">
-          <option>Bitte auswählen</option>
-          <option>Grundkenntnisse vorhanden</option>
-          <option>Einige Expert:innen</option>
-          <option>Keine Erfahrung</option>
-        </select>
-      </label>
+      <label for="strategie">Gibt es bereits eine KI-Strategie?</label>
+      <select id="strategie" name="strategie">
+        <option>Ja</option>
+        <option>Nein</option>
+        <option>In Planung</option>
+      </select>
+
+      <label for="prozesse">Wie stark sind Ihre Prozesse digitalisiert?</label>
+      <select id="prozesse" name="prozesse">
+        <option>Gar nicht</option>
+        <option>Teilweise automatisiert</option>
+        <option>Vollständig automatisiert</option>
+      </select>
+
+      <label for="infrastruktur">Wie sieht Ihre technische Infrastruktur aus?</label>
+      <input type="text" id="infrastruktur" name="infrastruktur">
+
+      <label for="kenntnis">Wie gut kennen sich Ihre Teams mit KI aus?</label>
+      <select id="kenntnis" name="kenntnis">
+        <option>Keine Erfahrung</option>
+        <option>Grundkenntnisse</option>
+        <option>Erfahrung im Einsatz</option>
+        <option>KI-Kompetenzteam vorhanden</option>
+      </select>
     </fieldset>
 
     <fieldset>
-      <legend>📋 Rechtliches & Verantwortung</legend>
-      <label>Datenschutz im Unternehmen
-        <select name="datenschutz">
-          <option>Bitte auswählen</option>
-          <option>Ja, DSGVO-konform</option>
-          <option>Teilweise dokumentiert</option>
-          <option>Wird noch aufgebaut</option>
-        </select>
-      </label>
-      <label>Wer ist für KI-Themen verantwortlich?<input name="verantwortung" placeholder="z. B. Geschäftsführung, Datenschutzbeauftragte, niemand benannt"></label>
+      <legend>📜 Rechtliches & Verantwortung</legend>
+      <label for="datenschutz">Datenschutz im Unternehmen</label>
+      <select id="datenschutz" name="datenschutz">
+        <option>Vollständig dokumentiert</option>
+        <option>Teilweise dokumentiert</option>
+        <option>Noch nicht geregelt</option>
+      </select>
+
+      <label for="verantwortlich">Wer ist für KI-Themen verantwortlich?</label>
+      <input type="text" id="verantwortlich" name="verantwortlich">
     </fieldset>
 
     <fieldset>
       <legend>🎯 Ziele & Herausforderungen</legend>
-      <label>Was möchten Sie durch KI erreichen?<textarea name="ziel"></textarea></label>
-      <label>Was hindert Sie aktuell daran?<textarea name="herausforderung"></textarea></label>
-      <label>Gibt es erste Maßnahmen?<input name="massnahmen" placeholder="z. B. Testphase mit Pilotteam"></label>
-      <label>Welche Tools oder Plattformen setzen Sie (testweise) ein?<input name="tools" placeholder="z. B. ChatGPT, Notion AI, DeepL, Midjourney"></label>
-      <label>Gibt es Förderanträge oder Beratungen?<textarea name="foerderung" placeholder="z. B. Beratung beantragt, Interesse an go-digital oder BMWK"></textarea></label>
+      <label for="ziel">Was möchten Sie durch KI erreichen?</label>
+      <textarea id="ziel" name="ziel"></textarea>
+
+      <label for="hindernis">Was hindert Sie aktuell daran?</label>
+      <textarea id="hindernis" name="hindernis"></textarea>
+
+      <label for="massnahmen">Gibt es erste Maßnahmen?</label>
+      <input type="text" id="massnahmen" name="massnahmen">
+
+      <label for="tools">Welche Tools oder Plattformen setzen Sie (testweise) ein?</label>
+      <input type="text" id="tools" name="tools">
+
+      <label for="foerderung">Gibt es Förderanträge oder Beratungen?</label>
+      <textarea id="foerderung" name="foerderung"></textarea>
     </fieldset>
 
     <button type="submit">✅ Analyse starten</button>
   </form>
 
+  <div id="result" style="display:none;"></div>
+
   <script>
-    const form = document.getElementById("briefing-form");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(form);
-      const payload = {};
-      formData.forEach((value, key) => payload[key] = value);
-      const response = await fetch("https://hook.eu2.make.com/gxydz1j89buq91wl1o26noto0eciax5h", {
+    document.getElementById("fragebogen-formular").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => data[key] = value);
+
+      const response = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
       });
-      if (response.ok) {
-        alert("✅ Analyse erfolgreich ausgelöst");
-      } else {
-        alert("❌ Fehler bei der Analyse");
-      }
+
+      const result = await response.json();
+      const resultHTML = `
+        <p><strong>✅ Deine Eingaben wurden verarbeitet.</strong></p>
+        <p><a href="${result.download_url}" target="_blank">📄 Vorschau deines KI-Briefings anzeigen</a></p>
+        <p><em>Optional:</em> <a href="#" onclick="alert('PDF-Versand folgt bald!')">Briefing per Mail erhalten</a></p>
+      `;
+      document.getElementById("result").innerHTML = resultHTML;
+      document.getElementById("result").style.display = "block";
     });
   </script>
 </body>
 </html>
-
