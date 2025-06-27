@@ -1,150 +1,220 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>KI-Briefing: So nutzen Sie Ihr Potenzial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KI-Förderung & Finanzierung</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 1rem; background: #f9f9f9; }
-    h1 { color: #333; }
-    fieldset { margin-bottom: 2rem; padding: 1rem; border: 1px solid #ccc; background: #fff; }
-    legend { font-weight: bold; }
-    label, input, select, textarea { display: block; width: 100%; margin-bottom: 1rem; }
-    button { background: #0070f3; color: white; border: none; padding: 0.75rem 1.5rem; cursor: pointer; }
-    button:hover { background: #005bb5; }
-    #result { margin-top: 2rem; padding: 1rem; background: #e0ffe0; border: 1px solid #ccc; }
-    #loading { margin-top: 2rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffeeba; display: none; }
-    #error { margin-top: 2rem; padding: 1rem; background: #f8d7da; border: 1px solid #f5c6cb; display: none; color: #721c24; }
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background-color: #f7f9fb;
+      color: #0d2b4a;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1, h2 {
+      color: #0d2b4a;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: 2px solid #0d2b4a;
+      border-radius: 6px;
+      font-size: 1rem;
+      background-color: #ffffff;
+      color: #0d2b4a;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+      display: block;
+    }
+    textarea {
+      height: 60px;
+    }
+    .checkbox {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .checkbox input {
+      width: auto;
+      margin-right: 0.5rem;
+    }
+    button {
+      background-color: #003b5a;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005080;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
   </style>
 </head>
 <body>
-  <h1>KI-Briefing: So nutzen Sie Ihr Potenzial</h1>
+  <h1>Förderung & Finanzierung</h1>
+  <p><strong>Nutzen Sie bestehende Fördermittel für Ihre KI-Vorhaben.</strong><br>
+  Je nach Projektart und Unternehmensgröße sind Zuschüsse zwischen 5.000 € und über 100.000 € möglich. Ich prüfe für Sie, ob und welche Programme zu Ihrer Maßnahme passen.</p>
 
-  <form id="fragebogen-formular">
-    <fieldset>
-      <legend>👤 Über dich</legend>
-      <label for="name">Wie dürfen wir Sie ansprechen?</label>
-      <input type="text" id="name" name="name">
-      <label for="unternehmen">Wie heißt Ihr Unternehmen? *</label>
-      <input type="text" id="unternehmen" name="unternehmen" required>
-      <label for="email">E-Mail-Adresse für den Report *</label>
+  <h2>Förderfähigkeit prüfen lassen</h2>
+
+  <form id="foerderForm">
+    <div class="section">
+      <label for="email">E-Mail</label>
       <input type="email" id="email" name="email" required>
-      <label for="freiberuflich">Sind Sie selbstständig oder freiberuflich tätig?</label>
-      <select id="selbststaendig" name="selbststaendig">
-        <option>Ja</option>
-        <option>Nein</option>
-      </select>
-    </fieldset>
 
-    <fieldset>
-      <legend>🏢 Ihr Geschäftsfeld</legend>
-      <label for="branche">Welche Branche beschreibt Ihr Tätigkeitsfeld am besten?</label>
+      <label for="name">Ihr Name</label>
+      <input type="text" id="name" name="name">
+
+      <label for="unternehmen">Unternehmen</label>
+      <input type="text" id="unternehmen" name="unternehmen">
+
+      <label for="branche">Branche</label>
       <select id="branche" name="branche">
-        <option>Marketing & Werbung</option>
-        <option>IT & Software</option>
+        <option value="">Bitte auswählen</option>
+        <option>Gesundheit</option>
+        <option>Industrie</option>
         <option>Beratung</option>
-        <option>Gesundheit & Soziales</option>
-        <option>Handwerk</option>
-        <option>Einzelhandel</option>
+        <option>IT / Software</option>
+        <option>Sonstige</option>
       </select>
-      <label for="bereich">Welcher Bereich steht im Mittelpunkt?</label>
-      <input type="text" id="bereich" name="bereich">
-    </fieldset>
 
-    <fieldset>
-      <legend>🧠 Aktueller KI-Reifegrad</legend>
-      <label for="strategie">Gibt es bereits eine KI-Strategie?</label>
-      <select id="strategie" name="strategie">
+      <label for="bereich">Geplanter Einsatzbereich</label>
+      <select id="bereich" name="bereich">
+        <option value="">Bitte auswählen</option>
+        <option>Marketing / Kommunikation</option>
+        <option>Produktion / Logistik</option>
+        <option>Kundendienst / Support</option>
+        <option>Verwaltung / Buchhaltung</option>
+      </select>
+
+      <label for="selbststaendig">Sind Sie selbstständig?</label>
+      <select id="selbststaendig" name="selbststaendig">
+        <option value="">Bitte auswählen</option>
         <option>Ja</option>
         <option>Nein</option>
-        <option>In Planung</option>
       </select>
-      <label for="prozesse">Wie stark sind Ihre Prozesse digitalisiert?</label>
-      <select id="prozesse" name="prozesse">
-        <option>Gar nicht</option>
-        <option>Teilweise automatisiert</option>
-        <option>Vollständig automatisiert</option>
-      </select>
-      <label for="infrastruktur">Wie sieht Ihre technische Infrastruktur aus?</label>
-      <input type="text" id="infrastruktur" name="infrastruktur">
-      <label for="kenntnis">Wie gut kennen sich Ihre Teams mit KI aus?</label>
-      <select id="knowhow" name="knowhow">
-        <option>Keine Erfahrung</option>
-        <option>Grundkenntnisse</option>
-        <option>Erfahrung im Einsatz</option>
-        <option>KI-Kompetenzteam vorhanden</option>
-      </select>
-    </fieldset>
+    </div>
 
-    <fieldset>
-      <legend>📜 Rechtliches & Verantwortung</legend>
-      <label for="datenschutz">Datenschutz im Unternehmen</label>
-      <select id="datenschutz" name="datenschutz">
-        <option>Vollständig dokumentiert</option>
-        <option>Teilweise dokumentiert</option>
-        <option>Noch nicht geregelt</option>
-      </select>
-      <label for="verantwortung">Wer ist für KI-Themen verantwortlich?</label>
-      <input type="text" id="verantwortung" name="verantwortung">
-    </fieldset>
+   <div class="section">
+  <h3>Kurzanalyse Ihrer KI-Fitness</h3>
 
-    <fieldset>
-      <legend>🎯 Ziele & Herausforderungen</legend>
-      <label for="ziel">Was möchten Sie durch KI erreichen?</label>
-      <textarea id="ziel" name="ziel"></textarea>
-      <label for="herausforderung">Was hindert Sie aktuell daran?</label>
+  <label for="frage1">1. Gibt es eine dokumentierte KI-Strategie oder Governance?</label>
+  <select id="frage1" name="frage1">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, ist vorhanden</option>
+    <option>Teilweise oder in Planung</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage2">2. Wird der KI-Einsatz rechtlich geprüft (z. B. DSGVO, Urheberrecht)?</label>
+  <select id="frage2" name="frage2">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, ist rechtlich geprüft</option>
+    <option>In Vorbereitung</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage3">3. Führen Sie ein zentrales Verzeichnis über eingesetzte KI-Systeme?</label>
+  <select id="frage3" name="frage3">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, wird aktuell gepflegt</option>
+    <option>Teilweise oder geplant</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage4">4. Liegt bei externen KI-Anbietern ein AV-Vertrag oder Äquivalent vor?</label>
+  <select id="frage4" name="frage4">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, liegt vor</option>
+    <option>Wird gerade geprüft</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage5">5. Gibt es ein internes KI-Audit- oder Kontrollverfahren?</label>
+  <select id="frage5" name="frage5">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, regelmäßig</option>
+    <option>Ist geplant</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage6">6. Werden Mitarbeitende in sensiblen Bereichen zum KI-Einsatz geschult?</label>
+  <select id="frage6" name="frage6">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, umfassend</option>
+    <option>Teilweise</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage7">7. Sind automatisierte Entscheidungen nachvollziehbar und steuerbar?</label>
+  <select id="frage7" name="frage7">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, vollständig</option>
+    <option>Teilweise</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage8">8. Gibt es Richtlinien zum ethischen KI-Einsatz?</label>
+  <select id="frage8" name="frage8">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, in Kraft</option>
+    <option>Ist in Arbeit</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage9">9. Wird der KI-Einsatz regelmäßig evaluiert und angepasst?</label>
+  <select id="frage9" name="frage9">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, mit klaren Zyklen</option>
+    <option>Teilweise / geplant</option>
+    <option>Nein</option>
+  </select>
+
+  <label for="frage10">10. Werden Ergebnisse auf Verzerrung oder Fehler geprüft?</label>
+  <select id="frage10" name="frage10">
+    <option value="">Bitte auswählen</option>
+    <option>Ja, mit Bias-Checks</option>
+    <option>Teilweise</option>
+    <option>Nein</option>
+  </select>
+</div>
+
+
+    <div class="section">
+      <label for="strategie">Geplante Maßnahme</label>
+      <select id="massnahme" name="massnahme">
+        <option value="">Bitte auswählen</option>
+        <option>Chatbot einführen</option>
+        <option>Texterstellung automatisieren</option>
+        <option>Vertrieb oder Support optimieren</option>
+        <option>Daten auswerten lassen</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <label for="herausforderung">Was ist Ihre größte Herausforderung beim KI-Einsatz?</label>
       <textarea id="herausforderung" name="herausforderung"></textarea>
-      <label for="massnahmen">Gibt es erste Maßnahmen?</label>
-      <input type="text" id="massnahmen" name="massnahmen">
-      <label for="tools">Welche Tools oder Plattformen setzen Sie (testweise) ein?</label>
-      <input type="text" id="tools" name="tools">
-      <label for="foerderung">Gibt es Förderanträge oder Beratungen?</label>
-      <textarea id="foerderung" name="foerderung"></textarea>
-    </fieldset>
 
-    <button type="submit">✅ Analyse starten</button>
+      <label for="ziele">Was möchten Sie mit KI erreichen?</label>
+      <textarea id="ziele" name="ziele"></textarea>
+    </div>
+
+    <div class="checkbox">
+      <input type="checkbox" id="datenschutz" name="datenschutz" required>
+      <label for="datenschutz">Ich habe die <a href="#">Datenschutzerklärung</a> gelesen und akzeptiert.</label>
+    </div>
+
+    <button type="submit">Jetzt prüfen lassen</button>
   </form>
-
-  <div id="loading">⏳ Deine Eingaben werden verarbeitet...</div>
-  <div id="error"></div>
-  <div id="result"></div>
-
-  <script>
-    document.getElementById("fragebogen-formular").addEventListener("submit", async function(event) {
-      event.preventDefault();
-      document.getElementById("loading").style.display = "block";
-      document.getElementById("result").style.display = "none";
-      document.getElementById("error").style.display = "none";
-
-      const formData = new FormData(this);
-      const data = {};
-      formData.forEach((value, key) => data[key] = value);
-
-      try {
-        const response = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        if (!response.ok) throw new Error("Fehler beim Senden der Daten.");
-
-        const result = await response.json();
-        const url = result.download_url || result.pdf_url?.data?.download_url || "Downloadlink nicht gefunden";
-
-        const resultHTML = `
-          <p><strong>✅ Deine Eingaben wurden verarbeitet.</strong></p>
-          <p><a href="${url}" target="_blank">📄 Vorschau deines KI-Briefings anzeigen</a></p>
-        `;
-        document.getElementById("result").innerHTML = resultHTML;
-        document.getElementById("result").style.display = "block";
-      } catch (error) {
-        document.getElementById("error").textContent = "❌ Fehler: " + error.message;
-        document.getElementById("error").style.display = "block";
-      } finally {
-        document.getElementById("loading").style.display = "none";
-      }
-    });
-  </script>
 </body>
 </html>
