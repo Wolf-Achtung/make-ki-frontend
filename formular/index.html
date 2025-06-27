@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KI-Förderung & Finanzierung</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KI-Förderung &amp; Finanzierung</title>
+<style>
     body {
       font-family: 'IBM Plex Mono', monospace;
       background-color: #f7f9fb;
@@ -61,160 +62,136 @@
   </style>
 </head>
 <body>
-  <h1>Förderung & Finanzierung</h1>
-  <p><strong>Nutzen Sie bestehende Fördermittel für Ihre KI-Vorhaben.</strong><br>
+<h1>Förderung &amp; Finanzierung</h1>
+<p><strong>Nutzen Sie bestehende Fördermittel für Ihre KI-Vorhaben.</strong><br/>
   Je nach Projektart und Unternehmensgröße sind Zuschüsse zwischen 5.000 € und über 100.000 € möglich. Ich prüfe für Sie, ob und welche Programme zu Ihrer Maßnahme passen.</p>
-
-  <h2>Förderfähigkeit prüfen lassen</h2>
-
-  <form id="foerderForm">
-    <div class="section">
-      <label for="email">E-Mail</label>
-      <input type="email" id="email" name="email" required>
-
-      <label for="name">Ihr Name</label>
-      <input type="text" id="name" name="name">
-
-      <label for="unternehmen">Unternehmen</label>
-      <input type="text" id="unternehmen" name="unternehmen">
-
-      <label for="branche">Branche</label>
-      <select id="branche" name="branche">
-        <option value="">Bitte auswählen</option>
-        <option>Gesundheit</option>
-        <option>Industrie</option>
-        <option>Beratung</option>
-        <option>IT / Software</option>
-        <option>Sonstige</option>
-      </select>
-
-      <label for="bereich">Geplanter Einsatzbereich</label>
-      <select id="bereich" name="bereich">
-        <option value="">Bitte auswählen</option>
-        <option>Marketing / Kommunikation</option>
-        <option>Produktion / Logistik</option>
-        <option>Kundendienst / Support</option>
-        <option>Verwaltung / Buchhaltung</option>
-      </select>
-
-      <label for="selbststaendig">Sind Sie selbstständig?</label>
-      <select id="selbststaendig" name="selbststaendig">
-        <option value="">Bitte auswählen</option>
-        <option>Ja</option>
-        <option>Nein</option>
-      </select>
-    </div>
-
-   <div class="section">
-  <h3>Kurzanalyse Ihrer KI-Fitness</h3>
-
-  <label for="frage1">1. Gibt es eine dokumentierte KI-Strategie oder Governance?</label>
-  <select id="frage1" name="frage1">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, ist vorhanden</option>
-    <option>Teilweise oder in Planung</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage2">2. Wird der KI-Einsatz rechtlich geprüft (z. B. DSGVO, Urheberrecht)?</label>
-  <select id="frage2" name="frage2">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, ist rechtlich geprüft</option>
-    <option>In Vorbereitung</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage3">3. Führen Sie ein zentrales Verzeichnis über eingesetzte KI-Systeme?</label>
-  <select id="frage3" name="frage3">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, wird aktuell gepflegt</option>
-    <option>Teilweise oder geplant</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage4">4. Liegt bei externen KI-Anbietern ein AV-Vertrag oder Äquivalent vor?</label>
-  <select id="frage4" name="frage4">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, liegt vor</option>
-    <option>Wird gerade geprüft</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage5">5. Gibt es ein internes KI-Audit- oder Kontrollverfahren?</label>
-  <select id="frage5" name="frage5">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, regelmäßig</option>
-    <option>Ist geplant</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage6">6. Werden Mitarbeitende in sensiblen Bereichen zum KI-Einsatz geschult?</label>
-  <select id="frage6" name="frage6">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, umfassend</option>
-    <option>Teilweise</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage7">7. Sind automatisierte Entscheidungen nachvollziehbar und steuerbar?</label>
-  <select id="frage7" name="frage7">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, vollständig</option>
-    <option>Teilweise</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage8">8. Gibt es Richtlinien zum ethischen KI-Einsatz?</label>
-  <select id="frage8" name="frage8">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, in Kraft</option>
-    <option>Ist in Arbeit</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage9">9. Wird der KI-Einsatz regelmäßig evaluiert und angepasst?</label>
-  <select id="frage9" name="frage9">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, mit klaren Zyklen</option>
-    <option>Teilweise / geplant</option>
-    <option>Nein</option>
-  </select>
-
-  <label for="frage10">10. Werden Ergebnisse auf Verzerrung oder Fehler geprüft?</label>
-  <select id="frage10" name="frage10">
-    <option value="">Bitte auswählen</option>
-    <option>Ja, mit Bias-Checks</option>
-    <option>Teilweise</option>
-    <option>Nein</option>
-  </select>
+<h2>Förderfähigkeit prüfen lassen</h2>
+<form id="foerderForm">
+<div class="section">
+<label for="email">E-Mail</label>
+<input id="email" name="email" required="" type="email"/>
+<label for="name">Ihr Name</label>
+<input id="name" name="name" type="text"/>
+<label for="unternehmen">Unternehmen</label>
+<input id="unternehmen" name="unternehmen" type="text"/>
+<label for="branche">Branche</label>
+<select id="branche" name="branche">
+<option value="">Bitte auswählen</option>
+<option>Gesundheit</option>
+<option>Industrie</option>
+<option>Beratung</option>
+<option>IT / Software</option>
+<option>Sonstige</option>
+</select>
+<label for="bereich">Geplanter Einsatzbereich</label>
+<select id="bereich" name="bereich">
+<option value="">Bitte auswählen</option>
+<option>Marketing / Kommunikation</option>
+<option>Produktion / Logistik</option>
+<option>Kundendienst / Support</option>
+<option>Verwaltung / Buchhaltung</option>
+</select>
+<label for="selbststaendig">Sind Sie selbstständig?</label>
+<select id="selbststaendig" name="selbststaendig">
+<option value="">Bitte auswählen</option>
+<option>Ja</option>
+<option>Nein</option>
+</select>
 </div>
-
-
-    <div class="section">
-      <label for="strategie">Geplante Maßnahme</label>
-      <select id="massnahme" name="massnahme">
-        <option value="">Bitte auswählen</option>
-        <option>Chatbot einführen</option>
-        <option>Texterstellung automatisieren</option>
-        <option>Vertrieb oder Support optimieren</option>
-        <option>Daten auswerten lassen</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <label for="herausforderung">Was ist Ihre größte Herausforderung beim KI-Einsatz?</label>
-      <textarea id="herausforderung" name="herausforderung"></textarea>
-
-      <label for="ziele">Was möchten Sie mit KI erreichen?</label>
-      <textarea id="ziele" name="ziele"></textarea>
-    </div>
-
-    <div class="checkbox">
-      <input type="checkbox" id="datenschutz" name="datenschutz" required>
-      <label for="datenschutz">Ich habe die <a href="#">Datenschutzerklärung</a> gelesen und akzeptiert.</label>
-    </div>
-
-    <button type="submit">Jetzt prüfen lassen</button>
-  </form>
+<div class="section">
+<h3>Kurzanalyse Ihrer KI-Fitness</h3>
+<label for="frage1">1. Gibt es eine dokumentierte KI-Strategie oder Governance?</label>
+<select id="frage1" name="frage1">
+<option value="">Bitte auswählen</option>
+<option>Ja, ist vorhanden</option>
+<option>Teilweise oder in Planung</option>
+<option>Nein</option>
+</select>
+<label for="frage2">2. Wird der KI-Einsatz rechtlich geprüft (z. B. DSGVO, Urheberrecht)?</label>
+<select id="frage2" name="frage2">
+<option value="">Bitte auswählen</option>
+<option>Ja, ist rechtlich geprüft</option>
+<option>In Vorbereitung</option>
+<option>Nein</option>
+</select>
+<label for="frage3">3. Führen Sie ein zentrales Verzeichnis über eingesetzte KI-Systeme?</label>
+<select id="frage3" name="frage3">
+<option value="">Bitte auswählen</option>
+<option>Ja, wird aktuell gepflegt</option>
+<option>Teilweise oder geplant</option>
+<option>Nein</option>
+</select>
+<label for="frage4">4. Liegt bei externen KI-Anbietern ein AV-Vertrag oder Äquivalent vor?</label>
+<select id="frage4" name="frage4">
+<option value="">Bitte auswählen</option>
+<option>Ja, liegt vor</option>
+<option>Wird gerade geprüft</option>
+<option>Nein</option>
+</select>
+<label for="frage5">5. Gibt es ein internes KI-Audit- oder Kontrollverfahren?</label>
+<select id="frage5" name="frage5">
+<option value="">Bitte auswählen</option>
+<option>Ja, regelmäßig</option>
+<option>Ist geplant</option>
+<option>Nein</option>
+</select>
+<label for="frage6">6. Werden Mitarbeitende in sensiblen Bereichen zum KI-Einsatz geschult?</label>
+<select id="frage6" name="frage6">
+<option value="">Bitte auswählen</option>
+<option>Ja, umfassend</option>
+<option>Teilweise</option>
+<option>Nein</option>
+</select>
+<label for="frage7">7. Sind automatisierte Entscheidungen nachvollziehbar und steuerbar?</label>
+<select id="frage7" name="frage7">
+<option value="">Bitte auswählen</option>
+<option>Ja, vollständig</option>
+<option>Teilweise</option>
+<option>Nein</option>
+</select>
+<label for="frage8">8. Gibt es Richtlinien zum ethischen KI-Einsatz?</label>
+<select id="frage8" name="frage8">
+<option value="">Bitte auswählen</option>
+<option>Ja, in Kraft</option>
+<option>Ist in Arbeit</option>
+<option>Nein</option>
+</select>
+<label for="frage9">9. Wird der KI-Einsatz regelmäßig evaluiert und angepasst?</label>
+<select id="frage9" name="frage9">
+<option value="">Bitte auswählen</option>
+<option>Ja, mit klaren Zyklen</option>
+<option>Teilweise / geplant</option>
+<option>Nein</option>
+</select>
+<label for="frage10">10. Werden Ergebnisse auf Verzerrung oder Fehler geprüft?</label>
+<select id="frage10" name="frage10">
+<option value="">Bitte auswählen</option>
+<option>Ja, mit Bias-Checks</option>
+<option>Teilweise</option>
+<option>Nein</option>
+</select>
+</div>
+<div class="section">
+<label for="strategie">Geplante Maßnahme</label>
+<select id="massnahme" name="massnahme">
+<option value="">Bitte auswählen</option>
+<option>Chatbot einführen</option>
+<option>Texterstellung automatisieren</option>
+<option>Vertrieb oder Support optimieren</option>
+<option>Daten auswerten lassen</option>
+</select>
+</div>
+<div class="section">
+<label for="herausforderung">Was ist Ihre größte Herausforderung beim KI-Einsatz?</label>
+<textarea id="herausforderung" name="herausforderung"></textarea>
+<label for="ziele">Was möchten Sie mit KI erreichen?</label>
+<textarea id="ziele" name="ziele"></textarea>
+</div>
+<div class="checkbox">
+<input id="datenschutz" name="datenschutz" required="" type="checkbox"/>
+<label for="datenschutz">Ich habe die <a href="#">Datenschutzerklärung</a> gelesen und akzeptiert.</label>
+</div>
+<button type="submit">Jetzt prüfen lassen</button>
+</form>
 </body>
 </html>
