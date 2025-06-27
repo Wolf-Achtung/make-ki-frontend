@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -12,25 +13,24 @@
     button { background: #0070f3; color: white; border: none; padding: 0.75rem 1.5rem; cursor: pointer; }
     button:hover { background: #005bb5; }
     #result { margin-top: 2rem; padding: 1rem; background: #e0ffe0; border: 1px solid #ccc; }
+    #loading { margin-top: 2rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffeeba; display: none; }
+    #error { margin-top: 2rem; padding: 1rem; background: #f8d7da; border: 1px solid #f5c6cb; display: none; color: #721c24; }
   </style>
 </head>
 <body>
   <h1>KI-Briefing: So nutzen Sie Ihr Potenzial</h1>
-  <form id="fragebogen-formular">
 
+  <form id="fragebogen-formular">
     <fieldset>
       <legend>👤 Über dich</legend>
       <label for="name">Wie dürfen wir Sie ansprechen?</label>
       <input type="text" id="name" name="name">
-
       <label for="unternehmen">Wie heißt Ihr Unternehmen? *</label>
       <input type="text" id="unternehmen" name="unternehmen" required>
-
       <label for="email">E-Mail-Adresse für den Report *</label>
       <input type="email" id="email" name="email" required>
-
       <label for="freiberuflich">Sind Sie selbstständig oder freiberuflich tätig?</label>
-      <select id="freiberuflich" name="freiberuflich">
+      <select id="selbststaendig" name="selbststaendig">
         <option>Ja</option>
         <option>Nein</option>
       </select>
@@ -47,7 +47,6 @@
         <option>Handwerk</option>
         <option>Einzelhandel</option>
       </select>
-
       <label for="bereich">Welcher Bereich steht im Mittelpunkt?</label>
       <input type="text" id="bereich" name="bereich">
     </fieldset>
@@ -60,19 +59,16 @@
         <option>Nein</option>
         <option>In Planung</option>
       </select>
-
       <label for="prozesse">Wie stark sind Ihre Prozesse digitalisiert?</label>
       <select id="prozesse" name="prozesse">
         <option>Gar nicht</option>
         <option>Teilweise automatisiert</option>
         <option>Vollständig automatisiert</option>
       </select>
-
       <label for="infrastruktur">Wie sieht Ihre technische Infrastruktur aus?</label>
       <input type="text" id="infrastruktur" name="infrastruktur">
-
       <label for="kenntnis">Wie gut kennen sich Ihre Teams mit KI aus?</label>
-      <select id="kenntnis" name="kenntnis">
+      <select id="knowhow" name="knowhow">
         <option>Keine Erfahrung</option>
         <option>Grundkenntnisse</option>
         <option>Erfahrung im Einsatz</option>
@@ -88,25 +84,20 @@
         <option>Teilweise dokumentiert</option>
         <option>Noch nicht geregelt</option>
       </select>
-
-      <label for="verantwortlich">Wer ist für KI-Themen verantwortlich?</label>
-      <input type="text" id="verantwortlich" name="verantwortlich">
+      <label for="verantwortung">Wer ist für KI-Themen verantwortlich?</label>
+      <input type="text" id="verantwortung" name="verantwortung">
     </fieldset>
 
     <fieldset>
       <legend>🎯 Ziele & Herausforderungen</legend>
       <label for="ziel">Was möchten Sie durch KI erreichen?</label>
       <textarea id="ziel" name="ziel"></textarea>
-
-      <label for="hindernis">Was hindert Sie aktuell daran?</label>
-      <textarea id="hindernis" name="hindernis"></textarea>
-
+      <label for="herausforderung">Was hindert Sie aktuell daran?</label>
+      <textarea id="herausforderung" name="herausforderung"></textarea>
       <label for="massnahmen">Gibt es erste Maßnahmen?</label>
       <input type="text" id="massnahmen" name="massnahmen">
-
       <label for="tools">Welche Tools oder Plattformen setzen Sie (testweise) ein?</label>
       <input type="text" id="tools" name="tools">
-
       <label for="foerderung">Gibt es Förderanträge oder Beratungen?</label>
       <textarea id="foerderung" name="foerderung"></textarea>
     </fieldset>
@@ -114,32 +105,45 @@
     <button type="submit">✅ Analyse starten</button>
   </form>
 
-  <div id="result" style="display:none;"></div>
+  <div id="loading">⏳ Deine Eingaben werden verarbeitet...</div>
+  <div id="error"></div>
+  <div id="result"></div>
 
   <script>
     document.getElementById("fragebogen-formular").addEventListener("submit", async function(event) {
       event.preventDefault();
+      document.getElementById("loading").style.display = "block";
+      document.getElementById("result").style.display = "none";
+      document.getElementById("error").style.display = "none";
 
       const formData = new FormData(this);
       const data = {};
       formData.forEach((value, key) => data[key] = value);
 
-      const response = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
+      try {
+        const response = await fetch("https://make-ki-backend-production.up.railway.app/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
 
-      const result = await response.json();
-      const resultHTML = `
-        <p><strong>✅ Deine Eingaben wurden verarbeitet.</strong></p>
-        <p><a href="${result.download_url}" target="_blank">📄 Vorschau deines KI-Briefings anzeigen</a></p>
-        <p><em>Optional:</em> <a href="#" onclick="alert('PDF-Versand folgt bald!')">Briefing per Mail erhalten</a></p>
-      `;
-      document.getElementById("result").innerHTML = resultHTML;
-      document.getElementById("result").style.display = "block";
+        if (!response.ok) throw new Error("Fehler beim Senden der Daten.");
+
+        const result = await response.json();
+        const url = result.download_url || result.pdf_url?.data?.download_url || "Downloadlink nicht gefunden";
+
+        const resultHTML = `
+          <p><strong>✅ Deine Eingaben wurden verarbeitet.</strong></p>
+          <p><a href="${url}" target="_blank">📄 Vorschau deines KI-Briefings anzeigen</a></p>
+        `;
+        document.getElementById("result").innerHTML = resultHTML;
+        document.getElementById("result").style.display = "block";
+      } catch (error) {
+        document.getElementById("error").textContent = "❌ Fehler: " + error.message;
+        document.getElementById("error").style.display = "block";
+      } finally {
+        document.getElementById("loading").style.display = "none";
+      }
     });
   </script>
 </body>
