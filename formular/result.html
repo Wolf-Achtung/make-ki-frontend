@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KI-Briefing Auswertung</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #f9fbfd;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    header img {
+      height: 60px;
+      margin-right: 1rem;
+    }
+    section {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    h2 {
+      margin-top: 0;
+      color: #005a9c;
+    }
+    .rubrik {
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo">
+    <h1>KI-Briefing: Ihre individuelle Auswertung</h1>
+  </header>
+
+  <section>
+    <h2>Executive Summary</h2>
+    <div id="executive_summary" class="rubrik">Wird geladen...</div>
+  </section>
+
+  <section>
+    <h2>Fördertipps & Ressourcen</h2>
+    <div id="fördertipps" class="rubrik">Wird geladen...</div>
+  </section>
+
+  <section>
+    <h2>Toolkompass</h2>
+    <div id="toolkompass" class="rubrik">Wird geladen...</div>
+  </section>
+
+  <section>
+    <h2>Branchentrend & Vergleich</h2>
+    <div id="branche_trend" class="rubrik">Wird geladen...</div>
+  </section>
+
+  <section>
+    <h2>Compliance & Gesetzeslage</h2>
+    <div id="compliance" class="rubrik">Wird geladen...</div>
+  </section>
+
+  <section>
+    <h2>Beratungsempfehlung</h2>
+    <div id="beratungsempfehlung" class="rubrik">Wird geladen...</div>
+  </section>
+
+  <section>
+    <h2>Visionärer Zukunftsblick</h2>
+    <div id="vision" class="rubrik">Wird geladen...</div>
+  </section>
+
+  <footer>
+    <p>© 2025 KI-Sicherheit.jetzt</p>
+  </footer>
+
+  <script>
+    // Beispiel: Laden der Daten von Railway (Platzhalter für deine API)
+    fetch('/api/briefing') // ← diesen Pfad ggf. anpassen
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("executive_summary").textContent = data.executive_summary || "–";
+        document.getElementById("fördertipps").textContent = data.fördertipps || "–";
+        document.getElementById("toolkompass").textContent = data.toolkompass || "–";
+        document.getElementById("branche_trend").textContent = data.branche_trend || "–";
+        document.getElementById("compliance").textContent = data.compliance || "–";
+        document.getElementById("beratungsempfehlung").textContent = data.beratungsempfehlung || "–";
+        document.getElementById("vision").textContent = data.vision || "–";
+      })
+      .catch(error => {
+        console.error("Fehler beim Laden der Briefing-Daten:", error);
+      });
+  </script>
+</body>
+</html>
