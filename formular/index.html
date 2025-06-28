@@ -4,17 +4,16 @@
   <meta charset="UTF-8" />
   <title>KI-Readiness & Förderung</title>
   <style>
-    body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; color: #003366; }
+    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; color: #003366; }
     label { font-weight: bold; display: block; margin-top: 1rem; }
     input, select, textarea { width: 100%; padding: 0.5rem; margin-top: 0.3rem; }
     button { margin-top: 1.5rem; padding: 0.8rem 1.2rem; background: #003366; color: #fff; border: none; cursor: pointer; }
     section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1.5rem; }
     h2 { color: #005a9c; }
-    pre { background: #f9f9f9; padding: 1rem; border-radius: 6px; }
   </style>
 </head>
 <body>
-  <h1>Förderfähigkeit & KI-Readiness prüfen</h1>
+  <h1>KI-Readiness & Förderung prüfen</h1>
   <form id="briefingForm">
     <label for="unternehmen">Unternehmen</label>
     <input type="text" id="unternehmen" name="unternehmen" />
@@ -30,6 +29,57 @@
 
     <label for="tools">Eingesetzte Tools</label>
     <input type="text" id="tools" name="tools" />
+
+    <h3>Kurzanalyse Ihrer KI-Compliance</h3>
+    <label for="frage1">1. Gibt es eine dokumentierte KI-Strategie?</label>
+    <select id="frage1" name="frage1">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage2">2. Wird der KI-Einsatz rechtlich geprüft?</label>
+    <select id="frage2" name="frage2">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage3">3. Führen Sie ein KI-Verzeichnis?</label>
+    <select id="frage3" name="frage3">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage4">4. AV-Verträge mit KI-Anbietern vorhanden?</label>
+    <select id="frage4" name="frage4">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage5">5. Gibt es interne KI-Audits?</label>
+    <select id="frage5" name="frage5">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage6">6. Schulungen für Mitarbeitende?</label>
+    <select id="frage6" name="frage6">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage7">7. Nachvollziehbarkeit von KI-Entscheidungen?</label>
+    <select id="frage7" name="frage7">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage8">8. Gibt es Ethik-Richtlinien?</label>
+    <select id="frage8" name="frage8">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage9">9. Regelmäßige Evaluation der KI?</label>
+    <select id="frage9" name="frage9">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
+
+    <label for="frage10">10. Bias-Checks & Fehlerkontrollen?</label>
+    <select id="frage10" name="frage10">
+      <option>Ja</option><option>Teilweise</option><option>Nein</option>
+    </select>
 
     <button type="submit">Briefing erstellen</button>
   </form>
@@ -47,13 +97,24 @@
         branche: this.branche.value,
         bereich: this.bereich.value,
         ziel: this.ziel.value,
-        tools: this.tools.value
+        tools: this.tools.value,
+        frage1: this.frage1.value,
+        frage2: this.frage2.value,
+        frage3: this.frage3.value,
+        frage4: this.frage4.value,
+        frage5: this.frage5.value,
+        frage6: this.frage6.value,
+        frage7: this.frage7.value,
+        frage8: this.frage8.value,
+        frage9: this.frage9.value,
+        frage10: this.frage10.value
       };
+
       const outputDiv = document.getElementById("output");
       outputDiv.innerHTML = "Analyse läuft ...";
 
       try {
-        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+        const res = await fetch("https://<DEIN-RAILWAY-ENDPUNKT>.railway.app/briefing", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
@@ -63,9 +124,11 @@
         if(json.error) {
           outputDiv.innerHTML = `<p style="color:red;">Fehler: ${json.error}</p>`;
         } else {
-          let html = "";
+          let html = `<h3>Compliance-Score: ${json.score}/10</h3><h4>Badge: ${json.badge}</h4>`;
           for (const [key, value] of Object.entries(json)) {
-            html += `<h3>${key.replace("_", " ").toUpperCase()}</h3><p>${value}</p>`;
+            if(key !== "score" && key !== "badge") {
+              html += `<h3>${key.replace("_"," ").toUpperCase()}</h3><p>${value}</p>`;
+            }
           }
           outputDiv.innerHTML = html;
           document.getElementById("resultSection").style.display = "block";
