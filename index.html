@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KI-Check Pro – KI-Sicherheit.jetzt</title>
+  <style>
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background-color: #f7f9fb;
+      color: #0d2b4a;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1, h2, h3 {
+      color: #0d2b4a;
+    }
+    .logo {
+      max-width: 220px;
+      margin: 0 auto 2rem;
+      display: block;
+    }
+    .button {
+      background-color: #003b5a;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.6rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+    .button:hover {
+      background-color: #005080;
+    }
+    .preisbox {
+      background: #ffffff;
+      border: 2px solid #003b5a;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .preisbox strong {
+      font-size: 1.5rem;
+      color: #003b5a;
+    }
+    .pro-tipp {
+      margin-top: 2rem;
+      background: #e0f4ff;
+      padding: 1rem;
+      border-left: 5px solid #003b5a;
+      border-radius: 6px;
+    }
+    .testimonial-container {
+      position: relative;
+      height: 140px;
+      margin-top: 3rem;
+    }
+    .testimonial {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      background: white;
+      border-left: 5px solid #003b5a;
+      padding: 1rem;
+      border-radius: 6px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+    .testimonial.show {
+      opacity: 1;
+    }
+    .testimonial strong {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<img src="ki-sicherheit-logo.png" alt="KI-Sicherheit.jetzt" class="logo" />
+
+<h1>Ihr Schnell-Check ist abgeschlossen!</h1>
+
+<p>Mit unserem kostenlosen KI-Check haben Sie bereits erste wichtige Hinweise zu Ihren Risiken und Chancen erhalten.</p>
+
+<h2>Jetzt individuelle Compliance-Auswertung & Trust-Badge sichern</h2>
+<p>Mit unserem strukturierten Voll-Check erhalten Sie eine detaillierte Auswertung, inkl. Compliance-Score (0-10), Trust-Badge für Marketing und Investoren sowie konkrete Handlungsempfehlungen und Förder-Tipps.</p>
+
+<div class="preisbox">
+  <p><strong>Nur 190,- € einmalig</strong><br>inkl. Maßnahmen-Plan & Badge</p>
+  <a href="/formular/" class="button">Jetzt Voll-Check starten</a>
+</div>
+
+<div class="pro-tipp">
+  <strong>Pro-Tipp:</strong> Kosten sind in der Regel steuerlich voll absetzbar.
+</div>
+
+<h2>Was unsere Kunden sagen:</h2>
+<div class="testimonial-container">
+  <div class="testimonial show"><strong>„Endlich ein Audit, das uns konkrete Maßnahmen liefert.“</strong><p>— Agentur für Digital Marketing, Köln</p></div>
+  <div class="testimonial"><strong>„Für uns im Handel Gold wert. Gerade gegenüber Investoren ist das Badge super.“</strong><p>— E-Commerce Händler, München</p></div>
+  <div class="testimonial"><strong>„Hat uns geholfen, den EU AI Act stressfrei anzugehen.“</strong><p>— IT-Beratung, Hamburg</p></div>
+  <div class="testimonial"><strong>„Wir nutzen das Zertifikat direkt in Angeboten.“</strong><p>— Steuerberatung, Frankfurt</p></div>
+  <div class="testimonial"><strong>„Super schneller Voll-Check mit klarem Ergebnis.“</strong><p>— Software-Startup, Berlin</p></div>
+  <div class="testimonial"><strong>„Erleichtert uns die jährliche Risikoanalyse enorm.“</strong><p>— Versicherungsmakler, Düsseldorf</p></div>
+  <div class="testimonial"><strong>„Hat uns gezeigt, wo wir DSGVO-technisch wirklich stehen.“</strong><p>— Bildungsanbieter, Leipzig</p></div>
+</div>
+
+<a href="/formular/" class="button">Jetzt Voll-Check starten</a>
+
+<script>
+const testimonials = document.querySelectorAll('.testimonial');
+let index = Math.floor(Math.random() * testimonials.length);
+
+function showTestimonial() {
+  testimonials.forEach((t, i) => {
+    t.classList.toggle('show', i === index);
+  });
+  index = (index + 1) % testimonials.length;
+}
+
+showTestimonial();
+setInterval(showTestimonial, 4000);
+</script>
+
+
+</body>
+</html>
