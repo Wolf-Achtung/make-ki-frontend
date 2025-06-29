@@ -184,7 +184,7 @@ document.querySelector("form").addEventListener("submit", async function(event) 
   };
 
   try {
-    const response = await fetch("https://DEIN-BACKEND-URL/briefing", {
+    const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(data)
