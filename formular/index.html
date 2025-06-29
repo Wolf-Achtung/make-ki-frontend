@@ -111,18 +111,47 @@ Zuschüsse von 5.000 € bis über 100.000 € sind möglich. Wir prüfen Ihre C
     <label for="ziel">Was möchten Sie mit KI erreichen?</label>
     <textarea id="ziel" name="ziel"></textarea>
   </div>
+
   <div class="section">
     <h3>Compliance-Fragen (EU-AI-Act & DSGVO)</h3>
-    <!-- Deine 10 Fragen hier -->
-    <!-- identisch mit bisherigem Aufbau -->
+    <label for="frage1">Gibt es bereits interne Richtlinien zum KI-Einsatz?</label>
+    <select id="frage1" name="frage1"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage2">Werden personenbezogene Daten verarbeitet?</label>
+    <select id="frage2" name="frage2"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage3">Gibt es einen Datenschutzbeauftragten?</label>
+    <select id="frage3" name="frage3"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage4">Sind Mitarbeitende zu KI & Datenschutz geschult?</label>
+    <select id="frage4" name="frage4"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage5">Gibt es ein Verzeichnis von Verarbeitungstätigkeiten?</label>
+    <select id="frage5" name="frage5"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage6">Existieren AV-Verträge für externe KI-Dienste?</label>
+    <select id="frage6" name="frage6"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage7">Werden KI-Outputs auf Bias geprüft?</label>
+    <select id="frage7" name="frage7"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage8">Existiert eine Notfallstrategie (Failsafe)?</label>
+    <select id="frage8" name="frage8"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage9">Gab es schon eine Datenschutz-Folgenabschätzung (DPIA)?</label>
+    <select id="frage9" name="frage9"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
+
+    <label for="frage10">Wird dokumentiert, wann & wofür KI genutzt wird?</label>
+    <select id="frage10" name="frage10"><option>Ja</option><option>Teilweise</option><option>Nein</option></select>
   </div>
+
   <button type="submit">Jetzt prüfen lassen</button>
 </form>
 
 <section id="resultSection" style="display:none;">
   <div class="success-highlight">
     🎉 <strong>Ihre individuelle KI-Analyse ist fertig!</strong>
-    <p>Sehen Sie hier Ihre Compliance-Risiken, Förderchancen und konkrete Handlungsempfehlungen.</p>
+    <p>Sehen Sie hier Ihre Compliance-Risiken, Förderchancen, ROI & Visionen.</p>
   </div>
   <div id="output"></div>
 </section>
@@ -141,15 +170,24 @@ document.getElementById("briefingForm").addEventListener("submit", async functio
     selbststaendig: this.selbststaendig.value,
     massnahme: this.massnahme.value,
     bereich: this.bereich.value,
-    ziel: this.ziel.value
-    // deine Compliance-Fragen hier ergänzen
+    ziel: this.ziel.value,
+    frage1: this.frage1.value,
+    frage2: this.frage2.value,
+    frage3: this.frage3.value,
+    frage4: this.frage4.value,
+    frage5: this.frage5.value,
+    frage6: this.frage6.value,
+    frage7: this.frage7.value,
+    frage8: this.frage8.value,
+    frage9: this.frage9.value,
+    frage10: this.frage10.value
   };
 
   const outputDiv = document.getElementById("output");
   outputDiv.innerHTML = "✅ Anfrage gesendet...";
 
   try {
-    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+    const res = await fetch("/briefing", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
@@ -157,23 +195,22 @@ document.getElementById("briefingForm").addEventListener("submit", async functio
     outputDiv.innerHTML += "<br>⌛ GPT wertet aus...";
 
     const text = await res.text();
-    console.log(\"GPT-Response:\", text);
+    console.log("GPT-Response:", text);
 
     let sections = text.split(/\\n\\n|\\r\\n\\r\\n/);
-    let html = \"\";
+    let html = "";
     sections.forEach(s => {
-      if(s.trim() !== \"\") {
-        html += `<div class=\"result-block\">${s.trim().replace(/\\n/g,\"<br>\")}</div>`;
+      if(s.trim() !== "") {
+        html += `<div class="result-block">${s.trim().replace(/\\n/g,"<br>")}</div>`;
       }
     });
 
     outputDiv.innerHTML = html;
-    document.getElementById(\"resultSection\").style.display = \"block\";
+    document.getElementById("resultSection").style.display = "block";
   } catch(err) {
-    outputDiv.innerHTML = `<p style=\"color:red;\">Serverfehler: ${err.message}</p>`;
-  } finally {
+    outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
     button.disabled = false;
-    button.innerText = \"Jetzt prüfen lassen\";
+    button.innerText = "Jetzt prüfen lassen";
   }
 });
 </script>
