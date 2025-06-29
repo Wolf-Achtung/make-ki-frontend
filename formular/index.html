@@ -2,141 +2,207 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KI-Readiness & Förderung</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; color: #003366; }
-    label { font-weight: bold; display: block; margin-top: 1rem; }
-    input, select, textarea { width: 100%; padding: 0.5rem; margin-top: 0.3rem; }
-    button { margin-top: 1.5rem; padding: 0.8rem 1.2rem; background: #003366; color: #fff; border: none; cursor: pointer; }
-    section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1.5rem; }
-    h2 { color: #005a9c; }
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background-color: #f7f9fb;
+      color: #0d2b4a;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1, h2, h3 {
+      color: #0d2b4a;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: 2px solid #0d2b4a;
+      border-radius: 6px;
+      font-size: 1rem;
+      background-color: #ffffff;
+      color: #0d2b4a;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+      display: block;
+    }
+    button {
+      background-color: #003b5a;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005080;
+    }
+    .badge-gold {
+      color: gold;
+      text-shadow: 0 0 5px gold;
+      animation: glowGold 2s infinite;
+    }
+    .badge-silver {
+      color: silver;
+      text-shadow: 0 0 4px silver;
+      animation: glowSilver 2s infinite;
+    }
+    .badge-starter {
+      color: tomato;
+      text-shadow: 0 0 6px tomato;
+      animation: glowStarter 1.5s infinite;
+    }
+    @keyframes glowGold {
+      0%, 100% { text-shadow: 0 0 5px gold; }
+      50% { text-shadow: 0 0 15px gold; }
+    }
+    @keyframes glowSilver {
+      0%, 100% { text-shadow: 0 0 4px silver; }
+      50% { text-shadow: 0 0 10px silver; }
+    }
+    @keyframes glowStarter {
+      0%, 100% { text-shadow: 0 0 6px tomato; }
+      50% { text-shadow: 0 0 12px tomato; }
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
   </style>
 </head>
 <body>
-  <h1>KI-Readiness & Förderung prüfen</h1>
-  <form id="briefingForm">
-    <label for="unternehmen">Unternehmen</label>
-    <input type="text" id="unternehmen" name="unternehmen" />
+<h1>KI-Readiness & Förderung prüfen</h1>
+<p><strong>Nutzen Sie bestehende Fördermittel für Ihre KI-Vorhaben.</strong><br/>
+Zuschüsse von 5.000 € bis über 100.000 € sind möglich. Wir prüfen Ihre Chancen und geben Ihnen konkrete Handlungsempfehlungen.</p>
 
-    <label for="branche">Branche</label>
-    <input type="text" id="branche" name="branche" />
+<h2>Kurzanalyse & Compliance-Check</h2>
+<form id="briefingForm">
+<div class="section">
+  <label for="unternehmen">Unternehmen</label>
+  <input id="unternehmen" name="unternehmen" type="text"/>
+  <label for="branche">Branche</label>
+  <input id="branche" name="branche" type="text"/>
+  <label for="bereich">Geplanter Einsatzbereich</label>
+  <input id="bereich" name="bereich" type="text"/>
+  <label for="ziel">Was möchten Sie mit KI erreichen?</label>
+  <textarea id="ziel" name="ziel"></textarea>
+</div>
+<div class="section">
+  <h3>Compliance-Fragen (EU-AI-Act & DSGVO)</h3>
+  <label>1. Gibt es eine dokumentierte KI-Strategie oder Governance?</label>
+  <select id="frage1" name="frage1">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>2. Wird der KI-Einsatz regelmäßig rechtlich auf DSGVO & Urheberrecht geprüft?</label>
+  <select id="frage2" name="frage2">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>3. Führen Sie ein zentrales Verzeichnis über eingesetzte KI-Systeme?</label>
+  <select id="frage3" name="frage3">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>4. Liegen bei externen KI-Anbietern AV-Verträge oder Äquivalente vor?</label>
+  <select id="frage4" name="frage4">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>5. Gibt es interne Audit- und Kontrollverfahren für KI?</label>
+  <select id="frage5" name="frage5">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>6. Werden Mitarbeitende in sensiblen Bereichen zum KI-Einsatz geschult?</label>
+  <select id="frage6" name="frage6">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>7. Sind automatisierte Entscheidungen nachvollziehbar & steuerbar?</label>
+  <select id="frage7" name="frage7">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>8. Gibt es verbindliche Richtlinien zum ethischen KI-Einsatz?</label>
+  <select id="frage8" name="frage8">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>9. Wird der KI-Einsatz regelmäßig evaluiert & angepasst?</label>
+  <select id="frage9" name="frage9">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+  <label>10. Werden Ergebnisse systematisch auf Verzerrungen & Fehler geprüft?</label>
+  <select id="frage10" name="frage10">
+    <option>Ja</option><option>Teilweise</option><option>Nein</option>
+  </select>
+</div>
+<button type="submit">Jetzt prüfen lassen</button>
+</form>
 
-    <label for="bereich">Bereich</label>
-    <input type="text" id="bereich" name="bereich" />
+<section id="resultSection" style="display:none;">
+  <h2>Dein persönliches KI-Briefing</h2>
+  <div id="output"></div>
+</section>
 
-    <label for="ziel">Ziele mit KI</label>
-    <input type="text" id="ziel" name="ziel" />
+<script>
+document.getElementById("briefingForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const data = {
+    unternehmen: this.unternehmen.value,
+    branche: this.branche.value,
+    bereich: this.bereich.value,
+    ziel: this.ziel.value,
+    frage1: this.frage1.value,
+    frage2: this.frage2.value,
+    frage3: this.frage3.value,
+    frage4: this.frage4.value,
+    frage5: this.frage5.value,
+    frage6: this.frage6.value,
+    frage7: this.frage7.value,
+    frage8: this.frage8.value,
+    frage9: this.frage9.value,
+    frage10: this.frage10.value
+  };
 
-    <label for="tools">Eingesetzte Tools</label>
-    <input type="text" id="tools" name="tools" />
+  const outputDiv = document.getElementById("output");
+  outputDiv.innerHTML = "✅ Anfrage gesendet...";
 
-    <h3>Kurzanalyse Ihrer KI-Compliance</h3>
-    <label for="frage1">1. Gibt es eine dokumentierte KI-Strategie?</label>
-    <select id="frage1" name="frage1">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage2">2. Wird der KI-Einsatz rechtlich geprüft?</label>
-    <select id="frage2" name="frage2">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage3">3. Führen Sie ein KI-Verzeichnis?</label>
-    <select id="frage3" name="frage3">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage4">4. AV-Verträge mit KI-Anbietern vorhanden?</label>
-    <select id="frage4" name="frage4">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage5">5. Gibt es interne KI-Audits?</label>
-    <select id="frage5" name="frage5">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage6">6. Schulungen für Mitarbeitende?</label>
-    <select id="frage6" name="frage6">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage7">7. Nachvollziehbarkeit von KI-Entscheidungen?</label>
-    <select id="frage7" name="frage7">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage8">8. Gibt es Ethik-Richtlinien?</label>
-    <select id="frage8" name="frage8">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage9">9. Regelmäßige Evaluation der KI?</label>
-    <select id="frage9" name="frage9">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <label for="frage10">10. Bias-Checks & Fehlerkontrollen?</label>
-    <select id="frage10" name="frage10">
-      <option>Ja</option><option>Teilweise</option><option>Nein</option>
-    </select>
-
-    <button type="submit">Briefing erstellen</button>
-  </form>
-
-  <section id="resultSection" style="display:none;">
-    <h2>Dein persönliches KI-Briefing</h2>
-    <div id="output"></div>
-  </section>
-
-  <script>
-    document.getElementById("briefingForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const data = {
-        unternehmen: this.unternehmen.value,
-        branche: this.branche.value,
-        bereich: this.bereich.value,
-        ziel: this.ziel.value,
-        tools: this.tools.value,
-        frage1: this.frage1.value,
-        frage2: this.frage2.value,
-        frage3: this.frage3.value,
-        frage4: this.frage4.value,
-        frage5: this.frage5.value,
-        frage6: this.frage6.value,
-        frage7: this.frage7.value,
-        frage8: this.frage8.value,
-        frage9: this.frage9.value,
-        frage10: this.frage10.value
-      };
-
-      const outputDiv = document.getElementById("output");
-      outputDiv.innerHTML = "Analyse läuft ...";
-
-      try {
-        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-        const json = await res.json();
-
-        if(json.error) {
-          outputDiv.innerHTML = `<p style="color:red;">Fehler: ${json.error}</p>`;
-        } else {
-          let html = `<h3>Compliance-Score: ${json.score}/10</h3><h4>Badge: ${json.badge}</h4>`;
-          for (const [key, value] of Object.entries(json)) {
-            if(key !== "score" && key !== "badge") {
-              html += `<h3>${key.replace("_"," ").toUpperCase()}</h3><p>${value}</p>`;
-            }
-          }
-          outputDiv.innerHTML = html;
-          document.getElementById("resultSection").style.display = "block";
-        }
-      } catch(err) {
-        outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
-      }
+  try {
+    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
     });
-  </script>
+    outputDiv.innerHTML += "<br>⌛ GPT antwortet...";
+
+    const json = await res.json();
+    console.log("GPT-Response:", json);
+
+    if(json.error) {
+      outputDiv.innerHTML = `<p style="color:red;">Fehler: ${json.error}</p>`;
+    } else {
+      let badgeClass = "";
+      if(json.badge === "Gold") badgeClass = "badge-gold";
+      else if(json.badge === "Silber") badgeClass = "badge-silver";
+      else if(json.badge === "Starter") badgeClass = "badge-starter";
+
+      let html = `<h3 class="${badgeClass}">✅ Compliance-Score: ${json.score}/10</h3>
+                  <h4 class="${badgeClass}">Badge: ${json.badge}</h4>`;
+
+      for (const [key, value] of Object.entries(json)) {
+        if(key !== "score" && key !== "badge") {
+          html += `<h3>${key.replace("_"," ").toUpperCase()}</h3><p>${value}</p>`;
+        }
+      }
+      outputDiv.innerHTML = "🎉 Briefing fertig.<br><br>" + html;
+      document.getElementById("resultSection").style.display = "block";
+    }
+  } catch(err) {
+    outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
+  }
+});
+</script>
+
 </body>
 </html>
