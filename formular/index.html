@@ -114,7 +114,7 @@
       outputDiv.innerHTML = "Analyse läuft ...";
 
       try {
-        const res = await fetch("https://<DEIN-RAILWAY-ENDPUNKT>.railway.app/briefing", {
+        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
