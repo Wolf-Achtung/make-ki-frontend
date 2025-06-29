@@ -187,7 +187,7 @@ document.getElementById("briefingForm").addEventListener("submit", async functio
   outputDiv.innerHTML = "✅ Anfrage gesendet...";
 
   try {
-    const res = await fetch("/briefing", {
+    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
