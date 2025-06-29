@@ -21,6 +21,17 @@
       margin: 0 auto 2rem;
       display: block;
     }
+    .logos {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+    .logos img {
+      max-height: 60px;
+      margin: 0.5rem;
+    }
     .button {
       background-color: #003b5a;
       color: white;
@@ -59,14 +70,15 @@
       position: relative;
       height: 140px;
       margin-top: 3rem;
+      overflow: hidden;
     }
     .testimonial {
       position: absolute;
       top: 0;
-      left: 0;
-      right: 0;
+      left: 100%;
+      right: -100%;
       opacity: 0;
-      transition: opacity 1s ease-in-out;
+      transition: all 1s ease-in-out;
       background: white;
       border-left: 5px solid #003b5a;
       padding: 1rem;
@@ -74,6 +86,8 @@
       box-shadow: 0 0 4px rgba(0,0,0,0.1);
     }
     .testimonial.show {
+      left: 0;
+      right: 0;
       opacity: 1;
     }
     .testimonial strong {
@@ -84,14 +98,26 @@
 </head>
 <body>
 
-<img src="ki-sicherheit-logo.png" alt="KI-Sicherheit.jetzt" class="logo" />
+<img src="badges/ki-sicherheit-logo.png" alt="KI-Sicherheit.jetzt" class="logo" />
 
-<h1>Ihr Schnell-Check ist abgeschlossen!</h1>
+<h1>Zertifiziert. Dokumentiert. KI-konform.</h1>
+<p>Der <strong>KI-Check Pro</strong> liefert Ihnen in wenigen Minuten eine strukturierte Einschätzung Ihres KI-Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.</p>
 
-<p>Mit unserem kostenlosen KI-Check haben Sie bereits erste wichtige Hinweise zu Ihren Risiken und Chancen erhalten.</p>
+<div class="logos">
+  <img src="badges/tuev-logo.png" alt="TÜV zertifiziert">
+  <img src="badges/dsgvo.svg" alt="DSGVO konform">
+  <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+  <img src="badges/ki-ready-2025.png" alt="KI-Ready 2025 Badge">
+</div>
 
-<h2>Jetzt individuelle Compliance-Auswertung & Trust-Badge sichern</h2>
-<p>Mit unserem strukturierten Voll-Check erhalten Sie eine detaillierte Auswertung, inkl. Compliance-Score (0-10), Trust-Badge für Marketing und Investoren sowie konkrete Handlungsempfehlungen und Förder-Tipps.</p>
+<ul>
+  <li>✓ DSGVO- & EU AI Act-konform</li>
+  <li>✓ Risikoanalyse mit Ampel-Logik</li>
+  <li>✓ PDF-Zertifikat mit „KI-Ready 2025“-Badge</li>
+  <li>✓ TÜV-zertifizierte Beratung</li>
+</ul>
+
+<a href="/formular/" class="button">Jetzt KI-Check starten</a>
 
 <div class="preisbox">
   <p><strong>Nur 190,- € einmalig</strong><br>inkl. Maßnahmen-Plan & Badge</p>
@@ -129,7 +155,6 @@ function showTestimonial() {
 showTestimonial();
 setInterval(showTestimonial, 4000);
 </script>
-
 
 </body>
 </html>
