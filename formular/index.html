@@ -157,63 +157,50 @@ Zuschüsse von 5.000 € bis über 100.000 € sind möglich. Wir prüfen Ihre C
 </section>
 
 <script>
-document.getElementById("briefingForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  const button = this.querySelector("button");
+document.querySelector("form").addEventListener("submit", async function(event) {
+  event.preventDefault();
+  const button = document.querySelector("button");
   button.disabled = true;
-  button.innerText = "Analyse läuft…";
+  button.innerText = "Analyse läuft...";
 
   const data = {
-    name: this.name.value,
-    email: this.email.value,
-    branche: this.branche.value,
-    selbststaendig: this.selbststaendig.value,
-    massnahme: this.massnahme.value,
-    bereich: this.bereich.value,
-    ziel: this.ziel.value,
-    frage1: this.frage1.value,
-    frage2: this.frage2.value,
-    frage3: this.frage3.value,
-    frage4: this.frage4.value,
-    frage5: this.frage5.value,
-    frage6: this.frage6.value,
-    frage7: this.frage7.value,
-    frage8: this.frage8.value,
-    frage9: this.frage9.value,
-    frage10: this.frage10.value
+    name: document.querySelector("input[name='name']").value,
+    email: document.querySelector("input[name='email']").value,
+    branche: document.querySelector("select[name='branche']").value,
+    selbststaendig: document.querySelector("select[name='selbststaendig']").value,
+    massnahme: document.querySelector("select[name='massnahme']").value,
+    bereich: document.querySelector("input[name='bereich']").value,
+    ziel: document.querySelector("textarea[name='ziel']").value,
+    richtlinien: document.querySelector("select[name='richtlinien']").value,
+    personen: document.querySelector("select[name='personen']").value,
+    dsb: document.querySelector("select[name='dsb']").value,
+    schulung: document.querySelector("select[name='schulung']").value,
+    verzeichnis: document.querySelector("select[name='verzeichnis']").value,
+    av: document.querySelector("select[name='av']").value,
+    bias: document.querySelector("select[name='bias']").value,
+    notfall: document.querySelector("select[name='notfall']").value,
+    dpia: document.querySelector("select[name='dpia']").value,
+    dokumentation: document.querySelector("select[name='dokumentation']").value
   };
 
-  const outputDiv = document.getElementById("output");
-  outputDiv.innerHTML = "✅ Anfrage gesendet...";
-
   try {
-    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+    const response = await fetch("https://DEIN-BACKEND-URL/briefing", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(data)
     });
-    outputDiv.innerHTML += "<br>⌛ GPT wertet aus...";
-
-    const text = await res.text();
-    console.log("GPT-Response:", text);
-
-    let sections = text.split(/\\n\\n|\\r\\n\\r\\n/);
-    let html = "";
-    sections.forEach(s => {
-      if(s.trim() !== "") {
-        html += `<div class="result-block">${s.trim().replace(/\\n/g,"<br>")}</div>`;
-      }
-    });
-
-    outputDiv.innerHTML = html;
-    document.getElementById("resultSection").style.display = "block";
-  } catch(err) {
-    outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
-    button.disabled = false;
-    button.innerText = "Jetzt prüfen lassen";
+    const result = await response.json();
+    document.querySelector("#result").innerText = result.briefing;
+  } catch (error) {
+    console.error("Fehler:", error);
+    document.querySelector("#result").innerText = "Es gab ein Problem bei der Analyse.";
   }
+
+  button.disabled = false;
+  button.innerText = "Jetzt prüfen lassen";
 });
 </script>
+
 
 </body>
 </html>
