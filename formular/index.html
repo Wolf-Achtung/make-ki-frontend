@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>KI-Readiness & Förderung</title>
     <style>
@@ -20,6 +20,7 @@
         <input type="text" name="unternehmen" placeholder="Unternehmen" required>
         <input type="text" name="name" placeholder="Ihr Name" required>
         <input type="email" name="email" placeholder="E-Mail" required>
+        <input type="text" name="plz" placeholder="Postleitzahl Ihres Unternehmens" required>
 
         <select name="branche" required>
             <option value="">Bitte Branche auswählen</option>
@@ -54,7 +55,7 @@
         </select>
 
         <h2>Datenschutz & KI-Management</h2>
-        <label>Haben Sie technische Maßnahmen getroffen, z. B. Verschlüsselung, Firewalls oder Zugriffskontrollen?</label>
+        <label>Haben Sie technische Maßnahmen getroffen (Firewall, Verschlüsselung etc.)?</label>
         <select name="frage1"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
         <label>Gibt es Schulungen oder Infos für Mitarbeiter zu Datenschutz, KI oder rechtlichen Anforderungen?</label>
@@ -63,25 +64,25 @@
         <label>Haben Sie einen Datenschutzbeauftragten oder Verantwortlichen benannt?</label>
         <select name="frage3"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Haben Sie Risiken für den Datenschutz dokumentiert (z. B. Datenschutz-Folgenabschätzung)?</label>
+        <label>Führen Sie Risikoanalysen oder Datenschutz-Folgenabschätzungen durch?</label>
         <select name="frage4"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Gibt es Regeln zur Löschung oder Anonymisierung von personenbezogenen Daten?</label>
+        <label>Gibt es Prozesse zur Datenlöschung oder Anonymisierung?</label>
         <select name="frage5"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Wissen Ihre Mitarbeiter, was bei einer Datenschutzverletzung zu tun ist?</label>
+        <label>Wissen Mitarbeiter, wie bei Datenschutzverletzungen zu handeln ist?</label>
         <select name="frage6"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Achten Sie darauf, dass Personen ihre Rechte (Auskunft, Löschung, Berichtigung) wahrnehmen können?</label>
+        <label>Werden Betroffenenrechte (Auskunft, Löschung) aktiv umgesetzt?</label>
         <select name="frage7"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Haben Sie Prozesse zur regelmäßigen Löschung oder Anonymisierung unnötiger Daten?</label>
+        <label>Gibt es eine Dokumentation der Datenverarbeitungsprozesse?</label>
         <select name="frage8"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Gibt es eine Meldepflicht und klare Abläufe für Datenschutzvorfälle?</label>
+        <label>Existieren Meldepflichten & Abläufe bei Datenschutzvorfällen?</label>
         <select name="frage9"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Führen Sie regelmäßige Überprüfungen oder Audits zur Datenschutzkonformität durch?</label>
+        <label>Führen Sie regelmäßige interne Audits zu Datenschutz und KI durch?</label>
         <select name="frage10"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
         <button type="submit">Briefing erstellen</button>
@@ -112,7 +113,6 @@
         document.getElementById('briefingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const data = Object.fromEntries(new FormData(e.target));
-
             document.getElementById('devFormData').innerText = JSON.stringify(data, null, 2);
 
             const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
@@ -121,12 +121,13 @@
                 body: JSON.stringify(data)
             });
             const json = await res.json();
-
             document.getElementById('devRawResponse').innerText = JSON.stringify(json, null, 2);
 
             let fragenAuditHTML = '';
-            if (json.fragen_audit && Array.isArray(json.fragen_audit)) {
-                fragenAuditHTML = '<h3>Frage-für-Frage-Audit</h3><ul>' + json.fragen_audit.map(f => `<li>${f}</li>`).join('') + '</ul>';
+            if (json.frage_audit) {
+                fragenAuditHTML = '<h3>Frage-für-Frage-Audit</h3><ul>' +
+                  Object.entries(json.frage_audit).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('') +
+                  '</ul>';
             }
 
             document.getElementById('result').innerHTML = `
@@ -138,6 +139,7 @@
                 <strong>Use Case:</strong> ${json.use_case_analysis || 'Keine Daten verfügbar'}<br><br>
                 <strong>Branche Trend:</strong> ${json.branche_trend || 'Keine Daten verfügbar'}<br><br>
                 <strong>Vision:</strong> ${json.vision || 'Keine Daten verfügbar'}<br><br>
+                <strong>Quick Wins:</strong> ${json.quick_wins?.join(", ") || 'Keine Daten verfügbar'}<br><br>
                 <strong>Toolstipps:</strong> ${json.toolstipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
                 <strong>Fördertipps:</strong> ${json.foerdertipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
                 <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
