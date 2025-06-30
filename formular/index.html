@@ -4,13 +4,14 @@
   <meta charset="UTF-8" />
   <title>KI-Readiness & Förderung</title>
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; color: #003366; }
+    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; color: #003366; line-height: 1.6; }
+    h1, h2, h3 { color: #005a9c; }
     label { font-weight: bold; display: block; margin-top: 1rem; }
-    select, input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.3rem; }
-    button { margin-top: 1.5rem; padding: 0.8rem 1.2rem; background: #003366; color: #fff; border: none; cursor: pointer; }
-    section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1.5rem; }
-    h2 { color: #005a9c; }
-    .badge { display: inline-block; padding: 0.5rem 1rem; border-radius: 8px; font-weight: bold; }
+    select, input, textarea { width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 4px; }
+    button { margin-top: 2rem; padding: 0.9rem 1.5rem; background: #003366; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+    button:hover { background: #005a9c; }
+    section { margin-top: 3rem; border-top: 2px solid #ccc; padding-top: 2rem; }
+    .badge { display: inline-block; padding: 0.5rem 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1rem; }
     .Bronze { background: #cd7f32; color: #fff; }
     .Silber { background: #c0c0c0; color: #000; }
     .Gold { background: #ffd700; color: #000; }
@@ -18,35 +19,65 @@
   </style>
 </head>
 <body>
-  <h1>Förderfähigkeit & KI-Readiness prüfen</h1>
+  <h1>KI-Readiness & Förderfähigkeit prüfen</h1>
   <form id="briefingForm">
-    <h3>Allgemein</h3>
-    <label>Unternehmen</label><input type="text" name="unternehmen" />
+    <h2>Allgemeine Angaben</h2>
+    <label>Unternehmen</label><input type="text" name="name" />
+    <label>E-Mail</label><input type="email" name="email" />
     <label>Branche</label><input type="text" name="branche" />
-    <label>Bereich</label><input type="text" name="bereich" />
-
-    <h3>Readiness</h3>
-    <label>Wie weit ist Ihre KI-Strategie fortgeschritten?</label>
-    <select name="readiness_level">
+    <label>Selbstständig?</label>
+    <select name="selbststaendig">
       <option>noch unklar</option>
-      <option>erste Überlegungen</option>
-      <option>in Planung</option>
-      <option>bereits in Umsetzung</option>
-      <option>voll integriert</option>
-    </select>
-
-    <h3>Compliance</h3>
-    <label>Haben Sie AV-Verträge und DSGVO-Dokumentation?</label>
-    <select name="compliance_docs">
-      <option>noch unklar</option>
-      <option>ja, vollständig</option>
-      <option>teilweise vorhanden</option>
+      <option>ja</option>
       <option>nein</option>
     </select>
 
-    <h3>Use-Cases</h3>
-    <label>Welche Ziele verfolgen Sie mit KI?</label><input type="text" name="ziel" />
-    <label>Eingesetzte oder geplante Tools</label><input type="text" name="tools" />
+    <h2>Geplante Maßnahme & Bereich</h2>
+    <label>Welche Maßnahme planen Sie?</label><input type="text" name="massnahme" />
+    <label>In welchem Bereich?</label><input type="text" name="bereich" />
+    <label>Ziele mit KI</label><input type="text" name="ziel" />
+
+    <h2>Compliance-Check</h2>
+    <label>Frage 1: Gibt es eine Datenschutzdokumentation?</label>
+    <select name="frage1">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 2: AV-Verträge vorhanden?</label>
+    <select name="frage2">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 3: Verfahrensverzeichnis gepflegt?</label>
+    <select name="frage3">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 4: Datenschutzfolgeabschätzung durchgeführt?</label>
+    <select name="frage4">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 5: Bias-Checks geplant?</label>
+    <select name="frage5">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 6: Ethische Leitlinien definiert?</label>
+    <select name="frage6">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 7: Transparenzrichtlinien erstellt?</label>
+    <select name="frage7">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 8: Data-Governance-Strategie vorhanden?</label>
+    <select name="frage8">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 9: Schulungen geplant oder durchgeführt?</label>
+    <select name="frage9">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
+    <label>Frage 10: Löschkonzepte definiert?</label>
+    <select name="frage10">
+      <option>noch unklar</option><option>ja</option><option>nein</option>
+    </select>
 
     <button type="submit">Briefing erstellen</button>
   </form>
