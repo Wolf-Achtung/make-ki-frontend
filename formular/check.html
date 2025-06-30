@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Sync-Checker Visual</title>
+    <style>
+        body { font-family: monospace; background: #f8f8f8; padding: 2rem; color: #333; }
+        pre { background: #fff; padding: 1rem; border-radius: 5px; overflow-x: auto; }
+        .ok { color: green; }
+        .warn { color: orange; }
+        .err { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Sync-Checker Visual</h1>
+    <button onclick="checkSync()">Check Sync Status</button>
+    <div id="output"></div>
+
+    <script>
+    async function checkSync() {
+        const out = document.getElementById('output');
+        out.innerHTML = "⏳ Lade...";
+        try {
+            const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/sync-check");
+            const json = await res.json();
+            let html = "<h2>Ergebnis</h2>";
+            html += `<p class="ok">Status: ${json.status}</p>`;
+            
+            html += `<h3>Expected Fields</h3><pre>${JSON.stringify(json.expected_fields, null, 2)}</pre>`;
+            html += `<h3>Found in HTML</h3><pre>${JSON.stringify(json.found_in_html, null, 2)}</pre>`;
+            
+            if(json.missing_in_html.length) {
+                html += `<h3 class="err">Fehlend in HTML</h3><pre>${JSON.stringify(json.missing_in_html, null, 2)}</pre>`;
+            } else {
+                html += `<p class="ok">✅ Alle erwarteten Felder sind in der HTML vorhanden.</p>`;
+            }
+
+            if(json.extra_in_html.length) {
+                html += `<h3 class="warn">Extra in HTML</h3><pre>${JSON.stringify(json.extra_in_html, null, 2)}</pre>`;
+            } else {
+                html += `<p class="ok">✅ Keine überzähligen Felder in HTML.</p>`;
+            }
+
+            out.innerHTML = html;
+        } catch(e) {
+            out.innerHTML = `<p class="err">❌ Fehler: ${e}</p>`;
+        }
+    }
+    </script>
+</body>
+</html>
