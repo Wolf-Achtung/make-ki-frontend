@@ -63,12 +63,35 @@
     <input type="text" name="ziel" placeholder="z.B. Kosten senken, Effizienz steigern" />
 
     <h2>Compliance-Check</h2>
-    ${[...Array(10).keys()].map(i => `
-      <label>Frage ${i+1}</label>
-      <select name="frage${i+1}">
-        <option>noch unklar</option><option>ja</option><option>nein</option>
-      </select>
-    `).join('')}
+    <label>Gibt es bei Ihnen eine schriftliche Dokumentation darüber, wie Sie personenbezogene Daten verarbeiten (z. B. Datenschutzkonzept, interne Richtlinien)?</label>
+    <select name="frage1"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Haben Sie mit allen Dienstleistern, die für Sie Daten verarbeiten (z. B. Cloud-Anbieter, Agenturen), schriftliche Auftragsverarbeitungsverträge (AV-Verträge) abgeschlossen?</label>
+    <select name="frage2"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Führen Sie ein sogenanntes „Verzeichnis von Verarbeitungstätigkeiten“ (nach DSGVO Art. 30), das alle Prozesse mit personenbezogenen Daten auflistet?</label>
+    <select name="frage3"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Haben Sie geprüft oder dokumentiert, ob bestimmte KI- oder Datenprojekte eine Datenschutz-Folgeabschätzung (DSFA) erfordern?</label>
+    <select name="frage4"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Prüfen Sie Ihre KI-Modelle oder Algorithmen regelmäßig auf Verzerrungen (Bias), Diskriminierung oder Fairness-Probleme?</label>
+    <select name="frage5"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Gibt es bei Ihnen schriftlich festgelegte ethische Grundsätze oder Leitlinien für den Einsatz von KI?</label>
+    <select name="frage6"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Haben Sie festgelegt, wie Sie gegenüber Kunden oder Partnern transparent machen, dass KI zum Einsatz kommt (z. B. Hinweise in Angeboten oder Webseiten)?</label>
+    <select name="frage7"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Haben Sie eine Strategie oder Regeln, wie Daten gesammelt, gespeichert und genutzt werden (Data Governance), z. B. Rollen & Verantwortlichkeiten?</label>
+    <select name="frage8"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Haben Sie bereits Mitarbeiterschulungen oder Workshops durchgeführt, um Ihr Team für KI, Datenschutz & Compliance zu sensibilisieren?</label>
+    <select name="frage9"><option>noch unklar</option><option>ja</option><option>nein</option></select>
+
+    <label>Gibt es feste Verfahren oder technische Regeln, nach denen Sie personenbezogene Daten löschen oder anonymisieren, wenn sie nicht mehr benötigt werden?</label>
+    <select name="frage10"><option>noch unklar</option><option>ja</option><option>nein</option></select>
 
     <button type="submit">Briefing erstellen</button>
   </form>
@@ -101,7 +124,6 @@
         });
         const json = await res.json();
 
-        // Badge & Score
         if(json.badge_level && json.compliance_score !== undefined){
           badgeDiv.innerHTML = `
             <h3>Score: ${json.compliance_score}/10</h3>
@@ -109,7 +131,6 @@
           `;
         }
 
-        // Hauptausgabe
         let html = "";
         for(const key of ["readiness_analysis", "compliance_analysis", "use_case_analysis", "executive_summary", "fördertipps", "toolkompass", "branche_trend", "vision"]){
           if(json[key]){
@@ -118,7 +139,6 @@
         }
         outputDiv.innerHTML = html;
         rawJsonDiv.textContent = JSON.stringify(json, null, 2);
-
         document.getElementById("resultSection").style.display = "block";
       } catch(err){
         outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
