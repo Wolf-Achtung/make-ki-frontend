@@ -29,33 +29,29 @@
   </section>
 
   <script>
-    document.getElementById("briefingForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(this));
-      const outputDiv = document.getElementById("output");
-      outputDiv.innerHTML = "Analyse läuft ...";
+  document.getElementById("briefingForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(this));
+    const outputDiv = document.getElementById("output");
+    outputDiv.innerHTML = "Analyse läuft ...";
 
-      try {
-        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-        const json = await res.json();
-        if(json.error){
-          outputDiv.innerHTML = `<p style="color:red;">Fehler: ${json.error}</p>`;
-        } else {
-          let html = "";
-          for(const [key, value] of Object.entries(json)){
-            html += `<h3>${key.replace("_"," ").toUpperCase()}</h3><p>${value}</p>`;
-          }
-          outputDiv.innerHTML = html;
-          document.getElementById("resultSection").style.display = "block";
-        }
-      } catch(err){
-        outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
-      }
-    });
-  </script>
+    try {
+      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+
+      // DEBUG-ANSICHT: zeig einfach das gesamte JSON an
+      outputDiv.innerHTML = "<pre>" + JSON.stringify(json, null, 2) + "</pre>";
+      document.getElementById("resultSection").style.display = "block";
+
+    } catch(err){
+      outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
+    }
+  });
+</script>
+
 </body>
 </html>
