@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>KI-Readiness & Förderung</title>
     <style>
@@ -10,7 +10,8 @@
         select, input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
         button { padding: 0.5rem 1rem; background: #003366; color: white; border: none; cursor: pointer; }
         button:hover { background: #0055aa; }
-        pre { background: #f0f0f0; padding: 1rem; border-radius: 5px; }
+        pre { background: #f0f0f0; padding: 1rem; border-radius: 5px; overflow-x:auto; }
+        #devPanel { background: #f9f9f9; border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; display: none; }
     </style>
 </head>
 <body>
@@ -87,17 +88,43 @@
     </form>
 
     <div id="result" style="margin-top:2rem;"></div>
-    <div id="debug" style="margin-top:2rem;"></div>
+
+    <div style="margin-top:2rem;">
+        <button onclick="toggleDevPanel()" style="background:#666;color:white;padding:5px 10px;border:none;border-radius:4px;cursor:pointer;">
+            🔍 Developer-Panel anzeigen
+        </button>
+    </div>
+    <div id="devPanel">
+        <h3>Developer Debug Panel</h3>
+        <strong>Gesendetes JSON:</strong>
+        <pre id="devFormData"></pre>
+        <strong>Roh-Response vom Server:</strong>
+        <pre id="devRawResponse"></pre>
+    </div>
 
     <script>
+        let devPanelVisible = false;
+        function toggleDevPanel() {
+            devPanelVisible = !devPanelVisible;
+            document.getElementById('devPanel').style.display = devPanelVisible ? 'block' : 'none';
+        }
+
         document.getElementById('briefingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const data = Object.fromEntries(new FormData(e.target));
+
+            // Developer Panel - zeige JSON
+            document.getElementById('devFormData').innerText = JSON.stringify(data, null, 2);
+
             const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
             const json = await res.json();
+
+            // Developer Panel - zeige Roh-Response
+            document.getElementById('devRawResponse').innerText = JSON.stringify(json, null, 2);
 
             document.getElementById('result').innerHTML = `
                 <h2>Ihr persönliches KI-Briefing</h2>
@@ -112,8 +139,6 @@
                 <strong>Fördertipps:</strong> ${json.foerdertipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
                 <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
             `;
-
-            document.getElementById('debug').innerHTML = `<h3>Rohdaten (Debug)</h3><pre>${JSON.stringify(json, null, 2)}</pre>`;
         });
     </script>
 </body>
