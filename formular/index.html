@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>KI-Readiness & Förderung</title>
     <style>
         body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; color: #003366; }
@@ -13,85 +13,127 @@
     </style>
 </head>
 <body>
-    <h1>Förderfähigkeit & KI-Readiness prüfen</h1>
-    <form id="briefingForm">
-        <input type="text" name="unternehmen" placeholder="Unternehmen" required>
-        <input type="text" name="name" placeholder="Ihr Name" required>
-        <input type="email" name="email" placeholder="E-Mail" required>
+<h1>Förderfähigkeit & KI-Readiness prüfen</h1>
+<form id="briefingForm">
+    <input type="text" name="unternehmen" placeholder="Unternehmen" required>
+    <input type="text" name="name" placeholder="Ihr Name" required>
+    <input type="email" name="email" placeholder="E-Mail" required>
 
-        <select name="branche" required>
-            <option value="">Bitte Branche auswählen</option>
-            <option>Finanzen & Steuern</option>
-            <option>Medien & Marketing</option>
-            <option>Kommunikation & PR</option>
-            <option>Bildung & Coaching</option>
-            <option>Verwaltung & Öffentliche Hand</option>
-            <option>Handel & E-Commerce</option>
-            <option>IT & Software</option>
-            <option>Sonstige</option>
-        </select>
+    <select name="branche" required>
+        <option value="">Bitte Branche auswählen</option>
+        <option>Finanzen & Steuern</option>
+        <option>Medien & Marketing</option>
+        <option>Kommunikation & PR</option>
+        <option>Bildung & Coaching</option>
+        <option>Verwaltung & Öffentliche Hand</option>
+        <option>Handel & E-Commerce</option>
+        <option>IT & Software</option>
+        <option>Sonstige</option>
+    </select>
 
-        <select name="massnahme" required>
-            <option value="">Geplante Maßnahme wählen</option>
-            <option>Beratung / Strategie</option>
-            <option>Risikoanalyse</option>
-            <option>Datenschutz / Compliance</option>
-            <option>KI-Tool-Integration, z.B. KI-Agents</option>
-            <option>Mitarbeiterschulung / Change Management</option>
-            <option>noch unklar</option>
-        </select>
+    <select name="massnahme" required>
+        <option value="">Geplante Maßnahme wählen</option>
+        <option>Beratung / Strategie</option>
+        <option>Risikoanalyse</option>
+        <option>Datenschutz / Compliance</option>
+        <option>KI-Tool-Integration, z.B. KI-Agents</option>
+        <option>Mitarbeiterschulung / Change Management</option>
+        <option>noch unklar</option>
+    </select>
 
-        <select name="bereich" required>
-            <option value="">Bereich auswählen</option>
-            <option>Marketing</option>
-            <option>Vertrieb</option>
-            <option>Geschäftsführung</option>
-            <option>Personal</option>
-            <option>Produktion</option>
-            <option>Sonstige</option>
-        </select>
+    <select name="bereich" required>
+        <option value="">Bereich auswählen</option>
+        <option>Marketing</option>
+        <option>Vertrieb</option>
+        <option>Geschäftsführung</option>
+        <option>Personal</option>
+        <option>Produktion</option>
+        <option>Sonstige</option>
+    </select>
 
-        <h2>Datenschutz & KI-Management</h2>
-        <select name="frage1"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage2"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage3"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage4"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage5"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage6"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage7"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage8"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage9"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-        <select name="frage10"><option>nein</option><option>ja</option><option>noch unklar</option></select>
+    <h2>Datenschutz & KI-Management</h2>
 
-        <button type="submit">Briefing erstellen</button>
-    </form>
+    <select name="frage1" required>
+        <option value="">Haben Sie Datenschutz-Maßnahmen wie Datenschutzerklärungen oder Verarbeitungsverzeichnisse umgesetzt?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
 
-    <div id="result" style="margin-top:2rem;"></div>
+    <select name="frage2" required>
+        <option value="">Minimieren Sie erhobene Daten auf das Nötigste?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
 
-    <script>
-        document.getElementById('briefingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = Object.fromEntries(new FormData(e.target));
-            const res = await fetch('/briefing', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            const json = await res.json();
+    <select name="frage3" required>
+        <option value="">Gab es in Ihrem Unternehmen schon Schulungen oder Informationen für Mitarbeiter zum Thema Datenschutz, Künstliche Intelligenz oder rechtliche Anforderungen?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
 
-            document.getElementById('result').innerHTML = `
-                <h2>Ihr persönliches KI-Briefing</h2>
-                <strong>Score:</strong> ${json.compliance_score ?? 0}/10<br>
-                <strong>Badge:</strong> ${json.badge_level ?? 'Bronze'}<br><br>
-                <strong>Readiness:</strong> ${json.readiness_analysis || 'Keine Daten verfügbar'}<br><br>
-                <strong>Compliance:</strong> ${json.compliance_analysis || 'Keine Daten verfügbar'}<br><br>
-                <strong>Use Case:</strong> ${json.use_case_analysis || 'Keine Daten verfügbar'}<br><br>
-                <strong>Branche Trend:</strong> ${json.branche_trend || 'Keine Daten verfügbar'}<br><br>
-                <strong>Vision:</strong> ${json.vision || 'Keine Daten verfügbar'}<br><br>
-                <strong>Toolstipps:</strong> ${json.toolstipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
-                <strong>Fördertipps:</strong> ${json.foerdertipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
-                <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
-            `;
-        });
-    </script>
+    <select name="frage4" required>
+        <option value="">Haben Sie technische Schutzmaßnahmen eingeführt, z. B. Verschlüsselung von Daten, sichere Passwörter oder Zugriffskontrollen?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage5" required>
+        <option value="">Gibt es eine verantwortliche Person oder einen Datenschutzbeauftragten, der sich um diese Themen kümmert?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage6" required>
+        <option value="">Haben Sie schon einmal überprüft oder dokumentiert, welche Risiken für den Datenschutz entstehen könnten (z. B. durch eine Datenschutz-Folgenabschätzung)?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage7" required>
+        <option value="">Haben Sie feste Regeln, wann und wie personenbezogene Daten gelöscht oder anonymisiert werden, wenn sie nicht mehr gebraucht werden?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage8" required>
+        <option value="">Wissen Ihre Mitarbeiter, was zu tun ist, wenn eine Datenschutzverletzung passiert (z. B. Datenverlust oder Hackerangriff)?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage9" required>
+        <option value="">Achten Sie darauf, dass Personen, deren Daten Sie speichern, ihre Rechte wahrnehmen können (z. B. Auskunft, Löschung, Berichtigung)?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage10" required>
+        <option value="">Haben Sie klare Prozesse für die regelmäßige Löschung oder Anonymisierung von Daten, die nicht mehr benötigt werden?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <button type="submit">Briefing erstellen</button>
+</form>
+
+<div id="result" style="margin-top:2rem;"></div>
+
+<script>
+document.getElementById('briefingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    const res = await fetch('/briefing', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    document.getElementById('result').innerHTML = `
+        <h2>Ihr persönliches KI-Briefing</h2>
+        <strong>Score:</strong> ${json.compliance_score ?? 0}/10<br>
+        <strong>Badge:</strong> ${json.badge_level ?? 'Bronze'}<br>
+        <div>${json.badge_code ?? ''}</div><br>
+        <strong>Badge-Info:</strong> ${json.badge_info || 'Keine Daten verfügbar'}<br><br>
+        <strong>Readiness:</strong> ${json.readiness_analysis || 'Keine Daten verfügbar'}<br><br>
+        <strong>Compliance:</strong> ${json.compliance_analysis || 'Keine Daten verfügbar'}<br><br>
+        <strong>Use Case:</strong> ${json.use_case_analysis || 'Keine Daten verfügbar'}<br><br>
+        <strong>Branche Trend:</strong> ${json.branche_trend || 'Keine Daten verfügbar'}<br><br>
+        <strong>Vision:</strong> ${json.vision || 'Keine Daten verfügbar'}<br><br>
+        <strong>Toolstipps:</strong> ${json.toolstipps?.map(t => `${t.name} (${t.hersteller}): ${t.einsatz}`).join("<br>") || 'Keine Daten verfügbar'}<br><br>
+        <strong>Fördertipps:</strong> ${json.foerdertipps?.map(f => `<a href='${f.link}'>${f.programm}</a>: ${f.kurzbeschreibung}`).join("<br>") || 'Keine Daten verfügbar'}<br><br>
+        <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
+    `;
+});
+</script>
 </body>
 </html>
