@@ -52,41 +52,39 @@
             <option>Sonstige</option>
         </select>
 
-       <h2>Datenschutz & KI-Management</h2>
-        
-        <label>Haben Sie technische Maßnahmen getroffen, z. B. Verschlüsselung, Firewalls oder Zugriffskontrollen, um Daten zu schützen?</label>
+        <h2>Datenschutz & KI-Management</h2>
+        <label>Haben Sie technische Maßnahmen getroffen, z. B. Verschlüsselung, Firewalls oder Zugriffskontrollen?</label>
         <select name="frage1"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Gibt es in Ihrem Unternehmen schon Schulungen oder Informationen für Mitarbeiter zum Thema Datenschutz, Künstliche Intelligenz oder rechtliche Anforderungen?</label>
+        <label>Gibt es Schulungen oder Infos für Mitarbeiter zu Datenschutz, KI oder rechtlichen Anforderungen?</label>
         <select name="frage2"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Haben Sie einen Datenschutzbeauftragten oder eine verantwortliche Person dafür benannt?</label>
+        <label>Haben Sie einen Datenschutzbeauftragten oder Verantwortlichen benannt?</label>
         <select name="frage3"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Haben Sie schon einmal geprüft oder dokumentiert, welche Risiken für den Datenschutz entstehen könnten (z. B. durch eine Datenschutz-Folgenabschätzung)?</label>
+        <label>Haben Sie Risiken für den Datenschutz dokumentiert (z. B. Datenschutz-Folgenabschätzung)?</label>
         <select name="frage4"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Gibt es feste Regeln, wann und wie personenbezogene Daten gelöscht oder anonymisiert werden?</label>
+        <label>Gibt es Regeln zur Löschung oder Anonymisierung von personenbezogenen Daten?</label>
         <select name="frage5"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Wissen Ihre Mitarbeiter, was zu tun ist, wenn eine Datenschutzverletzung passiert (z. B. durch Hackerangriff)?</label>
+        <label>Wissen Ihre Mitarbeiter, was bei einer Datenschutzverletzung zu tun ist?</label>
         <select name="frage6"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Achten Sie darauf, dass Personen, deren Daten Sie speichern, ihre Rechte wahrnehmen können (z. B. Auskunft, Löschung, Berichtigung)?</label>
+        <label>Achten Sie darauf, dass Personen ihre Rechte (Auskunft, Löschung, Berichtigung) wahrnehmen können?</label>
         <select name="frage7"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Haben Sie Prozesse, um die regelmäßige Löschung oder Anonymisierung von Daten sicherzustellen, die nicht mehr benötigt werden?</label>
+        <label>Haben Sie Prozesse zur regelmäßigen Löschung oder Anonymisierung unnötiger Daten?</label>
         <select name="frage8"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Gibt es eine Meldepflicht und einen klaren Ablauf für Datenschutzvorfälle in Ihrem Unternehmen?</label>
+        <label>Gibt es eine Meldepflicht und klare Abläufe für Datenschutzvorfälle?</label>
         <select name="frage9"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
-        <label>Führen Sie regelmäßige Überprüfungen oder Audits durch, um sicherzustellen, dass Ihr Unternehmen datenschutzkonform bleibt?</label>
+        <label>Führen Sie regelmäßige Überprüfungen oder Audits zur Datenschutzkonformität durch?</label>
         <select name="frage10"><option>nein</option><option>ja</option><option>noch unklar</option></select>
 
         <button type="submit">Briefing erstellen</button>
     </form>
-
 
     <div id="result" style="margin-top:2rem;"></div>
     <div id="debug" style="margin-top:2rem;"></div>
@@ -96,8 +94,7 @@
             e.preventDefault();
             const data = Object.fromEntries(new FormData(e.target));
             const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
             const json = await res.json();
@@ -116,10 +113,7 @@
                 <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
             `;
 
-            document.getElementById('debug').innerHTML = `
-                <h3>Rohdaten (Debug)</h3>
-                <pre>${JSON.stringify(json, null, 2)}</pre>
-            `;
+            document.getElementById('debug').innerHTML = `<h3>Rohdaten (Debug)</h3><pre>${JSON.stringify(json, null, 2)}</pre>`;
         });
     </script>
 </body>
