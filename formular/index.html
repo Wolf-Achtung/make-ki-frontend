@@ -7,7 +7,7 @@
     body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; color: #003366; line-height: 1.6; }
     h1, h2, h3 { color: #005a9c; }
     label { font-weight: bold; display: block; margin-top: 1rem; }
-    select, input, textarea { width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 4px; }
+    select, input { width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 4px; }
     button { margin-top: 2rem; padding: 0.9rem 1.5rem; background: #003366; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
     button:hover { background: #005a9c; }
     section { margin-top: 3rem; border-top: 2px solid #ccc; padding-top: 2rem; }
@@ -22,62 +22,53 @@
   <h1>KI-Readiness & Förderfähigkeit prüfen</h1>
   <form id="briefingForm">
     <h2>Allgemeine Angaben</h2>
-    <label>Unternehmen</label><input type="text" name="name" />
+    <label>Unternehmen</label><input type="text" name="unternehmen" />
+    <label>Name</label><input type="text" name="name" />
     <label>E-Mail</label><input type="email" name="email" />
-    <label>Branche</label><input type="text" name="branche" />
-    <label>Selbstständig?</label>
-    <select name="selbststaendig">
-      <option>noch unklar</option>
-      <option>ja</option>
-      <option>nein</option>
+
+    <h2>Branche</h2>
+    <select name="branche">
+      <option>Finanzen & Steuern</option>
+      <option>Medien & Marketing</option>
+      <option>Kommunikation & PR</option>
+      <option>Bildung & Coaching</option>
+      <option>Verwaltung & Öffentliche Hand</option>
+      <option>Handel & E-Commerce</option>
+      <option>IT & Software</option>
+      <option>Sonstige</option>
     </select>
 
-    <h2>Geplante Maßnahme & Bereich</h2>
-    <label>Welche Maßnahme planen Sie?</label><input type="text" name="massnahme" />
-    <label>In welchem Bereich?</label><input type="text" name="bereich" />
-    <label>Ziele mit KI</label><input type="text" name="ziel" />
+    <h2>Geplante Maßnahme</h2>
+    <select name="massnahme">
+      <option>Beratung / Strategie</option>
+      <option>Risikoanalyse</option>
+      <option>Datenschutz / Compliance</option>
+      <option>KI-Tool-Integration, z.B. KI-Agents</option>
+      <option>Mitarbeiterschulung / Change Management</option>
+      <option>noch unklar</option>
+    </select>
+
+    <h2>In welchem Bereich?</h2>
+    <select name="bereich">
+      <option>Vertrieb</option>
+      <option>Marketing</option>
+      <option>Geschäftsführung</option>
+      <option>HR & Recruiting</option>
+      <option>IT & Prozesse</option>
+      <option>Produktentwicklung</option>
+      <option>Sonstige</option>
+    </select>
+
+    <h2>Ziele mit KI</h2>
+    <input type="text" name="ziel" placeholder="z.B. Kosten senken, Effizienz steigern" />
 
     <h2>Compliance-Check</h2>
-    <label>Frage 1: Gibt es eine Datenschutzdokumentation?</label>
-    <select name="frage1">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 2: AV-Verträge vorhanden?</label>
-    <select name="frage2">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 3: Verfahrensverzeichnis gepflegt?</label>
-    <select name="frage3">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 4: Datenschutzfolgeabschätzung durchgeführt?</label>
-    <select name="frage4">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 5: Bias-Checks geplant?</label>
-    <select name="frage5">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 6: Ethische Leitlinien definiert?</label>
-    <select name="frage6">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 7: Transparenzrichtlinien erstellt?</label>
-    <select name="frage7">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 8: Data-Governance-Strategie vorhanden?</label>
-    <select name="frage8">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 9: Schulungen geplant oder durchgeführt?</label>
-    <select name="frage9">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
-    <label>Frage 10: Löschkonzepte definiert?</label>
-    <select name="frage10">
-      <option>noch unklar</option><option>ja</option><option>nein</option>
-    </select>
+    ${[...Array(10).keys()].map(i => `
+      <label>Frage ${i+1}</label>
+      <select name="frage${i+1}">
+        <option>noch unklar</option><option>ja</option><option>nein</option>
+      </select>
+    `).join('')}
 
     <button type="submit">Briefing erstellen</button>
   </form>
@@ -120,7 +111,7 @@
 
         // Hauptausgabe
         let html = "";
-        for(const key of ["readiness_analysis", "compliance_analysis", "use_case_analysis", "executive_summary", "fördertipps", "toolkompass", "branche_trend", "compliance", "beratungsempfehlung", "vision"]){
+        for(const key of ["readiness_analysis", "compliance_analysis", "use_case_analysis", "executive_summary", "fördertipps", "toolkompass", "branche_trend", "vision"]){
           if(json[key]){
             html += `<h3>${key.replace("_"," ").toUpperCase()}</h3><p>${json[key]}</p>`;
           }
