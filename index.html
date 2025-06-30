@@ -1,157 +1,139 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KI-Check Pro – KI-Sicherheit.jetzt</title>
-  <style>
-    body {
-      font-family: 'IBM Plex Mono', monospace;
-      background-color: #f7f9fb;
-      color: #0d2b4a;
-      padding: 2rem;
-      max-width: 800px;
-      margin: auto;
-    }
-    h1, h2, h3 {
-      color: #0d2b4a;
-    }
-    .logo {
-      max-width: 220px;
-      margin: 0 auto 2rem;
-      display: block;
-    }
-    .logos {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      flex-wrap: wrap;
-      margin: 2rem 0;
-    }
-    .logos img {
-      max-height: 60px;
-      margin: 0.5rem;
-    }
-    .button {
-      background-color: #003b5a;
-      color: white;
-      border: none;
-      padding: 0.8rem 1.6rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 1rem;
-    }
-    .button:hover {
-      background-color: #005080;
-    }
-    .preisbox {
-      background: #ffffff;
-      border: 2px solid #003b5a;
-      border-radius: 10px;
-      padding: 1.5rem;
-      margin-top: 2rem;
-      text-align: center;
-    }
-    .preisbox strong {
-      font-size: 1.5rem;
-      color: #003b5a;
-    }
-    .pro-tipp {
-      margin-top: 2rem;
-      background: #e0f4ff;
-      padding: 1rem;
-      border-left: none;
-      border-radius: 6px;
-    }
-    .testimonial-container {
-      position: relative;
-      height: 140px;
-      margin-top: 3rem;
-      overflow: hidden;
-    }
-    .testimonial {
-      position: absolute;
-      top: 0;
-      left: 100%;
-      right: -100%;
-      opacity: 0;
-      transition: all 1s ease-in-out;
-      background: white;
-      border-left: none;
-      padding: 1rem;
-      border-radius: 6px;
-      box-shadow: 0 0 4px rgba(0,0,0,0.1);
-    }
-    .testimonial.show {
-      left: 0;
-      right: 0;
-      opacity: 1;
-    }
-    .testimonial strong {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>KI-Readiness & Förderung</title>
+    <style>
+        body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; color: #003366; }
+        h1, h2 { color: #003366; }
+        select, input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
+        button { padding: 0.5rem 1rem; background: #003366; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0055aa; }
+    </style>
 </head>
 <body>
+<h1>Förderfähigkeit & KI-Readiness prüfen</h1>
+<form id="briefingForm">
+    <input type="text" name="unternehmen" placeholder="Unternehmen" required>
+    <input type="text" name="name" placeholder="Ihr Name" required>
+    <input type="email" name="email" placeholder="E-Mail" required>
 
-<img src="badges/ki-sicherheit-logo.png" alt="KI-Sicherheit.jetzt" class="logo" />
+    <select name="branche" required>
+        <option value="">Bitte Branche auswählen</option>
+        <option>Finanzen & Steuern</option>
+        <option>Medien & Marketing</option>
+        <option>Kommunikation & PR</option>
+        <option>Bildung & Coaching</option>
+        <option>Verwaltung & Öffentliche Hand</option>
+        <option>Handel & E-Commerce</option>
+        <option>IT & Software</option>
+        <option>Sonstige</option>
+    </select>
 
-<h1>Zertifiziert. Dokumentiert. KI-konform.</h1>
-<p>Der <strong>KI-Check Pro</strong> liefert Ihnen in wenigen Minuten eine strukturierte Einschätzung Ihres KI-Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.</p>
+    <select name="massnahme" required>
+        <option value="">Geplante Maßnahme wählen</option>
+        <option>Beratung / Strategie</option>
+        <option>Risikoanalyse</option>
+        <option>Datenschutz / Compliance</option>
+        <option>KI-Tool-Integration, z.B. KI-Agents</option>
+        <option>Mitarbeiterschulung / Change Management</option>
+        <option>noch unklar</option>
+    </select>
 
-<div class="logos">
-  <img src="badges/tuev-logo.png" alt="TÜV zertifiziert">
-  <img src="badges/dsgvo.svg" alt="DSGVO konform">
-  <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-  <img src="badges/ki-ready-2025.png" alt="KI-Ready 2025 Badge">
-</div>
+    <select name="bereich" required>
+        <option value="">Bereich auswählen</option>
+        <option>Marketing</option>
+        <option>Vertrieb</option>
+        <option>Geschäftsführung</option>
+        <option>Personal</option>
+        <option>Produktion</option>
+        <option>Sonstige</option>
+    </select>
 
-<ul>
-  <li>✓ DSGVO- & EU AI Act-konform</li>
-  <li>✓ Risikoanalyse mit Ampel-Logik</li>
-  <li>✓ PDF-Zertifikat mit „KI-Ready 2025“-Badge</li>
-  <li>✓ TÜV-zertifizierte Beratung</li>
-</ul>
+    <h2>Datenschutz & KI-Management</h2>
 
-<div class="preisbox">
-  <p><strong>Nur 190,- € einmalig</strong><br>inkl. Maßnahmen-Plan & Badge</p>
-  <a href="/formular/" class="button">Jetzt Voll-Check starten</a>
-</div>
+    <select name="frage1" required>
+        <option value="">Haben Sie Datenschutz-Maßnahmen wie Datenschutzerklärungen oder Verarbeitungsverzeichnisse umgesetzt?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
 
-<div class="pro-tipp">
-  <strong>Pro-Tipp:</strong> Kosten sind in der Regel steuerlich voll absetzbar.
-</div>
+    <select name="frage2" required>
+        <option value="">Minimieren Sie erhobene Daten auf das Nötigste?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
 
-<h2>Was unsere Kunden sagen:</h2>
-<div class="testimonial-container">
-  <div class="testimonial show"><strong>„Endlich ein Audit, das uns konkrete Maßnahmen liefert.“</strong><p>— Agentur für Digital Marketing, Köln</p></div>
-  <div class="testimonial"><strong>„Für uns im Handel Gold wert. Gerade gegenüber Investoren ist das Badge super.“</strong><p>— E-Commerce Händler, München</p></div>
-  <div class="testimonial"><strong>„Hat uns geholfen, den EU AI Act stressfrei anzugehen.“</strong><p>— IT-Beratung, Hamburg</p></div>
-  <div class="testimonial"><strong>„Wir nutzen das Zertifikat direkt in Angeboten.“</strong><p>— Steuerberatung, Frankfurt</p></div>
-  <div class="testimonial"><strong>„Super schneller Voll-Check mit klarem Ergebnis.“</strong><p>— Software-Startup, Berlin</p></div>
-  <div class="testimonial"><strong>„Erleichtert uns die jährliche Risikoanalyse enorm.“</strong><p>— Versicherungsmakler, Düsseldorf</p></div>
-  <div class="testimonial"><strong>„Hat uns gezeigt, wo wir DSGVO-technisch wirklich stehen.“</strong><p>— Bildungsanbieter, Leipzig</p></div>
-</div>
+    <select name="frage3" required>
+        <option value="">Gab es in Ihrem Unternehmen schon Schulungen oder Informationen für Mitarbeiter zum Thema Datenschutz, Künstliche Intelligenz oder rechtliche Anforderungen?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
 
+    <select name="frage4" required>
+        <option value="">Haben Sie technische Schutzmaßnahmen eingeführt, z. B. Verschlüsselung von Daten, sichere Passwörter oder Zugriffskontrollen?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage5" required>
+        <option value="">Gibt es eine verantwortliche Person oder einen Datenschutzbeauftragten, der sich um diese Themen kümmert?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage6" required>
+        <option value="">Haben Sie schon einmal überprüft oder dokumentiert, welche Risiken für den Datenschutz entstehen könnten (z. B. durch eine Datenschutz-Folgenabschätzung)?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage7" required>
+        <option value="">Haben Sie feste Regeln, wann und wie personenbezogene Daten gelöscht oder anonymisiert werden, wenn sie nicht mehr gebraucht werden?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage8" required>
+        <option value="">Wissen Ihre Mitarbeiter, was zu tun ist, wenn eine Datenschutzverletzung passiert (z. B. Datenverlust oder Hackerangriff)?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage9" required>
+        <option value="">Achten Sie darauf, dass Personen, deren Daten Sie speichern, ihre Rechte wahrnehmen können (z. B. Auskunft, Löschung, Berichtigung)?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <select name="frage10" required>
+        <option value="">Haben Sie klare Prozesse für die regelmäßige Löschung oder Anonymisierung von Daten, die nicht mehr benötigt werden?</option>
+        <option>ja</option><option>nein</option><option>noch unklar</option>
+    </select>
+
+    <button type="submit">Briefing erstellen</button>
+</form>
+
+<div id="result" style="margin-top:2rem;"></div>
 
 <script>
-const testimonials = document.querySelectorAll('.testimonial');
-let index = Math.floor(Math.random() * testimonials.length);
-
-function showTestimonial() {
-  testimonials.forEach((t, i) => {
-    t.classList.toggle('show', i === index);
-  });
-  index = (index + 1) % testimonials.length;
-}
-
-showTestimonial();
-setInterval(showTestimonial, 4000);
+document.getElementById('briefingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    const res = await fetch('/briefing', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    document.getElementById('result').innerHTML = `
+        <h2>Ihr persönliches KI-Briefing</h2>
+        <strong>Score:</strong> ${json.compliance_score ?? 0}/10<br>
+        <strong>Badge:</strong> ${json.badge_level ?? 'Bronze'}<br>
+        <div>${json.badge_code ?? ''}</div><br>
+        <strong>Badge-Info:</strong> ${json.badge_info || 'Keine Daten verfügbar'}<br><br>
+        <strong>Readiness:</strong> ${json.readiness_analysis || 'Keine Daten verfügbar'}<br><br>
+        <strong>Compliance:</strong> ${json.compliance_analysis || 'Keine Daten verfügbar'}<br><br>
+        <strong>Use Case:</strong> ${json.use_case_analysis || 'Keine Daten verfügbar'}<br><br>
+        <strong>Branche Trend:</strong> ${json.branche_trend || 'Keine Daten verfügbar'}<br><br>
+        <strong>Vision:</strong> ${json.vision || 'Keine Daten verfügbar'}<br><br>
+        <strong>Toolstipps:</strong> ${json.toolstipps?.map(t => `${t.name} (${t.hersteller}): ${t.einsatz}`).join("<br>") || 'Keine Daten verfügbar'}<br><br>
+        <strong>Fördertipps:</strong> ${json.foerdertipps?.map(f => `<a href='${f.link}'>${f.programm}</a>: ${f.kurzbeschreibung}`).join("<br>") || 'Keine Daten verfügbar'}<br><br>
+        <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
+    `;
+});
 </script>
-
 </body>
 </html>
