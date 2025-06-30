@@ -4,54 +4,104 @@
   <meta charset="UTF-8" />
   <title>KI-Readiness & Förderung</title>
   <style>
-    body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; color: #003366; }
+    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; color: #003366; }
     label { font-weight: bold; display: block; margin-top: 1rem; }
-    input, select, textarea { width: 100%; padding: 0.5rem; margin-top: 0.3rem; }
+    select, input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.3rem; }
     button { margin-top: 1.5rem; padding: 0.8rem 1.2rem; background: #003366; color: #fff; border: none; cursor: pointer; }
     section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1.5rem; }
     h2 { color: #005a9c; }
+    .badge { display: inline-block; padding: 0.5rem 1rem; border-radius: 8px; font-weight: bold; }
+    .Bronze { background: #cd7f32; color: #fff; }
+    .Silber { background: #c0c0c0; color: #000; }
+    .Gold { background: #ffd700; color: #000; }
+    pre { background: #f0f0f0; padding: 1rem; overflow-x: auto; }
   </style>
 </head>
 <body>
   <h1>Förderfähigkeit & KI-Readiness prüfen</h1>
   <form id="briefingForm">
+    <h3>Allgemein</h3>
     <label>Unternehmen</label><input type="text" name="unternehmen" />
     <label>Branche</label><input type="text" name="branche" />
     <label>Bereich</label><input type="text" name="bereich" />
-    <label>Ziele mit KI</label><input type="text" name="ziel" />
-    <label>Eingesetzte Tools</label><input type="text" name="tools" />
+
+    <h3>Readiness</h3>
+    <label>Wie weit ist Ihre KI-Strategie fortgeschritten?</label>
+    <select name="readiness_level">
+      <option>noch unklar</option>
+      <option>erste Überlegungen</option>
+      <option>in Planung</option>
+      <option>bereits in Umsetzung</option>
+      <option>voll integriert</option>
+    </select>
+
+    <h3>Compliance</h3>
+    <label>Haben Sie AV-Verträge und DSGVO-Dokumentation?</label>
+    <select name="compliance_docs">
+      <option>noch unklar</option>
+      <option>ja, vollständig</option>
+      <option>teilweise vorhanden</option>
+      <option>nein</option>
+    </select>
+
+    <h3>Use-Cases</h3>
+    <label>Welche Ziele verfolgen Sie mit KI?</label><input type="text" name="ziel" />
+    <label>Eingesetzte oder geplante Tools</label><input type="text" name="tools" />
+
     <button type="submit">Briefing erstellen</button>
   </form>
 
   <section id="resultSection" style="display:none;">
-    <h2>Dein persönliches KI-Briefing</h2>
+    <h2>Ihr persönliches KI-Briefing</h2>
+    <div id="badgeSection"></div>
     <div id="output"></div>
+    <h3>Rohdaten (Debug)</h3>
+    <pre id="rawJson"></pre>
   </section>
 
   <script>
-  document.getElementById("briefingForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(this));
-    const outputDiv = document.getElementById("output");
-    outputDiv.innerHTML = "Analyse läuft ...";
+    document.getElementById("briefingForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this));
+      const outputDiv = document.getElementById("output");
+      const badgeDiv = document.getElementById("badgeSection");
+      const rawJsonDiv = document.getElementById("rawJson");
 
-    try {
-      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      const json = await res.json();
+      outputDiv.innerHTML = "Analyse läuft ...";
+      badgeDiv.innerHTML = "";
+      rawJsonDiv.innerHTML = "";
 
-      // DEBUG-ANSICHT: zeig einfach das gesamte JSON an
-      outputDiv.innerHTML = "<pre>" + JSON.stringify(json, null, 2) + "</pre>";
-      document.getElementById("resultSection").style.display = "block";
+      try {
+        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
 
-    } catch(err){
-      outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
-    }
-  });
-</script>
+        // Badge & Score
+        if(json.badge_level && json.compliance_score !== undefined){
+          badgeDiv.innerHTML = `
+            <h3>Score: ${json.compliance_score}/10</h3>
+            <div class="badge ${json.badge_level}">${json.badge_level}</div>
+          `;
+        }
 
+        // Hauptausgabe
+        let html = "";
+        for(const key of ["readiness_analysis", "compliance_analysis", "use_case_analysis", "executive_summary", "fördertipps", "toolkompass", "branche_trend", "compliance", "beratungsempfehlung", "vision"]){
+          if(json[key]){
+            html += `<h3>${key.replace("_"," ").toUpperCase()}</h3><p>${json[key]}</p>`;
+          }
+        }
+        outputDiv.innerHTML = html;
+        rawJsonDiv.textContent = JSON.stringify(json, null, 2);
+
+        document.getElementById("resultSection").style.display = "block";
+      } catch(err){
+        outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
+      }
+    });
+  </script>
 </body>
 </html>
