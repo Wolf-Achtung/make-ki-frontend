@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>KI-Readiness & Förderung</title>
     <style>
         body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; color: #003366; }
@@ -10,6 +10,7 @@
         select, input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
         button { padding: 0.5rem 1rem; background: #003366; color: white; border: none; cursor: pointer; }
         button:hover { background: #0055aa; }
+        pre { background: #f0f0f0; padding: 1rem; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -51,7 +52,7 @@
             <option>Sonstige</option>
         </select>
 
-        <h2>Datenschutz & KI-Management</h2>
+       <h2>Datenschutz & KI-Management</h2>
         
         <label>Haben Sie technische Maßnahmen getroffen, z. B. Verschlüsselung, Firewalls oder Zugriffskontrollen, um Daten zu schützen?</label>
         <select name="frage1"><option>nein</option><option>ja</option><option>noch unklar</option></select>
@@ -86,14 +87,17 @@
         <button type="submit">Briefing erstellen</button>
     </form>
 
+
     <div id="result" style="margin-top:2rem;"></div>
+    <div id="debug" style="margin-top:2rem;"></div>
 
     <script>
         document.getElementById('briefingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const data = Object.fromEntries(new FormData(e.target));
             const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
             const json = await res.json();
@@ -110,6 +114,11 @@
                 <strong>Toolstipps:</strong> ${json.toolstipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
                 <strong>Fördertipps:</strong> ${json.foerdertipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
                 <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
+            `;
+
+            document.getElementById('debug').innerHTML = `
+                <h3>Rohdaten (Debug)</h3>
+                <pre>${JSON.stringify(json, null, 2)}</pre>
             `;
         });
     </script>
