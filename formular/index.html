@@ -1,149 +1,121 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>KI-Readiness & Förderung</title>
-  <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; color: #003366; line-height: 1.6; }
-    h1, h2, h3 { color: #005a9c; }
-    label { font-weight: bold; display: block; margin-top: 1rem; }
-    select, input { width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 4px; }
-    button { margin-top: 2rem; padding: 0.9rem 1.5rem; background: #003366; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
-    button:hover { background: #005a9c; }
-    section { margin-top: 3rem; border-top: 2px solid #ccc; padding-top: 2rem; }
-    .badge { display: inline-block; padding: 0.5rem 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1rem; }
-    .Bronze { background: #cd7f32; color: #fff; }
-    .Silber { background: #c0c0c0; color: #000; }
-    .Gold { background: #ffd700; color: #000; }
-    pre { background: #f0f0f0; padding: 1rem; overflow-x: auto; }
-  </style>
+    <meta charset="UTF-8">
+    <title>KI-Readiness & Förderung</title>
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; color: #003366; }
+        h1, h2 { color: #003366; }
+        .badge { margin: 1rem 0; padding: 1rem; background: #f0f0f0; border-left: 5px solid #003366; }
+        .section { margin-top: 2rem; }
+        ul { line-height: 1.6; }
+        .debug { margin-top: 2rem; background: #eee; padding: 1rem; font-family: monospace; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
-  <h1>KI-Readiness & Förderfähigkeit prüfen</h1>
-  <form id="briefingForm">
-    <h2>Allgemeine Angaben</h2>
-    <label>Unternehmen</label><input type="text" name="unternehmen" />
-    <label>Name</label><input type="text" name="name" />
-    <label>E-Mail</label><input type="email" name="email" />
 
-    <h2>Branche</h2>
-    <select name="branche">
-      <option>Finanzen & Steuern</option>
-      <option>Medien & Marketing</option>
-      <option>Kommunikation & PR</option>
-      <option>Bildung & Coaching</option>
-      <option>Verwaltung & Öffentliche Hand</option>
-      <option>Handel & E-Commerce</option>
-      <option>IT & Software</option>
-      <option>Sonstige</option>
-    </select>
+<h1>Ihr persönliches KI-Briefing</h1>
 
-    <h2>Geplante Maßnahme</h2>
-    <select name="massnahme">
-      <option>Beratung / Strategie</option>
-      <option>Risikoanalyse</option>
-      <option>Datenschutz / Compliance</option>
-      <option>KI-Tool-Integration, z.B. KI-Agents</option>
-      <option>Mitarbeiterschulung / Change Management</option>
-      <option>noch unklar</option>
-    </select>
-
-    <h2>In welchem Bereich?</h2>
-    <select name="bereich">
-      <option>Vertrieb</option>
-      <option>Marketing</option>
-      <option>Geschäftsführung</option>
-      <option>HR & Recruiting</option>
-      <option>IT & Prozesse</option>
-      <option>Produktentwicklung</option>
-      <option>Sonstige</option>
-    </select>
-
-    <h2>Ziele mit KI</h2>
-    <input type="text" name="ziel" placeholder="z.B. Kosten senken, Effizienz steigern" />
-
-    <h2>Compliance-Check</h2>
-    <label>Gibt es bei Ihnen eine schriftliche Dokumentation darüber, wie Sie personenbezogene Daten verarbeiten (z. B. Datenschutzkonzept, interne Richtlinien)?</label>
-    <select name="frage1"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Haben Sie mit allen Dienstleistern, die für Sie Daten verarbeiten (z. B. Cloud-Anbieter, Agenturen), schriftliche Auftragsverarbeitungsverträge (AV-Verträge) abgeschlossen?</label>
-    <select name="frage2"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Führen Sie ein sogenanntes „Verzeichnis von Verarbeitungstätigkeiten“ (nach DSGVO Art. 30), das alle Prozesse mit personenbezogenen Daten auflistet?</label>
-    <select name="frage3"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Haben Sie geprüft oder dokumentiert, ob bestimmte KI- oder Datenprojekte eine Datenschutz-Folgeabschätzung (DSFA) erfordern?</label>
-    <select name="frage4"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Prüfen Sie Ihre KI-Modelle oder Algorithmen regelmäßig auf Verzerrungen (Bias), Diskriminierung oder Fairness-Probleme?</label>
-    <select name="frage5"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Gibt es bei Ihnen schriftlich festgelegte ethische Grundsätze oder Leitlinien für den Einsatz von KI?</label>
-    <select name="frage6"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Haben Sie festgelegt, wie Sie gegenüber Kunden oder Partnern transparent machen, dass KI zum Einsatz kommt (z. B. Hinweise in Angeboten oder Webseiten)?</label>
-    <select name="frage7"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Haben Sie eine Strategie oder Regeln, wie Daten gesammelt, gespeichert und genutzt werden (Data Governance), z. B. Rollen & Verantwortlichkeiten?</label>
-    <select name="frage8"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Haben Sie bereits Mitarbeiterschulungen oder Workshops durchgeführt, um Ihr Team für KI, Datenschutz & Compliance zu sensibilisieren?</label>
-    <select name="frage9"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
-    <label>Gibt es feste Verfahren oder technische Regeln, nach denen Sie personenbezogene Daten löschen oder anonymisieren, wenn sie nicht mehr benötigt werden?</label>
-    <select name="frage10"><option>noch unklar</option><option>ja</option><option>nein</option></select>
-
+<form id="briefingForm">
+    <input type="text" placeholder="Unternehmen" name="unternehmen" required><br>
+    <input type="text" placeholder="Name" name="name" required><br>
+    <input type="email" placeholder="E-Mail" name="email" required><br>
+    <select name="branche" required>
+        <option value="">Branche wählen</option>
+        <option>Finanzen & Steuern</option>
+        <option>Medien & Marketing</option>
+        <option>Kommunikation & PR</option>
+        <option>Bildung & Coaching</option>
+        <option>Verwaltung & Öffentliche Hand</option>
+        <option>Handel & E-Commerce</option>
+        <option>IT & Software</option>
+        <option>Sonstige</option>
+    </select><br>
+    <select name="massnahme" required>
+        <option value="">Geplante Maßnahme wählen</option>
+        <option>Beratung / Strategie</option>
+        <option>Risikoanalyse</option>
+        <option>Datenschutz / Compliance</option>
+        <option>KI-Tool-Integration, z.B. KI-Agents</option>
+        <option>Mitarbeiterschulung / Change Management</option>
+        <option>noch unklar</option>
+    </select><br>
+    <select name="bereich" required>
+        <option value="">Bereich wählen</option>
+        <option>Marketing</option>
+        <option>Vertrieb</option>
+        <option>Geschäftsführung</option>
+        <option>Produktion</option>
+        <option>IT & Sicherheit</option>
+        <option>HR</option>
+        <option>Sonstige</option>
+    </select><br>
     <button type="submit">Briefing erstellen</button>
-  </form>
+</form>
 
-  <section id="resultSection" style="display:none;">
-    <h2>Ihr persönliches KI-Briefing</h2>
-    <div id="badgeSection"></div>
-    <div id="output"></div>
-    <h3>Rohdaten (Debug)</h3>
-    <pre id="rawJson"></pre>
-  </section>
+<div class="section" id="resultSection" style="display:none;">
+    <div id="score"></div>
+    <div id="badge"></div>
+    <div id="badgeNote" style="font-size:0.9em; color:#555;"></div>
 
-  <script>
-    document.getElementById("briefingForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(this));
-      const outputDiv = document.getElementById("output");
-      const badgeDiv = document.getElementById("badgeSection");
-      const rawJsonDiv = document.getElementById("rawJson");
+    <div class="section"><h2>Readiness</h2><div id="readiness"></div></div>
+    <div class="section"><h2>Compliance</h2><div id="compliance"></div></div>
+    <div class="section"><h2>Use Cases</h2><div id="useCases"></div></div>
+    <div class="section"><h2>Fördertipps</h2><div id="foerdertipps"></div></div>
+    <div class="section"><h2>Toolkompass</h2><div id="toolkompass"></div></div>
+    <div class="section"><h2>Vision</h2><div id="vision"></div></div>
+    <details class="debug">
+        <summary>Rohdaten (Debug)</summary>
+        <pre id="raw"></pre>
+    </details>
+</div>
 
-      outputDiv.innerHTML = "Analyse läuft ...";
-      badgeDiv.innerHTML = "";
-      rawJsonDiv.innerHTML = "";
-
-      try {
-        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-        const json = await res.json();
-
-        if(json.badge_level && json.compliance_score !== undefined){
-          badgeDiv.innerHTML = `
-            <h3>Score: ${json.compliance_score}/10</h3>
-            <div class="badge ${json.badge_level}">${json.badge_level}</div>
-          `;
-        }
-
-        let html = "";
-        for(const key of ["readiness_analysis", "compliance_analysis", "use_case_analysis", "executive_summary", "fördertipps", "toolkompass", "branche_trend", "vision"]){
-          if(json[key]){
-            html += `<h3>${key.replace("_"," ").toUpperCase()}</h3><p>${json[key]}</p>`;
-          }
-        }
-        outputDiv.innerHTML = html;
-        rawJsonDiv.textContent = JSON.stringify(json, null, 2);
-        document.getElementById("resultSection").style.display = "block";
-      } catch(err){
-        outputDiv.innerHTML = `<p style="color:red;">Serverfehler: ${err.message}</p>`;
-      }
+<script>
+document.getElementById("briefingForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
     });
-  </script>
+    const json = await res.json();
+    document.getElementById("resultSection").style.display = "block";
+
+    document.getElementById("score").innerHTML = `<strong>Score:</strong> ${json.compliance_score ?? "?"}/10`;
+    document.getElementById("badge").innerHTML = json.badge_code ?? `<div class="badge">Kein Badge generiert</div>`;
+    document.getElementById("badgeNote").innerText = "Dieses Siegel zeigt, dass dieses Unternehmen einen KI-Readiness & Compliance Check durchlaufen hat und seine Chancen und Baustellen kennt.";
+
+    document.getElementById("readiness").innerText = json.readiness_analysis ?? "-";
+    document.getElementById("compliance").innerText = json.compliance_analysis ?? "-";
+    document.getElementById("useCases").innerText = json.use_case_analysis ?? "-";
+    document.getElementById("vision").innerText = json.vision ?? "-";
+
+    // Fördertipps
+    if (json.foerdertipps && json.foerdertipps.length) {
+        let html = "<ul>";
+        json.foerdertipps.forEach(f => html += `<li><a href="${f.link}" target="_blank">${f.programm}</a>: ${f.kurzbeschreibung}</li>`);
+        html += "</ul>";
+        document.getElementById("foerdertipps").innerHTML = html;
+    } else {
+        document.getElementById("foerdertipps").innerText = "-";
+    }
+
+    // Tools
+    if (json.toolkompass && json.toolkompass.length) {
+        let html = "<ul>";
+        json.toolkompass.forEach(t => html += `<li><strong>${t.name}</strong> (${t.hersteller}): ${t.einsatz}</li>`);
+        html += "</ul>";
+        document.getElementById("tools").innerHTML = html;
+    } else {
+        document.getElementById("tools").innerText = "-";
+    }
+
+    document.getElementById("raw").innerText = JSON.stringify(json, null, 2);
+});
+</script>
+
 </body>
 </html>
