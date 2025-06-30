@@ -3,149 +3,165 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>KI-Readiness & Förderung</title>
+    <title>KI-Readiness & Datenschutz-Check</title>
     <style>
-        body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; color: #003366; }
-        h1, h2, h3 { color: #003366; }
-        select, input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
-        button { padding: 0.5rem 1rem; background: #003366; color: white; border: none; cursor: pointer; }
-        button:hover { background: #0055aa; }
-        pre { background: #f0f0f0; padding: 1rem; border-radius: 5px; overflow-x:auto; }
-        #devPanel { background: #f9f9f9; border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; display: none; }
+        body { font-family: Arial, sans-serif; background: #f4f7fa; color: #333; padding: 20px; }
+        h1, h2 { color: #004080; }
+        label { display: block; margin-top: 15px; }
+        select, input[type="text"], input[type="email"] {
+            width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;
+        }
+        button { background: #004080; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        button:hover { background: #0066cc; }
+        pre { background: #eee; padding: 10px; overflow: auto; }
     </style>
 </head>
 <body>
-    <h1>Förderfähigkeit & KI-Readiness prüfen</h1>
-    <form id="briefingForm">
-        <input type="text" name="unternehmen" placeholder="Unternehmen" required>
-        <input type="text" name="name" placeholder="Ihr Name" required>
-        <input type="email" name="email" placeholder="E-Mail" required>
-        <input type="text" name="plz" placeholder="Postleitzahl Ihres Unternehmens" required>
 
+<h1>KI-Readiness & Datenschutz-Check</h1>
+<p>Bitte füllen Sie den Fragebogen aus. Sie erhalten anschließend eine individuelle Analyse.</p>
+
+<form id="briefingForm">
+    <label>Unternehmen
+        <input type="text" name="unternehmen" required>
+    </label>
+    <label>Name
+        <input type="text" name="name" required>
+    </label>
+    <label>E-Mail
+        <input type="email" name="email" required>
+    </label>
+    <label>Branche
         <select name="branche" required>
-            <option value="">Bitte Branche auswählen</option>
-            <option>Finanzen & Steuern</option>
-            <option>Medien & Marketing</option>
-            <option>Kommunikation & PR</option>
-            <option>Bildung & Coaching</option>
-            <option>Verwaltung & Öffentliche Hand</option>
-            <option>Handel & E-Commerce</option>
+            <option value="">Bitte auswählen</option>
+            <option>Marketing & Werbung</option>
             <option>IT & Software</option>
+            <option>Handwerk</option>
+            <option>Beratung & Coaching</option>
+            <option>Handel</option>
+            <option>Gesundheit</option>
+            <option>Bildung & Training</option>
+            <option>Recht & Steuer</option>
             <option>Sonstige</option>
         </select>
-
+    </label>
+    <label>Geplante Maßnahme
         <select name="massnahme" required>
-            <option value="">Geplante Maßnahme wählen</option>
-            <option>Beratung / Strategie</option>
-            <option>Risikoanalyse</option>
-            <option>Datenschutz / Compliance</option>
-            <option>KI-Tool-Integration, z.B. KI-Agents</option>
-            <option>Mitarbeiterschulung / Change Management</option>
-            <option>noch unklar</option>
+            <option value="">Bitte auswählen</option>
+            <option>KI-Tool-Integration (z.B. Agents)</option>
+            <option>Automatisierung von Prozessen</option>
+            <option>Datenschutz-Optimierung</option>
+            <option>KI-Content-Erstellung</option>
+            <option>Sonstige</option>
         </select>
-
+    </label>
+    <label>Bereich
         <select name="bereich" required>
-            <option value="">Bereich auswählen</option>
+            <option value="">Bitte auswählen</option>
             <option>Marketing</option>
             <option>Vertrieb</option>
+            <option>HR</option>
+            <option>IT</option>
             <option>Geschäftsführung</option>
-            <option>Personal</option>
             <option>Produktion</option>
             <option>Sonstige</option>
         </select>
+    </label>
+    <label>Mitarbeiterzahl
+        <select name="mitarbeiterzahl" required>
+            <option value="">Bitte auswählen</option>
+            <option>1-5</option>
+            <option>6-19</option>
+            <option>20-99</option>
+            <option>100+</option>
+        </select>
+    </label>
+    <label>PLZ
+        <input type="text" name="plz" required>
+    </label>
 
-        <h2>Datenschutz & KI-Management</h2>
-        <label>Haben Sie technische Maßnahmen getroffen (Firewall, Verschlüsselung etc.)?</label>
-        <select name="frage1"><option>nein</option><option>ja</option><option>noch unklar</option></select>
+    <h2>Fragen zur Datenschutz- & KI-Readiness</h2>
+    <label>Haben Sie technische Maßnahmen (Firewall, Verschlüsselung etc.) umgesetzt?
+        <select name="frage1" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Gibt es regelmäßige Schulungen zu Datenschutz, KI und rechtlichen Vorgaben?
+        <select name="frage2" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Haben Sie einen Datenschutzbeauftragten benannt?
+        <select name="frage3" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Führen Sie Risikoanalysen oder Datenschutz-Folgenabschätzungen durch?
+        <select name="frage4" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Gibt es Prozesse zur Datenlöschung oder Anonymisierung?
+        <select name="frage5" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Wissen Mitarbeiter, wie bei Datenschutzverletzungen zu handeln ist?
+        <select name="frage6" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Werden Betroffenenrechte (Auskunft, Löschung) aktiv umgesetzt?
+        <select name="frage7" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Gibt es eine Dokumentation der Datenverarbeitungsprozesse?
+        <select name="frage8" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Existieren Meldepflichten und klar geregelte Abläufe bei Datenschutzvorfällen?
+        <select name="frage9" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
+    <label>Führen Sie regelmäßige interne Audits zu Datenschutz und KI durch?
+        <select name="frage10" required>
+            <option value="">Bitte auswählen</option>
+            <option>ja</option><option>nein</option><option>noch unklar</option>
+        </select>
+    </label>
 
-        <label>Gibt es Schulungen oder Infos für Mitarbeiter zu Datenschutz, KI oder rechtlichen Anforderungen?</label>
-        <select name="frage2"><option>nein</option><option>ja</option><option>noch unklar</option></select>
+    <button type="submit">Analyse starten</button>
+</form>
 
-        <label>Haben Sie einen Datenschutzbeauftragten oder Verantwortlichen benannt?</label>
-        <select name="frage3"><option>nein</option><option>ja</option><option>noch unklar</option></select>
+<h2>Developer Panel (Debug JSON)</h2>
+<pre id="debugOutput"></pre>
 
-        <label>Führen Sie Risikoanalysen oder Datenschutz-Folgenabschätzungen durch?</label>
-        <select name="frage4"><option>nein</option><option>ja</option><option>noch unklar</option></select>
+<script>
+document.getElementById("briefingForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    document.getElementById("debugOutput").textContent = JSON.stringify(json, null, 2);
+});
+</script>
 
-        <label>Gibt es Prozesse zur Datenlöschung oder Anonymisierung?</label>
-        <select name="frage5"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-
-        <label>Wissen Mitarbeiter, wie bei Datenschutzverletzungen zu handeln ist?</label>
-        <select name="frage6"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-
-        <label>Werden Betroffenenrechte (Auskunft, Löschung) aktiv umgesetzt?</label>
-        <select name="frage7"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-
-        <label>Gibt es eine Dokumentation der Datenverarbeitungsprozesse?</label>
-        <select name="frage8"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-
-        <label>Existieren Meldepflichten & Abläufe bei Datenschutzvorfällen?</label>
-        <select name="frage9"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-
-        <label>Führen Sie regelmäßige interne Audits zu Datenschutz und KI durch?</label>
-        <select name="frage10"><option>nein</option><option>ja</option><option>noch unklar</option></select>
-
-        <button type="submit">Briefing erstellen</button>
-    </form>
-
-    <div id="result" style="margin-top:2rem;"></div>
-
-    <div style="margin-top:2rem;">
-        <button onclick="toggleDevPanel()" style="background:#666;color:white;padding:5px 10px;border:none;border-radius:4px;cursor:pointer;">
-            🔍 Developer-Panel anzeigen
-        </button>
-    </div>
-    <div id="devPanel">
-        <h3>Developer Debug Panel</h3>
-        <strong>Gesendetes JSON:</strong>
-        <pre id="devFormData"></pre>
-        <strong>Roh-Response vom Server:</strong>
-        <pre id="devRawResponse"></pre>
-    </div>
-
-    <script>
-        let devPanelVisible = false;
-        function toggleDevPanel() {
-            devPanelVisible = !devPanelVisible;
-            document.getElementById('devPanel').style.display = devPanelVisible ? 'block' : 'none';
-        }
-
-        document.getElementById('briefingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = Object.fromEntries(new FormData(e.target));
-            document.getElementById('devFormData').innerText = JSON.stringify(data, null, 2);
-
-            const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const json = await res.json();
-            document.getElementById('devRawResponse').innerText = JSON.stringify(json, null, 2);
-
-            let fragenAuditHTML = '';
-            if (json.frage_audit) {
-                fragenAuditHTML = '<h3>Frage-für-Frage-Audit</h3><ul>' +
-                  Object.entries(json.frage_audit).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('') +
-                  '</ul>';
-            }
-
-            document.getElementById('result').innerHTML = `
-                <h2>Ihr persönliches KI-Briefing</h2>
-                <strong>Score:</strong> ${json.compliance_score ?? 0}/10<br>
-                <strong>Badge:</strong> ${json.badge_level ?? 'Bronze'}<br><br>
-                <strong>Readiness:</strong> ${json.readiness_analysis || 'Keine Daten verfügbar'}<br><br>
-                <strong>Compliance:</strong> ${json.compliance_analysis || 'Keine Daten verfügbar'}<br><br>
-                <strong>Use Case:</strong> ${json.use_case_analysis || 'Keine Daten verfügbar'}<br><br>
-                <strong>Branche Trend:</strong> ${json.branche_trend || 'Keine Daten verfügbar'}<br><br>
-                <strong>Vision:</strong> ${json.vision || 'Keine Daten verfügbar'}<br><br>
-                <strong>Quick Wins:</strong> ${json.quick_wins?.join(", ") || 'Keine Daten verfügbar'}<br><br>
-                <strong>Toolstipps:</strong> ${json.toolstipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
-                <strong>Fördertipps:</strong> ${json.foerdertipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
-                <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
-                ${fragenAuditHTML}
-            `;
-        });
-    </script>
 </body>
 </html>
