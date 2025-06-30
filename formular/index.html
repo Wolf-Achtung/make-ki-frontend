@@ -6,7 +6,7 @@
     <title>KI-Readiness & Förderung</title>
     <style>
         body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; color: #003366; }
-        h1, h2 { color: #003366; }
+        h1, h2, h3 { color: #003366; }
         select, input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
         button { padding: 0.5rem 1rem; background: #003366; color: white; border: none; cursor: pointer; }
         button:hover { background: #0055aa; }
@@ -113,7 +113,6 @@
             e.preventDefault();
             const data = Object.fromEntries(new FormData(e.target));
 
-            // Developer Panel - zeige JSON
             document.getElementById('devFormData').innerText = JSON.stringify(data, null, 2);
 
             const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
@@ -123,8 +122,12 @@
             });
             const json = await res.json();
 
-            // Developer Panel - zeige Roh-Response
             document.getElementById('devRawResponse').innerText = JSON.stringify(json, null, 2);
+
+            let fragenAuditHTML = '';
+            if (json.fragen_audit && Array.isArray(json.fragen_audit)) {
+                fragenAuditHTML = '<h3>Frage-für-Frage-Audit</h3><ul>' + json.fragen_audit.map(f => `<li>${f}</li>`).join('') + '</ul>';
+            }
 
             document.getElementById('result').innerHTML = `
                 <h2>Ihr persönliches KI-Briefing</h2>
@@ -138,6 +141,7 @@
                 <strong>Toolstipps:</strong> ${json.toolstipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
                 <strong>Fördertipps:</strong> ${json.foerdertipps?.join(", ") || 'Keine Daten verfügbar'}<br><br>
                 <strong>Executive Summary:</strong> ${json.executive_summary || 'Keine Daten verfügbar'}
+                ${fragenAuditHTML}
             `;
         });
     </script>
