@@ -145,6 +145,9 @@
     <button type="submit">Analyse starten</button>
 </form>
 
+<h2>Analyse-Ergebnisse</h2>
+<div id="analysisOutput"></div>
+
 <h2>Developer Panel (Debug JSON)</h2>
 <pre id="debugOutput"></pre>
 
@@ -159,7 +162,26 @@ document.getElementById("briefingForm").addEventListener("submit", async functio
         body: JSON.stringify(data)
     });
     const json = await res.json();
+
+    // Developer JSON
     document.getElementById("debugOutput").textContent = JSON.stringify(json, null, 2);
+
+    // Analyse
+    let html = "";
+    if (json.compliance_score !== undefined) html += `<p><strong>Score:</strong> ${json.compliance_score}/10</p>`;
+    if (json.badge_level) html += `<p><strong>Badge:</strong> ${json.badge_level}</p>`;
+    if (json.readiness_analysis) html += `<p><strong>Readiness:</strong> ${json.readiness_analysis}</p>`;
+    if (json.compliance_analysis) html += `<p><strong>Compliance:</strong> ${json.compliance_analysis}</p>`;
+    if (json.use_case_analysis) html += `<p><strong>Use Case:</strong> ${json.use_case_analysis}</p>`;
+    if (json.branche_trend) html += `<p><strong>Branche Trend:</strong> ${json.branche_trend}</p>`;
+    if (json.vision) html += `<p><strong>Vision:</strong> ${json.vision}</p>`;
+    if (json.next_steps) html += `<p><strong>Nächste Schritte:</strong><ul>${json.next_steps.map(s => `<li>${s}</li>`).join('')}</ul></p>`;
+    if (json.toolstipps) html += `<p><strong>Toolstipps:</strong> ${json.toolstipps.join(', ')}</p>`;
+    if (json.foerdertipps) html += `<p><strong>Fördertipps:</strong> ${json.foerdertipps.join(', ')}</p>`;
+    if (json.risiko_und_haftung) html += `<p><strong>Risiko & Haftung:</strong> ${json.risiko_und_haftung}</p>`;
+    if (json.executive_summary) html += `<p><strong>Executive Summary:</strong> ${json.executive_summary}</p>`;
+
+    document.getElementById("analysisOutput").innerHTML = html;
 });
 </script>
 
