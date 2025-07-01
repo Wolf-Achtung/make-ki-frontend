@@ -265,7 +265,6 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
         if (!res.ok) {
             const errText = await res.text();
             debug.textContent += "\n❌ Fehler im Server-Request: " + errText;
-            console.error("Fehler:", res.status, errText);
             spinner.style.display = "none";
             return;
         }
@@ -274,7 +273,7 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
         console.log("Server JSON:", json);
         debug.textContent += "\n\n📦 Server JSON:\n" + JSON.stringify(json, null, 2);
 
-        if (!json || typeof json !== "object" || !json.compliance_score) {
+        if (!json || typeof json !== "object" || !json.executive_report) {
             debug.textContent += "\n\n⚠️ JSON hat nicht die erwartete Struktur.";
             spinner.style.display = "none";
             return;
@@ -282,7 +281,7 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
 
         document.getElementById("mainForm").style.display = "none";
         document.getElementById("executiveReport").style.display = "block";
-        renderExecutiveReport(json);
+        document.getElementById("executiveReport").innerHTML = "<h2>Executive Briefing</h2><div style='white-space: pre-wrap; line-height:1.6;'>" + json.executive_report + "</div>";
 
     } catch (err) {
         debug.textContent += "\n❌ Netzwerk- oder Serverfehler: " + err;
@@ -290,34 +289,6 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
     }
     spinner.style.display = "none";
 });
-
-function renderExecutiveReport(json) {
-    document.getElementById("score").textContent = json.compliance_score;
-    document.getElementById("badge").textContent = json.trust_badge;
-    document.getElementById("summary").textContent = json.executive_summary;
-    document.getElementById("strategy").textContent = json.readiness_strategie;
-    document.getElementById("compliance").textContent = json.compliance_datenschutz;
-    document.getElementById("risiko").textContent = json.risiko_haftung;
-    document.getElementById("trend").textContent = json.branchentrends;
-    document.getElementById("benchmark").textContent = json.branchenvergleich;
-    document.getElementById("usecase").textContent = json.use_cases_innovation;
-    document.getElementById("roi").textContent = json.use_cases_roi;
-    document.getElementById("vision").textContent = json.vision;
-    document.getElementById("moon").textContent = json.moonshots_marsshots;
-
-    document.getElementById("dsGvoBar").style.width = json.dsgvo_score + "%";
-    document.getElementById("aiActBar").style.width = json.ai_act_score + "%";
-    document.getElementById("dsGvoLabel").textContent = json.dsgvo_score + "% DSGVO";
-    document.getElementById("aiActLabel").textContent = json.ai_act_score + "% AI Act";
-
-    ["nextSteps", "tools", "foerder"].forEach(id=>{
-        const ul = document.getElementById(id);
-        ul.innerHTML = "";
-        (id==="nextSteps"?json.next_steps:(id==="tools"?json.top_tools:json.foerderungen)).forEach(s=>{
-            const li = document.createElement("li");
-            li.textContent = s;
-            ul.appendChild(li);
-        });
-    });
-}
 </script>
+</body>
+</html>
