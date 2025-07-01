@@ -273,19 +273,43 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
         console.log("Server JSON:", json);
         debug.textContent += "\n\n📦 Server JSON:\n" + JSON.stringify(json, null, 2);
 
-        if (!json || typeof json !== "object" || !json.executive_report) {
-            debug.textContent += "\n\n⚠️ JSON hat nicht die erwartete Struktur oder das Feld executive_report fehlt.";
-            spinner.style.display = "none";
-            return;
-        }
+        // Mapping der JSON-Daten in die HTML-Felder
+        document.getElementById("score").textContent = json.compliance_score;
+        document.getElementById("badge").textContent = json.badge_level;
 
-        // Zusätzlich: Executive Report auch unten ausgeben
-        debug.textContent += "\n\n📄 Executive Report (Plain):\n" + json.executive_report;
+        document.getElementById("dsGvoLabel").textContent = json.ds_gvo_level + "%";
+        document.getElementById("dsGvoBar").style.width = json.ds_gvo_level + "%";
 
+        document.getElementById("aiActLabel").textContent = json.ai_act_level + "%";
+        document.getElementById("aiActBar").style.width = json.ai_act_level + "%";
+
+        document.getElementById("risk").textContent = json.risiko_und_haftung;
+        document.getElementById("summary").textContent = json.executive_summary;
+        document.getElementById("readiness").textContent = json.readiness_analysis;
+        document.getElementById("compliance").textContent = json.compliance_analysis;
+        document.getElementById("usecase").textContent = json.use_case_analysis;
+        document.getElementById("trend").textContent = json.branche_trend;
+        document.getElementById("vision").textContent = json.vision;
+        document.getElementById("dan").textContent = json.dan_inspiration;
+
+        // Listenfelder (next_steps, toolstipps, foerdertipps)
+        const fillList = (id, items) => {
+            const ul = document.getElementById(id);
+            ul.innerHTML = "";
+            items.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item;
+                ul.appendChild(li);
+            });
+        };
+        fillList("nextSteps", json.next_steps);
+        fillList("tools", json.toolstipps);
+        fillList("foerder", json.foerdertipps);
+
+        // UI umschalten
         document.getElementById("mainForm").style.display = "none";
         const reportBlock = document.getElementById("executiveReport");
         reportBlock.style.display = "block";
-        reportBlock.innerHTML = "<h2>Executive Briefing</h2><div style='white-space: pre-wrap; line-height:1.6;'>" + json.executive_report + "</div>";
 
     } catch (err) {
         debug.textContent += "\n❌ Netzwerk- oder Serverfehler: " + err;
@@ -294,8 +318,5 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
     spinner.style.display = "none";
 });
 </script>
-
-
-
 </body>
 </html>
