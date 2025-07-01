@@ -217,7 +217,7 @@
 document.getElementById("mainForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target));
-const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/analyze", {
+const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(data)
