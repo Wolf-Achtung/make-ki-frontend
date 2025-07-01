@@ -235,6 +235,7 @@ if (!res.ok) {
     console.error("Fehler:", res.status, await res.text());
 }
 const json = await res.json();
+    console.log("Empfangene JSON-Daten:", json);
     document.getElementById("mainForm").style.display = "none";
     document.getElementById("executiveReport").style.display = "block";
     renderExecutiveReport(json);
