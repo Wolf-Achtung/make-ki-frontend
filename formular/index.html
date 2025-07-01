@@ -143,5 +143,117 @@
 <button type="submit">Analyse starten</button>
 </form>
 
+<div id="executiveReport" style="display:none;">
+    <div style="text-align:center; margin-bottom:30px;">
+        <img src="badges/ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="height:90px;">
+    </div>
+
+    <h1>Executive Briefing</h1>
+
+    <h2>Status & Trust-Badge</h2>
+    <p><strong>Compliance Score:</strong> <span id="score"></span>/10</p>
+    <p><strong>Trust-Badge:</strong> <span id="badge" style="font-size:1.2em;"></span></p>
+
+    <div style="margin-top:20px;">
+        <strong>DSGVO Level:</strong>
+        <div class="progress"><div id="dsGvoBar"></div></div>
+        <small id="dsGvoLabel"></small>
+    </div>
+    <div style="margin-top:10px;">
+        <strong>AI Act Level:</strong>
+        <div class="progress"><div id="aiActBar"></div></div>
+        <small id="aiActLabel"></small>
+    </div>
+
+    <h2>Risiko & Haftung</h2>
+    <p id="risk"></p>
+
+    <h2>Executive Summary</h2>
+    <p id="summary"></p>
+
+    <h2>Readiness & Strategie</h2>
+    <p id="readiness"></p>
+
+    <h2>Compliance & Datenschutz</h2>
+    <p id="compliance"></p>
+
+    <h2>Use Cases & Innovation</h2>
+    <p id="usecase"></p>
+
+    <h2>Branchentrends & Benchmarks</h2>
+    <p id="trend"></p>
+
+    <h2>Vision</h2>
+    <p id="vision"></p>
+
+    <h2>Priorisierte Next Steps</h2>
+    <ul id="nextSteps"></ul>
+
+    <h2>Toolstipps</h2>
+    <ul id="tools"></ul>
+
+    <h2>Fördertipps</h2>
+    <ul id="foerder"></ul>
+
+    <div class="dan-box">
+        <h2>Moonshot-Inspiration</h2>
+        <p id="dan"></p>
+    </div>
+
+    <div style="margin-top:50px; text-align:center;">
+        <img src="badges/ki-ready-2025.png" alt="KI-Ready 2025" style="height:50px; margin-right:10px;">
+        <img src="badges/dsgvo.svg" alt="DSGVO" style="height:50px; margin-right:10px;">
+        <img src="badges/eu-ai.svg" alt="EU AI" style="height:50px;">
+    </div>
+
+    <footer>
+        <p><img src="badges/tuev-logo-transparent.png" alt="TÜV Zertifiziert" style="height:40px; vertical-align:middle; margin-right:8px;"> TÜV-zertifiziertes KI-Management, Wolf Hohl, 10405 Berlin &bull; E-Mail: kontakt@ki-sicherheit.jetzt</p>
+        <p>Dieses Executive Briefing wurde automatisch auf Basis Ihrer Angaben erstellt und stellt keine rechtliche Beratung dar. Für die Richtigkeit und Vollständigkeit der Angaben wird keine Haftung übernommen.</p>
+        <p>© 2025 KI-Sicherheit.jetzt</p>
+    </footer>
+</div>
+
+<script>
+document.getElementById("mainForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    const res = await fetch("/analyze", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+    const json = await res.json();
+    document.getElementById("mainForm").style.display = "none";
+    document.getElementById("executiveReport").style.display = "block";
+    renderExecutiveReport(json);
+});
+
+function renderExecutiveReport(json) {
+    document.getElementById("score").textContent = json.compliance_score;
+    document.getElementById("badge").textContent = json.badge_level;
+    document.getElementById("risk").textContent = json.risiko_und_haftung;
+    document.getElementById("summary").textContent = json.executive_summary;
+    document.getElementById("readiness").textContent = json.readiness_analysis;
+    document.getElementById("compliance").textContent = json.compliance_analysis;
+    document.getElementById("usecase").textContent = json.use_case_analysis;
+    document.getElementById("trend").textContent = json.branche_trend;
+    document.getElementById("vision").textContent = json.vision;
+    document.getElementById("dan").textContent = json.dan_inspiration;
+
+    document.getElementById("dsGvoBar").style.width = json.ds_gvo_level + "%";
+    document.getElementById("aiActBar").style.width = json.ai_act_level + "%";
+    document.getElementById("dsGvoLabel").textContent = json.ds_gvo_level + "% DSGVO";
+    document.getElementById("aiActLabel").textContent = json.ai_act_level + "% AI Act";
+
+    ["nextSteps","tools","foerder"].forEach(id=>{
+        const ul = document.getElementById(id);
+        ul.innerHTML = "";
+        json[id === "nextSteps" ? "next_steps" : (id==="tools" ? "toolstipps" : "foerdertipps")].forEach(s=>{
+            let li=document.createElement("li"); li.textContent=s; ul.appendChild(li);
+        });
+    });
+}
+</script>
+
 </body>
 </html>
