@@ -1,290 +1,147 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>KI-Readiness & Executive Report</title>
-    <style>
-        body { font-family:'IBM Plex Mono', monospace; max-width:800px; margin:0 auto; color:#002b45; line-height:1.6; background:#fff;}
-        h1,h2 { color:#002b45; }
-        ul li { margin-bottom:8px; }
-        .progress { background:#e6eef2; border-radius:8px; overflow:hidden; }
-        .progress div { height:20px; width:0%; transition:width 0.5s; background:#004080; }
-        .dan-box { margin-top:40px; padding:20px; background:#f5f9fc; border-left:6px solid #004080; }
-        footer { margin-top:50px; font-size:0.9em; color:#666; text-align:center; border-top:1px solid #ccc; padding-top:15px; }
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KI-Readiness & Executive Report</title>
+<style>
+  body {
+    font-family: 'IBM Plex Mono', monospace;
+    background-color: #f7f9fb;
+    color: #0d2b4a;
+    padding: 2rem;
+    max-width: 900px;
+    margin: auto;
+  }
+  h1, h2 {
+    color: #0d2b4a;
+  }
+  label {
+    font-weight: bold;
+    margin-bottom: 0.4rem;
+    display: block;
+    max-width: 600px;
+  }
+  input, select, textarea {
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+    padding: 0.6rem;
+    margin-top: 0.4rem;
+    margin-bottom: 1.4rem;
+    border: 2px solid #0d2b4a;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #ffffff;
+    color: #0d2b4a;
+    display: block;
+  }
+  textarea {
+    height: 80px;
+  }
+  button {
+    background-color: #003b5a;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 600px;
+  }
+  button:hover {
+    background-color: #005080;
+  }
+</style>
+
 </head>
 <body>
 
 <h1>KI-Readiness & Datenschutz-Check</h1>
-<p>Bitte füllen Sie den Fragebogen aus. Sie erhalten anschließend eine individuelle Analyse.</p>
+<p>Bitte beantworten Sie die folgenden Fragen möglichst genau. So erhalten Sie ein individuelles Executive-Briefing mit praxisnahen Empfehlungen.</p>
 
-<form id="briefingForm">
-    <label>Unternehmen
-        <input type="text" name="unternehmen" required>
-    </label>
-    <label>Name
-        <input type="text" name="name" required>
-    </label>
-    <label>E-Mail
-        <input type="email" name="email" required>
-    </label>
-    <label>Branche
-        <select name="branche" required>
-            <option value="">Bitte auswählen</option>
-            <option>Marketing & Werbung</option>
-            <option>IT & Software</option>
-            <option>Handwerk</option>
-            <option>Beratung & Coaching</option>
-            <option>Handel</option>
-            <option>Gesundheit</option>
-            <option>Bildung & Training</option>
-            <option>Recht & Steuer</option>
-            <option>Sonstige</option>
-        </select>
-    </label>
-    <label>Geplante Maßnahme
-        <select name="massnahme" required>
-            <option value="">Bitte auswählen</option>
-            <option>KI-Tool-Integration (z.B. Agents)</option>
-            <option>Automatisierung von Prozessen</option>
-            <option>Datenschutz-Optimierung</option>
-            <option>KI-Content-Erstellung</option>
-            <option>Sonstige</option>
-        </select>
-    </label>
-    <label>Bereich
-        <select name="bereich" required>
-            <option value="">Bitte auswählen</option>
-            <option>Marketing</option>
-            <option>Vertrieb</option>
-            <option>HR</option>
-            <option>IT</option>
-            <option>Geschäftsführung</option>
-            <option>Produktion</option>
-            <option>Sonstige</option>
-        </select>
-    </label>
-    <label>Mitarbeiterzahl
-        <select name="mitarbeiterzahl" required>
-            <option value="">Bitte auswählen</option>
-            <option>1-5</option>
-            <option>6-19</option>
-            <option>20-99</option>
-            <option>100+</option>
-        </select>
-    </label>
-    <label>PLZ
-        <input type="text" name="plz" required>
-    </label>
-
-    <h2>Fragen zur Datenschutz- & KI-Readiness</h2>
-    <label>Haben Sie technische Maßnahmen (Firewall, Verschlüsselung etc.) umgesetzt?
-        <select name="frage1" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Gibt es regelmäßige Schulungen zu Datenschutz, KI und rechtlichen Vorgaben?
-        <select name="frage2" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Haben Sie einen Datenschutzbeauftragten benannt?
-        <select name="frage3" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Führen Sie Risikoanalysen oder Datenschutz-Folgenabschätzungen durch?
-        <select name="frage4" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Gibt es Prozesse zur Datenlöschung oder Anonymisierung?
-        <select name="frage5" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Wissen Mitarbeiter, wie bei Datenschutzverletzungen zu handeln ist?
-        <select name="frage6" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Werden Betroffenenrechte (Auskunft, Löschung) aktiv umgesetzt?
-        <select name="frage7" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Gibt es eine Dokumentation der Datenverarbeitungsprozesse?
-        <select name="frage8" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Existieren Meldepflichten und klar geregelte Abläufe bei Datenschutzvorfällen?
-        <select name="frage9" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-    <label>Führen Sie regelmäßige interne Audits zu Datenschutz und KI durch?
-        <select name="frage10" required>
-            <option value="">Bitte auswählen</option>
-            <option>ja</option><option>nein</option><option>noch unklar</option>
-        </select>
-    </label>
-<label>Was sind aktuell Ihre größten geschäftlichen Herausforderungen?
-    <textarea name="herausforderungen" rows="3" placeholder="z.B. Fachkräftemangel, Vertrieb, hohe Kosten..."></textarea>
-</label>
-
-<label>Wo möchten Sie mit Ihrem Unternehmen in 3 Jahren stehen?
-    <textarea name="ziele_3jahre" rows="3" placeholder="z.B. Marktführer, neue Geschäftsfelder, KI-gestützt..."></textarea>
-</label>
-
-<label>Welche IT-Systeme oder Tools nutzen Sie derzeit?
-    <textarea name="it_systeme" rows="2" placeholder="z.B. HubSpot, Lexoffice, Google Workspace..."></textarea>
-</label>
-
-<label>Nutzen Sie bereits KI-Tools? Wenn ja, welche?
-    <textarea name="ki_tools" rows="2" placeholder="z.B. ChatGPT, Jasper, Midjourney..."></textarea>
-</label>
-
-<label>Welche Zielgruppen bedienen Sie?
-    <textarea name="zielgruppen" rows="2" placeholder="z.B. B2B Mittelstand, lokale Endkunden..."></textarea>
-</label>
-
-<label>Gab es in den letzten Jahren Datenschutzvorfälle oder externe Audits?
-    <textarea name="vorfaelle" rows="2" placeholder="z.B. Datenpanne 2023, DSGVO-Prüfung..."></textarea>
-</label>
-
-<label>Wo vermuten Sie in Ihrem Unternehmen die größten Automatisierungspotenziale?
-    <textarea name="innovation_potentiale" rows="2" placeholder="z.B. Angebotserstellung, Rechnungsprüfung..."></textarea>
-</label>
-
-<label>Was wäre für Sie ein echter Durchbruch, wenn Geld & Ressourcen keine Rolle spielen würden?
-    <textarea name="moonshot" rows="3" placeholder="z.B. eigene KI-App, internationaler Vertrieb..."></textarea>
-</label>
-
-    <button type="submit">Analyse starten</button>
-</form>
-
-
-<div id="executiveReport" style="display:none;">
-    <div style="text-align:center; margin-bottom:30px;">
-        <img src="badges/ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="height:90px;">
-    </div>
-
-    <h1>Executive Briefing</h1>
-
-    <h2>Status & Trust-Badge</h2>
-    <p><strong>Compliance Score:</strong> <span id="score"></span>/10</p>
-    <p><strong>Trust-Badge:</strong> <span id="badge" style="font-size:1.2em;"></span></p>
-
-    <div style="margin-top:20px;">
-        <strong>DSGVO Level:</strong>
-        <div class="progress"><div id="dsGvoBar"></div></div>
-        <small id="dsGvoLabel"></small>
-    </div>
-    <div style="margin-top:10px;">
-        <strong>AI Act Level:</strong>
-        <div class="progress"><div id="aiActBar"></div></div>
-        <small id="aiActLabel"></small>
-    </div>
-
-    <h2>Risiko & Haftung</h2>
-    <p id="risk"></p>
-
-    <h2>Executive Summary</h2>
-    <p id="summary"></p>
-
-    <h2>Readiness & Strategie</h2>
-    <p id="readiness"></p>
-
-    <h2>Compliance & Datenschutz</h2>
-    <p id="compliance"></p>
-
-    <h2>Use Cases & Innovation</h2>
-    <p id="usecase"></p>
-
-    <h2>Branchentrends & Benchmarks</h2>
-    <p id="trend"></p>
-
-    <h2>Vision</h2>
-    <p id="vision"></p>
-
-    <h2>Priorisierte Next Steps</h2>
-    <ul id="nextSteps"></ul>
-
-    <h2>Toolstipps</h2>
-    <ul id="tools"></ul>
-
-    <h2>Fördertipps</h2>
-    <ul id="foerder"></ul>
-
-    <div class="dan-box">
-        <h2>Moonshot-Inspiration</h2>
-        <p id="dan"></p>
-    </div>
-
-    <div style="margin-top:50px; text-align:center;">
-        <img src="badges/ki-ready-2025.png" alt="KI-Ready 2025" style="height:50px; margin-right:10px;">
-        <img src="badges/dsgvo.svg" alt="DSGVO" style="height:50px; margin-right:10px;">
-        <img src="badges/eu-ai.svg" alt="EU AI" style="height:50px;">
-    </div>
-
-    <footer>
-        <p><img src="badges/tuev-logo-transparent.png" alt="TÜV Zertifiziert" style="height:40px; vertical-align:middle; margin-right:8px;"> TÜV-zertifiziertes KI-Management, Wolf Hohl, 10405 Berlin &bull; E-Mail: kontakt@ki-sicherheit.jetzt</p>
-        <p>Dieses Executive Briefing wurde automatisch auf Basis Ihrer Angaben erstellt und stellt keine rechtliche Beratung dar. Für die Richtigkeit und Vollständigkeit der Angaben wird keine Haftung übernommen.</p>
-        <p>© 2025 KI-Sicherheit.jetzt</p>
-    </footer>
+<h2>Unternehmensdaten</h2>
+<label>E-Mail
+<input type="email" name="email" required></label>
+<label>Name
+<input type="text" name="name" required></label>
+<label>Unternehmen
+<input type="text" name="unternehmen" required></label>
+<label>Branche
+<select name="branche">
+  <option>Bitte Branche auswählen</option><option>Finanzen & Steuern</option><option>Medien & Marketing</option><option>Kommunikation & PR</option><option>Bildung & Coaching</option><option>Verwaltung & Öffentliche Hand</option><option>Handel & E-Commerce</option><option>IT & Software</option><option>Sonstige</option>
+</select></label>
+<label>Geplanter Einsatzbereich
+<select name="einsatzbereich">
+  <option>Bereich auswählen</option><option>Marketing</option><option>Vertrieb</option><option>Geschäftsführung</option><option>Personal</option><option>Produktion</option><option>Sonstige</option>
+</select></label>
+<label>Geplante Maßnahme
+<select name="massnahme">
+  <option>Geplante Maßnahme wählen</option><option>Beratung / Strategie</option><option>Risikoanalyse</option><option>Datenschutz / Compliance</option><option>KI-Tool-Integration</option><option>Mitarbeiterschulung / Change Management</option><option>noch unklar</option>
+</select></label>
+<label>Mitarbeiterzahl
+<select name="mitarbeiterzahl">
+  <option>Mitarbeiterzahl wählen</option><option>1-5</option><option>6-20</option><option>21-99</option><option>mehr als 100</option>
+</select></label>
+<label>PLZ
+<input type="text" name="plz" required></label>
+<h2>Unternehmensfragen</h2>
+<form id="mainForm">
+<div class="section">
+<label>Haben Sie technische Maßnahmen getroffen, z. B. Verschlüsselung, Firewalls oder Zugriffskontrollen?
+<select name="frage1"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
+<label>Gibt es Schulungen oder Informationen für Mitarbeiter zu Datenschutz, KI oder rechtlichen Anforderungen?
+<select name="frage2"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
+<label>Haben Sie einen Datenschutzbeauftragten oder Verantwortlichen benannt?
+<select name="frage3"><option>Bitte auswählen</option><option>Ja</option><option>Nein</option></select></label>
+<label>Haben Sie Risiken z. B. durch eine Datenschutz-Folgenabschätzung geprüft?
+<select name="frage4"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
+<label>Gibt es feste Regeln zur Löschung oder Anonymisierung personenbezogener Daten?
+<select name="frage5"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
+<label>Wissen Ihre Mitarbeiter, was bei einer Datenschutzverletzung zu tun ist?
+<select name="frage6"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
+<label>Achten Sie darauf, dass Betroffene ihre Rechte wahrnehmen können (Auskunft, Löschung etc.)?
+<select name="frage7"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
+<label>Gibt es eine Dokumentation der Datenverarbeitung?
+<select name="frage8"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
+<label>Existieren Meldepflichten und klare Abläufe bei Datenschutzvorfällen?
+<select name="frage9"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
+<label>Führen Sie regelmäßige Überprüfungen oder Audits durch?
+<select name="frage10"><option>Bitte auswählen</option><option>Ja</option><option>Teilweise</option><option>Nein</option></select></label>
 </div>
 
-<script>
-document.getElementById("mainForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.target));
-    const res = await fetch("/analyze", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-    });
-    const json = await res.json();
-    document.getElementById("mainForm").style.display = "none";
-    document.getElementById("executiveReport").style.display = "block";
-    renderExecutiveReport(json);
-});
+<div class="section">
+<h2>Business & Strategie Fragen</h2>
+<label>Was sind Ihre größten Herausforderungen?
+<select name="herausforderungen"><option>Bitte auswählen</option><option>Fachkräftemangel</option><option>Kosten senken</option><option>Wachstum & Skalierung</option><option>Effizienz steigern</option><option>Innovation vorantreiben</option><option>Sonstige</option></select>
+<textarea name="herausforderungen_sonstiges" placeholder="Falls Sonstige, bitte hier angeben"></textarea></label>
+<label>Wo möchten Sie in 3 Jahren stehen?
+<select name="ziele_3jahre"><option>Bitte auswählen</option><option>Marktführer werden</option><option>Neue Märkte erschließen</option><option>KI-gestützt automatisieren</option><option>Mehr Umsatz / Kunden</option><option>Sonstige</option></select>
+<textarea name="ziele_3jahre_sonstiges" placeholder="Falls Sonstige, bitte hier angeben"></textarea></label>
+<label>Welche IT-Tools nutzen Sie?
+<select name="it_systeme"><option>Bitte auswählen</option><option>HubSpot</option><option>Lexoffice</option><option>Google Workspace</option><option>Microsoft 365</option><option>Sonstige</option></select>
+<textarea name="it_systeme_sonstiges" placeholder="Falls Sonstige, bitte hier angeben"></textarea></label>
+<label>Nutzen Sie KI-Tools? Welche?
+<select name="ki_tools"><option>Bitte auswählen</option><option>ChatGPT</option><option>Jasper</option><option>Midjourney</option><option>keine</option><option>Sonstige</option></select>
+<textarea name="ki_tools_sonstiges" placeholder="Falls Sonstige, bitte hier angeben"></textarea></label>
+<label>Welche Zielgruppen bedienen Sie?
+<select name="zielgruppen"><option>Bitte auswählen</option><option>B2B Mittelstand</option><option>Endkunden (B2C)</option><option>Öffentliche Hand</option><option>Internationale Märkte</option><option>Sonstige</option></select>
+<textarea name="zielgruppen_sonstiges" placeholder="Falls Sonstige, bitte hier angeben"></textarea></label>
+<label>Gab es Datenschutzvorfälle/Audits?
+<select name="vorfaelle"><option>Bitte auswählen</option><option>Ja, Vorfall</option><option>Ja, Audit</option><option>Nein</option></select>
+<textarea name="vorfaelle_sonstiges" placeholder="Falls Details, bitte hier angeben"></textarea></label>
+<label>Größte Automatisierungspotenziale?
+<select name="automation"><option>Bitte auswählen</option><option>Angebotserstellung</option><option>Kundenservice</option><option>Marketingprozesse</option><option>Produktion/Logistik</option><option>Sonstige</option></select>
+<textarea name="automation_sonstiges" placeholder="Falls Sonstige, bitte hier angeben"></textarea></label>
+<label>Was wäre ein echter Moonshot?
+<select name="moonshot"><option>Bitte auswählen</option><option>Eigene KI-App entwickeln</option><option>International skalieren</option><option>100% Automatisierung</option><option>Neues Geschäftsmodell</option><option>Sonstige</option></select>
+<textarea name="moonshot_sonstiges" placeholder="Falls Sonstige, bitte hier angeben"></textarea></label>
+</div>
 
-function renderExecutiveReport(json) {
-    document.getElementById("score").textContent = json.compliance_score;
-    document.getElementById("badge").textContent = json.badge_level;
-    document.getElementById("risk").textContent = json.risiko_und_haftung;
-    document.getElementById("summary").textContent = json.executive_summary;
-    document.getElementById("readiness").textContent = json.readiness_analysis;
-    document.getElementById("compliance").textContent = json.compliance_analysis;
-    document.getElementById("usecase").textContent = json.use_case_analysis;
-    document.getElementById("trend").textContent = json.branche_trend;
-    document.getElementById("vision").textContent = json.vision;
-    document.getElementById("dan").textContent = json.dan_inspiration;
-
-    document.getElementById("dsGvoBar").style.width = json.ds_gvo_level + "%";
-    document.getElementById("aiActBar").style.width = json.ai_act_level + "%";
-    document.getElementById("dsGvoLabel").textContent = json.ds_gvo_level + "% DSGVO";
-    document.getElementById("aiActLabel").textContent = json.ai_act_level + "% AI Act";
-
-    ["nextSteps","tools","foerder"].forEach(id=>{
-        const ul = document.getElementById(id);
-        ul.innerHTML = "";
-        json[id === "nextSteps" ? "next_steps" : (id==="tools" ? "toolstipps" : "foerdertipps")].forEach(s=>{
-            let li=document.createElement("li"); li.textContent=s; ul.appendChild(li);
-        });
-    });
-}
-</script>
+<div class="checkbox"><input type="checkbox" name="datenschutz" required> Ich akzeptiere die Datenschutzerklärung.</div>
+<button type="submit">Analyse starten</button>
+</form>
 
 </body>
 </html>
