@@ -214,6 +214,25 @@
         <img src="badges/dsgvo.svg" alt="DSGVO" style="height:50px; margin-right:10px;">
         <img src="badges/eu-ai.svg" alt="EU AI" style="height:50px;">
     </div>
+<div id="loadingSpinner" style="display:none; text-align:center; margin:20px;">
+  <div style="
+    border:6px solid #f3f3f3;
+    border-top:6px solid #3498db;
+    border-radius:50%;
+    width:50px;
+    height:50px;
+    animation:spin 1s linear infinite;
+    margin:0 auto;
+  "></div>
+  <p>Bitte warten, Analyse läuft...</p>
+</div>
+
+<style>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
 
     <footer>
         <p><img src="badges/tuev-logo-transparent.png" alt="TÜV Zertifiziert" style="height:40px; vertical-align:middle; margin-right:8px;"> TÜV-zertifiziertes KI-Management, Wolf Hohl, 10405 Berlin &bull; E-Mail: kontakt@ki-sicherheit.jetzt</p>
@@ -226,62 +245,78 @@
 document.getElementById("mainForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const debug = document.getElementById("debugOutput");
-    debug.textContent = "Formulardaten werden gesammelt...";
-
+    const spinner = document.getElementById("loadingSpinner");
     const data = Object.fromEntries(new FormData(e.target));
-    debug.textContent += "\nFormulardaten: " + JSON.stringify(data, null, 2);
+    console.log("Formulardaten:", data);
 
-    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-    });
+    spinner.style.display = "block";
+    debug.textContent = "⏳ Sende Daten an Server...\n" + JSON.stringify(data, null, 2);
 
-    debug.textContent += "\nServer antwortet mit Status: " + res.status;
+    try {
+        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
 
-    if (!res.ok) {
-        const errText = await res.text();
-        debug.textContent += "\nFehler: " + errText;
-        console.error("Fehler:", res.status, errText);
-        return;
+        debug.textContent += "\n\n✅ Server antwortet mit Status: " + res.status;
+
+        if (!res.ok) {
+            const errText = await res.text();
+            debug.textContent += "\n❌ Fehler im Server-Request: " + errText;
+            console.error("Fehler:", res.status, errText);
+            spinner.style.display = "none";
+            return;
+        }
+
+        const json = await res.json();
+        console.log("Server JSON:", json);
+        debug.textContent += "\n\n📦 Server JSON:\n" + JSON.stringify(json, null, 2);
+
+        if (!json || typeof json !== "object" || !json.compliance_score) {
+            debug.textContent += "\n\n⚠️ JSON hat nicht die erwartete Struktur.";
+            spinner.style.display = "none";
+            return;
+        }
+
+        document.getElementById("mainForm").style.display = "none";
+        document.getElementById("executiveReport").style.display = "block";
+        renderExecutiveReport(json);
+
+    } catch (err) {
+        debug.textContent += "\n❌ Netzwerk- oder Serverfehler: " + err;
+        console.error(err);
     }
-
-    const json = await res.json();
-    debug.textContent += "\nServer JSON:\n" + JSON.stringify(json, null, 2);
-
-    document.getElementById("mainForm").style.display = "none";
-    document.getElementById("executiveReport").style.display = "block";
-    renderExecutiveReport(json);
+    spinner.style.display = "none";
 });
-
 
 function renderExecutiveReport(json) {
     document.getElementById("score").textContent = json.compliance_score;
-    document.getElementById("badge").textContent = json.badge_level;
-    document.getElementById("risk").textContent = json.risiko_und_haftung;
+    document.getElementById("badge").textContent = json.trust_badge;
     document.getElementById("summary").textContent = json.executive_summary;
-    document.getElementById("readiness").textContent = json.readiness_analysis;
-    document.getElementById("compliance").textContent = json.compliance_analysis;
-    document.getElementById("usecase").textContent = json.use_case_analysis;
-    document.getElementById("trend").textContent = json.branche_trend;
+    document.getElementById("strategy").textContent = json.readiness_strategie;
+    document.getElementById("compliance").textContent = json.compliance_datenschutz;
+    document.getElementById("risiko").textContent = json.risiko_haftung;
+    document.getElementById("trend").textContent = json.branchentrends;
+    document.getElementById("benchmark").textContent = json.branchenvergleich;
+    document.getElementById("usecase").textContent = json.use_cases_innovation;
+    document.getElementById("roi").textContent = json.use_cases_roi;
     document.getElementById("vision").textContent = json.vision;
-    document.getElementById("dan").textContent = json.dan_inspiration;
+    document.getElementById("moon").textContent = json.moonshots_marsshots;
 
-    document.getElementById("dsGvoBar").style.width = json.ds_gvo_level + "%";
-    document.getElementById("aiActBar").style.width = json.ai_act_level + "%";
-    document.getElementById("dsGvoLabel").textContent = json.ds_gvo_level + "% DSGVO";
-    document.getElementById("aiActLabel").textContent = json.ai_act_level + "% AI Act";
+    document.getElementById("dsGvoBar").style.width = json.dsgvo_score + "%";
+    document.getElementById("aiActBar").style.width = json.ai_act_score + "%";
+    document.getElementById("dsGvoLabel").textContent = json.dsgvo_score + "% DSGVO";
+    document.getElementById("aiActLabel").textContent = json.ai_act_score + "% AI Act";
 
-    ["nextSteps","tools","foerder"].forEach(id=>{
+    ["nextSteps", "tools", "foerder"].forEach(id=>{
         const ul = document.getElementById(id);
         ul.innerHTML = "";
-        json[id === "nextSteps" ? "next_steps" : (id==="tools" ? "toolstipps" : "foerdertipps")].forEach(s=>{
-            let li=document.createElement("li"); li.textContent=s; ul.appendChild(li);
+        (id==="nextSteps"?json.next_steps:(id==="tools"?json.top_tools:json.foerderungen)).forEach(s=>{
+            const li = document.createElement("li");
+            li.textContent = s;
+            ul.appendChild(li);
         });
     });
 }
 </script>
-<pre id="debugOutput" style="background:#eee;padding:1rem;border-radius:8px;overflow-x:auto;"></pre>
-
-</body>
-</html>
