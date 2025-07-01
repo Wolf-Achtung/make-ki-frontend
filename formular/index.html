@@ -274,14 +274,15 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
         debug.textContent += "\n\n📦 Server JSON:\n" + JSON.stringify(json, null, 2);
 
         if (!json || typeof json !== "object" || !json.executive_report) {
-            debug.textContent += "\n\n⚠️ JSON hat nicht die erwartete Struktur.";
+            debug.textContent += "\n\n⚠️ JSON hat nicht die erwartete Struktur oder das Feld executive_report fehlt.";
             spinner.style.display = "none";
             return;
         }
 
         document.getElementById("mainForm").style.display = "none";
-        document.getElementById("executiveReport").style.display = "block";
-        document.getElementById("executiveReport").innerHTML = "<h2>Executive Briefing</h2><div style='white-space: pre-wrap; line-height:1.6;'>" + json.executive_report + "</div>";
+        const reportBlock = document.getElementById("executiveReport");
+        reportBlock.style.display = "block";
+        reportBlock.innerHTML = "<h2>Executive Briefing</h2><div style='white-space: pre-wrap; line-height:1.6;'>" + json.executive_report + "</div>";
 
     } catch (err) {
         debug.textContent += "\n❌ Netzwerk- oder Serverfehler: " + err;
@@ -290,5 +291,7 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
     spinner.style.display = "none";
 });
 </script>
+
+
 </body>
 </html>
