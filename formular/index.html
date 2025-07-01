@@ -279,6 +279,9 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
             return;
         }
 
+        // Zusätzlich: Executive Report auch unten ausgeben
+        debug.textContent += "\n\n📄 Executive Report (Plain):\n" + json.executive_report;
+
         document.getElementById("mainForm").style.display = "none";
         const reportBlock = document.getElementById("executiveReport");
         reportBlock.style.display = "block";
@@ -291,6 +294,7 @@ document.getElementById("mainForm").addEventListener("submit", async (e) => {
     spinner.style.display = "none";
 });
 </script>
+
 
 
 </body>
