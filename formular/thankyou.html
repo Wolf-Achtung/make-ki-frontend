@@ -2,74 +2,44 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vielen Dank – KI-Sicherheit.jetzt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vielen Dank für Ihre Analyse!</title>
   <style>
-    body {
-      font-family: 'IBM Plex Mono', monospace;
-      background-color: #f7f9fb;
-      color: #0d2b4a;
-      padding: 2rem;
-      max-width: 800px;
-      margin: auto;
-      text-align: center;
-    }
-    h1 {
-      color: #0d2b4a;
-      margin-bottom: 1rem;
-    }
-    p {
-      margin-bottom: 1.5rem;
-    }
+    body { font-family: monospace; padding: 40px; max-width: 700px; margin: auto; }
+    h1 { color: #003b5a; }
     .button {
-      background-color: #003b5a;
+      background: #003b5a;
       color: white;
-      border: none;
-      padding: 0.8rem 1.6rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
+      padding: 12px 24px;
       text-decoration: none;
+      border-radius: 5px;
       display: inline-block;
-    }
-    .button:hover {
-      background-color: #005080;
-    }
-    .button.disabled {
-      background-color: #7d8fa2;
-      cursor: not-allowed;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
+  <h1>Ihre KI-Readiness-Analyse ist fertig!</h1>
+  <p>Vielen Dank für Ihre Angaben. Ihre individuelle Executive-Auswertung wurde erfolgreich erstellt.</p>
+  <p>Sie können den PDF-Bericht hier herunterladen:</p>
 
-<img src="/badges/ki-sicherheit-logo.png" alt="KI Sicherheit Logo" style="max-height:100px; margin-bottom:30px;" />
+  <a id="downloadLink" class="button" href="#">🔽 PDF wird vorbereitet...</a>
 
-<h1>Vielen Dank!</h1>
-<p>Ihre Analyse wurde erfolgreich abgeschlossen.<br>
-Sie erhalten ein maßgeschneidertes Executive Briefing inklusive aller Empfehlungen und Fördertipps.</p>
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
 
-<a id="downloadButton" class="button" href="#">PDF wird vorbereitet...</a>
-
-<p style="margin-top:2rem;">Falls Sie Fragen haben, schreiben Sie uns jederzeit an<br>
-<a href="mailto:kontakt@ki-sicherheit.jetzt">kontakt@ki-sicherheit.jetzt</a></p>
-
-<p style="margin-top:3rem; font-size:0.9em;">© 2025 KI-Sicherheit.jetzt</p>
-
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const file = params.get('file');
-
-  if (file) {
-    const button = document.getElementById("downloadButton");
-    button.href = "https://make-ki-backend-neu-production.up.railway.app/download/" + file;
-    button.textContent = "PDF herunterladen";
-  } else {
-    const button = document.getElementById("downloadButton");
-    button.textContent = "Kein PDF gefunden.";
-    button.classList.add("disabled");
-  }
-</script>
-
+    const file = getQueryParam('file');
+    const link = document.getElementById("downloadLink");
+    if (file) {
+      link.href = "/download/" + encodeURIComponent(file);
+      link.textContent = "📥 PDF herunterladen";
+    } else {
+      link.textContent = "⚠️ Keine Datei angegeben.";
+      link.style.background = "#999";
+    }
+  </script>
 </body>
 </html>

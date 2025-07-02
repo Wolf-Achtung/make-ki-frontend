@@ -5,89 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KI-Readiness & Datenschutz-Check</title>
   <style>
-    body { font-family: monospace; padding: 20px; }
-    label { display: block; margin: 10px 0 5px; }
-    input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
+    body { font-family: monospace; padding: 20px; max-width: 800px; margin: auto; }
+    label { display: block; margin: 10px 0 5px; font-weight: bold; }
+    input, select, textarea { width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; }
     button { background: #003b5a; color: white; padding: 10px 20px; border: none; cursor: pointer; }
-    #debugOutput { background: #eee; padding: 10px; white-space: pre-wrap; margin-top: 20px; }
+    #debugOutput { background: #f4f4f4; padding: 10px; white-space: pre-wrap; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>Vollständiger KI-Readiness-Check</h1>
-  <form id="mainForm">
-    <label>Email</label><input name="email" type="email" required>
-    <label>Name</label><input name="name" required>
-    <label>Unternehmen</label><input name="unternehmen" required>
-    <label>PLZ</label><input name="plz">
-    <label>Branche</label><input name="branche">
+<h1>KI-Readiness Formular</h1>
 
-    <label>Geplanter Einsatzbereich</label><input name="bereich">
-    <label>Produkte / Dienstleistungen</label><input name="produkt_dienstleistung">
-    <label>Geplante Maßnahme</label><input name="massnahme">
+<form id="dynamicForm">
+  <!-- Felder werden hier dynamisch eingefügt -->
+</form>
 
-    <label>Mitarbeiterzahl</label><input name="mitarbeiterzahl" type="number">
-    <label>Selbstständig / freiberuflich?</label><select name="selbststaendig">
-      <option value="">Bitte wählen</option>
-      <option>Ja</option><option>Nein</option>
-    </select>
+<button id="submitButton" style="display:none;">Analyse starten</button>
 
-    <label>Zielgruppen</label><input name="zielgruppen">
-    <label>IT-Systeme</label><input name="it_systeme">
-    <label>KI-Tools im Einsatz</label><input name="ki_tools">
+<pre id="debugOutput">Debug wartet...</pre>
 
-    <label>Herausforderungen</label><textarea name="herausforderungen"></textarea>
-    <label>Innovation Potentiale</label><textarea name="innovation_potentiale"></textarea>
-    <label>Ziele in 3 Jahren</label><textarea name="ziele_3jahre"></textarea>
-    <label>Moonshot (großes Ziel)</label><textarea name="moonshot"></textarea>
+<script>
+async function loadForm() {
+  const res = await fetch("/fields.json");
+  const json = await res.json();
+  const fields = json.fields;
+  const form = document.getElementById("dynamicForm");
+  
+  fields.forEach(field => {
+    const label = document.createElement("label");
+    label.textContent = field.label;
+    
+    let input;
+    if (field.type === "select") {
+      input = document.createElement("select");
+      input.name = field.name;
+      field.options.forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt;
+        option.textContent = opt;
+        input.appendChild(option);
+      });
+    } else if (field.type === "textarea") {
+      input = document.createElement("textarea");
+      input.name = field.name;
+      input.placeholder = field.placeholder || "";
+    } else {
+      input = document.createElement("input");
+      input.name = field.name;
+      input.type = field.type || "text";
+      input.placeholder = field.placeholder || "";
+    }
+    if (field.required) input.required = true;
+    
+    form.appendChild(label);
+    form.appendChild(input);
+  });
 
-    <label>Vorfaelle (Sicherheitsvorfälle?)</label><textarea name="vorfaelle"></textarea>
+  // Sobald geladen, zeige Submit-Button
+  document.getElementById("submitButton").style.display = "inline-block";
+}
 
-    <!-- Die "frage1" bis "frage10" sind exemplarisch als Ja/Nein -->
-    <label>Frage 1</label><select name="frage1"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 2</label><select name="frage2"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 3</label><select name="frage3"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 4</label><select name="frage4"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 5</label><select name="frage5"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 6</label><select name="frage6"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 7</label><select name="frage7"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 8</label><select name="frage8"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 9</label><select name="frage9"><option>Ja</option><option>Nein</option></select>
-    <label>Frage 10</label><select name="frage10"><option>Ja</option><option>Nein</option></select>
+loadForm();
 
-    <label><input type="checkbox" name="privacy" required> Ich akzeptiere die Datenschutzerklärung</label>
-    <label><input type="checkbox" name="gpt_consent" required> Ich willige ein, dass meine Daten durch GPT verarbeitet werden.</label>
+// Submit-Handler
+document.getElementById("submitButton").addEventListener("click", async (e) => {
+  e.preventDefault();
+  const debug = document.getElementById("debugOutput");
+  const formData = new FormData(document.getElementById("dynamicForm"));
+  const data = Object.fromEntries(formData.entries());
+  
+  debug.textContent = "📤 Sende Daten an Server...\\n" + JSON.stringify(data, null, 2);
 
-    <button type="submit">Analyse starten</button>
-  </form>
-
-  <pre id="debugOutput">Debug-Ausgabe...</pre>
-
-  <script>
-    document.getElementById("mainForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const debug = document.getElementById("debugOutput");
-      const data = Object.fromEntries(new FormData(e.target));
-      debug.textContent = "⏳ Sende Daten an Server...\n" + JSON.stringify(data, null, 2);
-
-      try {
-        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(data)
-        });
-        debug.textContent += "\n\n✅ Server Status: " + res.status;
-
-        const json = await res.json();
-        debug.textContent += "\n\n📦 Antwort: " + JSON.stringify(json, null, 2);
-
-        if (json.pdf_url) {
-          const filename = json.pdf_url.split("/").pop();
-          window.location.href = "/formular/thankyou.html?file=" + encodeURIComponent(filename);
-        }
-      } catch (err) {
-        debug.textContent += "\n❌ Fehler: " + err;
-      }
+  try {
+    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
     });
-  </script>
+    const json = await res.json();
+    debug.textContent += "\\n\\n✅ Server-Antwort:\\n" + JSON.stringify(json, null, 2);
+
+    if (json.pdf_url) {
+      const filename = json.pdf_url.split("/").pop();
+      window.location.href = "/formular/thankyou.html?file=" + encodeURIComponent(filename);
+    }
+  } catch (err) {
+    debug.textContent += "\\n❌ Fehler: " + err;
+  }
+});
+</script>
 </body>
 </html>
