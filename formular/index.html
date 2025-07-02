@@ -1,94 +1,78 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KI-Readiness & Compliance Check</title>
-  <style>
-    body { font-family: monospace; padding: 20px; max-width: 900px; margin: auto; }
-    h1, h2, h3 { color: #003b5a; }
-    label { display: block; margin-top: 12px; font-weight: bold; }
-    input, select, textarea { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px;}
-    button { background: #003b5a; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
-    #debugOutput { background: #f4f4f4; padding: 12px; margin-top: 30px; white-space: pre-wrap; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI-Readiness & Datenschutz Formular</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fira Mono', monospace; background: #f8fbfd; color: #0a2a43; max-width: 800px; margin: auto; padding: 2em; }
+        h1,h2 { color: #003b5a; }
+        label { display:block; margin-top:1em; font-weight:bold; }
+        input, select, textarea { width:100%; padding:0.6em; margin-top:0.3em; border:2px solid #0a2a43; border-radius:5px; }
+        button { background:#003b5a; color:white; border:none; padding:0.8em 1.5em; margin-top:2em; border-radius:5px; cursor:pointer; }
+        button:hover { background:#005b85; }
+    </style>
 </head>
 <body>
-
 <h1>KI-Readiness & Datenschutz Formular</h1>
+<form id="readinessForm">
 
-<form id="dynamicForm"></form>
+    <h2>Business & Strategie Fragen</h2>
 
-<button id="submitButton" style="display:none;">Analyse starten</button>
+    <label>Was sind Ihre größten Herausforderungen?</label>
+    <input type="text" placeholder="z. B. Kosten senken, neue Märkte, Fachkräftemangel" name="herausforderungen">
 
-<pre id="debugOutput">Debug wartet...</pre>
+    <label>Wo möchten Sie in 3 Jahren stehen?</label>
+    <input type="text" placeholder="z. B. Marktführer, internationaler Ausbau, Nachhaltigkeit verbessern" name="ziele_3jahre">
+
+    <label>Welche IT-Tools werden bereits eingesetzt?</label>
+    <select name="it_systeme">
+        <option>Bitte auswählen</option>
+        <option>Microsoft 365</option>
+        <option>Salesforce</option>
+        <option>Lexware</option>
+        <option>Sonstiges</option>
+    </select>
+    <textarea placeholder="Falls Sonstige, bitte hier angeben"></textarea>
+
+    <label>Nutzen Sie aktuell KI-Tools im Unternehmen?</label>
+    <select name="ki_tools">
+        <option>Bitte auswählen</option>
+        <option>ChatGPT</option>
+        <option>Midjourney</option>
+        <option>keine</option>
+        <option>Sonstiges</option>
+    </select>
+    <textarea placeholder="Falls Sonstige, bitte hier angeben"></textarea>
+
+    <label>Welche Zielgruppen bedient Ihr Unternehmen?</label>
+    <input type="text" placeholder="z. B. B2B, B2C, öffentliche Hand" name="zielgruppen">
+
+    <label>Gab es Datenschutzvorfälle/Audits?</label>
+    <select name="vorfaelle">
+        <option>Bitte auswählen</option>
+        <option>ja</option>
+        <option>nein</option>
+        <option>nicht bekannt</option>
+    </select>
+
+    <label>Größte Automatisierungspotenziale?</label>
+    <input type="text" placeholder="z. B. Produktion, Marketing, Support" name="automation">
+
+    <label>Was wäre ein echter Moonshot?</label>
+    <input type="text" placeholder="z. B. neue Produkte, KI-gestützte Services" name="moonshot">
+
+    <button type="submit">Analyse starten</button>
+</form>
+
+<div id="debug" style="background:#eee; margin-top:2em; padding:1em;">Debug wartet...</div>
 
 <script>
-async function buildForm() {
-  const res = await fetch("fields.json");
-  const schema = await res.json();
-  const form = document.getElementById("dynamicForm");
-
-  schema.sections.forEach(section => {
-    const h3 = document.createElement("h3");
-    h3.textContent = section.title;
-    form.appendChild(h3);
-
-    section.fields.forEach(field => {
-      const label = document.createElement("label");
-      label.textContent = field.label;
-      form.appendChild(label);
-
-      let input;
-      if (field.type === "select") {
-        input = document.createElement("select");
-        input.name = field.name;
-        field.options.forEach(opt => {
-          const option = document.createElement("option");
-          option.value = opt;
-          option.textContent = opt;
-          input.appendChild(option);
-        });
-      } else {
-        input = document.createElement("input");
-        input.type = "text";
-        input.name = field.name;
-        input.placeholder = field.placeholder || "";
-      }
-      form.appendChild(input);
+    document.getElementById('readinessForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        document.getElementById('debug').innerText = 'Formular wurde erfolgreich abgesendet (Test)';
     });
-  });
-
-  document.getElementById("submitButton").style.display = "inline-block";
-}
-buildForm();
-
-// Submit-Handler
-document.getElementById("submitButton").addEventListener("click", async (e) => {
-  e.preventDefault();
-  const debug = document.getElementById("debugOutput");
-  const formData = new FormData(document.getElementById("dynamicForm"));
-  const data = Object.fromEntries(formData.entries());
-
-  debug.textContent = "📤 Sende an Server...\n" + JSON.stringify(data, null, 2);
-
-  try {
-    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(data)
-    });
-    const json = await res.json();
-    debug.textContent += "\n\n✅ Server antwortet:\n" + JSON.stringify(json, null, 2);
-
-    if (json.pdf_url) {
-      const filename = json.pdf_url.split("/").pop();
-      window.location.href = "/formular/thankyou.html?file=" + encodeURIComponent(filename);
-    }
-  } catch (err) {
-    debug.textContent += "\n❌ Fehler: " + err;
-  }
-});
 </script>
 <script src="formbuilder.js"></script>
 </body>
