@@ -1,105 +1,78 @@
-document.addEventListener("DOMContentLoaded", async () => {
-    console.log("🚀 Starte Formular-Builder...");
-
-    const container = document.getElementById("form-container");
+async function buildAndSubmitForm(fields) {
+    const formContainer = document.getElementById("form-container");
     const debug = document.getElementById("debug");
 
-    if (!container) {
-        console.error("❌ Kein Element mit ID 'form-container' gefunden.");
-        return;
-    }
+    const form = document.createElement("form");
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        debug.innerText = "⏳ Sende Daten an Server...";
 
-    try {
-        const response = await fetch("fields.json");
-        const data = await response.json();
-        console.log("✅ fields.json geladen:", data);
-
-        data.fields.forEach(field => {
-            const fieldWrapper = document.createElement("div");
-            fieldWrapper.className = "form-field";
-
-            const label = document.createElement("label");
-            label.innerText = field.label;
-            label.htmlFor = field.key;
-            fieldWrapper.appendChild(label);
-
-            if (field.type === "dropdown") {
-                const select = document.createElement("select");
-                select.name = field.key;
-                select.id = field.key;
-
-                const defaultOption = document.createElement("option");
-                defaultOption.value = "";
-                defaultOption.innerText = "Bitte auswählen";
-                select.appendChild(defaultOption);
-
-                field.options.forEach(opt => {
-                    const option = document.createElement("option");
-                    option.value = opt;
-                    option.innerText = opt;
-                    select.appendChild(option);
-                });
-
-                fieldWrapper.appendChild(select);
-
-            } else if (field.type === "text") {
-                const input = document.createElement("input");
-                input.type = "text";
-                input.name = field.key;
-                input.id = field.key;
-                if (field.placeholder) input.placeholder = field.placeholder;
-                fieldWrapper.appendChild(input);
-            }
-
-            container.appendChild(fieldWrapper);
-            console.log(`📝 Feld hinzugefügt: ${field.label} (${field.key})`);
+        const data = {};
+        fields.forEach(field => {
+            const el = form.querySelector(`[name="${field.name}"]`);
+            if (el) data[field.name] = el.value;
         });
 
-        // Submit-Button am Ende
-        const submitBtn = document.createElement("button");
-        submitBtn.type = "button";
-        submitBtn.innerText = "Analyse starten";
-        submitBtn.className = "submit-button";
-        submitBtn.addEventListener("click", async () => {
-            console.log("🚀 Sende Daten an Server...");
+        console.log("🚀 Sende Daten:", data);
 
-            const payload = {};
-            data.fields.forEach(field => {
-                const el = document.getElementById(field.key);
-                payload[field.key] = el ? el.value : null;
+        try {
+            const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
             });
 
-            console.log("📦 JSON-Request:", payload);
-            debug.innerText = "📤 JSON-Request:\n" + JSON.stringify(payload, null, 2);
+            const json = await res.json();
+            console.log("✅ Serverantwort:", json);
 
-            try {
-                const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-                const result = await res.json();
-                console.log("✅ Server-Antwort:", result);
+            // Gib das gerenderte HTML direkt aus
+            formContainer.innerHTML = json.html;
+            debug.innerText = "✅ Analyse erfolgreich geladen.";
 
-                debug.innerText += "\n\n✅ Server Response:\n" + JSON.stringify(result, null, 2);
+        } catch (err) {
+            console.error("❌ Fehler:", err);
+            debug.innerText = "❌ Fehler: " + err;
+        }
+    };
 
-                if (result.pdf_url) {
-                    window.location.href = `thankyou.html?file=${encodeURIComponent(result.pdf_url)}`;
-                } else {
-                    alert("Es gab ein Problem bei der Erstellung des Reports.");
-                }
-            } catch (err) {
-                console.error("❌ Fehler beim Senden:", err);
-                debug.innerText += "\n\n❌ Fehler beim Senden: " + err;
-                alert("Serverfehler - bitte später erneut versuchen.");
-            }
-        });
+    fields.forEach(field => {
+        const label = document.createElement("label");
+        label.innerText = field.label;
 
-        container.appendChild(submitBtn);
-        console.log("🎉 Formular erfolgreich aufgebaut und bereit.");
+        let input;
+        if (field.type === "textarea") {
+            input = document.createElement("textarea");
+        } else if (field.type === "select") {
+            input = document.createElement("select");
+            field.options.forEach(opt => {
+                const option = document.createElement("option");
+                option.value = opt;
+                option.text = opt;
+                input.add(option);
+            });
+        } else {
+            input = document.createElement("input");
+            input.type = field.type;
+        }
+        input.name = field.name;
 
-    } catch (err) {
-        console.error("❌ Fehler beim Laden oder Parsen der fields.json:", err);
-        if (debug) debug.innerText = "❌ Fehler beim Laden des Formulars.";
-    }
-});
+        form.appendChild(label);
+        form.appendChild(input);
+    });
+
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.innerText = "Analyse starten";
+    form.appendChild(submit);
+
+    formContainer.appendChild(form);
+}
+
+// Lade fields.json & baue Formular
+fetch("fields.json")
+    .then(res => res.json())
+    .then(fields => buildAndSubmitForm(fields))
+    .catch(err => {
+        console.error("❌ Fehler beim Laden von fields.json:", err);
+        document.getElementById("debug").innerText = "Fehler beim Laden des Formulars.";
+    });
