@@ -1,48 +1,13 @@
 {
   "fields": [
-    {
-      "key": "branche",
-      "label": "Branche",
-      "type": "dropdown",
-      "options": ["Finanzen & Steuern", "Medien & Marketing", "Kommunikation & PR", "Bildung & Coaching", "Verwaltung & Öffentliche Hand", "Handel & E-Commerce", "IT & Software", "Sonstige"]
-    },
-    {
-      "key": "bereich",
-      "label": "Geplanter Einsatzbereich",
-      "type": "dropdown",
-      "options": ["Beratung", "Vertrieb", "Marketing", "Produktion", "IT", "Personal", "Compliance", "Sonstige"]
-    },
-    {
-      "key": "massnahme",
-      "label": "Geplante Maßnahme",
-      "type": "dropdown",
-      "options": ["Beratung / Strategie", "Risikoanalyse", "Datenschutz / Compliance", "KI-Tool-Integration", "Mitarbeiterschulung / Change Management", "noch unklar"]
-    },
-    {
-      "key": "mitarbeiterzahl",
-      "label": "Mitarbeiterzahl",
-      "type": "dropdown",
-      "options": ["1-5", "6-20", "21-99", "mehr als 100"]
-    },
-    {
-      "key": "produkt_dienstleistung",
-      "label": "Was bieten Sie konkret an?",
-      "type": "text",
-      "placeholder": "z. B. Webdesign, Zahnarztpraxis, Maschinenbau"
-    },
-    {
-      "key": "selbststaendig",
-      "label": "Sind Sie selbstständig oder freiberuflich tätig?",
-      "type": "dropdown",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "plz",
-      "label": "PLZ (für Förderung-Check)",
-      "type": "text"
-    },
+    { "key": "branche", "label": "Branche", "type": "dropdown", "options": ["Finanzen & Steuern", "Medien & Marketing", "Kommunikation & PR", "Bildung & Coaching", "Verwaltung & Öffentliche Hand", "Handel & E-Commerce", "IT & Software", "Sonstige"] },
+    { "key": "bereich", "label": "Geplanter Einsatzbereich", "type": "dropdown", "options": ["Beratung", "Vertrieb", "Marketing", "Produktion", "IT", "Personal", "Compliance", "Sonstige"] },
+    { "key": "massnahme", "label": "Geplante Maßnahme", "type": "dropdown", "options": ["Beratung / Strategie", "Risikoanalyse", "Datenschutz / Compliance", "KI-Tool-Integration", "Mitarbeiterschulung / Change Management", "noch unklar"] },
+    { "key": "mitarbeiterzahl", "label": "Mitarbeiterzahl", "type": "dropdown", "options": ["1-5", "6-20", "21-99", "mehr als 100"] },
+    { "key": "produkt_dienstleistung", "label": "Was bieten Sie konkret an?", "type": "text", "placeholder": "z. B. Webdesign, Zahnarztpraxis, Maschinenbau" },
+    { "key": "selbststaendig", "label": "Sind Sie selbstständig oder freiberuflich tätig?", "type": "dropdown", "options": ["Ja", "Nein"] },
+    { "key": "plz", "label": "PLZ (für Förderung-Check)", "type": "text" },
 
-    // Unternehmensfragen
     { "key": "frage1", "label": "Haben Sie technische Maßnahmen getroffen (z. B. Verschlüsselung, Firewalls, Zugriffskontrollen)?", "type": "dropdown", "options": ["Ja", "Nein"] },
     { "key": "frage2", "label": "Gibt es Schulungen oder Informationen für Mitarbeiter zu Datenschutz, KI oder rechtlichen Anforderungen?", "type": "dropdown", "options": ["Ja", "Nein"] },
     { "key": "frage3", "label": "Haben Sie einen Datenschutzbeauftragten oder Verantwortlichen benannt?", "type": "dropdown", "options": ["Ja", "Nein"] },
@@ -54,54 +19,13 @@
     { "key": "frage9", "label": "Existieren Meldepflichten und klare Abläufe bei Datenschutzvorfällen?", "type": "dropdown", "options": ["Ja", "Nein"] },
     { "key": "frage10", "label": "Führen Sie regelmäßige Überprüfungen oder Audits durch?", "type": "dropdown", "options": ["Ja", "Nein"] },
 
-    // Business & Strategie
-    {
-      "key": "herausforderungen",
-      "label": "Was sind Ihre größten Herausforderungen?",
-      "type": "text",
-      "placeholder": "z. B. Fachkräftemangel, Kosten senken, Digitalisierung"
-    },
-    {
-      "key": "ziele_3jahre",
-      "label": "Wo möchten Sie in 3 Jahren stehen?",
-      "type": "text",
-      "placeholder": "z. B. Marktführer, neue Märkte erschließen"
-    },
-    {
-      "key": "it_systeme",
-      "label": "Welche IT-Tools werden bereits eingesetzt?",
-      "type": "dropdown",
-      "options": ["Microsoft Office", "Google Workspace", "SAP", "HubSpot", "Sonstige"]
-    },
-    {
-      "key": "ki_tools",
-      "label": "Nutzen Sie aktuell KI-Tools im Unternehmen?",
-      "type": "dropdown",
-      "options": ["ChatGPT", "DALL·E", "Midjourney", "Copilot", "keine", "Sonstige"]
-    },
-    {
-      "key": "zielgruppen",
-      "label": "Welche Zielgruppen bedient Ihr Unternehmen?",
-      "type": "text",
-      "placeholder": "z. B. B2B, Endkunden, öffentl. Auftraggeber"
-    },
-    {
-      "key": "vorfaelle",
-      "label": "Gab es bereits Datenschutzvorfälle/Audits?",
-      "type": "dropdown",
-      "options": ["Ja", "Nein", "Nicht bekannt"]
-    },
-    {
-      "key": "innovation_potentiale",
-      "label": "Größte Automatisierungspotenziale?",
-      "type": "text",
-      "placeholder": "z. B. Marketing, Kundenservice, Produktion"
-    },
-    {
-      "key": "moonshot",
-      "label": "Was wäre ein echter Moonshot?",
-      "type": "text",
-      "placeholder": "z. B. Internationaler Marktführer"
-    }
+    { "key": "herausforderungen", "label": "Was sind Ihre größten Herausforderungen?", "type": "text", "placeholder": "z. B. Fachkräftemangel, Kosten senken, Digitalisierung" },
+    { "key": "ziele_3jahre", "label": "Wo möchten Sie in 3 Jahren stehen?", "type": "text", "placeholder": "z. B. Marktführer, neue Märkte erschließen" },
+    { "key": "it_systeme", "label": "Welche IT-Tools werden bereits eingesetzt?", "type": "dropdown", "options": ["Microsoft Office", "Google Workspace", "SAP", "HubSpot", "Sonstige"] },
+    { "key": "ki_tools", "label": "Nutzen Sie aktuell KI-Tools im Unternehmen?", "type": "dropdown", "options": ["ChatGPT", "DALL·E", "Midjourney", "Copilot", "keine", "Sonstige"] },
+    { "key": "zielgruppen", "label": "Welche Zielgruppen bedient Ihr Unternehmen?", "type": "text", "placeholder": "z. B. B2B, Endkunden, öffentl. Auftraggeber" },
+    { "key": "vorfaelle", "label": "Gab es bereits Datenschutzvorfälle/Audits?", "type": "dropdown", "options": ["Ja", "Nein", "Nicht bekannt"] },
+    { "key": "innovation_potentiale", "label": "Größte Automatisierungspotenziale?", "type": "text", "placeholder": "z. B. Marketing, Kundenservice, Produktion" },
+    { "key": "moonshot", "label": "Was wäre ein echter Moonshot?", "type": "text", "placeholder": "z. B. Internationaler Marktführer" }
   ]
 }
