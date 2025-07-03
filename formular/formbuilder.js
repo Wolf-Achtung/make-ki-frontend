@@ -71,7 +71,7 @@ async function buildAndSubmitForm(fields) {
 // Lade fields.json & baue Formular
 fetch("fields.json")
     .then(res => res.json())
-    .then(fields => buildAndSubmitForm(fields))
+    .then(json => buildAndSubmitForm(json.fields))
     .catch(err => {
         console.error("❌ Fehler beim Laden von fields.json:", err);
         document.getElementById("debug").innerText = "Fehler beim Laden des Formulars.";
