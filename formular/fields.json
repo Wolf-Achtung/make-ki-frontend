@@ -1,154 +1,90 @@
 {
   "fields": [
     {
-      "key": "branche",
       "label": "Branche",
       "type": "select",
-      "options": ["IT", "Handwerk", "Gesundheit", "Industrie", "Beratung", "Sonstiges"]
+      "options": [
+        "Bitte auswählen",
+        "Marketing & Werbung",
+        "IT & Software",
+        "Handwerk",
+        "Beratung & Coaching",
+        "Handel",
+        "Gesundheit",
+        "Bildung & Training",
+        "Recht & Steuer",
+        "Sonstige"
+      ]
     },
     {
-      "key": "bereich",
       "label": "Geplanter Einsatzbereich",
-      "type": "select",
-      "options": ["Marketing", "Produktion", "Vertrieb", "Support", "HR", "Allgemein"]
-    },
-    {
-      "key": "massnahme",
-      "label": "Welche Maßnahme planen Sie?",
       "type": "text",
-      "placeholder": "z. B. KI-gestützte Prozessoptimierung"
+      "placeholder": "z. B. Vertrieb, Verwaltung, Kundenservice"
     },
     {
-      "key": "mitarbeiterzahl",
+      "label": "Geplante Maßnahme",
+      "type": "text",
+      "placeholder": "z. B. Prozessoptimierung, KI-Integration"
+    },
+    {
       "label": "Mitarbeiterzahl",
       "type": "select",
-      "options": ["1-9", "10-49", "50-249", "250+"]
+      "options": ["Bitte auswählen", "1-5", "6-20", "21-99", "100+"]
     },
     {
-      "key": "produkt_dienstleistung",
-      "label": "Produkt oder Dienstleistung",
-      "type": "text",
-      "placeholder": "z. B. Softwarelösungen, Handwerksservice"
+      "label": "Was bieten Sie konkret an?",
+      "type": "textarea",
+      "placeholder": "Produkt / Dienstleistung beschreiben"
     },
     {
-      "key": "selbststaendig",
-      "label": "Sind Sie selbstständig oder Freiberufler?",
+      "label": "Sind Sie selbstständig oder freiberuflich tätig?",
       "type": "select",
-      "options": ["Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"]
     },
     {
-      "key": "plz",
-      "label": "PLZ / Region",
+      "label": "PLZ (für Förderung-Check)",
       "type": "text",
-      "placeholder": "z. B. 80331"
+      "placeholder": "z. B. 10405"
     },
     {
-      "key": "herausforderungen",
-      "label": "Was sind Ihre größten Herausforderungen?",
-      "type": "text",
-      "placeholder": "z. B. Fachkräftemangel, Digitalisierung"
-    },
-    {
-      "key": "ziele_3jahre",
-      "label": "Wo soll das Unternehmen in 3 Jahren stehen?",
-      "type": "text",
-      "placeholder": "z. B. Marktführer im Bereich XY"
-    },
-    {
-      "key": "it_systeme",
-      "label": "Welche IT-Tools werden bereits eingesetzt?",
+      "label": "Haben Sie technische Maßnahmen getroffen (z. B. Verschlüsselung, Firewalls, Zugriffskontrollen)?",
       "type": "select",
-      "options": ["MS Office", "ERP-System", "CRM", "Kein System", "Sonstiges"]
+      "options": ["Bitte auswählen", "Ja", "Nein"]
     },
     {
-      "key": "ki_tools",
-      "label": "Nutzen Sie aktuell KI-Tools im Unternehmen?",
+      "label": "Gibt es Schulungen oder Informationen für Mitarbeiter zu Datenschutz, KI oder rechtlichen Anforderungen?",
       "type": "select",
-      "options": ["Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"]
     },
     {
-      "key": "zielgruppen",
-      "label": "Welche Zielgruppen bedienen Sie?",
+      "label": "Haben Sie einen Datenschutzbeauftragten oder Verantwortlichen benannt?",
       "type": "select",
-      "options": ["B2B", "B2C", "Öffentliche Hand", "Sonstige"]
+      "options": ["Bitte auswählen", "Ja", "Nein"]
     },
     {
-      "key": "innovation_potenziale",
-      "label": "Größte Automatisierungspotenziale?",
+      "label": "Haben Sie Risiken z. B. durch eine Datenschutz-Folgenabschätzung geprüft?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein"]
+    },
+    {
+      "label": "Gibt es feste Regeln zur Löschung oder Anonymisierung personenbezogener Daten?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein"]
+    },
+    {
+      "label": "Wissen Ihre Mitarbeiter, was bei einer Datenschutzverletzung zu tun ist?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein"]
+    },
+    {
+      "label": "Größte Automatisierungspotenziale",
       "type": "text",
-      "placeholder": "z. B. Rechnungsprüfung, Kundenservice"
+      "placeholder": "z. B. Marketing, Buchhaltung, Kundenservice"
     },
     {
-      "key": "moonshot",
       "label": "Was wäre ein echter Moonshot?",
       "type": "text",
-      "placeholder": "z. B. vollautomatische Produktion"
-    },
-    {
-      "key": "vorfaelle",
-      "label": "Gab es bereits Datenschutzvorfälle/Audits?",
-      "type": "select",
-      "options": ["Ja", "Nein", "Nicht bekannt"]
-    },
-    {
-      "key": "frage1",
-      "label": "Existiert eine schriftliche Datenschutzdokumentation?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage2",
-      "label": "Werden Mitarbeitende regelmäßig geschult?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage3",
-      "label": "Existieren Löschkonzepte für Daten?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage4",
-      "label": "Sind externe Dienstleister vertraglich abgesichert?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage5",
-      "label": "Werden regelmäßig Backups gemacht?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage6",
-      "label": "Existieren Notfallpläne?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage7",
-      "label": "Gibt es ein IT-Sicherheitskonzept?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage8",
-      "label": "Sind KI-Modelle dokumentiert & erklärt?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage9",
-      "label": "Werden KI-Ergebnisse regelmäßig geprüft?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
-    },
-    {
-      "key": "frage10",
-      "label": "Existieren Ansprechpartner für KI & Datenschutz?",
-      "type": "select",
-      "options": ["Ja", "Nein"]
+      "placeholder": "z. B. Marktführer international"
     }
   ]
 }

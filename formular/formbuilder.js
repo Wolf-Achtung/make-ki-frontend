@@ -1,11 +1,13 @@
 async function buildAndSubmitForm(fields) {
     const formContainer = document.getElementById("form-container");
     const debug = document.getElementById("debug");
+    const ergebnis = document.getElementById("ergebnis");
 
     const form = document.createElement("form");
     form.onsubmit = async (e) => {
         e.preventDefault();
         debug.innerText = "⏳ Sende Daten an Server...";
+        ergebnis.innerHTML = "";
 
         const data = {};
         fields.forEach(field => {
@@ -26,13 +28,11 @@ async function buildAndSubmitForm(fields) {
             console.log("✅ Serverantwort:", json);
 
             if (json.html) {
-                formContainer.innerHTML = json.html;
+                ergebnis.innerHTML = json.html;
+                debug.innerText = "✅ Analyse erfolgreich geladen.";
             } else {
                 debug.innerText = "⚠️ Server hat kein HTML zurückgegeben.";
             }
-
-            debug.innerText = "✅ Analyse erfolgreich geladen.";
-
         } catch (err) {
             console.error("❌ Fehler:", err);
             debug.innerText = "❌ Fehler: " + err;
@@ -51,6 +51,7 @@ async function buildAndSubmitForm(fields) {
         let input;
         if (field.type === "textarea") {
             input = document.createElement("textarea");
+            input.placeholder = field.placeholder || "";
         } else if (field.type === "select" && Array.isArray(field.options)) {
             input = document.createElement("select");
             field.options.forEach(opt => {
@@ -62,7 +63,7 @@ async function buildAndSubmitForm(fields) {
         } else {
             input = document.createElement("input");
             input.type = field.type || "text";
-            if (field.placeholder) input.placeholder = field.placeholder;
+            input.placeholder = field.placeholder || "";
         }
         input.name = field.key;
         input.style.width = "100%";
@@ -86,7 +87,7 @@ async function buildAndSubmitForm(fields) {
 
 fetch("fields.json")
     .then(res => res.json())
-    .then(json => buildAndSubmitForm(json.fields || json)) // falls json.fields fehlt
+    .then(json => buildAndSubmitForm(json.fields || json))
     .catch(err => {
         console.error("❌ Fehler beim Laden von fields.json:", err);
         document.getElementById("debug").innerText = "Fehler beim Laden des Formulars.";
