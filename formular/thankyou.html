@@ -41,8 +41,7 @@
     const params = new URLSearchParams(window.location.search);
     const file = params.get('file');
     if (file) {
-      const backendUrl = "https://make-ki-backend-neu-production.up.railway.app/download/";
-      document.getElementById('downloadLink').href = backendUrl + encodeURIComponent(file);
+      document.getElementById('downloadLink').href = file;
     } else {
       document.getElementById('downloadLink').innerText = "Kein PDF gefunden.";
       document.getElementById('downloadLink').style.background = "#ccc";
