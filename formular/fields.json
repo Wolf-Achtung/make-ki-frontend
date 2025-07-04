@@ -1,6 +1,7 @@
 {
   "fields": [
     {
+      "key": "branche",
       "label": "Branche",
       "type": "select",
       "options": [
@@ -14,74 +15,101 @@
         "Bildung & Training",
         "Recht & Steuer",
         "Sonstige"
-      ]
+      ],
+      "required": true
     },
     {
+      "key": "einsatzbereich",
       "label": "Geplanter Einsatzbereich",
       "type": "text",
-      "placeholder": "z. B. Vertrieb, Verwaltung, Kundenservice"
+      "placeholder": "z. B. Vertrieb, Verwaltung, Kundenservice",
+      "required": true
     },
     {
+      "key": "massnahme",
       "label": "Geplante Maßnahme",
       "type": "text",
-      "placeholder": "z. B. Prozessoptimierung, KI-Integration"
+      "placeholder": "z. B. Prozessoptimierung, KI-Integration",
+      "required": true
     },
     {
+      "key": "mitarbeiterzahl",
       "label": "Mitarbeiterzahl",
       "type": "select",
-      "options": ["Bitte auswählen", "1-5", "6-20", "21-99", "100+"]
+      "options": ["Bitte auswählen", "1-5", "6-20", "21-99", "100+"],
+      "required": true
     },
     {
+      "key": "angebot",
       "label": "Was bieten Sie konkret an?",
       "type": "textarea",
-      "placeholder": "Produkt / Dienstleistung beschreiben"
+      "placeholder": "Produkt / Dienstleistung beschreiben",
+      "required": true
     },
     {
+      "key": "selbststaendig",
       "label": "Sind Sie selbstständig oder freiberuflich tätig?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "required": true
     },
     {
+      "key": "plz",
       "label": "PLZ (für Förderung-Check)",
       "type": "text",
-      "placeholder": "z. B. 10405"
+      "placeholder": "z. B. 10405",
+      "required": true
     },
     {
+      "key": "technische_massnahmen",
       "label": "Haben Sie technische Maßnahmen getroffen (z. B. Verschlüsselung, Firewalls, Zugriffskontrollen)?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "required": true
     },
     {
+      "key": "schulungen",
       "label": "Gibt es Schulungen oder Informationen für Mitarbeiter zu Datenschutz, KI oder rechtlichen Anforderungen?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "required": true
     },
     {
+      "key": "dsb",
       "label": "Haben Sie einen Datenschutzbeauftragten oder Verantwortlichen benannt?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "required": true
     },
     {
+      "key": "folgenabschaetzung",
       "label": "Haben Sie Risiken z. B. durch eine Datenschutz-Folgenabschätzung geprüft?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "required": true
     },
     {
+      "key": "loeschregeln",
       "label": "Gibt es feste Regeln zur Löschung oder Anonymisierung personenbezogener Daten?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "required": true
     },
     {
+      "key": "meldewege",
       "label": "Wissen Ihre Mitarbeiter, was bei einer Datenschutzverletzung zu tun ist?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"]
+      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "required": true
     },
     {
+      "key": "automatisierungspotenziale",
       "label": "Größte Automatisierungspotenziale",
       "type": "text",
       "placeholder": "z. B. Marketing, Buchhaltung, Kundenservice"
     },
     {
+      "key": "moonshot",
       "label": "Was wäre ein echter Moonshot?",
       "type": "text",
       "placeholder": "z. B. Marktführer international"
