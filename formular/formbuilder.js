@@ -2,21 +2,17 @@ document.addEventListener("DOMContentLoaded", async function () {
   const form = document.getElementById("dynamicForm");
   const ergebnis = document.getElementById("ergebnis");
   const debug = document.getElementById("debug");
-  
   // Felder von Server holen (fields.json im selben Verzeichnis)
   const res = await fetch("fields.json");
   const { fields } = await res.json();
-  
   // Formular dynamisch bauen
   fields.forEach(field => {
     const div = document.createElement("div");
     div.className = "form-group";
-    
     const label = document.createElement("label");
     label.innerText = field.label;
     label.htmlFor = field.key;
     div.appendChild(label);
-    
     let input;
     if (field.type === "textarea") {
       input = document.createElement("textarea");
@@ -34,6 +30,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         option.text = opt;
         input.add(option);
       });
+    } else if (field.type === "checkbox") {
+      input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = "true";
+      input.style.width = "22px";
+      input.style.height = "22px";
+      input.style.verticalAlign = "middle";
+      label.innerHTML = field.label; // HTML für Link!
     } else if (field.type === "input") {
       input = document.createElement("input");
       input.type = "text";
@@ -65,7 +69,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     div.appendChild(input);
     form.appendChild(div);
   });
-
   // Submit-Handler
   form.onsubmit = async function (e) {
     e.preventDefault();
@@ -76,12 +79,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (el) {
         if (el.multiple) {
           data[field.key] = Array.from(el.selectedOptions).map(o => o.value);
+        } else if (field.type === "checkbox") {
+          data[field.key] = el.checked;
         } else {
           data[field.key] = el.value;
         }
       }
     });
-
     try {
       const resp = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
         method: "POST",

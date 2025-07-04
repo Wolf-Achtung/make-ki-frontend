@@ -286,11 +286,17 @@
       "required": false
     },
     {
-      "key": "risikohemmnisse",
-      "label": "Was sind aktuell die größten Hemmnisse/Risiken beim KI-Einsatz?",
-      "type": "textarea",
-      "placeholder": "z. B. Datenschutz, Fachkräftemangel, Kosten",
-      "required": false
-    }
-  ]
+  "key": "risikohemmnisse",
+  "label": "Was sind aktuell die größten Hemmnisse/Risiken beim KI-Einsatz?",
+  "type": "textarea",
+  "placeholder": "z. B. Datenschutz, Fachkräftemangel, Kosten",
+  "required": false
+},
+{
+  "key": "datenschutz_ok",
+  "label": "Ich habe die <a href='datenschutz.html' target='_blank'>Datenschutzerklärung</a> gelesen und akzeptiere sie.",
+  "type": "checkbox",
+  "required": true
+}
+]
 }
