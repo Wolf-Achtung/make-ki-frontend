@@ -69,6 +69,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     div.appendChild(input);
     form.appendChild(div);
   });
+
+  // ------ Analyse-Button am Ende ------
+  const submitBtn = document.createElement("button");
+  submitBtn.type = "submit";
+  submitBtn.innerText = "Analyse starten";
+  submitBtn.className = "btn-primary";
+  submitBtn.style.marginTop = "2em";
+  submitBtn.style.fontSize = "1.2em";
+  submitBtn.style.padding = "0.7em 2em";
+  submitBtn.style.background = "#003b5a";
+  submitBtn.style.color = "#fff";
+  submitBtn.style.border = "none";
+  submitBtn.style.borderRadius = "6px";
+  submitBtn.style.cursor = "pointer";
+  form.appendChild(submitBtn);
+  // ------------------------------------
+
   // Submit-Handler
   form.onsubmit = async function (e) {
     e.preventDefault();
