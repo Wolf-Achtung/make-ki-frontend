@@ -108,8 +108,7 @@
     "Kundensupport",
     "Individuell (bitte angeben)"
   ],
-  "required": false,
-  "multiple": true
+  "required": false
 },
     {
       "key": "ki_potenzial",
