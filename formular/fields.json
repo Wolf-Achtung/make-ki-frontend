@@ -1,69 +1,37 @@
 {
   "fields": [
     { "key": "branche", "label": "Branche", "type": "select", "options": ["Marketing & Werbung", "IT & Software", "Handwerk", "Gesundheit", "Beratung & Coaching", "Recht & Steuern", "Industrie & Produktion", "Handel & E-Commerce", "Immobilien", "Finanzen & Versicherung", "Sonstige"], "required": true },
-
     { "key": "unternehmensgroesse", "label": "Mitarbeiterzahl", "type": "select", "options": ["1", "2-5", "6-10", "11-50", "51-250"], "required": true },
-
     { "key": "selbststaendig", "label": "Sind Sie selbstständig oder freiberuflich tätig?", "type": "select", "options": ["Ja", "Nein"], "required": true },
-
     { "key": "plz", "label": "Postleitzahl (für regionale Fördermöglichkeiten)", "type": "input", "required": true },
-
     { "key": "bundesland", "label": "Bundesland", "type": "select", "options": ["Baden-Württemberg", "Bayern", "Berlin", "Brandenburg", "Bremen", "Hamburg", "Hessen", "Mecklenburg-Vorpommern", "Niedersachsen", "Nordrhein-Westfalen", "Rheinland-Pfalz", "Saarland", "Sachsen", "Sachsen-Anhalt", "Schleswig-Holstein", "Thüringen"], "required": true },
-
-    { "key": "hauptleistung", "label": "Hauptangebot / Leistung (Bitte kurz beschreiben, z.B. 'Online-Marketing-Beratung', 'Bauplanung', 'Gesundheitsdienstleistungen')", "type": "input", "required": true },
-
+    { "key": "hauptleistung", "label": "Was ist das Hauptprodukt / die wichtigste Dienstleistung Ihres Unternehmens? (z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen)", "type": "input", "required": true },
     { "key": "zielgruppen", "label": "Zielgruppe (Bitte auswählen oder angeben)", "type": "select", "options": ["Unternehmen (KMU)", "Privatkunden", "Öffentliche Hand", "Freiberufler", "Verbände/Organisationen", "Sonstige (bitte angeben)"], "required": true },
-
     { "key": "ki_einsatz", "label": "Wo wird KI heute bereits eingesetzt? (Mehrfachauswahl möglich)", "type": "checkbox", "options": ["Buchhaltung/Finanzen", "Vertrieb/Marketing", "Kundenservice", "Produktion/Prozesse", "HR/Personal", "Forschung & Entwicklung", "Noch kein Einsatz", "Sonstiges (bitte angeben)"], "required": false },
-
     { "key": "digitalisierungsgrad", "label": "Wie bewerten Sie den Digitalisierungsgrad Ihres Unternehmens? (1 = kaum digital, 10 = vollständig digitalisiert)", "type": "range", "min": 1, "max": 10, "required": true },
-
     { "key": "prozesse_papierlos", "label": "Wie hoch ist der Anteil papierloser Prozesse?", "type": "select", "options": ["0-20%", "21-50%", "51-80%", "81-100%"], "required": true },
-
     { "key": "automatisierungsgrad", "label": "Wie hoch ist der Automatisierungsgrad der Arbeitsprozesse? (1 = wenig automatisiert, 10 = weitgehend automatisiert)", "type": "range", "min": 1, "max": 10, "required": false },
-
     { "key": "ki_knowhow", "label": "Wie schätzen Sie das KI-Knowhow im Unternehmen ein?", "type": "select", "options": ["Kaum vorhanden", "Grundkenntnisse (erste Tools im Einsatz)", "Fortgeschritten (einige KI-Prozesse etabliert)", "Expertenwissen (strategischer KI-Einsatz)"], "required": true },
-
     { "key": "datenschutzbeauftragter", "label": "Gibt es in Ihrem Unternehmen einen Datenschutzbeauftragten?", "type": "select", "options": ["Ja", "Nein"], "required": true },
-
     { "key": "technische_massnahmen", "label": "Wie gut sind technische & organisatorische Datenschutz-Maßnahmen umgesetzt?", "type": "select", "options": ["Vollständig", "Teilweise", "Unklar"], "required": true },
-
     { "key": "folgenabschaetzung", "label": "Wurde bereits eine Datenschutz-Folgenabschätzung (DSFA) durchgeführt?", "type": "select", "options": ["Ja", "Nein"], "required": true },
-
     { "key": "meldewege", "label": "Gibt es Meldewege für Datenschutzvorfälle?", "type": "select", "options": ["Ja", "Nein"], "required": true },
-
     { "key": "loeschregeln", "label": "Existieren klare Löschregeln für Daten?", "type": "select", "options": ["Ja", "Teilweise", "Nein"], "required": true },
-
     { "key": "ai_act_kenntnis", "label": "Wie gut sind Sie mit dem EU AI Act vertraut?", "type": "select", "options": ["Nein", "Habe davon gehört", "Gut informiert"], "required": true },
-
-    { "key": "risikohemmnisse", "label": "Was sind aktuell die größten Hemmnisse oder Risiken beim Einsatz von KI? (z.B. Unsicherheit bei Rechtslage, Fachkräftemangel, fehlende Erfahrung, Datenschutzbedenken, Budget, fehlende Zeit, Akzeptanz im Team etc.)", "type": "textarea", "required": false },
-
+    { "key": "risikohemmnisse", "label": "Was sind für Ihr Unternehmen aktuell die größten Hemmnisse oder Risiken beim Einsatz von KI? (z.B. Unsicherheit bei Rechtslage, Fachkräftemangel, fehlende Erfahrung, Datenschutzbedenken, Budget, fehlende Zeit, Akzeptanz im Team etc.)", "type": "textarea", "required": false },
     { "key": "bisherige_foerdermittel", "label": "Haben Sie bereits Fördermittel für Digitalisierung oder KI erhalten?", "type": "select", "options": ["Ja", "Nein"], "required": false },
-
     { "key": "interesse_foerderung", "label": "Sind Sie an weiteren Fördermöglichkeiten interessiert?", "type": "select", "options": ["Ja", "Nein"], "required": false },
-
     { "key": "erfahrung_beratung", "label": "Haben Sie bereits Beratung zu KI oder Digitalisierung in Anspruch genommen?", "type": "select", "options": ["Ja", "Nein", "Unklar"], "required": false },
-
     { "key": "investitionsbudget", "label": "Welches Investitionsbudget ist für Digitalisierung und KI geplant?", "type": "select", "options": ["Bis 2.000 €", "2.000–10.000 €", "10.000–50.000 €", "Über 50.000 €"], "required": false },
-
     { "key": "ki_projekte", "label": "Gibt es geplante oder laufende KI-Projekte? (z.B. Chatbots, automatisierte Datenanalyse, Prozessoptimierung, KI im Marketing etc.)", "type": "textarea", "required": false },
-
     { "key": "ki_usecases", "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen? (Mehrfachauswahl möglich)", "type": "checkbox", "options": ["Texterstellung & Content", "Bild-/Video-/Audio-Generierung", "Prozessautomatisierung & Workflows", "Kundensupport & Chatbots", "Datenanalyse & Prognose", "Personalisierung von Angeboten", "Qualitätskontrolle/Produktion", "Individuell (bitte angeben)"], "required": false },
-
     { "key": "ki_potenzial", "label": "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen? (z.B. Umsatzsteigerung, Prozessoptimierung, Kostenersparnis, schnellere Markteinführung, neue Dienstleistungen, Wissensmanagement etc.)", "type": "select", "options": ["Umsatzsteigerung", "Prozessoptimierung", "Kostenersparnis", "Schnellere Markteinführung", "Neue Dienstleistungen/Produkte", "Besseres Wissensmanagement", "Bessere Kundenbindung", "Noch unklar"], "required": false },
-
     { "key": "usecase_priority", "label": "In welchem Bereich möchten Sie den KI-Einsatz priorisieren?", "type": "select", "options": ["Produktion", "Marketing", "Kundensupport", "Personal", "Finanzen", "Noch unklar"], "required": false },
-
     { "key": "marktposition", "label": "Wie würden Sie die aktuelle Marktposition Ihres Unternehmens im Wettbewerb einschätzen?", "type": "select", "options": ["Marktführer", "Mittelfeld", "Nische", "Noch unklar"], "required": false },
-
     { "key": "innovationsprozess", "label": "Wie werden Innovationen in Ihrem Unternehmen entwickelt? (Gibt es einen festen Prozess, werden Ideen im Team gesammelt, oder eher spontan?)", "type": "select", "options": ["Fester Innovationsprozess", "Team sammelt Ideen laufend", "Spontan/Ad-hoc", "Noch unklar"], "required": false },
-
     { "key": "risikofreude", "label": "Wie risikofreudig ist Ihr Unternehmen? (1 = sehr risikoavers, 10 = sehr risikofreudig)", "type": "range", "min": 1, "max": 10, "required": false },
-
     { "key": "vision", "label": "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern? (Beispiele: ganz neue Dienstleistungen, disruptive Prozesse, Branchenvorreiter, starke Effizienzgewinne, neue Arbeitsmodelle, Automatisierung, neue Umsatzmodelle etc.)", "type": "textarea", "required": false },
-
     { "key": "moonshot", "label": "Was wäre Ihr größter \"Moonshot\" – also ein wirklich großer, mutiger Durchbruch, den Sie sich durch KI wünschen? Zukunftsbild: Wenn alles möglich wäre, was wäre Ihr Traum für Ihr Unternehmen in 3 Jahren mit KI? (z.B. Marktführer, globaler Durchbruch, neue Branche erschlossen, …)", "type": "textarea", "required": false },
-
     { "key": "datenschutz_ok", "label": "Ich habe die <a href='datenschutz.html' target='_blank'>Datenschutzerklärung</a> gelesen und akzeptiere sie.", "type": "checkbox", "required": true }
   ]
 }
