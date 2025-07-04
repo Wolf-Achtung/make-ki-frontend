@@ -22,9 +22,17 @@
     },
     {
       "key": "unternehmensgroesse",
-      "label": "Mitarbeiterzahl",
+      "label": "Mitarbeiterzahl (inkl. Inhaber/in)",
       "type": "select",
-      "options": ["Bitte auswählen", "1-5", "6-20", "21-99", "100-499", "500+"],
+      "options": [
+        "Bitte auswählen",
+        "1 (Solo-Selbstständig)",
+        "2-5",
+        "6-20",
+        "21-49",
+        "50-99",
+        "100-249"
+      ],
       "required": true
     },
     {
@@ -88,6 +96,21 @@
       "required": false
     },
     {
+      "key": "ki_usecases",
+      "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen?",
+      "type": "checkbox",
+      "options": [
+        "Texterstellung",
+        "Bildgenerierung",
+        "Spracherkennung",
+        "Prozessautomatisierung",
+        "Datenanalyse & Prognose",
+        "Kundensupport",
+        "Individuell (bitte angeben)"
+      ],
+      "required": false
+    },
+    {
       "key": "ki_potenzial",
       "label": "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
       "type": "textarea",
@@ -96,7 +119,7 @@
     },
     {
       "key": "ki_projekte",
-      "label": "Gibt es laufende/plange KI-Projekte?",
+      "label": "Gibt es laufende/geplante KI-Projekte?",
       "type": "textarea",
       "placeholder": "z. B. Chatbot, Texterstellung, Bilderkennung",
       "required": false
@@ -109,11 +132,51 @@
       "required": true
     },
     {
+      "key": "digitalisierungsgrad",
+      "label": "Wie digital sind Ihre internen Prozesse bereits?",
+      "type": "range",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "required": true
+    },
+    {
+      "key": "prozesse_papierlos",
+      "label": "Wie viele Geschäftsprozesse laufen bereits vollständig papierlos?",
+      "type": "select",
+      "options": [
+        "Bitte auswählen", "0-10%", "11-50%", "51-80%", "81-100%"
+      ],
+      "required": true
+    },
+    {
       "key": "innovationsprozess",
       "label": "Gibt es Prozesse für Innovationsmanagement/Change?",
       "type": "select",
       "options": ["Bitte auswählen", "Ja", "Nein", "Teilweise"],
       "required": true
+    },
+    {
+      "key": "marktposition",
+      "label": "Wie schätzen Sie Ihre Marktposition aktuell ein?",
+      "type": "select",
+      "options": [
+        "Bitte auswählen",
+        "Marktführer",
+        "Unteres Drittel",
+        "Mittelfeld",
+        "Oberes Drittel",
+        "Nischenanbieter",
+        "Kenne ich nicht"
+      ],
+      "required": true
+    },
+    {
+      "key": "benchmark_wettbewerb",
+      "label": "Kennen Sie Unternehmen in Ihrer Branche, die KI bereits erfolgreich nutzen? Wer ist für Sie Benchmark/Vorbild?",
+      "type": "textarea",
+      "placeholder": "z. B. Ja, Unternehmen XY. Nein. Unbekannt.",
+      "required": false
     },
     {
       "key": "datenschutzbeauftragter",
@@ -154,7 +217,13 @@
       "key": "ai_act_kenntnis",
       "label": "Wie gut kennen Sie den EU AI Act?",
       "type": "select",
-      "options": ["Bitte auswählen", "Experte", "Grundkenntnisse", "Habe davon gehört", "Kenne ich nicht"],
+      "options": [
+        "Bitte auswählen",
+        "Experte",
+        "Grundkenntnisse",
+        "Habe davon gehört",
+        "Kenne ich nicht"
+      ],
       "required": true
     },
     {
@@ -172,6 +241,43 @@
       "required": true
     },
     {
+      "key": "erfahrung_beratung",
+      "label": "Gab es bereits Beratung zum Thema Digitalisierung/KI?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein", "Unklar"],
+      "required": true
+    },
+    {
+      "key": "investitionsbudget",
+      "label": "Welches Investitionsbudget planen Sie für KI/Digitalisierung in den nächsten 12 Monaten?",
+      "type": "select",
+      "options": [
+        "Bitte auswählen",
+        "bis 2.000 €",
+        "2.000–10.000 €",
+        "10.000–50.000 €",
+        "über 50.000 €",
+        "noch offen"
+      ],
+      "required": true
+    },
+    {
+      "key": "risikofreude",
+      "label": "Wie risikofreudig ist Ihr Unternehmen bei Innovationen?",
+      "type": "range",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "required": true
+    },
+    {
+      "key": "usecase_priority",
+      "label": "Welcher Geschäftsbereich sollte zuerst mit KI verbessert werden?",
+      "type": "textarea",
+      "placeholder": "z. B. Vertrieb, Buchhaltung, Produktion, Kundenservice",
+      "required": false
+    },
+    {
       "key": "moonshot",
       "label": "Was wäre Ihr persönlicher Moonshot (Traumziel) für Ihr Unternehmen durch KI?",
       "type": "textarea",
@@ -180,7 +286,7 @@
     },
     {
       "key": "risikohemmnisse",
-      "label": "Was sind aus Ihrer Sicht aktuell die größten Hemmnisse/Risiken beim KI-Einsatz?",
+      "label": "Was sind aktuell die größten Hemmnisse/Risiken beim KI-Einsatz?",
       "type": "textarea",
       "placeholder": "z. B. Datenschutz, Fachkräftemangel, Kosten",
       "required": false
