@@ -95,21 +95,22 @@
       "placeholder": "z. B. Marketing, Buchhaltung, Kundenservice, noch nicht im Einsatz",
       "required": false
     },
-    {
-      "key": "ki_usecases",
-      "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen?",
-      "type": "checkbox",
-      "options": [
-        "Texterstellung",
-        "Bildgenerierung",
-        "Spracherkennung",
-        "Prozessautomatisierung",
-        "Datenanalyse & Prognose",
-        "Kundensupport",
-        "Individuell (bitte angeben)"
-      ],
-      "required": false
-    },
+   {
+  "key": "ki_usecases",
+  "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen?",
+  "type": "select",
+  "options": [
+    "Texterstellung",
+    "Bildgenerierung",
+    "Spracherkennung",
+    "Prozessautomatisierung",
+    "Datenanalyse & Prognose",
+    "Kundensupport",
+    "Individuell (bitte angeben)"
+  ],
+  "required": false,
+  "multiple": true
+},
     {
       "key": "ki_potenzial",
       "label": "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
