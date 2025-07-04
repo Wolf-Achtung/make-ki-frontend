@@ -1,11 +1,27 @@
+// formbuilder.js
+
 document.addEventListener("DOMContentLoaded", async function () {
   const form = document.getElementById("dynamicForm");
   const ergebnis = document.getElementById("ergebnis");
   const debug = document.getElementById("debug");
-  // Felder von Server holen (fields.json im selben Verzeichnis)
-  const res = await fetch("fields.json");
-  const { fields } = await res.json();
-  // Formular dynamisch bauen
+
+  // --- Felder von Server laden (fields.json im selben Verzeichnis) ---
+  let fields = [];
+  try {
+    const res = await fetch("fields.json");
+    fields = await res.json();
+
+    // Prüfe, ob Felder korrekt geladen wurden
+    if (!fields || !Array.isArray(fields) || fields.length === 0) {
+      debug.innerText = "❌ Fehler: Keine Formularfelder geladen.";
+      return;
+    }
+  } catch (e) {
+    debug.innerText = "❌ Fehler beim Laden von fields.json: " + e;
+    return;
+  }
+
+  // --- Formular dynamisch bauen ---
   fields.forEach(field => {
     const div = document.createElement("div");
     div.className = "form-group";
@@ -14,6 +30,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     label.htmlFor = field.key;
     div.appendChild(label);
     let input;
+
+    // Feldtypen behandeln
     if (field.type === "textarea") {
       input = document.createElement("textarea");
       input.rows = 3;
@@ -30,6 +48,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         option.text = opt;
         input.add(option);
       });
+    } else if (field.type === "multiselect" && Array.isArray(field.options)) {
+      input = document.createElement("select");
+      input.multiple = true;
+      input.size = Math.min(field.options.length, 6);
+      field.options.forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt;
+        option.text = opt;
+        input.add(option);
+      });
     } else if (field.type === "checkbox") {
       input = document.createElement("input");
       input.type = "checkbox";
@@ -37,12 +65,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       input.style.width = "22px";
       input.style.height = "22px";
       input.style.verticalAlign = "middle";
-      label.innerHTML = field.label; // HTML für Link!
+      label.innerHTML = field.label; // Erlaubt HTML für Datenschutzerklärung-Links
     } else if (field.type === "input") {
       input = document.createElement("input");
       input.type = "text";
       input.placeholder = field.placeholder || "";
-    } else if (field.type === "range") {
+    } else if (field.type === "slider" || field.type === "range") {
       input = document.createElement("input");
       input.type = "range";
       input.min = field.min || 0;
@@ -50,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       input.step = field.step || 1;
       input.value = field.min || 0;
       input.style.width = "250px";
-      // Range-Value-Label
+      // Live-Label für Slider-Wert
       const rangeLabel = document.createElement("span");
       rangeLabel.style.marginLeft = "10px";
       rangeLabel.innerText = input.value;
@@ -59,10 +87,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       });
       div.appendChild(rangeLabel);
     } else {
+      // Standard: Textfeld
       input = document.createElement("input");
       input.type = "text";
       input.placeholder = field.placeholder || "";
     }
+
     input.name = field.key;
     input.id = field.key;
     if (field.required) input.required = true;
@@ -70,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     form.appendChild(div);
   });
 
-  // ------ Analyse-Button am Ende ------
+  // --- Analyse-Button am Ende ---
   const submitBtn = document.createElement("button");
   submitBtn.type = "submit";
   submitBtn.innerText = "Analyse starten";
@@ -84,25 +114,29 @@ document.addEventListener("DOMContentLoaded", async function () {
   submitBtn.style.borderRadius = "6px";
   submitBtn.style.cursor = "pointer";
   form.appendChild(submitBtn);
-  // ------------------------------------
 
-  // Submit-Handler
+  // --- Submit-Handler ---
   form.onsubmit = async function (e) {
     e.preventDefault();
     debug.innerText = "⏳ Wird ausgewertet ...";
     const data = {};
+
     fields.forEach(field => {
       const el = form.querySelector(`[name="${field.key}"]`);
       if (el) {
         if (el.multiple) {
+          // Mehrfachauswahl (Select)
           data[field.key] = Array.from(el.selectedOptions).map(o => o.value);
         } else if (field.type === "checkbox") {
           data[field.key] = el.checked;
+        } else if (field.type === "slider" || field.type === "range") {
+          data[field.key] = parseInt(el.value, 10);
         } else {
           data[field.key] = el.value;
         }
       }
     });
+
     try {
       const resp = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
         method: "POST",
