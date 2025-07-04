@@ -14,36 +14,17 @@
         "Gesundheit",
         "Bildung & Training",
         "Recht & Steuer",
+        "Industrie & Produktion",
+        "Finanzen & Versicherung",
         "Sonstige"
       ],
       "required": true
     },
     {
-      "key": "einsatzbereich",
-      "label": "Geplanter Einsatzbereich",
-      "type": "text",
-      "placeholder": "z. B. Vertrieb, Verwaltung, Kundenservice",
-      "required": true
-    },
-    {
-      "key": "massnahme",
-      "label": "Geplante Maßnahme",
-      "type": "text",
-      "placeholder": "z. B. Prozessoptimierung, KI-Integration",
-      "required": true
-    },
-    {
-      "key": "mitarbeiterzahl",
+      "key": "unternehmensgroesse",
       "label": "Mitarbeiterzahl",
       "type": "select",
-      "options": ["Bitte auswählen", "1-5", "6-20", "21-99", "100+"],
-      "required": true
-    },
-    {
-      "key": "angebot",
-      "label": "Was bieten Sie konkret an?",
-      "type": "textarea",
-      "placeholder": "Produkt / Dienstleistung beschreiben",
+      "options": ["Bitte auswählen", "1-5", "6-20", "21-99", "100-499", "500+"],
       "required": true
     },
     {
@@ -55,64 +36,154 @@
     },
     {
       "key": "plz",
-      "label": "PLZ (für Förderung-Check)",
+      "label": "PLZ (für Fördermittel-Check)",
       "type": "text",
       "placeholder": "z. B. 10405",
       "required": true
     },
     {
+      "key": "bundesland",
+      "label": "Bundesland",
+      "type": "select",
+      "options": [
+        "Bitte auswählen",
+        "Baden-Württemberg",
+        "Bayern",
+        "Berlin",
+        "Brandenburg",
+        "Bremen",
+        "Hamburg",
+        "Hessen",
+        "Mecklenburg-Vorpommern",
+        "Niedersachsen",
+        "Nordrhein-Westfalen",
+        "Rheinland-Pfalz",
+        "Saarland",
+        "Sachsen",
+        "Sachsen-Anhalt",
+        "Schleswig-Holstein",
+        "Thüringen"
+      ],
+      "required": true
+    },
+    {
+      "key": "hauptleistung",
+      "label": "Was bieten Sie aktuell an? (Hauptprodukt/-Dienstleistung)",
+      "type": "textarea",
+      "placeholder": "Beschreiben Sie kurz Ihr Angebot.",
+      "required": true
+    },
+    {
+      "key": "zielgruppen",
+      "label": "Wer sind Ihre wichtigsten Zielgruppen/Kunden?",
+      "type": "textarea",
+      "placeholder": "z. B. KMU, Endkunden, Industriepartner",
+      "required": true
+    },
+    {
+      "key": "ki_einsatz",
+      "label": "Wo wird KI aktuell schon eingesetzt?",
+      "type": "textarea",
+      "placeholder": "z. B. Marketing, Buchhaltung, Kundenservice, noch nicht im Einsatz",
+      "required": false
+    },
+    {
+      "key": "ki_potenzial",
+      "label": "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
+      "type": "textarea",
+      "placeholder": "z. B. Automatisierung, Prognosen, Kommunikation",
+      "required": false
+    },
+    {
+      "key": "ki_projekte",
+      "label": "Gibt es laufende/plange KI-Projekte?",
+      "type": "textarea",
+      "placeholder": "z. B. Chatbot, Texterstellung, Bilderkennung",
+      "required": false
+    },
+    {
+      "key": "ki_knowhow",
+      "label": "Wie schätzen Sie das interne KI-Know-how ein?",
+      "type": "select",
+      "options": ["Bitte auswählen", "sehr hoch", "hoch", "mittel", "gering", "nicht vorhanden"],
+      "required": true
+    },
+    {
+      "key": "innovationsprozess",
+      "label": "Gibt es Prozesse für Innovationsmanagement/Change?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein", "Teilweise"],
+      "required": true
+    },
+    {
+      "key": "datenschutzbeauftragter",
+      "label": "Gibt es einen Datenschutzbeauftragten?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein", "Extern"],
+      "required": true
+    },
+    {
       "key": "technische_massnahmen",
-      "label": "Haben Sie technische Maßnahmen getroffen (z. B. Verschlüsselung, Firewalls, Zugriffskontrollen)?",
+      "label": "Technische Maßnahmen vorhanden (Firewalls, Zugriffskontrolle etc.)?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"],
-      "required": true
-    },
-    {
-      "key": "schulungen",
-      "label": "Gibt es Schulungen oder Informationen für Mitarbeiter zu Datenschutz, KI oder rechtlichen Anforderungen?",
-      "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"],
-      "required": true
-    },
-    {
-      "key": "dsb",
-      "label": "Haben Sie einen Datenschutzbeauftragten oder Verantwortlichen benannt?",
-      "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "options": ["Bitte auswählen", "Ja", "Nein", "Teilweise"],
       "required": true
     },
     {
       "key": "folgenabschaetzung",
-      "label": "Haben Sie Risiken z. B. durch eine Datenschutz-Folgenabschätzung geprüft?",
+      "label": "DSGVO-Folgenabschätzung für KI durchgeführt?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"],
-      "required": true
-    },
-    {
-      "key": "loeschregeln",
-      "label": "Gibt es feste Regeln zur Löschung oder Anonymisierung personenbezogener Daten?",
-      "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "options": ["Bitte auswählen", "Ja", "Nein", "In Planung"],
       "required": true
     },
     {
       "key": "meldewege",
-      "label": "Wissen Ihre Mitarbeiter, was bei einer Datenschutzverletzung zu tun ist?",
+      "label": "Gibt es Prozesse für Meldewege bei Datenschutzverstößen?",
       "type": "select",
-      "options": ["Bitte auswählen", "Ja", "Nein"],
+      "options": ["Bitte auswählen", "Ja", "Nein", "Teilweise"],
       "required": true
     },
     {
-      "key": "automatisierungspotenziale",
-      "label": "Größte Automatisierungspotenziale",
-      "type": "text",
-      "placeholder": "z. B. Marketing, Buchhaltung, Kundenservice"
+      "key": "loeschregeln",
+      "label": "Gibt es Regeln zur Löschung/Anonymisierung von Daten?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein", "Teilweise"],
+      "required": true
+    },
+    {
+      "key": "ai_act_kenntnis",
+      "label": "Wie gut kennen Sie den EU AI Act?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Experte", "Grundkenntnisse", "Habe davon gehört", "Kenne ich nicht"],
+      "required": true
+    },
+    {
+      "key": "bisherige_foerdermittel",
+      "label": "Haben Sie bereits Fördermittel für Digitalisierung oder KI erhalten/genutzt?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein", "In Planung"],
+      "required": true
+    },
+    {
+      "key": "interesse_foerderung",
+      "label": "Besteht Interesse an Fördermitteln für KI-Projekte?",
+      "type": "select",
+      "options": ["Bitte auswählen", "Ja", "Nein", "Unsicher"],
+      "required": true
     },
     {
       "key": "moonshot",
-      "label": "Was wäre ein echter Moonshot?",
-      "type": "text",
-      "placeholder": "z. B. Marktführer international"
+      "label": "Was wäre Ihr persönlicher Moonshot (Traumziel) für Ihr Unternehmen durch KI?",
+      "type": "textarea",
+      "placeholder": "Beschreiben Sie Ihren Traumzustand.",
+      "required": false
+    },
+    {
+      "key": "risikohemmnisse",
+      "label": "Was sind aus Ihrer Sicht aktuell die größten Hemmnisse/Risiken beim KI-Einsatz?",
+      "type": "textarea",
+      "placeholder": "z. B. Datenschutz, Fachkräftemangel, Kosten",
+      "required": false
     }
   ]
 }
