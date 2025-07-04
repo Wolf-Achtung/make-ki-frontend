@@ -70,14 +70,14 @@
   },
   {
     "key": "hauptleistung",
-    "label": "Was ist das Hauptprodukt / die wichtigste Dienstleistung Ihres Unternehmens? (z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen)",
+    "label": "Was ist das Hauptprodukt / die wichtigste Dienstleistung Ihres Unternehmens?",
     "type": "input",
     "placeholder": "z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen"
   },
   {
     "key": "zielgruppen",
-    "label": "Wer sind Ihre wichtigsten Zielgruppen oder Kundensegmente?",
-    "type": "multiselect",
+    "label": "Wer ist Ihre wichtigste Zielgruppe oder Kundensegment?",
+    "type": "select",
     "options": [
       "B2B",
       "B2C",
@@ -152,14 +152,14 @@
   },
   {
     "key": "ki_projekte",
-    "label": "Gibt es geplante oder laufende KI-Projekte? (z.B. Chatbots, automatisierte Datenanalyse, Prozessoptimierung, KI im Marketing...)",
+    "label": "Gibt es geplante oder laufende KI-Projekte?",
     "type": "input",
     "placeholder": "z.B. Chatbots, automatisierte Datenanalyse, Prozessoptimierung, KI im Marketing"
   },
   {
     "key": "ki_usecases",
-    "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen? (Mehrfachauswahl möglich)",
-    "type": "multiselect",
+    "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen?",
+    "type": "select",
     "options": [
       "Texterstellung",
       "Bildgenerierung",
@@ -169,12 +169,12 @@
       "Kundensupport",
       "Wissensmanagement",
       "Marketing",
-      "Sonstiges (bitte angeben)"
+      "Noch unklar"
     ]
   },
   {
     "key": "ki_potenzial",
-    "label": "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen? (z.B. Umsatzsteigerung, Prozessoptimierung, Kostenersparnis, schnellere Markteinführung, neue Dienstleistungen, Wissensmanagement)",
+    "label": "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
     "type": "input",
     "placeholder": "z.B. Umsatzsteigerung, Prozessoptimierung, Kostenersparnis, schnellere Markteinführung, neue Dienstleistungen, Wissensmanagement"
   },
