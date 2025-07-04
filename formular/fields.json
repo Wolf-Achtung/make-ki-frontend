@@ -72,9 +72,9 @@
   },
   {
     "key": "hauptleistung",
-    "label": "Was ist das Hauptprodukt / die wichtigste Dienstleistung Ihres Unternehmens?",
+    "label": "Was ist das Hauptprodukt / die wichtigste Dienstleistung Ihres Unternehmens? (z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen)",
     "type": "input",
-    "placeholder": "z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen, Softwareentwicklung"
+    "placeholder": "z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen"
   },
   {
     "key": "zielgruppen",
@@ -92,9 +92,6 @@
       "Andere"
     ]
   },
-
-  // --- STATUS QUO: Digitalisierung & KI-Einsatz ---
-
   {
     "key": "ki_einsatz",
     "label": "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
@@ -155,9 +152,6 @@
       "Expertenwissen"
     ]
   },
-
-  // --- VISION & INNOVATION / ZUKUNFT ---
-
   {
     "key": "ki_projekte",
     "label": "Gibt es geplante oder laufende KI-Projekte? (z.B. Chatbots, automatisierte Datenanalyse, Prozessoptimierung, KI im Marketing...)",
@@ -214,9 +208,6 @@
     "type": "input",
     "placeholder": "z.B. Marktführer, globaler Durchbruch, neue Branche erschlossen, ..."
   },
-
-  // --- COMPLIANCE, RISIKEN & FÖRDERMITTEL ---
-
   {
     "key": "datenschutzbeauftragter",
     "label": "Gibt es in Ihrem Unternehmen einen Datenschutzbeauftragten?",
@@ -280,13 +271,10 @@
   },
   {
     "key": "ki_hemmnisse",
-    "label": "Was sind aktuell die größten Hemmnisse oder Risiken beim Einsatz von KI in Ihrem Unternehmen?",
+    "label": "Was sind für Ihr Unternehmen aktuell die größten Hemmnisse oder Risiken beim Einsatz von KI?",
     "type": "input",
     "placeholder": "z.B. Unsicherheit bei Rechtslage, Fachkräftemangel, fehlende Erfahrung, Datenschutzbedenken, Budget, fehlende Zeit, Akzeptanz im Team"
   },
-
-  // --- FÖRDERMITTEL & MARKT ---
-
   {
     "key": "bisherige_foerdermittel",
     "label": "Haben Sie bereits Fördermittel für Digitalisierung oder KI erhalten/genutzt?",
@@ -371,8 +359,6 @@
     "max": 5,
     "step": 1
   },
-
-  // --- DATENSCHUTZABFRAGE ---
   {
     "key": "datenschutz_ok",
     "label": "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.",
