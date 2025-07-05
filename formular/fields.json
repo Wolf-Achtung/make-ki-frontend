@@ -14,8 +14,9 @@
       "Industrie/Produktion",
       "Finanzen & Versicherungen",
       "Bildung",
-      "Andere"
-    ]
+      "Sonstige"
+    ],
+    "required": true
   },
   {
     "key": "unternehmensgroesse",
@@ -27,8 +28,10 @@
       "6-10",
       "11-25",
       "26-50",
-      "51-100"
-    ]
+      "51-100",
+      "101+"
+    ],
+    "required": true
   },
   {
     "key": "selbststaendig",
@@ -37,13 +40,15 @@
     "options": [
       "Ja",
       "Nein"
-    ]
+    ],
+    "required": true
   },
   {
     "key": "plz",
     "label": "Postleitzahl (für regionale Fördermöglichkeiten)",
     "type": "input",
-    "placeholder": "z.B. 10405"
+    "placeholder": "z.B. 10405",
+    "required": true
   },
   {
     "key": "bundesland",
@@ -66,18 +71,20 @@
       "Sachsen-Anhalt",
       "Schleswig-Holstein",
       "Thüringen"
-    ]
+    ],
+    "required": true
   },
   {
     "key": "hauptleistung",
     "label": "Was ist das Hauptprodukt / die wichtigste Dienstleistung Ihres Unternehmens?",
     "type": "input",
-    "placeholder": "z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen"
+    "placeholder": "z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen",
+    "required": true
   },
   {
     "key": "zielgruppen",
     "label": "Wer sind Ihre wichtigsten Zielgruppen oder Kundensegmente?",
-    "type": "select",
+    "type": "multiselect",
     "options": [
       "B2B",
       "B2C",
@@ -88,12 +95,30 @@
       "Privatpersonen",
       "Startups",
       "Andere"
-    ]
+    ],
+    "required": true
+  },
+  {
+    "key": "projektziel",
+    "label": "Welches Ziel verfolgen Sie mit Ihrem nächsten KI-/Digitalisierungsprojekt?",
+    "type": "multiselect",
+    "options": [
+      "Prozessautomatisierung",
+      "Kostensenkung",
+      "Compliance/Datenschutz",
+      "Produktinnovation",
+      "Kundenservice verbessern",
+      "Markterschließung",
+      "Personalentlastung",
+      "Fördermittel beantragen",
+      "Andere"
+    ],
+    "required": false
   },
   {
     "key": "ki_einsatz",
     "label": "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
-    "type": "select",
+    "type": "multiselect",
     "options": [
       "Marketing",
       "Vertrieb",
@@ -109,11 +134,12 @@
   },
   {
     "key": "digitalisierungsgrad",
-    "label": "Wie digital sind Ihre internen Prozesse bereits (1 = analog, 10 = voll digital)?",
+    "label": "Wie digital sind Ihre internen Prozesse bereits? (1 = analog, 10 = voll digital)",
     "type": "slider",
     "min": 1,
     "max": 10,
-    "step": 1
+    "step": 1,
+    "required": true
   },
   {
     "key": "prozesse_papierlos",
@@ -159,7 +185,7 @@
   {
     "key": "ki_usecases",
     "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen?",
-    "type": "select",
+    "type": "multiselect",
     "options": [
       "Texterstellung",
       "Bildgenerierung",
@@ -270,8 +296,19 @@
   {
     "key": "ki_hemmnisse",
     "label": "Was sind für Ihr Unternehmen aktuell die größten Hemmnisse oder Risiken beim Einsatz von KI?",
-    "type": "input",
-    "placeholder": "z.B. Unsicherheit bei Rechtslage, Fachkräftemangel, fehlende Erfahrung, Datenschutzbedenken, Budget, fehlende Zeit, Akzeptanz im Team"
+    "type": "multiselect",
+    "options": [
+      "Unsicherheit bei Rechtslage",
+      "Datenschutz",
+      "Knowhow",
+      "Budget",
+      "Akzeptanz im Team",
+      "Zeitmangel",
+      "IT-Integration",
+      "Keine Hemmnisse",
+      "Andere"
+    ],
+    "required": false
   },
   {
     "key": "bisherige_foerdermittel",
