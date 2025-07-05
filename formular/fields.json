@@ -17,18 +17,18 @@
       "Andere"
     ]
   },
- {
-  "key": "unternehmensgroesse",
-  "label": "Wie viele Mitarbeiter:innen hat Ihr Unternehmen?",
-  "type": "select",
-  "options": [
-    "1 (Solo-Selbstständig)",
-    "2-5",
-    "6-10",
-    "11-25",
-    "26-50",
-    "51-100"
-  ]
+  {
+    "key": "unternehmensgroesse",
+    "label": "Wie viele Mitarbeiter:innen hat Ihr Unternehmen?",
+    "type": "select",
+    "options": [
+      "1 (Solo-Selbstständig)",
+      "2-5",
+      "6-10",
+      "11-25",
+      "26-50",
+      "51-100"
+    ]
   },
   {
     "key": "selbststaendig",
@@ -76,8 +76,8 @@
   },
   {
     "key": "zielgruppen",
-    "label": "Wer ist Ihre wichtigste Zielgruppe oder Kundensegment?",
-    "type": "select",
+    "label": "Wer sind Ihre wichtigsten Zielgruppen oder Kundensegmente?",
+    "type": "multiselect",
     "options": [
       "B2B",
       "B2C",
@@ -93,7 +93,7 @@
   {
     "key": "ki_einsatz",
     "label": "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
-    "type": "select",
+    "type": "multiselect",
     "options": [
       "Marketing",
       "Vertrieb",
@@ -159,7 +159,7 @@
   {
     "key": "ki_usecases",
     "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen?",
-    "type": "select",
+    "type": "multiselect",
     "options": [
       "Texterstellung",
       "Bildgenerierung",
@@ -169,7 +169,7 @@
       "Kundensupport",
       "Wissensmanagement",
       "Marketing",
-      "Noch unklar"
+      "Sonstiges (bitte angeben)"
     ]
   },
   {

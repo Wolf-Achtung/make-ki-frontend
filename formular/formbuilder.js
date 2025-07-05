@@ -38,10 +38,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       input.placeholder = field.placeholder || "";
     } else if (field.type === "select" && Array.isArray(field.options)) {
       input = document.createElement("select");
-      if (field.multiple) {
-        input.multiple = true;
-        input.size = Math.min(field.options.length, 6);
-      }
       field.options.forEach(opt => {
         const option = document.createElement("option");
         option.value = opt;
@@ -147,8 +143,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (json.html) {
         ergebnis.innerHTML = json.html;
         if (json.pdf_url) {
+          let pdfUrl = json.pdf_url;
+          if (pdfUrl && pdfUrl.startsWith("/downloads")) {
+            pdfUrl = "https://make-ki-backend-neu-production.up.railway.app" + pdfUrl;
+          }
           const link = document.createElement("a");
-          link.href = json.pdf_url;
+          link.href = pdfUrl;
           link.innerText = "PDF herunterladen";
           link.target = "_blank";
           link.className = "btn";
