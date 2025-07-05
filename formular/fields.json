@@ -77,7 +77,7 @@
   {
     "key": "zielgruppen",
     "label": "Wer sind Ihre wichtigsten Zielgruppen oder Kundensegmente?",
-    "type": "multiselect",
+    "type": "select",
     "options": [
       "B2B",
       "B2C",
@@ -93,7 +93,7 @@
   {
     "key": "ki_einsatz",
     "label": "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
-    "type": "multiselect",
+    "type": "select",
     "options": [
       "Marketing",
       "Vertrieb",
@@ -159,7 +159,7 @@
   {
     "key": "ki_usecases",
     "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen?",
-    "type": "multiselect",
+    "type": "select",
     "options": [
       "Texterstellung",
       "Bildgenerierung",
