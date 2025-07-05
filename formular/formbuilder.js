@@ -1,5 +1,3 @@
-// formbuilder.js
-
 document.addEventListener("DOMContentLoaded", async function () {
   const form = document.getElementById("dynamicForm");
   const ergebnis = document.getElementById("ergebnis");
@@ -24,66 +22,86 @@ document.addEventListener("DOMContentLoaded", async function () {
     const div = document.createElement("div");
     div.className = "form-group";
     div.style.marginBottom = "1.2em";
-    const label = document.createElement("label");
-    label.innerText = field.label;
-    label.htmlFor = field.key;
-    label.style.fontWeight = "500";
-    label.style.display = "block";
-    div.appendChild(label);
-    let input;
 
-    // Feldtypen behandeln
-    if (field.type === "textarea") {
-      input = document.createElement("textarea");
-      input.rows = 3;
-      input.placeholder = field.placeholder || "";
-    } else if (field.type === "select" && Array.isArray(field.options)) {
-      input = document.createElement("select");
-      input.name = field.key;
-      input.id = field.key;
-      field.options.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.text = opt;
-        input.add(option);
-      });
-    } else if (field.type === "multiselect" && Array.isArray(field.options)) {
-      input = document.createElement("select");
-      input.multiple = true;
-      input.size = Math.min(field.options.length, 6);
-      input.name = field.key;
-      input.id = field.key;
-      field.options.forEach(opt => {
-        const option = document.createElement("option");
-        option.value = opt;
-        option.text = opt;
-        input.add(option);
-      });
+    // Label
+    if (field.label) {
+      const label = document.createElement("label");
+      label.innerText = field.label;
+      label.htmlFor = field.key;
+      label.style.fontWeight = "500";
+      label.style.display = "block";
+      div.appendChild(label);
+    }
+
+    // Hilfetext
+    if (field.help) {
       const help = document.createElement("small");
-      help.innerText = "Mehrfachauswahl mit STRG (Windows) oder CMD (Mac)";
+      help.innerText = field.help;
       help.style.display = "block";
-      help.style.marginTop = "0.2em";
+      help.style.marginBottom = "0.2em";
       help.style.color = "#666";
       div.appendChild(help);
-    } else if (field.type === "checkbox") {
+    }
+
+    let input;
+
+    // Checkbox-Gruppe (Mehrfachauswahl)
+    if (field.type === "checkbox" && Array.isArray(field.options)) {
+      const group = document.createElement("div");
+      group.style.display = "flex";
+      group.style.flexWrap = "wrap";
+      group.style.gap = "16px 24px";
+      field.options.forEach(option => {
+        const boxLabel = document.createElement("label");
+        boxLabel.style.display = "flex";
+        boxLabel.style.alignItems = "center";
+        boxLabel.style.cursor = "pointer";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = field.key; // WICHTIG: gleicher Name für alle Optionen!
+        checkbox.value = option;
+        checkbox.style.marginRight = "8px";
+        boxLabel.appendChild(checkbox);
+        boxLabel.appendChild(document.createTextNode(option));
+        group.appendChild(boxLabel);
+      });
+      div.appendChild(group);
+    }
+    // Einzelne Checkbox (z.B. DSGVO)
+    else if (field.type === "checkbox") {
       input = document.createElement("input");
       input.type = "checkbox";
-      input.value = "true";
       input.name = field.key;
       input.id = field.key;
       input.style.width = "22px";
       input.style.height = "22px";
       input.style.verticalAlign = "middle";
-      label.style.display = "inline-block";
-      label.style.fontWeight = "400";
-      label.style.marginLeft = "0.5em";
-    } else if (field.type === "input") {
-      input = document.createElement("input");
-      input.type = "text";
+      div.appendChild(input);
+    }
+    // Textarea
+    else if (field.type === "textarea") {
+      input = document.createElement("textarea");
+      input.rows = 3;
       input.placeholder = field.placeholder || "";
       input.name = field.key;
       input.id = field.key;
-    } else if (field.type === "slider" || field.type === "range") {
+      div.appendChild(input);
+    }
+    // Select
+    else if (field.type === "select" && Array.isArray(field.options)) {
+      input = document.createElement("select");
+      input.name = field.key;
+      input.id = field.key;
+      field.options.forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt;
+        option.text = opt;
+        input.add(option);
+      });
+      div.appendChild(input);
+    }
+    // Slider/Range
+    else if (field.type === "slider" || field.type === "range") {
       input = document.createElement("input");
       input.type = "range";
       input.min = field.min || 0;
@@ -100,31 +118,35 @@ document.addEventListener("DOMContentLoaded", async function () {
       input.addEventListener("input", () => {
         rangeLabel.innerText = input.value;
       });
+      div.appendChild(input);
       div.appendChild(rangeLabel);
-    } else {
-      // Standard: Textfeld
+    }
+    // Input (Text)
+    else {
       input = document.createElement("input");
       input.type = "text";
       input.placeholder = field.placeholder || "";
       input.name = field.key;
       input.id = field.key;
+      div.appendChild(input);
     }
 
     // Required-Felder
-    if (field.required) input.required = true;
+    if (field.required && input) input.required = true;
 
-    // Stil
-    input.style.width = "100%";
-    input.style.maxWidth = "540px";
-    input.style.fontSize = "1.1em";
-    input.style.marginTop = "0.2em";
-    input.style.marginBottom = "0.3em";
-    input.style.padding = "0.3em 0.7em";
-    input.style.border = "1.5px solid #193B54";
-    input.style.borderRadius = "6px";
-    input.style.boxSizing = "border-box";
+    // Stil für Inputs (außer Checkboxen)
+    if (input && field.type !== "checkbox") {
+      input.style.width = "100%";
+      input.style.maxWidth = "540px";
+      input.style.fontSize = "1.1em";
+      input.style.marginTop = "0.2em";
+      input.style.marginBottom = "0.3em";
+      input.style.padding = "0.3em 0.7em";
+      input.style.border = "1.5px solid #193B54";
+      input.style.borderRadius = "6px";
+      input.style.boxSizing = "border-box";
+    }
 
-    div.appendChild(input);
     form.appendChild(div);
   });
 
@@ -152,20 +174,29 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let missingRequired = false;
     fields.forEach(field => {
-      const el = form.querySelector(`[name="${field.key}"]`);
-      if (el) {
-        if (el.multiple) {
-          data[field.key] = Array.from(el.selectedOptions).map(o => o.value);
-          if (field.required && data[field.key].length === 0) missingRequired = true;
-        } else if (field.type === "checkbox") {
-          data[field.key] = el.checked;
-          if (field.required && !el.checked) missingRequired = true;
-        } else if (field.type === "slider" || field.type === "range") {
-          data[field.key] = parseInt(el.value, 10);
-        } else {
-          data[field.key] = el.value;
-          if (field.required && (!el.value || el.value.trim() === "")) missingRequired = true;
-        }
+      // Für Checkbox-Gruppen (Mehrfachauswahl)
+      if (field.type === "checkbox" && Array.isArray(field.options)) {
+        const selected = [];
+        form.querySelectorAll(`input[name="${field.key}"]:checked`).forEach(cb => selected.push(cb.value));
+        data[field.key] = selected;
+        if (field.required && selected.length === 0) missingRequired = true;
+      }
+      // Für einzelne Checkbox (z.B. DSGVO)
+      else if (field.type === "checkbox") {
+        const el = form.querySelector(`[name="${field.key}"]`);
+        data[field.key] = el ? el.checked : false;
+        if (field.required && !data[field.key]) missingRequired = true;
+      }
+      // Slider
+      else if (field.type === "slider" || field.type === "range") {
+        const el = form.querySelector(`[name="${field.key}"]`);
+        data[field.key] = el ? parseInt(el.value, 10) : null;
+      }
+      // Alle anderen Inputs/Selects
+      else {
+        const el = form.querySelector(`[name="${field.key}"]`);
+        data[field.key] = el ? el.value : "";
+        if (field.required && (!el.value || el.value.trim() === "")) missingRequired = true;
       }
     });
 

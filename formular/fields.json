@@ -84,7 +84,7 @@
   {
     "key": "zielgruppen",
     "label": "Wer sind Ihre wichtigsten Zielgruppen oder Kundensegmente?",
-    "type": "multiselect",
+    "type": "checkbox",
     "options": [
       "B2B",
       "B2C",
@@ -96,12 +96,13 @@
       "Startups",
       "Andere"
     ],
-    "required": true
+    "required": true,
+    "help": "Mehrfachauswahl möglich."
   },
   {
     "key": "projektziel",
     "label": "Welches Ziel verfolgen Sie mit Ihrem nächsten KI-/Digitalisierungsprojekt?",
-    "type": "multiselect",
+    "type": "checkbox",
     "options": [
       "Prozessautomatisierung",
       "Kostensenkung",
@@ -113,12 +114,13 @@
       "Fördermittel beantragen",
       "Andere"
     ],
-    "required": false
+    "required": false,
+    "help": "Mehrfachauswahl möglich."
   },
   {
     "key": "ki_einsatz",
     "label": "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
-    "type": "multiselect",
+    "type": "checkbox",
     "options": [
       "Marketing",
       "Vertrieb",
@@ -130,7 +132,8 @@
       "Personal",
       "Noch keine Nutzung",
       "Sonstiges"
-    ]
+    ],
+    "help": "Mehrfachauswahl möglich."
   },
   {
     "key": "digitalisierungsgrad",
@@ -185,7 +188,7 @@
   {
     "key": "ki_usecases",
     "label": "Für welche Anwendungsfälle möchten Sie KI gezielt nutzen?",
-    "type": "multiselect",
+    "type": "checkbox",
     "options": [
       "Texterstellung",
       "Bildgenerierung",
@@ -196,7 +199,8 @@
       "Wissensmanagement",
       "Marketing",
       "Sonstiges (bitte angeben)"
-    ]
+    ],
+    "help": "Mehrfachauswahl möglich."
   },
   {
     "key": "ki_potenzial",
@@ -296,7 +300,7 @@
   {
     "key": "ki_hemmnisse",
     "label": "Was sind für Ihr Unternehmen aktuell die größten Hemmnisse oder Risiken beim Einsatz von KI?",
-    "type": "multiselect",
+    "type": "checkbox",
     "options": [
       "Unsicherheit bei Rechtslage",
       "Datenschutz",
@@ -308,7 +312,8 @@
       "Keine Hemmnisse",
       "Andere"
     ],
-    "required": false
+    "required": false,
+    "help": "Mehrfachauswahl möglich."
   },
   {
     "key": "bisherige_foerdermittel",
