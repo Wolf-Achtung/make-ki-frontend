@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Checkbox-Gruppe (Mehrfachauswahl)
     if (field.type === "checkbox" && Array.isArray(field.options)) {
       const group = document.createElement("div");
+      group.className = "form-checkbox-group";
       group.style.display = "flex";
       group.style.flexWrap = "wrap";
       group.style.gap = "16px 24px";
