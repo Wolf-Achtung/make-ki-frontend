@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const form = document.getElementById("dynamicForm");
+  const form = document.getElementById("ki-form");
   const ergebnis = document.getElementById("ergebnis");
   const debug = document.getElementById("debug");
 
