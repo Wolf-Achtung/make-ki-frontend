@@ -17,10 +17,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     return;
   }
 
-  // Optional: Felder thematisch gruppieren, wenn section vorhanden
+  // Felder thematisch gruppieren (section)
   let currentSection = "";
   fields.forEach(field => {
-    // Abschnittsüberschrift (wenn gewünscht)
+    // Abschnittsüberschrift
     if (field.section && field.section !== currentSection) {
       currentSection = field.section;
       const sectionH = document.createElement("h2");
@@ -31,16 +31,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const div = document.createElement("div");
     div.className = "form-group";
-    div.style.marginBottom = "1.5em";
 
     // Label
     if (field.label) {
       const label = document.createElement("label");
       label.innerText = field.label;
       label.htmlFor = field.key;
-      label.style.fontWeight = "500";
-      label.style.display = "block";
-      label.style.marginBottom = "0.2em";
+      label.className = "form-label";
       div.appendChild(label);
     }
 
@@ -48,33 +45,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (field.help) {
       const help = document.createElement("small");
       help.innerText = field.help;
-      help.style.display = "block";
-      help.style.marginBottom = "0.25em";
-      help.style.color = "#6a7683";
+      help.className = "form-help";
       div.appendChild(help);
     }
 
     let input;
 
-    // Checkbox-Gruppe (Mehrfachauswahl) - NEU: untereinander, ruhiger
+    // Checkbox-Gruppe (Mehrfachauswahl) sauber untereinander
     if (field.type === "checkbox" && Array.isArray(field.options)) {
       const group = document.createElement("div");
       group.className = "form-checkbox-group";
-      group.style.display = "flex";
-      group.style.flexDirection = "column";
-      group.style.gap = "7px";
       field.options.forEach(option => {
         const boxLabel = document.createElement("label");
-        boxLabel.style.display = "flex";
-        boxLabel.style.alignItems = "center";
-        boxLabel.style.fontWeight = "400";
-        boxLabel.style.cursor = "pointer";
-        boxLabel.style.marginBottom = "0.2em";
+        boxLabel.className = "checkbox-label";
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.name = field.key;
         checkbox.value = option;
-        checkbox.style.marginRight = "10px";
         boxLabel.appendChild(checkbox);
         boxLabel.appendChild(document.createTextNode(option));
         group.appendChild(boxLabel);
@@ -87,9 +74,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       input.type = "checkbox";
       input.name = field.key;
       input.id = field.key;
-      input.style.width = "20px";
-      input.style.height = "20px";
-      input.style.verticalAlign = "middle";
+      input.className = "checkbox-single";
       div.appendChild(input);
     }
     // Textarea
@@ -126,10 +111,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       input.value = field.min || 0;
       input.name = field.key;
       input.id = field.key;
-      input.style.width = "220px";
-      // Live-Label für Slider-Wert
+      input.className = "form-range";
+      // Live-Label für Wert
       const rangeLabel = document.createElement("span");
-      rangeLabel.style.marginLeft = "12px";
+      rangeLabel.className = "range-label";
       rangeLabel.innerText = input.value;
       input.addEventListener("input", () => {
         rangeLabel.innerText = input.value;
@@ -148,24 +133,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       div.appendChild(input);
     }
 
-    // Required
+    // Pflichtfelder
     if (field.required && input) input.required = true;
-
-    // Modernes Input-Styling (ohne Checkboxen)
-    if (input && field.type !== "checkbox") {
-      input.style.width = "100%";
-      input.style.maxWidth = "520px";
-      input.style.fontSize = "1.06em";
-      input.style.marginTop = "0.18em";
-      input.style.marginBottom = "0.25em";
-      input.style.padding = "0.45em 0.7em";
-      input.style.border = "1.4px solid #1a4064";
-      input.style.borderRadius = "14px";
-      input.style.background = "#fafcff";
-      input.style.boxSizing = "border-box";
-      input.style.boxShadow = "0 1px 6px 0 rgba(0,0,0,0.08)";
-      input.style.transition = "border 0.2s, box-shadow 0.3s";
-    }
 
     form.appendChild(div);
   });
@@ -175,14 +144,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   submitBtn.type = "submit";
   submitBtn.innerText = "Analyse starten";
   submitBtn.className = "btn-primary";
-  submitBtn.style.marginTop = "2.2em";
-  submitBtn.style.fontSize = "1.17em";
-  submitBtn.style.padding = "0.7em 2em";
-  submitBtn.style.background = "#003b5a";
-  submitBtn.style.color = "#fff";
-  submitBtn.style.border = "none";
-  submitBtn.style.borderRadius = "14px";
-  submitBtn.style.cursor = "pointer";
   form.appendChild(submitBtn);
 
   // Submit-Handler
