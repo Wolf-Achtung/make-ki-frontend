@@ -193,6 +193,51 @@ input[type="submit"]:hover {
     margin-bottom: 13px;
   }
 }
+/* Einheitliches Styling für alle Form Controls */
+input[type="text"],
+textarea,
+select {
+  width: 100%;
+  min-height: 48px;    /* Größer für Freitextfelder */
+  font-size: 1.08em;
+  border: 2px solid #dde8f3;
+  border-radius: 14px;
+  background: #fafdff;
+  padding: 12px 16px;
+  color: #18355b;
+  margin-bottom: 0;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  box-shadow: 0 1px 8px rgba(33, 40, 69, 0.08);
+  outline: none;
+  resize: vertical;
+}
+
+/* Textarea spezifisch noch größer machen */
+textarea {
+  min-height: 72px;    /* Angenehme Höhe für Freitext */
+  max-height: 220px;
+  line-height: 1.5;
+}
+
+/* Gleiche Optik beim Dropdown */
+select {
+  background: #fafdff;
+  border-radius: 14px;
+  border: 2px solid #dde8f3;
+  min-height: 48px;
+  font-size: 1.08em;
+  padding: 12px 16px;
+  color: #18355b;
+}
+
+/* Fokus-Zustand mit klarer, aber dezenter Outline */
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #2d8cff;
+  box-shadow: 0 0 2px #2d8cff, 0 2px 10px rgba(24,53,91,0.08);
+  background: #f3f9fe;
+}
 
 ::-webkit-input-placeholder { color: #bcc6d3; }
 ::-moz-placeholder { color: #bcc6d3; }
