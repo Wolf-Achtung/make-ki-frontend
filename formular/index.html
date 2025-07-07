@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>KI-Readiness Check</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="form-wrapper">
-    <img src="ki-sicherheit-logo.png" alt="KI Sicherheit Logo" class="logo">
-    <h1>KI-Readiness-Check</h1>
+  <div class="form-card">
+    <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" class="logo" />
+    <h1 class="headline">KI-Readiness-Check</h1>
     <div id="form-root"></div>
   </div>
+
   <footer class="footer">
-<a href="https://ki-sicherheit.jetzt">ki-sicherheit.jetzt</a><br>
-    <img src="ki-sicherheit-logo.png" alt="Logo" style="height:28px;vertical-align:middle; margin:0 8px;"/>
+    <div>
+      <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener">ki-sicherheit.jetzt</a><br>
+      <img src="ki-sicherheit-logo.png" alt="Logo" class="footer-logo" />
+    </div>
     <div class="lizenz">
       &copy; KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
       Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br>
@@ -23,6 +26,7 @@
       Die Nutzung und Bearbeitung der bereitgestellten Listen, Templates und Prompts ist ausschließlich Kunden und Partnern von KI-Sicherheit.jetzt vorbehalten.
     </div>
   </footer>
-  <script src="formbuilder.js"></script>
+
+  <script src="formbuilder.js" defer></script>
 </body>
 </html>
