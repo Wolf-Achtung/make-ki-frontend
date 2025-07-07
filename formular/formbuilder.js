@@ -17,12 +17,24 @@ function buildForm(fields) {
     group.className = "form-group";
     group.style.background = "#fff";
 
-    // Frage als Label
-    const label = document.createElement('label');
-    label.textContent = field.label;
-    label.setAttribute('for', field.name);
-    label.className = "form-label";
-    group.appendChild(label);
+   // Frage als Label
+const label = document.createElement('label');
+label.textContent = field.label;
+label.setAttribute('for', field.name);
+label.className = "form-label";
+
+// NEU: Tooltip für Hilfetext (aus dem JSON)
+if (field.help) {
+  const help = document.createElement('span');
+  help.className = "form-help";
+  help.textContent = " ⓘ ";
+  help.title = field.help;
+  help.style.cursor = "help";
+  help.style.marginLeft = "7px";
+  label.appendChild(help);
+}
+group.appendChild(label);
+
 
     // Feldbeschreibung (optional)
     if (field.description) {
@@ -158,4 +170,11 @@ function buildForm(fields) {
     }, 1200);
     // Sende-Logik siehe Backend...
   });
+// Autosize für alle Textareas – wächst dynamisch bei Eingabe
+document.addEventListener('input', function (event) {
+  if (event.target.tagName.toLowerCase() !== 'textarea') return;
+  event.target.style.height = 'auto';
+  event.target.style.height = (event.target.scrollHeight) + 'px';
+}, false);
+
 }
