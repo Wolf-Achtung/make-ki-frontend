@@ -41,6 +41,8 @@ h1 {
   box-shadow: 0 1px 8px rgba(33, 40, 69, 0.08);
   margin: 1.4em 0;
   padding: 1.4em 1.4em 1em 1.4em;
+  width: 100%;
+  max-width: 100%;
 }
 
 .form-group label,
@@ -52,193 +54,7 @@ h1 {
   color: #16304d;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="number"],
-input[type="password"],
-input[type="range"],
-textarea,
-select {
-  width: 100%;
-  min-height: 44px;
-  padding: 9px 12px;
-  font-size: 1em;
-  border: 2px solid #dde8f3;
-  border-radius: 12px;
-  background: #fafdff;
-  margin-bottom: 0;
-  outline: none;
-  box-shadow: 0 2px 10px rgba(24,53,91,0.07);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-input[type="range"] {
-  min-width: 80%;
-  margin-top: 14px;
-  margin-bottom: 0;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: #2d8cff;
-  box-shadow: 0 0 2px #2d8cff, 0 2px 10px rgba(24,53,91,0.08);
-}
-
-.checkbox-group,
-.radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 0;
-}
-
-.checkbox-group label,
-.radio-group label {
-  font-size: 1em;
-  font-weight: 400;
-  color: #18355b;
-  margin-left: 1.2em;
-  margin-bottom: 2px;
-  position: relative;
-}
-.checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 32px;
-  margin: 8px 0;
-}
-
-.checkbox-label {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px #e5e5e5;
-  padding: 6px 18px 6px 10px;
-  margin-bottom: 4px;
-  min-width: 170px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: box-shadow 0.2s;
-}
-.checkbox-label input[type="checkbox"] {
-  margin-right: 8px;
-  accent-color: #12738b;
-  transform: scale(1.2);
-}
-
-.checkbox-label:has(input[type="checkbox"]:checked) {
-  box-shadow: 0 0 0 2.5px #059;
-  background: #e7f2fb;
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-  accent-color: #18355b;
-  margin-right: 8px;
-  width: 1.2em;
-  height: 1.2em;
-  vertical-align: middle;
-}
-
-button,
-input[type="submit"] {
-  background: #18355b;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.18em;
-  font-weight: 600;
-  padding: 14px 0;
-  width: 100%;
-  cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 1.5px 8px rgba(24,53,91,0.09);
-  transition: background 0.15s;
-}
-
-button:hover,
-input[type="submit"]:hover {
-  background: #286ee6;
-}
-
-.footer {
-  max-width: 720px;
-  margin: 40px auto 0 auto;
-  text-align: center;
-  background: #fff;
-  padding: 24px 16px 16px 16px;
-  border-radius: 20px;
-  box-shadow: 0 2px 16px rgba(24,53,91,0.04);
-  font-size: 0.95em;
-  color: #8191b5;
-}
-
-.footer .lizenz {
-  font-size: 0.90em;
-  color: #a1adc7;
-  margin-top: 10px;
-}
-
-@media (max-width: 800px) {
-  .form-container, .footer {
-    padding: 16px 7px 10px 7px;
-    max-width: 99vw;
-  }
-  .form-header h1 {
-    font-size: 1.3rem;
-  }
-  .form-group {
-    padding: 13px 5px 11px 9px;
-    margin-bottom: 13px;
-  }
-}
-/* Einheitliches Styling für alle Form Controls */
-input[type="text"],
-textarea,
-select {
-  width: 100%;
-  min-height: 48px;    /* Größer für Freitextfelder */
-  font-size: 1.08em;
-  border: 2px solid #dde8f3;
-  border-radius: 14px;
-  background: #fafdff;
-  padding: 12px 16px;
-  color: #18355b;
-  margin-bottom: 0;
-  transition: border-color 0.18s, box-shadow 0.18s;
-  box-shadow: 0 1px 8px rgba(33, 40, 69, 0.08);
-  outline: none;
-  resize: vertical;
-}
-
-/* Textarea spezifisch noch größer machen */
-textarea {
-  min-height: 72px;    /* Angenehme Höhe für Freitext */
-  max-height: 220px;
-  line-height: 1.5;
-}
-
-/* Gleiche Optik beim Dropdown */
-select {
-  background: #fafdff;
-  border-radius: 14px;
-  border: 2px solid #dde8f3;
-  min-height: 48px;
-  font-size: 1.08em;
-  padding: 12px 16px;
-  color: #18355b;
-}
-
-/* Fokus-Zustand mit klarer, aber dezenter Outline */
-input[type="text"]:focus,
-textarea:focus,
-select:focus {
-  border-color: #2d8cff;
-  box-shadow: 0 0 2px #2d8cff, 0 2px 10px rgba(24,53,91,0.08);
-  background: #f3f9fe;
-}
-/* --- Einheitliche, großzügige Form Controls --- */
+/* ----------- EINHEITLICHE FORM CONTROLS ----------- */
 input[type="text"],
 input[type="email"],
 input[type="number"],
@@ -246,6 +62,7 @@ input[type="password"],
 select,
 textarea {
   width: 100%;
+  max-width: 100%;
   min-height: 56px;
   font-size: 1.11em;
   border: 2px solid #dde8f3;
@@ -258,6 +75,7 @@ textarea {
   transition: border-color 0.19s, box-shadow 0.19s, background 0.16s;
   outline: none;
   appearance: none;
+  box-sizing: border-box;
   resize: none;
 }
 
@@ -280,28 +98,159 @@ textarea:focus {
   box-shadow: 0 0 0 2px #e3eeff, 0 2px 10px rgba(24,53,91,0.08);
   background: #f3f9fe;
 }
+
 input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="number"]:hover,
+input[type="password"]:hover,
 select:hover,
 textarea:hover {
   box-shadow: 0 2.5px 14px #e9f3fd, 0 1px 8px rgba(33,40,69,0.08);
   background: #f6fbff;
   border-color: #b5d6f6;
-  transition: border-color 0.14s, background 0.14s, box-shadow 0.14s;
 }
 
 /* Dezenter Platzhalter */
 ::placeholder { color: #b6c7e1; opacity: 1; }
 
-/* Tooltip-Optik */
+/* ----------- RUNDES CHECKBOX-DESIGN ----------- */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2.2px solid #94baf7;
+  background: #fafdff;
+  transition: border-color 0.16s, box-shadow 0.18s;
+  vertical-align: middle;
+  margin-right: 12px;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
+
+input[type="checkbox"]:hover {
+  border-color: #2d8cff;
+  box-shadow: 0 0 0 3px #e6eefc;
+}
+
+input[type="checkbox"]:checked {
+  border-color: #2d8cff;
+  background: radial-gradient(circle at 50% 50%, #2d8cff 60%, #fafdff 100%);
+}
+
+input[type="checkbox"]:checked:after {
+  content: '';
+  position: absolute;
+  top: 7px; left: 7px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1.5px #2d8cff;
+}
+
+/* Checkbox-Label (neben/um die runde Box) */
+.checkbox-label {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #e5e5e5;
+  padding: 6px 18px 6px 10px;
+  margin-bottom: 4px;
+  min-width: 170px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: box-shadow 0.2s;
+  font-size: 1.08em;
+  color: #18355b;
+}
+
+/* Bei Auswahl: blauer Schatten */
+.checkbox-label:has(input[type="checkbox"]:checked) {
+  box-shadow: 0 0 0 2.5px #059;
+  background: #e7f2fb;
+}
+
+/* Checkbox-Gruppe Layout */
+.checkbox-group,
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px 0;
+  margin-bottom: 0;
+}
+
+/* ----------- BUTTONS ----------- */
+button,
+input[type="submit"] {
+  background: #18355b;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.18em;
+  font-weight: 600;
+  padding: 14px 0;
+  width: 100%;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 1.5px 8px rgba(24,53,91,0.09);
+  transition: background 0.15s;
+}
+
+button:hover,
+input[type="submit"]:hover {
+  background: #286ee6;
+}
+
+/* ----------- TOOLTIP / INFO ----------- */
 .form-help {
   color: #8da7d8;
   font-size: 1.15em;
   vertical-align: middle;
+  cursor: help;
+  margin-left: 7px;
 }
 
-/* Responsive Anpassung */
+/* ----------- FOOTER ----------- */
+.footer {
+  max-width: 720px;
+  margin: 40px auto 0 auto;
+  text-align: center;
+  background: #fff;
+  padding: 24px 16px 16px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 16px rgba(24,53,91,0.04);
+  font-size: 0.95em;
+  color: #8191b5;
+}
+
+.footer .lizenz {
+  font-size: 0.90em;
+  color: #a1adc7;
+  margin-top: 10px;
+}
+
+/* ----------- RESPONSIVE ----------- */
+@media (max-width: 800px) {
+  .form-container, .footer {
+    padding: 16px 7px 10px 7px;
+    max-width: 99vw;
+  }
+  .form-header h1 {
+    font-size: 1.3rem;
+  }
+  .form-group {
+    padding: 13px 5px 11px 9px;
+    margin-bottom: 13px;
+  }
+}
+
 @media (max-width: 600px) {
   input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="password"],
   select,
   textarea {
     min-height: 44px;
@@ -311,8 +260,3 @@ textarea:hover {
   }
   textarea { min-height: 80px; }
 }
-
-::-webkit-input-placeholder { color: #bcc6d3; }
-::-moz-placeholder { color: #bcc6d3; }
-:-ms-input-placeholder { color: #bcc6d3; }
-::placeholder { color: #bcc6d3; }
