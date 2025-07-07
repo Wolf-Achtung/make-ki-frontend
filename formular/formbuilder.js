@@ -1,184 +1,161 @@
-// Formular-Builder – optimiert, defensiv, ready für moderne UX
-
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("fields.json")
-    .then((res) => res.json())
-    .then((fields) => buildForm(fields))
-    .catch((err) => {
-      showError("Fehler beim Laden des Formulars.");
-      console.error(err);
-    });
-});
+// formbuilder.js
+fetch('fields.json')
+  .then(res => res.json())
+  .then(fields => buildForm(fields));
 
 function buildForm(fields) {
-  const formRoot = document.getElementById("form-root");
-  if (!formRoot) {
-    console.error("Container mit id 'form-root' nicht gefunden.");
-    return;
-  }
+  const formContainer = document.getElementById('form-container');
+  if (!formContainer) return;
 
-  // Thematische Gruppierung (optional: kannst du im JSON ergänzen)
-  // Sonst erscheinen die Felder in JSON-Reihenfolge
-
-  const form = document.createElement("form");
-  form.className = "main-form";
+  const form = document.createElement('form');
+  form.id = "mainForm";
+  form.className = "questionnaire-form";
   form.autocomplete = "off";
 
-  // Formularfelder
-  fields.forEach((field) => {
-    const fieldDiv = document.createElement("div");
-    fieldDiv.className = "form-field";
+  fields.forEach((field, idx) => {
+    const group = document.createElement('div');
+    group.className = "form-group";
+    group.style.background = "#fff";
 
-    // Label
-    if (field.label) {
-      const label = document.createElement("label");
-      label.innerText = field.label;
-      if (field.id) label.htmlFor = field.id;
-      fieldDiv.appendChild(label);
+    // Frage als Label
+    const label = document.createElement('label');
+    label.textContent = field.label;
+    label.setAttribute('for', field.name);
+    label.className = "form-label";
+    group.appendChild(label);
+
+    // Feldbeschreibung (optional)
+    if (field.description) {
+      const desc = document.createElement('div');
+      desc.className = "form-desc";
+      desc.innerText = field.description;
+      group.appendChild(desc);
     }
 
-    // Feldtyp
-    let input;
-    switch (field.type) {
-      case "text":
-      case "email":
-      case "number":
-        input = document.createElement("input");
-        input.type = field.type;
-        break;
-      case "textarea":
-        input = document.createElement("textarea");
-        break;
-      case "select":
-        input = document.createElement("select");
-        (field.options || []).forEach((opt) => {
-          const option = document.createElement("option");
-          option.value = opt.value ?? opt;
-          option.innerText = opt.label ?? opt;
-          input.appendChild(option);
-        });
-        break;
-      case "checkbox":
-        input = document.createElement("input");
+    // Eingabefeld-Typ
+    if (field.type === "checkbox" && Array.isArray(field.options)) {
+      // Checkbox-Gruppe für Mehrfachauswahl
+      const checkboxGroup = document.createElement('div');
+      checkboxGroup.className = "checkbox-group";
+      field.options.forEach((opt, i) => {
+        const id = `${field.name}_${i}`;
+        const wrapper = document.createElement('label');
+        wrapper.className = "checkbox-label";
+        wrapper.style.display = "block";
+        const input = document.createElement('input');
         input.type = "checkbox";
-        break;
-      case "radio":
-        input = document.createElement("div");
-        (field.options || []).forEach((opt, idx) => {
-          const radio = document.createElement("input");
-          radio.type = "radio";
-          radio.name = field.id;
-          radio.value = opt.value ?? opt;
-          radio.id = `${field.id}_${idx}`;
-          const radioLabel = document.createElement("label");
-          radioLabel.htmlFor = radio.id;
-          radioLabel.innerText = opt.label ?? opt;
-          input.appendChild(radio);
-          input.appendChild(radioLabel);
-        });
-        break;
-      case "slider":
-        input = document.createElement("input");
-        input.type = "range";
-        input.min = field.min ?? 1;
-        input.max = field.max ?? 10;
-        input.value = field.value ?? field.min ?? 1;
-        input.classList.add("slider");
-        // Live Value anzeigen
-        const val = document.createElement("span");
-        val.className = "slider-value";
-        val.innerText = input.value;
-        input.addEventListener("input", () => {
-          val.innerText = input.value;
-        });
-        fieldDiv.appendChild(val);
-        break;
-      default:
-        input = document.createElement("input");
-        input.type = "text";
-    }
-
-    if (field.id) input.id = field.id;
-    if (field.name) input.name = field.name;
-    if (field.required) input.required = true;
-    if (field.placeholder) input.placeholder = field.placeholder;
-
-    // Checkboxen/Radio nebeneinander
-    if (field.type === "checkbox" || field.type === "radio") {
-      fieldDiv.classList.add("form-inline");
-    }
-
-    // Slider nach Label
-    if (field.type === "slider") {
-      fieldDiv.appendChild(input);
-    } else {
-      fieldDiv.appendChild(input);
-    }
-
-    form.appendChild(fieldDiv);
-  });
-
-  // Absenden-Button
-  const btnDiv = document.createElement("div");
-  btnDiv.className = "form-actions";
-  const submitBtn = document.createElement("button");
-  submitBtn.type = "submit";
-  submitBtn.innerText = "Auswertung starten";
-  submitBtn.className = "btn-primary";
-  btnDiv.appendChild(submitBtn);
-  form.appendChild(btnDiv);
-
-  // Meldung
-  const msg = document.createElement("div");
-  msg.className = "form-message";
-  form.appendChild(msg);
-
-  // Submit-Handler
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true;
-    msg.innerText = "Wird gesendet...";
-    msg.classList.remove("error");
-
-    const data = {};
-    new FormData(form).forEach((value, key) => {
-      if (data[key]) {
-        if (!Array.isArray(data[key])) data[key] = [data[key]];
-        data[key].push(value);
-      } else {
-        data[key] = value;
-      }
-    });
-
-    fetch("/briefing", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        msg.innerText = "Erfolgreich gesendet!";
-        msg.classList.add("success");
-        submitBtn.disabled = false;
-        // Ggf. Redirect oder PDF-Link anzeigen
-        if (result.pdf_url) {
-          msg.innerHTML += `<br><a href="${result.pdf_url}" target="_blank" class="btn-link">PDF herunterladen</a>`;
-        }
-      })
-      .catch((err) => {
-        msg.innerText = "Fehler beim Absenden.";
-        msg.classList.add("error");
-        submitBtn.disabled = false;
-        console.error(err);
+        input.name = field.name; // KEIN [] nötig, JS sammelt das!
+        input.value = opt;
+        input.id = id;
+        wrapper.appendChild(input);
+        const span = document.createElement('span');
+        span.textContent = opt;
+        wrapper.appendChild(span);
+        checkboxGroup.appendChild(wrapper);
       });
+      group.appendChild(checkboxGroup);
+
+    } else if (field.type === "radio" && Array.isArray(field.options)) {
+      // Radiobutton-Gruppe
+      const radioGroup = document.createElement('div');
+      radioGroup.className = "radio-group";
+      field.options.forEach((opt, i) => {
+        const id = `${field.name}_${i}`;
+        const wrapper = document.createElement('label');
+        wrapper.className = "radio-label";
+        const input = document.createElement('input');
+        input.type = "radio";
+        input.name = field.name;
+        input.value = opt;
+        input.id = id;
+        wrapper.appendChild(input);
+        const span = document.createElement('span');
+        span.textContent = opt;
+        wrapper.appendChild(span);
+        radioGroup.appendChild(wrapper);
+      });
+      group.appendChild(radioGroup);
+
+    } else if (field.type === "textarea") {
+      // Mehrzeiliges Textfeld
+      const textarea = document.createElement('textarea');
+      textarea.name = field.name;
+      textarea.id = field.name;
+      textarea.className = "form-control";
+      textarea.rows = 3;
+      group.appendChild(textarea);
+
+    } else if (field.type === "select" && Array.isArray(field.options)) {
+      // Dropdown
+      const select = document.createElement('select');
+      select.name = field.name;
+      select.id = field.name;
+      select.className = "form-control";
+      field.options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        select.appendChild(option);
+      });
+      group.appendChild(select);
+
+    } else if (field.type === "number" || field.type === "range") {
+      // Zahleneingabe
+      const input = document.createElement('input');
+      input.type = field.type;
+      input.name = field.name;
+      input.id = field.name;
+      input.className = "form-control";
+      if (field.min !== undefined) input.min = field.min;
+      if (field.max !== undefined) input.max = field.max;
+      if (field.step !== undefined) input.step = field.step;
+      group.appendChild(input);
+
+    } else if (field.type === "bool" || field.type === "checkbox") {
+      // Einzelne Checkbox
+      if (!field.options) {
+        const input = document.createElement('input');
+        input.type = "checkbox";
+        input.name = field.name;
+        input.id = field.name;
+        input.className = "form-checkbox";
+        group.appendChild(input);
+        const span = document.createElement('span');
+        span.textContent = field.boxLabel || '';
+        group.appendChild(span);
+      }
+
+    } else {
+      // Standard Textfeld
+      const input = document.createElement('input');
+      input.type = field.type || "text";
+      input.name = field.name;
+      input.id = field.name;
+      input.className = "form-control";
+      group.appendChild(input);
+    }
+
+    form.appendChild(group);
   });
 
-  // Ins DOM einfügen
-  formRoot.innerHTML = "";
-  formRoot.appendChild(form);
-}
+  // Submit-Button
+  const submitBtn = document.createElement('button');
+  submitBtn.type = "submit";
+  submitBtn.className = "submit-btn";
+  submitBtn.textContent = "Absenden";
+  form.appendChild(submitBtn);
 
-function showError(msg) {
-  const formRoot = document.getElementById("form-root");
-  if (formRoot) formRoot.innerHTML = `<div class="form-message error">${msg}</div>`;
+  formContainer.innerHTML = ""; // vorherigen Inhalt entfernen
+  formContainer.appendChild(form);
+
+  // Formular absenden (hier ggf. eigene Logik, z.B. Animation)
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    // Animation oder Datenverarbeitung...
+    form.classList.add("submitted");
+    setTimeout(() => {
+      form.classList.remove("submitted");
+    }, 1200);
+    // Sende-Logik siehe Backend...
+  });
 }
