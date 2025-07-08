@@ -1,40 +1,33 @@
-body {
-  font-family: 'IBM Plex Mono', 'Fira Mono', 'Courier New', Courier, monospace;
-  background: #f6f9fc;
-  color: #18355b;
+/* --------------------------
+   Allgemeine Farben & Reset
+--------------------------- */
+html, body {
   margin: 0;
-  min-height: 100vh;
+  padding: 0;
+  font-family: "Inter", "Segoe UI", "Arial", sans-serif;
+  background: #f0f6fa;
+  color: #18355b;
+  font-size: 17px;
+  line-height: 1.7;
 }
+* { box-sizing: border-box; }
+a { color: #1863a7; text-decoration: none; }
+a:hover { text-decoration: underline; }
 
+/* --------------------------
+   Container & Abschnitt
+--------------------------- */
 .form-container {
   max-width: 650px;
-  margin: 32px auto 0 auto;
+  margin: 40px auto 0 auto;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 4px 32px rgba(24,53,91,0.09), 0 1.5px 8px rgba(24,53,91,0.11);
   padding: 36px 32px 28px 32px;
+  box-sizing: border-box;
 }
 
-.form-header {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.logo {
-  height: 44px;
-}
-
-h1 {
-  font-size: 2.2rem;
-  color: #18355b;
-  font-weight: 700;
-  margin: 0 0 6px 0;
-  letter-spacing: 0.02em;
-}
-
+/* Abschnitt für einzelne Felder */
 .form-group {
   background: #fff;
   border-radius: 16px;
@@ -43,18 +36,20 @@ h1 {
   padding: 1.4em 1.4em 1em 1.4em;
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
-.form-group label,
-.form-group .label {
-  display: block;
-  font-weight: 500;
-  margin-bottom: 8px;
-  font-size: 1.07em;
-  color: #16304d;
+.form-header h1 {
+  font-size: 2.0rem;
+  font-weight: 700;
+  margin: 0 0 1.7em 0;
+  color: #11305d;
+  letter-spacing: -0.015em;
 }
 
-/* ----------- EINHEITLICHE FORM CONTROLS ----------- */
+/* --------------------------
+   Felder – Inputs, Selects, Textareas
+--------------------------- */
 input[type="text"],
 input[type="email"],
 input[type="number"],
@@ -79,11 +74,16 @@ textarea {
   resize: none;
 }
 
-/* textarea: noch größer, vertikal verstellbar */
 textarea {
   min-height: 120px;
   max-height: 300px;
   line-height: 1.5;
+  border-radius: 16px;
+  background: #fafdff;
+  border: 2px solid #dde8f3;
+  box-shadow: 0 1.5px 8px rgba(33,40,69,0.09);
+  transition: border-color 0.19s, box-shadow 0.19s, background 0.16s;
+  padding: 14px 18px;
   resize: vertical;
 }
 
@@ -110,128 +110,118 @@ textarea:hover {
   border-color: #b5d6f6;
 }
 
-/* Dezenter Platzhalter */
-::placeholder { color: #b6c7e1; opacity: 1; }
-
-/* ----------- RUNDES CHECKBOX-DESIGN ----------- */
+/* --------------------------
+   Checkboxen (rund, modern)
+--------------------------- */
 input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2.2px solid #94baf7;
-  background: #fafdff;
-  transition: border-color 0.16s, box-shadow 0.18s;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #2d8cff;
+  border-radius: 7px;
+  accent-color: #2d8cff;
   vertical-align: middle;
-  margin-right: 12px;
-  position: relative;
+  margin-right: 8px;
+  background: #fff;
   cursor: pointer;
-  outline: none;
 }
 
-input[type="checkbox"]:hover {
-  border-color: #2d8cff;
-  box-shadow: 0 0 0 3px #e6eefc;
-}
-
-input[type="checkbox"]:checked {
-  border-color: #2d8cff;
-  background: radial-gradient(circle at 50% 50%, #2d8cff 60%, #fafdff 100%);
-}
-
-input[type="checkbox"]:checked:after {
-  content: '';
-  position: absolute;
-  top: 7px; left: 7px;
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 0 1.5px #2d8cff;
-}
-
-/* Checkbox-Label (neben/um die runde Box) */
-.checkbox-label {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px #e5e5e5;
-  padding: 6px 18px 6px 10px;
+/* Label bei Checkboxen */
+.checkbox-label, label {
+  font-size: 1em;
+  color: #1a3355;
+  font-weight: 400;
+  cursor: pointer;
   margin-bottom: 4px;
-  min-width: 170px;
-  cursor: pointer;
+  line-height: 1.4;
+  display: block;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 8px;
+}
+
+.checkbox-group label {
   display: flex;
   align-items: center;
-  transition: box-shadow 0.2s;
-  font-size: 1.08em;
-  color: #18355b;
-}
-
-/* Bei Auswahl: blauer Schatten */
-.checkbox-label:has(input[type="checkbox"]:checked) {
-  box-shadow: 0 0 0 2.5px #059;
-  background: #e7f2fb;
-}
-
-/* Checkbox-Gruppe Layout */
-.checkbox-group,
-.radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px 0;
+  font-weight: 400;
   margin-bottom: 0;
 }
 
-/* ----------- BUTTONS ----------- */
-button,
-input[type="submit"] {
-  background: #18355b;
+/* --------------------------
+   Buttons, CTA, Button-Reihen
+--------------------------- */
+.button-row {
+  text-align: center;
+}
+
+button, .btn, .quiz-btn, .pro-btn, a.btn {
+  background: #08385d;
   color: #fff;
   border: none;
-  border-radius: 12px;
-  font-size: 1.18em;
-  font-weight: 600;
-  padding: 14px 0;
-  width: 100%;
+  border-radius: 29px;
+  font-size: 1.13rem;
+  font-weight: 500;
+  padding: 13px 42px;
+  margin: 13px 13px 0 0;
   cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 1.5px 8px rgba(24,53,91,0.09);
-  transition: background 0.15s;
+  transition: background 0.13s, transform 0.13s, box-shadow 0.15s;
+  box-shadow: 0 2px 10px 0 rgba(20, 44, 73, 0.10);
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  letter-spacing: 0.01em;
+}
+.btn:hover, .quiz-btn:hover, .pro-btn:hover, button:hover {
+  background: #1863a7;
+  transform: translateY(-2px) scale(1.045);
+  box-shadow: 0 7px 20px #07354d33;
+}
+button:active, .btn:active {
+  background: #0c2442;
+  box-shadow: none;
 }
 
-button:hover,
-input[type="submit"]:hover {
-  background: #286ee6;
+.button-row {
+  margin-top: 1.3em;
 }
 
-/* ----------- TOOLTIP / INFO ----------- */
-.form-help {
-  color: #8da7d8;
-  font-size: 1.15em;
-  vertical-align: middle;
-  cursor: help;
-  margin-left: 7px;
+@media (max-width: 520px) {
+  button, .btn, .quiz-btn, .pro-btn, a.btn {
+    font-size: 1.03rem;
+    padding: 11px 18px;
+    border-radius: 22px;
+    margin: 10px 0 0 0;
+  }
+}
+/* --------------------------
+   Fehlermeldungen & Hilfetexte
+--------------------------- */
+input:invalid, select:invalid, textarea:invalid {
+  border-color: #d98e6e;
+  background: #fff6f2;
 }
 
-/* ----------- FOOTER ----------- */
-.footer {
-  max-width: 720px;
-  margin: 40px auto 0 auto;
-  text-align: center;
-  background: #fff;
-  padding: 24px 16px 16px 16px;
-  border-radius: 20px;
-  box-shadow: 0 2px 16px rgba(24,53,91,0.04);
-  font-size: 0.95em;
-  color: #8191b5;
+.form-error {
+  color: #cc3939;
+  font-size: 1.01em;
+  margin-top: 4px;
+  margin-bottom: 0;
 }
 
-.footer .lizenz {
-  font-size: 0.90em;
-  color: #a1adc7;
-  margin-top: 10px;
+/* Hilfetexte und Hinweise */
+.help-text {
+  font-size: 0.99em;
+  color: #4079a8;
+  margin-bottom: 7px;
+  margin-top: 1px;
 }
 
-/* ----------- RESPONSIVE ----------- */
+/* --------------------------
+   Responsives Layout
+--------------------------- */
 @media (max-width: 800px) {
   .form-container, .footer {
     padding: 16px 7px 10px 7px;
@@ -259,4 +249,92 @@ input[type="submit"]:hover {
     border-radius: 14px;
   }
   textarea { min-height: 80px; }
+  .form-container {
+    padding: 10px 2vw 8px 2vw;
+  }
+}
+
+/* --------------------------
+   Footer & Legal-Links
+--------------------------- */
+.footer,
+footer {
+  background: #fff;
+  color: #b5bed6;
+  width: 100%;
+  padding: 12px 0 8px 0;
+  text-align: center;
+  border-top: 2px solid #c5d3e2;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+  left: 0;
+  z-index: 100;
+  margin-top: 0;
+  box-shadow: 0 -2px 12px rgba(24, 53, 91, 0.06);
+}
+
+.footer a, footer a {
+  color: #11305d;
+  text-decoration: none;
+  margin: 0 10px;
+  font-size: 0.97rem;
+  opacity: 0.87;
+  transition: color 0.13s, opacity 0.13s;
+}
+.footer a:hover, footer a:hover {
+  color: #2d8cff;
+  opacity: 1;
+}
+
+.footer-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 8px 0 3px 0;
+}
+.footer-logos img {
+  height: 32px;
+  filter: grayscale(17%);
+  opacity: 0.85;
+  transition: filter 0.19s, opacity 0.13s;
+}
+.footer-logos img:hover {
+  filter: none;
+  opacity: 1;
+}
+
+/* --------------------------
+   Sonstiges
+--------------------------- */
+label {
+  margin-bottom: 7px;
+  font-weight: 500;
+  color: #173059;
+  display: block;
+}
+
+::placeholder {
+  color: #b2bed3;
+  opacity: 1;
+  font-size: 1em;
+  font-style: italic;
+}
+::-webkit-input-placeholder { color: #b2bed3; }
+::-moz-placeholder { color: #b2bed3; }
+:-ms-input-placeholder { color: #b2bed3; }
+::-ms-input-placeholder { color: #b2bed3; }
+
+/* Scrollbar-Design (optional, wirkt moderner) */
+::-webkit-scrollbar {
+  width: 9px;
+  background: #e6eef8;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbe0f7;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aacde6;
 }
