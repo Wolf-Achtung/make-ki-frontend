@@ -15,8 +15,7 @@
       "Finanzen & Versicherungen",
       "Bildung",
       "Sonstige"
-    ],
-    "required": true
+    ]
   },
   {
     "key": "unternehmensgroesse",
@@ -30,8 +29,7 @@
       "26-50",
       "51-100",
       "101+"
-    ],
-    "required": true
+    ]
   },
   {
     "key": "selbststaendig",
@@ -40,15 +38,7 @@
     "options": [
       "Ja",
       "Nein"
-    ],
-    "required": true
-  },
-  {
-    "key": "plz",
-    "label": "Postleitzahl (für regionale Fördermöglichkeiten)",
-    "type": "input",
-    "placeholder": "z.B. 10405",
-    "required": true
+    ]
   },
   {
     "key": "bundesland",
@@ -71,15 +61,12 @@
       "Sachsen-Anhalt",
       "Schleswig-Holstein",
       "Thüringen"
-    ],
-    "required": true
+    ]
   },
   {
     "key": "hauptleistung",
     "label": "Was ist das Hauptprodukt / die wichtigste Dienstleistung Ihres Unternehmens?",
-    "type": "textarea",
-    "placeholder": "z.B. Online-Marketing-Beratung, Bauplanung, Gesundheitsdienstleistungen",
-    "required": true
+    "type": "textarea"
   },
   {
     "key": "zielgruppen",
@@ -95,8 +82,7 @@
       "Privatpersonen",
       "Startups",
       "Andere"
-    ],
-    "required": true
+    ]
   },
   {
     "key": "projektziel",
@@ -112,8 +98,7 @@
       "Personalentlastung",
       "Fördermittel beantragen",
       "Andere"
-    ],
-    "required": false
+    ]
   },
   {
     "key": "ki_einsatz",
@@ -138,8 +123,7 @@
     "type": "slider",
     "min": 1,
     "max": 10,
-    "step": 1,
-    "required": true
+    "step": 1
   },
   {
     "key": "prozesse_papierlos",
@@ -179,8 +163,7 @@
   {
     "key": "ki_projekte",
     "label": "Gibt es geplante oder laufende KI-Projekte?",
-    "type": "textarea",
-    "placeholder": "z.B. Chatbots, automatisierte Datenanalyse, Prozessoptimierung, KI im Marketing"
+    "type": "textarea"
   },
   {
     "key": "ki_usecases",
@@ -201,8 +184,7 @@
   {
     "key": "ki_potenzial",
     "label": "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
-    "type": "textarea",
-    "placeholder": "z.B. Umsatzsteigerung, Prozessoptimierung, Kostenersparnis, schnellere Markteinführung, neue Dienstleistungen, Wissensmanagement"
+    "type": "textarea"
   },
   {
     "key": "usecase_priority",
@@ -223,168 +205,96 @@
   {
     "key": "ki_geschaeftsmodell_vision",
     "label": "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern?",
-    "type": "textarea",
-    "placeholder": "z.B. neue Dienstleistungen, disruptive Prozesse, Branchenvorreiter, starke Effizienzgewinne, neue Arbeitsmodelle, Automatisierung, neue Umsatzmodelle"
+    "type": "textarea"
   },
   {
     "key": "moonshot",
     "label": "Was wäre ein wirklich großer, mutiger Durchbruch, den Sie sich durch KI wünschen? Was wäre Ihr Traum für Ihr Unternehmen in 3 Jahren mit KI?",
-    "type": "textarea",
-    "placeholder": "z.B. Marktführer, globaler Durchbruch, neue Branche erschlossen, ..."
+    "type": "textarea"
   },
   {
     "key": "datenschutzbeauftragter",
     "label": "Gibt es in Ihrem Unternehmen einen Datenschutzbeauftragten?",
     "type": "select",
-    "options": [
-      "Ja",
-      "Nein",
-      "Teilweise (externer Berater/noch in Planung)"
-    ]
+    "options": ["Ja", "Nein", "Teilweise (externer Berater/noch in Planung)"]
   },
   {
     "key": "technische_massnahmen",
     "label": "Welche technischen Maßnahmen (Firewalls, Zugriffskontrolle etc.) sind zum Schutz von Daten vorhanden?",
     "type": "select",
-    "options": [
-      "Alle relevanten Maßnahmen vorhanden",
-      "Teilweise umgesetzt",
-      "Noch keine umgesetzt"
-    ]
+    "options": ["Alle relevanten Maßnahmen vorhanden", "Teilweise umgesetzt", "Noch keine umgesetzt"]
   },
   {
     "key": "folgenabschaetzung",
     "label": "Wurde für KI-Anwendungen eine DSGVO-Folgenabschätzung durchgeführt?",
     "type": "select",
-    "options": [
-      "Ja",
-      "Nein",
-      "Teilweise (in Planung)"
-    ]
+    "options": ["Ja", "Nein", "Teilweise (in Planung)"]
   },
   {
     "key": "meldewege",
     "label": "Gibt es definierte Meldewege bei Datenschutzvorfällen?",
     "type": "select",
-    "options": [
-      "Ja",
-      "Teilweise",
-      "Nein"
-    ]
+    "options": ["Ja", "Teilweise", "Nein"]
   },
   {
     "key": "loeschregeln",
     "label": "Gibt es klare Regeln zur Löschung oder Anonymisierung von Daten?",
     "type": "select",
-    "options": [
-      "Ja",
-      "Teilweise",
-      "Nein"
-    ]
+    "options": ["Ja", "Teilweise", "Nein"]
   },
   {
     "key": "ai_act_kenntnis",
     "label": "Wie gut kennen Sie den EU AI Act und seine Anforderungen?",
     "type": "select",
-    "options": [
-      "Sehr gut",
-      "Gut",
-      "Habe davon gehört",
-      "Noch nicht beschäftigt"
-    ]
+    "options": ["Sehr gut", "Gut", "Habe davon gehört", "Noch nicht beschäftigt"]
   },
   {
     "key": "ki_hemmnisse",
     "label": "Was sind für Ihr Unternehmen aktuell die größten Hemmnisse oder Risiken beim Einsatz von KI? Mehrfachauswahl möglich.",
     "type": "checkbox",
-    "options": [
-      "Unsicherheit bei Rechtslage",
-      "Datenschutz",
-      "Knowhow",
-      "Budget",
-      "Akzeptanz im Team",
-      "Zeitmangel",
-      "IT-Integration",
-      "Keine Hemmnisse",
-      "Andere"
-    ],
-    "required": false
+    "options": ["Unsicherheit bei Rechtslage", "Datenschutz", "Knowhow", "Budget", "Akzeptanz im Team", "Zeitmangel", "IT-Integration", "Keine Hemmnisse", "Andere"]
   },
   {
     "key": "bisherige_foerdermittel",
     "label": "Haben Sie bereits Fördermittel für Digitalisierung oder KI erhalten/genutzt?",
     "type": "select",
-    "options": [
-      "Ja",
-      "Nein"
-    ]
+    "options": ["Ja", "Nein"]
   },
   {
     "key": "interesse_foerderung",
     "label": "Besteht Interesse an Fördermitteln für KI- oder Digitalisierungsprojekte?",
     "type": "select",
-    "options": [
-      "Ja",
-      "Nein",
-      "Unklar"
-    ]
+    "options": ["Ja", "Nein", "Unklar"]
   },
   {
     "key": "erfahrung_beratung",
     "label": "Gab es bereits Beratung zum Thema Digitalisierung/KI?",
     "type": "select",
-    "options": [
-      "Ja",
-      "Nein",
-      "Unklar"
-    ]
+    "options": ["Ja", "Nein", "Unklar"]
   },
   {
     "key": "investitionsbudget",
     "label": "Welches Investitionsbudget planen Sie für KI/Digitalisierung in den nächsten 12 Monaten?",
     "type": "select",
-    "options": [
-      "Unter 2.000 €",
-      "2.000–10.000 €",
-      "10.001–50.000 €",
-      "Mehr als 50.000 €",
-      "Noch unklar"
-    ]
+    "options": ["Unter 2.000 €", "2.000–10.000 €", "10.001–50.000 €", "Mehr als 50.000 €", "Noch unklar"]
   },
   {
     "key": "marktposition",
     "label": "Wie schätzen Sie Ihre aktuelle Marktposition im Wettbewerb ein?",
     "type": "select",
-    "options": [
-      "Marktführer",
-      "Im oberen Drittel",
-      "Mittelfeld",
-      "Aufholer/Nachzügler",
-      "Schwer einzuschätzen"
-    ]
+    "options": ["Marktführer", "Im oberen Drittel", "Mittelfeld", "Aufholer/Nachzügler", "Schwer einzuschätzen"]
   },
   {
     "key": "benchmark_wettbewerb",
     "label": "Vergleichen Sie Ihre Digitalisierung/KI-Readiness regelmäßig mit Wettbewerbern?",
     "type": "select",
-    "options": [
-      "Ja",
-      "Nein",
-      "Selten"
-    ]
+    "options": ["Ja", "Nein", "Selten"]
   },
   {
     "key": "innovationsprozess",
     "label": "Wie werden Innovationen in Ihrem Unternehmen entwickelt?",
     "type": "select",
-    "options": [
-      "Durch internes Innovationsteam",
-      "Durch Mitarbeitende",
-      "In Zusammenarbeit mit Kunden",
-      "Externe Berater/Partner",
-      "Zufällig/ungeplant",
-      "Noch nicht definiert"
-    ]
+    "options": ["Durch internes Innovationsteam", "Durch Mitarbeitende", "In Zusammenarbeit mit Kunden", "Externe Berater/Partner", "Zufällig/ungeplant", "Noch nicht definiert"]
   },
   {
     "key": "risikofreude",
@@ -392,13 +302,11 @@
     "type": "slider",
     "min": 1,
     "max": 5,
-    "step": 1,
-    "required": true
+    "step": 1
   },
   {
     "key": "datenschutz_ok",
     "label": "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.",
-    "type": "checkbox",
-    "required": true
+    "type": "checkbox"
   }
 ]
