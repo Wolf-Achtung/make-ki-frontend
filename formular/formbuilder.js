@@ -17,26 +17,22 @@ function buildForm(fields) {
     group.className = "form-group";
     group.style.background = "#fff";
 
-   // Frage als Label
-const label = document.createElement('label');
-label.textContent = field.label;
-label.setAttribute('for', field.name);
-label.className = "form-label";
+    const label = document.createElement('label');
+    label.textContent = field.label;
+    label.setAttribute('for', field.name);
+    label.className = "form-label";
 
-// NEU: Tooltip für Hilfetext (aus dem JSON)
-if (field.help) {
-  const help = document.createElement('span');
-  help.className = "form-help";
-  help.textContent = " ⓘ ";
-  help.title = field.help;
-  help.style.cursor = "help";
-  help.style.marginLeft = "7px";
-  label.appendChild(help);
-}
-group.appendChild(label);
+    if (field.help) {
+      const help = document.createElement('span');
+      help.className = "form-help";
+      help.textContent = " ⓘ ";
+      help.title = field.help;
+      help.style.cursor = "help";
+      help.style.marginLeft = "7px";
+      label.appendChild(help);
+    }
+    group.appendChild(label);
 
-
-    // Feldbeschreibung (optional)
     if (field.description) {
       const desc = document.createElement('div');
       desc.className = "form-desc";
@@ -44,9 +40,7 @@ group.appendChild(label);
       group.appendChild(desc);
     }
 
-    // Eingabefeld-Typ
     if (field.type === "checkbox" && Array.isArray(field.options)) {
-      // Checkbox-Gruppe für Mehrfachauswahl
       const checkboxGroup = document.createElement('div');
       checkboxGroup.className = "checkbox-group";
       field.options.forEach((opt, i) => {
@@ -56,7 +50,7 @@ group.appendChild(label);
         wrapper.style.display = "block";
         const input = document.createElement('input');
         input.type = "checkbox";
-        input.name = field.name; // KEIN [] nötig, JS sammelt das!
+        input.name = field.name;
         input.value = opt;
         input.id = id;
         wrapper.appendChild(input);
@@ -66,9 +60,7 @@ group.appendChild(label);
         checkboxGroup.appendChild(wrapper);
       });
       group.appendChild(checkboxGroup);
-
     } else if (field.type === "radio" && Array.isArray(field.options)) {
-      // Radiobutton-Gruppe
       const radioGroup = document.createElement('div');
       radioGroup.className = "radio-group";
       field.options.forEach((opt, i) => {
@@ -87,18 +79,14 @@ group.appendChild(label);
         radioGroup.appendChild(wrapper);
       });
       group.appendChild(radioGroup);
-
     } else if (field.type === "textarea") {
-      // Mehrzeiliges Textfeld
       const textarea = document.createElement('textarea');
       textarea.name = field.name;
       textarea.id = field.name;
       textarea.className = "form-control";
       textarea.rows = 3;
       group.appendChild(textarea);
-
     } else if (field.type === "select" && Array.isArray(field.options)) {
-      // Dropdown
       const select = document.createElement('select');
       select.name = field.name;
       select.id = field.name;
@@ -110,9 +98,7 @@ group.appendChild(label);
         select.appendChild(option);
       });
       group.appendChild(select);
-
     } else if (field.type === "number" || field.type === "range") {
-      // Zahleneingabe
       const input = document.createElement('input');
       input.type = field.type;
       input.name = field.name;
@@ -122,9 +108,7 @@ group.appendChild(label);
       if (field.max !== undefined) input.max = field.max;
       if (field.step !== undefined) input.step = field.step;
       group.appendChild(input);
-
     } else if (field.type === "bool" || field.type === "checkbox") {
-      // Einzelne Checkbox
       if (!field.options) {
         const input = document.createElement('input');
         input.type = "checkbox";
@@ -136,9 +120,7 @@ group.appendChild(label);
         span.textContent = field.boxLabel || '';
         group.appendChild(span);
       }
-
     } else {
-      // Standard Textfeld
       const input = document.createElement('input');
       input.type = field.type || "text";
       input.name = field.name;
@@ -157,24 +139,55 @@ group.appendChild(label);
   submitBtn.textContent = "Absenden";
   form.appendChild(submitBtn);
 
-  formContainer.innerHTML = ""; // vorherigen Inhalt entfernen
+  formContainer.innerHTML = "";
   formContainer.appendChild(form);
 
-  // Formular absenden (hier ggf. eigene Logik, z.B. Animation)
+  // Autosize für Textareas
+  document.addEventListener('input', function (event) {
+    if (event.target.tagName.toLowerCase() !== 'textarea') return;
+    event.target.style.height = 'auto';
+    event.target.style.height = (event.target.scrollHeight) + 'px';
+  }, false);
+
+  // >>> NEU: Formular absenden an dein Railway-Backend <<<
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    // Animation oder Datenverarbeitung...
-    form.classList.add("submitted");
-    setTimeout(() => {
-      form.classList.remove("submitted");
-    }, 1200);
-    // Sende-Logik siehe Backend...
-  });
-// Autosize für alle Textareas – wächst dynamisch bei Eingabe
-document.addEventListener('input', function (event) {
-  if (event.target.tagName.toLowerCase() !== 'textarea') return;
-  event.target.style.height = 'auto';
-  event.target.style.height = (event.target.scrollHeight) + 'px';
-}, false);
 
+    // Daten sammeln (inkl. Checkbox-Arrays)
+    const formData = new FormData(form);
+    const data = {};
+
+    formData.forEach((value, key) => {
+      if (data[key]) {
+        if (Array.isArray(data[key])) {
+          data[key].push(value);
+        } else {
+          data[key] = [data[key], value];
+        }
+      } else {
+        data[key] = value;
+      }
+    });
+
+    console.log("🚀 Daten werden gesendet:", data);
+
+    fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+      console.log("✅ Antwort vom Server:", result);
+      if (result.pdf_url) {
+        window.location.href = result.pdf_url; // Download automatisch starten
+      } else {
+        alert("Report erstellt, aber kein PDF-Link zurückgegeben.");
+      }
+    })
+    .catch(err => {
+      console.error("❌ Fehler beim Senden:", err);
+      alert("Es gab einen Fehler bei der Erstellung des Reports.");
+    });
+  });
 }
