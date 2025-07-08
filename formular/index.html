@@ -7,14 +7,34 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <!-- LOGIN MODAL -->
+  <div id="login-modal" style="
+    position:fixed;
+    top:0;left:0;width:100%;height:100%;
+    background:#f5faff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;">
+    <div style="background:white;padding:2em;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.1);text-align:center;">
+      <h2>Login zum Voll-Check</h2>
+      <input type="password" id="pw" placeholder="Passwort eingeben" style="padding:0.5em;margin-top:1em;width:200px;">
+      <br>
+      <button onclick="checkPW()" style="padding:0.5em 1em;margin-top:1em;background:#005EB8;color:white;border:none;border-radius:4px;cursor:pointer;">Login</button>
+      <div id="err" style="color:red;display:none;margin-top:1em;">Falsches Passwort</div>
+    </div>
+  </div>
+
   <div class="form-container">
     <div class="form-header">
       <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" class="logo" />
       <h1>KI-Readiness-Check</h1>
     </div>
-    <!-- Hier nur noch der Container, NICHT das statische Form -->
     <div id="form-container"></div>
   </div>
+
   <footer class="footer">
     <div class="lizenz">
       © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
@@ -24,6 +44,39 @@
       Die Nutzung und Bearbeitung der bereitgestellten Listen, Templates und Prompts ist ausschließlich Kunden und Partnern von KI-Sicherheit.jetzt vorbehalten.
     </div>
   </footer>
+
 <script src="formbuilder.js"></script>
+<script>
+  // Formular laden
+  fetch("fields.json")
+    .then(response => response.json())
+    .then(fields => buildForm(fields, document.getElementById('form-container')));
+
+  // Erlaubte Passwörter
+  const allowedPWs = [
+    "K=Zjp4","uXh@d5","+WVj2t","ZKm4w","Nwz9g?","M?EH4c","K9zJ#t","Dk4&MF",
+    "N:3jZz","EXD7(q","tB\"qd3","tuky(4","K/qn6t","x\"sq9z","8B)Yfw","3ep&nw",
+    "WH=4pY","GV!8WW","@Azn6R","Qp!sr4","nk7V_S","QJ*4fh","yEE8Y@","Y8yCc,",
+    "c\"aVg7","9ppP\"Y","T9:kuK","R7t=Mf","G&8wxm","wj/2gq","!ZeTp8","y4w!mC",
+    "Y5GC=B","uXh@d5","&cq4hW","c(F8HH","U7yFj:","4x#hXf","K=Zjp4","\"8PmZn",
+    "@Fh5Mk","k/9vmD","+WVj2t","WmW!2Q","SW?7Pt","?HY3Ar","LAc:Q5","u=L4nw",
+    "(s6eGa","UJJ=s7","x,RQ3s","PAH6(p","9\"pyhv"
+  ];
+
+  function checkPW() {
+    const entered = document.getElementById('pw').value;
+    if (allowedPWs.includes(entered)) {
+      document.getElementById('login-modal').style.display = "none";
+      sessionStorage.setItem("isLoggedIn", "true");
+    } else {
+      document.getElementById('err').style.display = "block";
+    }
+  }
+
+  // Session prüfen
+  if (sessionStorage.getItem("isLoggedIn") === "true") {
+    document.getElementById('login-modal').style.display = "none";
+  }
+</script>
 </body>
 </html>
