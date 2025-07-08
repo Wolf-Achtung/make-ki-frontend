@@ -96,7 +96,7 @@
       "Startups",
       "Andere"
     ],
-    "required": true,
+    "required": true
   },
   {
     "key": "projektziel",
@@ -113,7 +113,7 @@
       "Fördermittel beantragen",
       "Andere"
     ],
-    "required": false,
+    "required": false
   },
   {
     "key": "ki_einsatz",
@@ -130,7 +130,7 @@
       "Personal",
       "Noch keine Nutzung",
       "Sonstiges"
-    ],
+    ]
   },
   {
     "key": "digitalisierungsgrad",
@@ -196,7 +196,7 @@
       "Wissensmanagement",
       "Marketing",
       "Sonstiges"
-    ],
+    ]
   },
   {
     "key": "ki_potenzial",
@@ -308,7 +308,7 @@
       "Keine Hemmnisse",
       "Andere"
     ],
-    "required": false,
+    "required": false
   },
   {
     "key": "bisherige_foerdermittel",
