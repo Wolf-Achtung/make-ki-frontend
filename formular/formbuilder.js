@@ -1,140 +1,135 @@
-function buildForm(fields, container) {
-  const form = document.createElement("form");
-  form.innerHTML = "";
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("/fields.json")
+        .then(response => response.json())
+        .then(fields => buildForm(fields));
 
-  fields.forEach(field => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "form-field";
+    function buildForm(fields) {
+        const form = document.getElementById("dynamic-form");
+        fields.forEach(field => {
+            const div = document.createElement("div");
+            div.className = "form-group";
 
-    const label = document.createElement("label");
-    label.textContent = field.label;
+            const label = document.createElement("label");
+            label.textContent = field.label;
+            div.appendChild(label);
 
-    if (field.type === "select") {
-      form.appendChild(label);
-      const select = document.createElement("select");
-      select.name = field.name || field.key;
-      field.options.forEach(option => {
-        const opt = document.createElement("option");
-        opt.value = option;
-        opt.textContent = option;
-        select.appendChild(opt);
-      });
-      wrapper.appendChild(select);
+            if (field.type === "text") {
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = field.placeholder || "";
+                input.name = field.key;
+                div.appendChild(input);
+            } else if (field.type === "select") {
+                const select = document.createElement("select");
+                select.name = field.key;
+                field.options.forEach(opt => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    select.appendChild(option);
+                });
+                div.appendChild(select);
+            } else if (field.type === "checkbox") {
+                field.options.forEach(opt => {
+                    const checkboxLabel = document.createElement("label");
+                    checkboxLabel.style.display = "block";
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.name = field.key;
+                    checkbox.value = opt;
+                    checkboxLabel.appendChild(checkbox);
+                    checkboxLabel.append(` ${opt}`);
+                    div.appendChild(checkboxLabel);
+                });
+            }
+            form.insertBefore(div, form.lastElementChild);
+        });
 
-    } else if (field.type === "checkbox" && Array.isArray(field.options)) {
-      form.appendChild(label);
-      wrapper.style.marginBottom = "18px";
-      wrapper.style.padding = "10px";
-      wrapper.style.border = "1px solid #dde8f3";
-      wrapper.style.borderRadius = "12px";
-      wrapper.style.background = "#fafdff";
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            showLoadingOverlay();
 
-      field.options.forEach(option => {
-        const checkboxLabel = document.createElement("label");
-        checkboxLabel.style.display = "block";
-        checkboxLabel.style.margin = "4px 0";
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.name = field.name || field.key;
-        checkbox.value = option;
-        checkboxLabel.appendChild(checkbox);
-        checkboxLabel.appendChild(document.createTextNode(" " + option));
-        wrapper.appendChild(checkboxLabel);
-      });
+            const formData = new FormData(form);
+            const data = {};
 
-    } else if (field.type === "checkbox") {
-      form.appendChild(label);
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.name = field.name || field.key;
-      wrapper.appendChild(input);
+            for (let [key, value] of formData.entries()) {
+                if (data[key]) {
+                    if (!Array.isArray(data[key])) data[key] = [data[key]];
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
 
-    } else if (field.type === "number") {
-      form.appendChild(label);
-      const input = document.createElement("input");
-      input.type = "number";
-      input.name = field.name || field.key;
-      wrapper.appendChild(input);
-
-    } else {
-      form.appendChild(label);
-      const input = document.createElement("input");
-      input.type = "text";
-      input.name = field.name || field.key;
-      if (field.placeholder) input.placeholder = field.placeholder;
-      wrapper.appendChild(input);
+            fetch("/briefing", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                hideLoadingOverlay();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "KI-Readiness-Report.pdf";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(() => {
+                hideLoadingOverlay();
+                alert("Beim Erstellen des Berichts ist ein Fehler aufgetreten.");
+            });
+        });
     }
 
-    form.appendChild(wrapper);
-  });
+    function showLoadingOverlay() {
+        const overlay = document.createElement("div");
+        overlay.id = "loading-overlay";
+        overlay.style.position = "fixed";
+        overlay.style.top = "0";
+        overlay.style.left = "0";
+        overlay.style.width = "100%";
+        overlay.style.height = "100%";
+        overlay.style.background = "rgba(255,255,255,0.9)";
+        overlay.style.display = "flex";
+        overlay.style.flexDirection = "column";
+        overlay.style.alignItems = "center";
+        overlay.style.justifyContent = "center";
+        overlay.style.zIndex = "9999";
 
-  const dsField = document.createElement("div");
-  dsField.innerHTML = `
-    <label><input type="checkbox" name="datenschutz_ok" required /> 
-    Ich habe die <a href="/datenschutz.html" target="_blank">Datenschutzerklärung</a> gelesen und akzeptiere sie.</label>
-  `;
-  form.appendChild(dsField);
+        const spinner = document.createElement("div");
+        spinner.style.width = "60px";
+        spinner.style.height = "60px";
+        spinner.style.border = "6px solid #4a90e2";
+        spinner.style.borderTop = "6px solid transparent";
+        spinner.style.borderRadius = "50%";
+        spinner.style.animation = "spin 1s linear infinite";
+        overlay.appendChild(spinner);
 
-  const submit = document.createElement("button");
-  submit.textContent = "Absenden";
-  form.appendChild(submit);
+        const text = document.createElement("div");
+        text.style.marginTop = "20px";
+        text.style.fontSize = "1.2em";
+        text.style.color = "#333";
+        text.textContent = 'Der individuelle KI-Report wird erstellt. Bitte bis zu 10 Minuten  Geduld...';
+        overlay.appendChild(text);
 
-  // Ladeanzeige-Element hinzufügen
-  const loadingMsg = document.createElement("div");
-  loadingMsg.style.display = "none";
-  loadingMsg.style.marginTop = "15px";
-  loadingMsg.style.fontSize = "0.95em";
-  loadingMsg.style.color = "#555";
-  loadingMsg.textContent = "Der individuelle KI-Report wird erstellt. Das kann 10 Minuten dauern.";
-  form.appendChild(loadingMsg);
+        document.body.appendChild(overlay);
 
-  container.appendChild(form);
-
-  form.onsubmit = function(e) {
-    e.preventDefault();
-    submit.disabled = true;
-    submit.textContent = "Wird verarbeitet...";
-    loadingMsg.style.display = "block";
-
-    const data = new FormData(form);
-    const json = {};
-    data.forEach((value, key) => {
-      if (json[key] !== undefined) {
-        if (!Array.isArray(json[key])) json[key] = [json[key]];
-        json[key].push(value);
-      } else {
-        json[key] = value;
-      }
-    });
-    json["datenschutz_ok"] = true;
-    sendDataWithRetry(json, 0);
-  };
-}
-
-function sendDataWithRetry(data, attempt) {
-  fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })
-  .then(res => {
-    if (!res.ok) throw new Error("Server antwortete nicht korrekt");
-    return res.json();
-  })
-  .then(result => {
-    if (result.pdf_url) {
-      window.location.href = result.pdf_url;
-    } else {
-      alert("Report erstellt, aber kein PDF-Link zurückgegeben.");
+        // CSS Animation hinzufügen
+        const style = document.createElement("style");
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
     }
-  })
-  .catch(err => {
-    console.error("Fehler beim Fetch:", err);
-    if (attempt < 2) {
-      console.log(`Erneuter Versuch ${attempt+2} in 2 Sekunden...`);
-      setTimeout(() => sendDataWithRetry(data, attempt + 1), 2000);
-    } else {
-      alert("Es gab einen Fehler bei der Erstellung des Reports. Bitte erneut versuchen.");
+
+    function hideLoadingOverlay() {
+        const overlay = document.getElementById("loading-overlay");
+        if (overlay) overlay.remove();
     }
-  });
-}
+});
