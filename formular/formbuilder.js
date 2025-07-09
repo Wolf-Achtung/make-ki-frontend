@@ -8,9 +8,9 @@ function buildForm(fields, container) {
 
     const label = document.createElement("label");
     label.textContent = field.label;
-    wrapper.appendChild(label);
 
     if (field.type === "select") {
+      form.appendChild(label);
       const select = document.createElement("select");
       select.name = field.name || field.key;
       field.options.forEach(option => {
@@ -22,7 +22,10 @@ function buildForm(fields, container) {
       wrapper.appendChild(select);
 
     } else if (field.type === "checkbox" && Array.isArray(field.options)) {
-      // Checkbox-Gruppe schöner darstellen
+      // Label außerhalb des Wrappers!
+      form.appendChild(label);
+
+      // Wrapper NUR für die Checkboxen
       wrapper.style.marginBottom = "18px";
       wrapper.style.padding = "10px";
       wrapper.style.border = "1px solid #dde8f3";
@@ -43,18 +46,21 @@ function buildForm(fields, container) {
       });
 
     } else if (field.type === "checkbox") {
+      form.appendChild(label);
       const input = document.createElement("input");
       input.type = "checkbox";
       input.name = field.name || field.key;
       wrapper.appendChild(input);
 
     } else if (field.type === "number") {
+      form.appendChild(label);
       const input = document.createElement("input");
       input.type = "number";
       input.name = field.name || field.key;
       wrapper.appendChild(input);
 
     } else {
+      form.appendChild(label);
       const input = document.createElement("input");
       input.type = "text";
       input.name = field.name || field.key;
@@ -65,7 +71,7 @@ function buildForm(fields, container) {
     form.appendChild(wrapper);
   });
 
-  // Datenschutzerklärung nur einmal, mit Link
+  // Datenschutzerklärung
   const dsField = document.createElement("div");
   dsField.innerHTML = `
     <label><input type="checkbox" name="datenschutz_ok" required /> 
