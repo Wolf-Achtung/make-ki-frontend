@@ -2,7 +2,7 @@
 function buildForm(fields, container) {
   const form = document.createElement("form");
   form.innerHTML = "";
-  
+
   fields.forEach(field => {
     const wrapper = document.createElement("div");
     wrapper.className = "form-field";
@@ -11,34 +11,59 @@ function buildForm(fields, container) {
     label.textContent = field.label;
     wrapper.appendChild(label);
 
-    let input;
     if (field.type === "select") {
-      input = document.createElement("select");
+      const select = document.createElement("select");
+      select.name = field.name;
       field.options.forEach(option => {
         const opt = document.createElement("option");
         opt.value = option;
         opt.textContent = option;
-        input.appendChild(opt);
+        select.appendChild(opt);
       });
+      wrapper.appendChild(select);
+
+    } else if (field.type === "checkbox" && Array.isArray(field.options)) {
+      // Checkbox-Gruppe
+      field.options.forEach(option => {
+        const checkboxLabel = document.createElement("label");
+        checkboxLabel.style.display = "block";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = field.name;
+        checkbox.value = option;
+        checkboxLabel.appendChild(checkbox);
+        checkboxLabel.appendChild(document.createTextNode(" " + option));
+        wrapper.appendChild(checkboxLabel);
+      });
+
     } else if (field.type === "checkbox") {
-      input = document.createElement("input");
+      // Einzelnes Checkbox-Feld
+      const input = document.createElement("input");
       input.type = "checkbox";
+      input.name = field.name;
+      wrapper.appendChild(input);
+
     } else if (field.type === "number") {
-      input = document.createElement("input");
+      const input = document.createElement("input");
       input.type = "number";
+      input.name = field.name;
+      wrapper.appendChild(input);
+
     } else {
-      input = document.createElement("input");
+      const input = document.createElement("input");
       input.type = "text";
+      input.name = field.name;
+      wrapper.appendChild(input);
     }
 
-    input.name = field.name;
-    wrapper.appendChild(input);
     form.appendChild(wrapper);
   });
 
+  // Datenschutzerklärung nur EINMAL, mit Link
   const dsField = document.createElement("div");
   dsField.innerHTML = `
-    <label><input type="checkbox" name="datenschutz_ok" required /> Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.</label>
+    <label><input type="checkbox" name="datenschutz_ok" required /> 
+    Ich habe die <a href="/datenschutz.html" target="_blank">Datenschutzerklärung</a> gelesen und akzeptiere sie.</label>
   `;
   form.appendChild(dsField);
 
@@ -85,7 +110,7 @@ function sendDataWithRetry(data, attempt) {
   })
   .catch(err => {
     console.error("Fehler beim Fetch:", err);
-    if (attempt < 2) { // insgesamt 3 Versuche
+    if (attempt < 2) {
       console.log(`Erneuter Versuch ${attempt+2} in 2 Sekunden...`);
       setTimeout(() => sendDataWithRetry(data, attempt + 1), 2000);
     } else {

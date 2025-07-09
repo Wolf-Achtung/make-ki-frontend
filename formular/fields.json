@@ -303,10 +303,5 @@
     "min": 1,
     "max": 5,
     "step": 1
-  },
-  {
-    "key": "datenschutz_ok",
-    "label": "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.",
-    "type": "checkbox"
   }
 ]
