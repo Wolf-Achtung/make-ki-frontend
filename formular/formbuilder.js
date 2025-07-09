@@ -85,7 +85,7 @@ function buildForm(fields, container) {
   loadingMsg.style.marginTop = "15px";
   loadingMsg.style.fontSize = "0.95em";
   loadingMsg.style.color = "#555";
-  loadingMsg.textContent = "Ihr individueller KI-Report wird erstellt. Zeit für eine Kaffeepause...";
+  loadingMsg.textContent = "Der individuelle KI-Report wird erstellt. Und "Gut' Ding will Weile haben"... also Zeit für eine Kaffeepause...";
   form.appendChild(loadingMsg);
 
   container.appendChild(form);
