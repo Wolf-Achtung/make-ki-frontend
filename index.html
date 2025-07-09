@@ -97,35 +97,6 @@
   </style>
 </head>
 <body>
-<!-- LOGIN-MODAL -->
-<div id="login-modal" class="login-modal">
-  <div class="login-box">
-    <h2>Login</h2>
-    <p>
-      Bitte Passwort eingeben<br>
-      oder <a href="#" id="show-request-form">Passwort anfordern</a>
-    </p>
-    <!-- Login-Formular -->
-    <form id="login-form" autocomplete="off">
-      <input type="password" id="login-password" placeholder="Passwort" required />
-      <button type="submit" class="button">Login</button>
-    </form>
-    <div class="login-error" id="login-error" style="display:none;">Falsches Passwort. Bitte versuchen Sie es erneut.</div>
-    <!-- E-Mail Formular für Passwort-Anfrage (Netlify) -->
-    <form id="request-form" data-netlify="true" method="POST" name="testzugang" style="display:none;">
-      <input type="hidden" name="form-name" value="testzugang">
-      <input type="email" id="request-email" name="email" placeholder="Ihre E-Mail-Adresse" required>
-      <label class="privacy-label">
-        <input type="checkbox" name="privacy" required style="vertical-align: middle; margin-right:4px;">
-        Ich habe die <a href="#datenschutz" target="_blank" style="color:#1763b4;">Datenschutzerklärung</a> gelesen und akzeptiere sie.
-      </label>
-      <button type="submit" class="button">Passwort anfordern</button>
-    </form>
-    <div class="request-success" id="request-success" style="display:none;">Danke! Wir senden Ihnen das Passwort in Kürze per E-Mail.</div>
-    <a href="#" id="back-to-login" style="display:none; font-size:0.97rem; margin-top:14px; color:#337;">Zurück zum Login</a>
-  </div>
-</div>
-
 <img src="badges/ki-sicherheit-logo.png" alt="KI-Sicherheit.jetzt" class="logo" />
 
 <h1>Zertifiziert. Dokumentiert. KI-konform.</h1>
@@ -154,7 +125,7 @@
   <strong>Pro-Tipp:</strong> Kosten sind in der Regel steuerlich voll absetzbar.
 </div>
 
-<h2>Was unsere Kunden sagen:</h2>
+<h2>Ihre konkreten Vorteile:</h2>
 <div class="testimonial-container">
   <div class="testimonial show"><strong>„Endlich ein Audit, das konkrete Maßnahmen liefert.“</strong><p></p></div>
   <div class="testimonial"><strong>„Für den Handel Gold wert. Gerade gegenüber Investoren.“</strong><p></p></div>
