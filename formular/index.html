@@ -27,27 +27,31 @@
     </div>
   </div>
 
+  <!-- HEADER -->
   <div class="form-container">
-    <div class="form-header">
-      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" class="logo" />
+    <div class="form-header" style="text-align:center;">
+      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="max-width:200px;margin-bottom:10px;" />
       <h1>KI-Readiness-Check</h1>
     </div>
-    <div id="form-container"></div>
+
+    <!-- DAS FORMULAR -->
+    <form id="dynamic-form" style="max-width:600px;margin:0 auto;">
+      <button type="submit" style="margin-top:20px;padding:0.75em 2em;background:#005EB8;color:white;border:none;border-radius:4px;cursor:pointer;">
+        Individuellen Report erstellen
+      </button>
+    </form>
   </div>
 
-  <footer class="footer">
-    <div class="lizenz">
-      © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
-      Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br>
-      Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.<br>
-      Alle Logos und Design-Elemente sind urheberrechtlich geschützt.<br>
-      Die Nutzung und Bearbeitung der bereitgestellten Listen, Templates und Prompts ist ausschließlich Kunden und Partnern von KI-Sicherheit.jetzt vorbehalten.
-    </div>
+  <!-- FOOTER -->
+  <footer class="footer" style="margin-top:40px;padding:20px;text-align:center;font-size:0.8em;color:#555;">
+    © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
+    Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br>
+    Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.<br>
+    Logos & Design sind urheberrechtlich geschützt. Nutzung & Bearbeitung der bereitgestellten Listen, Templates und Prompts ausschließlich für Kunden & Partner von KI-Sicherheit.jetzt.
   </footer>
 
 <script src="formbuilder.js"></script>
 <script>
-
   // Erlaubte Passwörter
   const allowedPWs = [
     "K=Zjp4","uXh@d5","+WVj2t","ZKm4w","Nwz9g?","M?EH4c","K9zJ#t","Dk4&MF",
