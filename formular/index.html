@@ -47,10 +47,6 @@
 
 <script src="formbuilder.js"></script>
 <script>
-  // Formular laden
-  fetch("fields.json")
-    .then(response => response.json())
-    .then(fields => buildForm(fields, document.getElementById('form-container')));
 
   // Erlaubte Passwörter
   const allowedPWs = [
