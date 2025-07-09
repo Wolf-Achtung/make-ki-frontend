@@ -22,10 +22,7 @@ function buildForm(fields, container) {
       wrapper.appendChild(select);
 
     } else if (field.type === "checkbox" && Array.isArray(field.options)) {
-      // Label außerhalb des Wrappers!
       form.appendChild(label);
-
-      // Wrapper NUR für die Checkboxen
       wrapper.style.marginBottom = "18px";
       wrapper.style.padding = "10px";
       wrapper.style.border = "1px solid #dde8f3";
@@ -71,7 +68,6 @@ function buildForm(fields, container) {
     form.appendChild(wrapper);
   });
 
-  // Datenschutzerklärung
   const dsField = document.createElement("div");
   dsField.innerHTML = `
     <label><input type="checkbox" name="datenschutz_ok" required /> 
@@ -83,10 +79,23 @@ function buildForm(fields, container) {
   submit.textContent = "Absenden";
   form.appendChild(submit);
 
+  // Ladeanzeige-Element hinzufügen
+  const loadingMsg = document.createElement("div");
+  loadingMsg.style.display = "none";
+  loadingMsg.style.marginTop = "15px";
+  loadingMsg.style.fontSize = "0.95em";
+  loadingMsg.style.color = "#555";
+  loadingMsg.textContent = "Ihr individueller KI-Report wird erstellt. Dies kann bis zu 2 Minuten dauern...";
+  form.appendChild(loadingMsg);
+
   container.appendChild(form);
 
   form.onsubmit = function(e) {
     e.preventDefault();
+    submit.disabled = true;
+    submit.textContent = "Wird verarbeitet...";
+    loadingMsg.style.display = "block";
+
     const data = new FormData(form);
     const json = {};
     data.forEach((value, key) => {
