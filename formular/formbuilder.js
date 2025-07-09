@@ -1,4 +1,3 @@
-// formbuilder.js
 function buildForm(fields, container) {
   const form = document.createElement("form");
   form.innerHTML = "";
@@ -13,7 +12,7 @@ function buildForm(fields, container) {
 
     if (field.type === "select") {
       const select = document.createElement("select");
-      select.name = field.name;
+      select.name = field.name || field.key;
       field.options.forEach(option => {
         const opt = document.createElement("option");
         opt.value = option;
@@ -23,13 +22,20 @@ function buildForm(fields, container) {
       wrapper.appendChild(select);
 
     } else if (field.type === "checkbox" && Array.isArray(field.options)) {
-      // Checkbox-Gruppe
+      // Checkbox-Gruppe schöner darstellen
+      wrapper.style.marginBottom = "18px";
+      wrapper.style.padding = "10px";
+      wrapper.style.border = "1px solid #dde8f3";
+      wrapper.style.borderRadius = "12px";
+      wrapper.style.background = "#fafdff";
+
       field.options.forEach(option => {
         const checkboxLabel = document.createElement("label");
         checkboxLabel.style.display = "block";
+        checkboxLabel.style.margin = "4px 0";
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.name = field.name;
+        checkbox.name = field.name || field.key;
         checkbox.value = option;
         checkboxLabel.appendChild(checkbox);
         checkboxLabel.appendChild(document.createTextNode(" " + option));
@@ -37,29 +43,29 @@ function buildForm(fields, container) {
       });
 
     } else if (field.type === "checkbox") {
-      // Einzelnes Checkbox-Feld
       const input = document.createElement("input");
       input.type = "checkbox";
-      input.name = field.name;
+      input.name = field.name || field.key;
       wrapper.appendChild(input);
 
     } else if (field.type === "number") {
       const input = document.createElement("input");
       input.type = "number";
-      input.name = field.name;
+      input.name = field.name || field.key;
       wrapper.appendChild(input);
 
     } else {
       const input = document.createElement("input");
       input.type = "text";
-      input.name = field.name;
+      input.name = field.name || field.key;
+      if (field.placeholder) input.placeholder = field.placeholder;
       wrapper.appendChild(input);
     }
 
     form.appendChild(wrapper);
   });
 
-  // Datenschutzerklärung nur EINMAL, mit Link
+  // Datenschutzerklärung nur einmal, mit Link
   const dsField = document.createElement("div");
   dsField.innerHTML = `
     <label><input type="checkbox" name="datenschutz_ok" required /> 
@@ -90,7 +96,6 @@ function buildForm(fields, container) {
   };
 }
 
-// --- Retry-Funktion ---
 function sendDataWithRetry(data, attempt) {
   fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
     method: "POST",
