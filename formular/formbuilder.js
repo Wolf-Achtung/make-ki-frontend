@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         {
             "key": "bundesland",
-            "label": "Bundesland",
+            "label": "Bundesland (regionale Fördermöglichkeiten)",
             "type": "select",
             "options": ["Baden-Württemberg", "Bayern", "Berlin", "Brandenburg", "Bremen", "Hamburg", "Hessen", "Mecklenburg-Vorpommern", "Niedersachsen", "Nordrhein-Westfalen", "Rheinland-Pfalz", "Saarland", "Sachsen", "Sachsen-Anhalt", "Schleswig-Holstein", "Thüringen"]
         },
@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "key": "investitionsbudget",
             "label": "Welches Investitionsbudget planen Sie für KI/Digitalisierung in den nächsten 12 Monaten?",
             "type": "select",
-            "options": ["Unter 2.000 €", "2.000–10.000 €", "10.001–50.000 €", "Mehr als 50.000 €", "Noch unklar"]
+            "options": ["Unter 2.000 €", "2.000–10.000 €", "10.000–50.000 €", "Mehr als 50.000 €", "Noch unklar"]
         },
         {
             "key": "marktposition",
@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            fetch("/briefing", {
+            fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(data)
