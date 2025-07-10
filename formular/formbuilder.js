@@ -1,6 +1,7 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // Statt fetch: direkter Import des Fields-Arrays
-    const fields = [
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("dynamicForm");
+
+        const fields = [
         {
             "key": "branche",
             "label": "In welcher Branche ist Ihr Unternehmen hauptsächlich tätig?",
@@ -207,151 +208,53 @@ document.addEventListener("DOMContentLoaded", function () {
 
     buildForm(fields);
 
-    function buildForm(fields) {
-        const form = document.getElementById("dynamic-form");
-        fields.forEach(field => {
-            const div = document.createElement("div");
-            div.className = "form-group";
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
 
-            const label = document.createElement("label");
-            label.textContent = field.label;
-            div.appendChild(label);
+        showLoadingOverlay();
 
-            if (field.type === "text" || field.type === "textarea") {
-                const input = document.createElement(field.type === "textarea" ? "textarea" : "input");
-                if (field.type === "text") input.type = "text";
-                if (field.placeholder) input.placeholder = field.placeholder;
-                input.name = field.key;
-                div.appendChild(input);
-            } else if (field.type === "select") {
-                const select = document.createElement("select");
-                select.name = field.key;
-                field.options.forEach(opt => {
-                    const option = document.createElement("option");
-                    option.value = opt;
-                    option.textContent = opt;
-                    select.appendChild(option);
-                });
-                div.appendChild(select);
-            } else if (field.type === "checkbox") {
-                field.options.forEach(opt => {
-                    const checkboxLabel = document.createElement("label");
-                    checkboxLabel.style.display = "block";
-                    const checkbox = document.createElement("input");
-                    checkbox.type = "checkbox";
-                    checkbox.name = field.key;
-                    checkbox.value = opt;
-                    checkboxLabel.appendChild(checkbox);
-                    checkboxLabel.append(` ${opt}`);
-                    div.appendChild(checkboxLabel);
-                });
-            } else if (field.type === "slider") {
-                const input = document.createElement("input");
-                input.type = "range";
-                input.min = field.min;
-                input.max = field.max;
-                input.step = field.step;
-                input.name = field.key;
+        const formData = new FormData(form);
+        const data = {};
 
-                const output = document.createElement("span");
-                output.style.marginLeft = "10px";
-                output.textContent = input.value;
-
-                input.addEventListener("input", () => {
-                    output.textContent = input.value;
-                });
-
-                div.appendChild(input);
-                div.appendChild(output);
+        for (let [key, value] of formData.entries()) {
+            if (data[key]) {
+                if (!Array.isArray(data[key])) data[key] = [data[key]];
+                data[key].push(value);
+            } else {
+                data[key] = value;
             }
+        }
 
-            form.insertBefore(div, form.lastElementChild);
+        // robust: datenschutz_ok extra prüfen
+        const dsCheck = document.querySelector('input[name="datenschutz_ok"]');
+        data["datenschutz_ok"] = dsCheck && dsCheck.checked ? true : false;
+
+        fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        })
+        .then(async response => {
+            const contentType = response.headers.get("Content-Type");
+            if (contentType && contentType.includes("application/json")) {
+                const json = await response.json();
+                throw new Error(json.error || "Unbekannter Serverfehler");
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            hideLoadingOverlay();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "KI-Readiness-Report.pdf";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(err => {
+            hideLoadingOverlay();
+            alert("Beim Erstellen des Berichts ist ein Fehler aufgetreten: " + err.message);
         });
-
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            showLoadingOverlay();
-
-            const formData = new FormData(form);
-            const data = {};
-
-            for (let [key, value] of formData.entries()) {
-                if (data[key]) {
-                    if (!Array.isArray(data[key])) data[key] = [data[key]];
-                    data[key].push(value);
-                } else {
-                    data[key] = value;
-                }
-            }
-
-            fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(data)
-            })
-            .then(response => response.blob())
-            .then(blob => {
-                hideLoadingOverlay();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "KI-Readiness-Report.pdf";
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            })
-            .catch(() => {
-                hideLoadingOverlay();
-                alert("Beim Erstellen des Berichts ist ein Fehler aufgetreten.");
-            });
-        });
-    }
-
-    function showLoadingOverlay() {
-        const overlay = document.createElement("div");
-        overlay.id = "loading-overlay";
-        overlay.style.position = "fixed";
-        overlay.style.top = "0";
-        overlay.style.left = "0";
-        overlay.style.width = "100%";
-        overlay.style.height = "100%";
-        overlay.style.background = "rgba(255,255,255,0.9)";
-        overlay.style.display = "flex";
-        overlay.style.flexDirection = "column";
-        overlay.style.alignItems = "center";
-        overlay.style.justifyContent = "center";
-        overlay.style.zIndex = "9999";
-
-        const spinner = document.createElement("div");
-        spinner.style.width = "60px";
-        spinner.style.height = "60px";
-        spinner.style.border = "6px solid #4a90e2";
-        spinner.style.borderTop = "6px solid transparent";
-        spinner.style.borderRadius = "50%";
-        spinner.style.animation = "spin 1s linear infinite";
-        overlay.appendChild(spinner);
-
-        const text = document.createElement("div");
-        text.style.marginTop = "20px";
-        text.style.fontSize = "1.2em";
-        text.style.color = "#333";
-        text.textContent = 'Der individuelle KI-Report wird erstellt. Fas kann bis zu 10 Minuten dauern...';
-        overlay.appendChild(text);
-
-        document.body.appendChild(overlay);
-
-        const style = document.createElement("style");
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    function hideLoadingOverlay() {
-        const overlay = document.getElementById("loading-overlay");
-        if (overlay) overlay.remove();
-    }
+    });
 });
