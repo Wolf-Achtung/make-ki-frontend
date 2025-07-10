@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const form = document.getElementById("dynamicForm");
-
-        const fields = [
+    const fields = [
         {
             "key": "branche",
             "label": "In welcher Branche ist Ihr Unternehmen hauptsächlich tätig?",
@@ -208,11 +206,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     buildForm(fields);
 
-    form.addEventListener("submit", function(e) {
+    document.getElementById("dynamic-form").addEventListener("submit", function(e) {
         e.preventDefault();
 
-        showLoadingOverlay();
-
+        const form = e.target;
         const formData = new FormData(form);
         const data = {};
 
@@ -225,36 +222,145 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
 
-        // robust: datenschutz_ok extra prüfen
-        const dsCheck = document.querySelector('input[name="datenschutz_ok"]');
+        // Datenschutz-Checkbox prüfen
+        const dsCheck = form.querySelector('input[name="datenschutz_ok"]');
         data["datenschutz_ok"] = dsCheck && dsCheck.checked ? true : false;
 
+        // Sende Daten an Backend
         fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(data)
         })
         .then(async response => {
-            const contentType = response.headers.get("Content-Type");
-            if (contentType && contentType.includes("application/json")) {
-                const json = await response.json();
-                throw new Error(json.error || "Unbekannter Serverfehler");
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            hideLoadingOverlay();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "KI-Readiness-Report.pdf";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+            const json = await response.json();
+            if (json.error) throw new Error(json.error);
+            window.open(json.pdf_url, "_blank");
         })
         .catch(err => {
-            hideLoadingOverlay();
             alert("Beim Erstellen des Berichts ist ein Fehler aufgetreten: " + err.message);
         });
     });
 });
+
+// --------------------------------------
+// Dynamischer Formbuilder
+// --------------------------------------
+function buildForm(fields) {
+    const form = document.getElementById("dynamic-form");
+    form.innerHTML = ""; // vorherigen Inhalt leeren
+
+    fields.forEach(field => {
+        const wrapper = document.createElement("div");
+        wrapper.style.marginBottom = "18px";
+
+        const label = document.createElement("label");
+        label.style.display = "block";
+        label.style.fontWeight = "bold";
+        label.style.marginBottom = "6px";
+        label.textContent = field.label;
+
+        let inputElem;
+
+        // --- SELECT ---
+        if (field.type === "select") {
+            inputElem = document.createElement("select");
+            inputElem.name = field.key;
+            inputElem.style.width = "100%";
+            inputElem.style.padding = "0.5em";
+            inputElem.style.borderRadius = "4px";
+            field.options.forEach(opt => {
+                const option = document.createElement("option");
+                option.value = opt;
+                option.textContent = opt;
+                inputElem.appendChild(option);
+            });
+        }
+        // --- TEXTAREA ---
+        else if (field.type === "textarea") {
+            inputElem = document.createElement("textarea");
+            inputElem.name = field.key;
+            inputElem.placeholder = field.placeholder || "";
+            inputElem.rows = 3;
+            inputElem.style.width = "100%";
+            inputElem.style.padding = "0.5em";
+            inputElem.style.borderRadius = "4px";
+        }
+        // --- CHECKBOX-GRUPPE ---
+        else if (field.type === "checkbox") {
+            inputElem = document.createElement("div");
+            field.options.forEach(opt => {
+                const checkboxWrapper = document.createElement("label");
+                checkboxWrapper.style.display = "inline-block";
+                checkboxWrapper.style.marginRight = "15px";
+                checkboxWrapper.style.fontWeight = "normal";
+                const box = document.createElement("input");
+                box.type = "checkbox";
+                box.name = field.key;
+                box.value = opt;
+                checkboxWrapper.appendChild(box);
+                checkboxWrapper.appendChild(document.createTextNode(" " + opt));
+                inputElem.appendChild(checkboxWrapper);
+            });
+        }
+        // --- SLIDER ---
+        else if (field.type === "slider") {
+            inputElem = document.createElement("input");
+            inputElem.type = "range";
+            inputElem.name = field.key;
+            inputElem.min = field.min;
+            inputElem.max = field.max;
+            inputElem.step = field.step || 1;
+            inputElem.value = field.min;
+            inputElem.style.width = "70%";
+
+            // Value-Anzeige
+            const valueLabel = document.createElement("span");
+            valueLabel.style.marginLeft = "12px";
+            valueLabel.textContent = inputElem.value;
+            inputElem.addEventListener("input", function() {
+                valueLabel.textContent = this.value;
+            });
+            wrapper.appendChild(valueLabel);
+        }
+        // --- DEFAULT (Text) ---
+        else {
+            inputElem = document.createElement("input");
+            inputElem.type = "text";
+            inputElem.name = field.key;
+            inputElem.placeholder = field.placeholder || "";
+            inputElem.style.width = "100%";
+            inputElem.style.padding = "0.5em";
+            inputElem.style.borderRadius = "4px";
+        }
+
+        label.appendChild(document.createElement("br"));
+        wrapper.appendChild(label);
+        wrapper.appendChild(inputElem);
+        form.appendChild(wrapper);
+    });
+
+    // --- Datenschutz-Checkbox ---
+    const dsDiv = document.createElement("div");
+    dsDiv.style.marginBottom = "18px";
+    dsDiv.innerHTML = `
+        <label style="font-weight:normal">
+            <input type="checkbox" name="datenschutz_ok" style="margin-right:8px">
+            Ich akzeptiere die <a href="/datenschutz.html" target="_blank">Datenschutzerklärung</a>.
+        </label>
+    `;
+    form.appendChild(dsDiv);
+
+    // --- Submit-Button ---
+    const submitBtn = document.createElement("button");
+    submitBtn.type = "submit";
+    submitBtn.textContent = "Individuellen Report erstellen";
+    submitBtn.style.marginTop = "12px";
+    submitBtn.style.padding = "0.75em 2em";
+    submitBtn.style.background = "#005EB8";
+    submitBtn.style.color = "white";
+    submitBtn.style.border = "none";
+    submitBtn.style.borderRadius = "4px";
+    submitBtn.style.cursor = "pointer";
+    form.appendChild(submitBtn);
+}
