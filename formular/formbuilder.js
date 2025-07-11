@@ -468,7 +468,6 @@ function renderForm(fields, formId = "formbuilder") {
               <input type="checkbox" id="${field.key}" name="${field.key}" required />
               ${field.label}
             </label>
-            ${window.renderGuidance ? window.renderGuidance(field.description) : ""}
           </div>
         `;
         break;
@@ -477,21 +476,37 @@ function renderForm(fields, formId = "formbuilder") {
         input = `<input type="text" id="${field.key}" name="${field.key}" />`;
     }
 
-    const guidance = window.renderGuidance ? window.renderGuidance(field.description) : (field.description ? `<div>${field.description}</div>` : "");
+    // Guidance/Hilfetext
+    const guidance = field.description
+      ? (window.renderGuidance
+          ? window.renderGuidance(field.description)
+          : `<div>${field.description}</div>`)
+      : "";
 
-    return `
-      <div class="form-group">
-        <label for="${field.key}">${field.label}</label>
-        ${guidance}
-        ${input}
-      </div>
-    `;
+    // NUR für das Datenschutzfeld kein zusätzliches Label oben!
+    if (field.type === "privacy") {
+      return `
+        <div class="form-group privacy-group">
+          ${input}
+          ${guidance}
+        </div>
+      `;
+    } else {
+      return `
+        <div class="form-group">
+          <label for="${field.key}">${field.label}</label>
+          ${guidance}
+          ${input}
+        </div>
+      `;
+    }
   }).join('');
 
   if (!form.querySelector('button, [type=submit]')) {
     form.innerHTML += `<button type="submit">Absenden</button>`;
   }
 }
+
 
 renderForm(fields);
 
