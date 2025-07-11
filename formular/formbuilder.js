@@ -218,7 +218,6 @@ const fields = [
     ],
     description: "Wo versprechen Sie sich den größten Nutzen durch den ersten/weitern KI-Einsatz? Gibt es einen Bereich, der am meisten profitieren würde?"
   },
-  // weiter mit Teil 2 ...
   {
     key: "ki_geschaeftsmodell_vision",
     label: "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern?",
@@ -409,7 +408,6 @@ const fields = [
     step: 1,
     description: "Wählen Sie den Wert, der am ehesten auf Ihr Unternehmen zutrifft. Eher sicherheitsorientiert oder bereit, Neues auszuprobieren?"
   },
-  // Datenschutz-Checkbox als Pflichtfeld am Ende:
   {
     key: "datenschutz",
     label: "Ich habe die <a href=\"datenschutz.html\" onclick=\"window.open(this.href, 'DatenschutzPopup', 'width=600,height=400'); return false;\">Datenschutzhinweise</a> gelesen und bin einverstanden.",
