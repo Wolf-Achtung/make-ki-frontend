@@ -531,7 +531,7 @@ document.getElementById("formbuilder").addEventListener("submit", async function
   if (button) button.disabled = true;
 
   try {
-    const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/submit", {
+    const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
