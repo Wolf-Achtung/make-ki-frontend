@@ -131,9 +131,10 @@ const fields = [
     max: 10,
     step: 1,
     description: "Einschätzung auf einer Skala von 1 (überwiegend Papier, keine Automatisierung) bis 10 (voll digitalisierte, integrierte Systeme in allen Prozessen)."
-  },
-  // ... Fortsetzung folgt im nächsten Teil!
+  }
 ];
+
+// Weiter mit Teil 2...
 fields.push(
   {
     key: "digitalisierungsgrad",
@@ -230,8 +231,9 @@ fields.push(
     ],
     description: "Wo versprechen Sie sich den größten Nutzen durch den ersten/weitern KI-Einsatz? Gibt es einen Bereich, der am meisten profitieren würde?"
   }
-  // ... Teil 3 folgt!
 );
+
+// Teil 3 folgt ...
 fields.push(
   {
     key: "ki_geschaeftsmodell_vision",
@@ -331,8 +333,9 @@ fields.push(
     ],
     description: "Mehrfachauswahl möglich. Was blockiert aktuell den (weiteren) Einsatz von KI? Je ehrlicher Sie sind, desto gezielter kann beraten werden."
   }
-  // ... Teil 4 folgt!
 );
+
+// Teil 4 folgt ...
 fields.push(
   {
     key: "bisherige_foerdermittel",
@@ -425,8 +428,18 @@ fields.push(
     max: 5,
     step: 1,
     description: "Wählen Sie den Wert, der am ehesten auf Ihr Unternehmen zutrifft. Eher sicherheitsorientiert oder bereit, Neues auszuprobieren?"
+  },
+  // Datenschutz-Checkbox als Pflichtfeld am Ende:
+  {
+    key: "datenschutz",
+    label: "Ich habe die <a href='#' target='_blank'>Datenschutzhinweise</a> gelesen und bin einverstanden.",
+    type: "privacy",
+    description: "Ihre Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
   }
 );
+
+// Renderfunktion (wie gehabt, inkl. privacy case):
+
 function renderForm(fields, formId = "formbuilder") {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -471,12 +484,22 @@ function renderForm(fields, formId = "formbuilder") {
         `;
         break;
 
+      case "privacy":
+        input = `
+          <div class="privacy-section">
+            <label>
+              <input type="checkbox" id="${field.key}" name="${field.key}" required />
+              ${field.label}
+            </label>
+            ${window.renderGuidance ? window.renderGuidance(field.description) : ""}
+          </div>
+        `;
+        break;
+
       default:
-        // Standard: Textfeld
         input = `<input type="text" id="${field.key}" name="${field.key}" />`;
     }
 
-    // Guidance helper (dein eigenes Script aus index.html)
     const guidance = window.renderGuidance ? window.renderGuidance(field.description) : (field.description ? `<div>${field.description}</div>` : "");
 
     return `
@@ -488,11 +511,39 @@ function renderForm(fields, formId = "formbuilder") {
     `;
   }).join('');
 
-  // Optional: Submit-Button ergänzen, wenn nicht vorhanden
   if (!form.querySelector('button, [type=submit]')) {
     form.innerHTML += `<button type="submit">Absenden</button>`;
   }
 }
 
-// Jetzt nach der Definition von fields aufrufen:
+// Renderaufruf:
 renderForm(fields);
+
+// Submit-Handler, verhindert Reload, liest Werte aus:
+document.getElementById("formbuilder").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const data = {};
+
+  for (let [key, value] of formData.entries()) {
+    if (data[key]) {
+      if (Array.isArray(data[key])) {
+        data[key].push(value);
+      } else {
+        data[key] = [data[key], value];
+      }
+    } else {
+      data[key] = value;
+    }
+  }
+
+  // Debug-Ausgabe:
+  console.log(data);
+
+  // Feedback anzeigen
+  const feedback = document.getElementById("feedback");
+  feedback.textContent = "Danke, Ihre Angaben wurden übermittelt.";
+  feedback.style.display = "block";
+  // Optional: Formular ausblenden
+  // this.style.display = "none";
+});
