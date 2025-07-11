@@ -226,6 +226,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const dsCheck = form.querySelector('input[name="datenschutz_ok"]');
         data["datenschutz_ok"] = dsCheck && dsCheck.checked ? true : false;
 
+        // --- User-Feedback: Loader anzeigen ---
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        const oldBtnText = submitBtn.textContent;
+        submitBtn.textContent = "Report wird erstellt ... bitte warten";
+        
         // Sende Daten an Backend
         fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
             method: "POST",
@@ -235,9 +241,38 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(async response => {
             const json = await response.json();
             if (json.error) throw new Error(json.error);
-            window.open(json.pdf_url, "_blank");
+
+            // Erfolgsnachricht statt Sofort-Download
+            submitBtn.textContent = "Report erfolgreich erstellt!";
+            submitBtn.style.background = "#059e3b";
+            // Download-Link anzeigen
+            const resultDiv = document.createElement("div");
+            resultDiv.style.marginTop = "24px";
+            resultDiv.style.padding = "18px";
+            resultDiv.style.background = "#e5f8e6";
+            resultDiv.style.borderRadius = "8px";
+            resultDiv.style.textAlign = "center";
+            let url = json.pdf_url;
+            if (url && !url.startsWith("http")) {
+                url = "https://make-ki-backend-neu-production.up.railway.app" + url;
+            }
+            resultDiv.innerHTML = `
+                <b>Dein individueller Report wurde erfolgreich erstellt.</b><br>
+                <a href="${url}" target="_blank" style="display:inline-block;margin-top:12px;padding:8px 18px;background:#005EB8;color:white;border-radius:4px;text-decoration:none;">Report als PDF öffnen</a>
+            `;
+            form.parentNode.insertBefore(resultDiv, form.nextSibling);
+
+            // Formular wieder benutzbar machen (optional, oder Button ausgegraut lassen)
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = oldBtnText;
+                submitBtn.style.background = "#005EB8";
+            }, 5000);
+
         })
         .catch(err => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = oldBtnText;
             alert("Beim Erstellen des Berichts ist ein Fehler aufgetreten: " + err.message);
         });
     });
