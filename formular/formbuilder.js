@@ -510,11 +510,10 @@ function renderForm(fields, formId = "formbuilder") {
 
 renderForm(fields);
 
-document.getElementById("formbuilder").addEventListener("submit", function(e) {
+document.getElementById("formbuilder").addEventListener("submit", async function(e) {
   e.preventDefault();
   const formData = new FormData(this);
   const data = {};
-
   for (let [key, value] of formData.entries()) {
     if (data[key]) {
       if (Array.isArray(data[key])) {
@@ -527,13 +526,31 @@ document.getElementById("formbuilder").addEventListener("submit", function(e) {
     }
   }
 
-  // Debug-Ausgabe:
-  console.log(data);
+  // Optional: Button deaktivieren während Sendung
+  const button = this.querySelector("button[type=submit]");
+  if (button) button.disabled = true;
 
-  // Feedback anzeigen
-  const feedback = document.getElementById("feedback");
-  feedback.textContent = "Danke, Ihre Angaben wurden übermittelt.";
-  feedback.style.display = "block";
-  // Optional: Formular ausblenden
-  // this.style.display = "none";
+  try {
+    const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    if (response.ok) {
+      const feedback = document.getElementById("feedback");
+      feedback.textContent = "Danke, Ihre Angaben wurden übermittelt.";
+      feedback.style.display = "block";
+      // Formular zurücksetzen (optional)
+      this.reset();
+    } else {
+      throw new Error("Serverfehler: " + response.status);
+    }
+  } catch (err) {
+    const feedback = document.getElementById("feedback");
+    feedback.textContent = "Fehler beim Übertragen Ihrer Angaben. Bitte versuchen Sie es später erneut.";
+    feedback.style.display = "block";
+    console.error(err);
+  }
+
+  if (button) button.disabled = false;
 });
