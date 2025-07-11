@@ -427,3 +427,72 @@ fields.push(
     description: "Wählen Sie den Wert, der am ehesten auf Ihr Unternehmen zutrifft. Eher sicherheitsorientiert oder bereit, Neues auszuprobieren?"
   }
 );
+function renderForm(fields, formId = "formbuilder") {
+  const form = document.getElementById(formId);
+  if (!form) return;
+
+  form.innerHTML = fields.map(field => {
+    let input = "";
+    switch (field.type) {
+      case "select":
+        input = `
+          <select id="${field.key}" name="${field.key}">
+            <option value="">Bitte wählen...</option>
+            ${field.options.map(opt => `
+              <option value="${opt.value}">${opt.label}</option>
+            `).join("")}
+          </select>
+        `;
+        break;
+
+      case "textarea":
+        input = `
+          <textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder || ""}"></textarea>
+        `;
+        break;
+
+      case "checkbox":
+        input = `
+          <div class="checkbox-group">
+            ${field.options.map(opt => `
+              <label class="checkbox-label">
+                <input type="checkbox" name="${field.key}" value="${opt.value}" />
+                ${opt.label}
+              </label>
+            `).join("")}
+          </div>
+        `;
+        break;
+
+      case "slider":
+        input = `
+          <input type="range" id="${field.key}" name="${field.key}" min="${field.min || 1}" max="${field.max || 10}" step="${field.step || 1}" value="${field.min || 1}" oninput="this.nextElementSibling.innerText=this.value"/>
+          <span class="slider-value-label">${field.min || 1}</span>
+        `;
+        break;
+
+      default:
+        // Standard: Textfeld
+        input = `<input type="text" id="${field.key}" name="${field.key}" />`;
+    }
+
+    // Guidance helper (dein eigenes Script aus index.html)
+    const guidance = window.renderGuidance ? window.renderGuidance(field.description) : (field.description ? `<div>${field.description}</div>` : "");
+
+    return `
+      <div class="form-group">
+        <label for="${field.key}">${field.label}</label>
+        ${guidance}
+        ${input}
+      </div>
+    `;
+  }).join('');
+
+  // Optional: Submit-Button ergänzen, wenn nicht vorhanden
+  if (!form.querySelector('button, [type=submit]')) {
+    form.innerHTML += `<button type="submit">Absenden</button>`;
+  }
+}
+
+// Jetzt nach der Definition von fields aufrufen:
+renderForm(fields);
