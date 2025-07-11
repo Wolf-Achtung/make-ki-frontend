@@ -131,19 +131,6 @@ const fields = [
     max: 10,
     step: 1,
     description: "Einschätzung auf einer Skala von 1 (überwiegend Papier, keine Automatisierung) bis 10 (voll digitalisierte, integrierte Systeme in allen Prozessen)."
-  }
-];
-
-// Weiter mit Teil 2...
-fields.push(
-  {
-    key: "digitalisierungsgrad",
-    label: "Wie digital sind Ihre internen Prozesse bereits? (1 = analog, 10 = voll digital)",
-    type: "slider",
-    min: 1,
-    max: 10,
-    step: 1,
-    description: "Schätzen Sie selbst: 1 = Fast alles noch papierbasiert, kaum digitale Abläufe. 10 = Alle Prozesse sind IT-gestützt, alle Daten und Abläufe sind digitalisiert."
   },
   {
     key: "prozesse_papierlos",
@@ -230,11 +217,8 @@ fields.push(
       { value: "unbekannt", label: "Noch unklar" }
     ],
     description: "Wo versprechen Sie sich den größten Nutzen durch den ersten/weitern KI-Einsatz? Gibt es einen Bereich, der am meisten profitieren würde?"
-  }
-);
-
-// Teil 3 folgt ...
-fields.push(
+  },
+  // weiter mit Teil 2 ...
   {
     key: "ki_geschaeftsmodell_vision",
     label: "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern?",
@@ -332,11 +316,7 @@ fields.push(
       { value: "andere", label: "Andere" }
     ],
     description: "Mehrfachauswahl möglich. Was blockiert aktuell den (weiteren) Einsatz von KI? Je ehrlicher Sie sind, desto gezielter kann beraten werden."
-  }
-);
-
-// Teil 4 folgt ...
-fields.push(
+  },
   {
     key: "bisherige_foerdermittel",
     label: "Haben Sie bereits Fördermittel für Digitalisierung oder KI erhalten/genutzt?",
@@ -432,14 +412,13 @@ fields.push(
   // Datenschutz-Checkbox als Pflichtfeld am Ende:
   {
     key: "datenschutz",
-    label: "Ich habe die <a href='#' target='_blank'>Datenschutzhinweise</a> gelesen und bin einverstanden.",
+    label: "Ich habe die <a href=\"datenschutz.html\" onclick=\"window.open(this.href, 'DatenschutzPopup', 'width=600,height=400'); return false;\">Datenschutzhinweise</a> gelesen und bin einverstanden.",
     type: "privacy",
     description: "Ihre Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
   }
-);
+];
 
-// Renderfunktion (wie gehabt, inkl. privacy case):
-
+// Renderfunktion und Submit-Handler:
 function renderForm(fields, formId = "formbuilder") {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -516,10 +495,8 @@ function renderForm(fields, formId = "formbuilder") {
   }
 }
 
-// Renderaufruf:
 renderForm(fields);
 
-// Submit-Handler, verhindert Reload, liest Werte aus:
 document.getElementById("formbuilder").addEventListener("submit", function(e) {
   e.preventDefault();
   const formData = new FormData(this);
