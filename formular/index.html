@@ -6,37 +6,12 @@
   <title>KI-Readiness Check</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* Kurze Optimierungen direkt hier für Demo */
-    .form-container {
-      background: #f5faff;
-      border-radius: 22px;
-      box-shadow: 0 2px 24px #00427512;
-      padding: 30px 0 16px 0;
-      max-width: 660px;
-      margin: 40px auto 0 auto;
-    }
+    .form-container { background: #f5faff; border-radius: 22px; box-shadow: 0 2px 24px #00427512; padding: 30px 0 16px 0; max-width: 660px; margin: 40px auto 0 auto; }
     .form-header img { max-width: 160px; }
     .form-header h1 { color: #062452; font-size: 2.2em; margin-bottom: 10px;}
-    .form-group { margin-bottom: 30px; }
-    label { font-weight: bold; color: #062452; }
-    .form-control, .form-range {
-      width: 100%; padding: 12px; margin-top: 8px;
-      border-radius: 9px; border: 1px solid #c7daf5;
-      background: #fff;
-    }
-    .form-check { margin-bottom: 7px; }
-    .form-check-label { margin-left: 6px; }
-    .form-range { margin-top: 18px; }
-    .slider-value { font-weight: bold; margin-left: 12px; }
     .footer { margin-top: 40px; color: #666; }
-    .datenschutz-hinweis {
-      margin-top: 14px; margin-bottom: 18px;
-      font-size: 0.97em; color: #555;
-    }
-    #feedback { margin: 24px 0 14px 0; }
-    @media (max-width: 650px) {
-      .form-container { padding: 10px; }
-    }
+    .guidance { color: #204769; font-size: 1em; margin-bottom: 8px; margin-top: -4px; }
+    @media (max-width: 650px) { .form-container { padding: 10px; } }
   </style>
 </head>
 <body>
@@ -45,20 +20,10 @@
       <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="margin-bottom:10px;" />
       <h1>KI-Readiness-Check</h1>
     </div>
-    <form id="ki-form" style="max-width:600px;margin:0 auto;">
-      <!-- Formularfelder werden von formbuilder.js generiert -->
-      <div id="form-fields"></div>
-      <div class="datenschutz-hinweis">
-        <input type="checkbox" id="datenschutz_ok" name="datenschutz_ok" required style="margin-right:8px;">
-        <label for="datenschutz_ok" style="font-weight:normal;">
-          Ich akzeptiere die <a href="datenschutz.html" target="_blank">Datenschutzerklärung</a>.
-        </label>
-      </div>
-      <button type="submit" style="width:100%;margin-top:8px;padding:0.85em 2em;background:#005EB8;color:white;border:none;border-radius:8px;cursor:pointer;font-size:1.07em;">
-        Individuellen Report erstellen
-      </button>
-      <div id="feedback"></div>
+    <form id="formbuilder" style="max-width:600px;margin:0 auto;">
+      <!-- Formularfelder und Datenschutz werden von formbuilder.js erzeugt -->
     </form>
+    <div id="feedback"></div>
   </div>
   <footer class="footer">
     © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
@@ -66,6 +31,14 @@
     Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.<br>
     Logos & Design sind urheberrechtlich geschützt. Nutzung & Bearbeitung der bereitgestellten Listen, Templates und Prompts ausschließlich für Kunden & Partner von KI-Sicherheit.jetzt.
   </footer>
+
+  <!-- Guidance-Helper, damit du description einfach nutzen kannst -->
+  <script>
+    window.renderGuidance = function(description) {
+      if (!description) return '';
+      return `<div class="guidance">${description}</div>`;
+    }
+  </script>
   <script src="formbuilder.js"></script>
 </body>
 </html>
