@@ -412,7 +412,7 @@ const fields = [
     key: "datenschutz",
     label: "Ich habe die <a href=\"datenschutz.html\" onclick=\"window.open(this.href, 'DatenschutzPopup', 'width=600,height=700'); return false;\">Datenschutzhinweise</a> gelesen und bin einverstanden.",
     type: "privacy",
-    description: "Ihre Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
+    description: "Bitte beachten Sie: Die Erstellung Ihres Executive Briefings kann mehrere Minuten dauern. Bitte lassen Sie diese Seite so lange geöffnet. Nach Fertigstellung erscheint unten auf der Seite ein PDF-Download-Button. Ihr Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
   }
 ];
 
@@ -502,8 +502,26 @@ function renderForm(fields, formId = "formbuilder") {
     }
   }).join('');
 
+  // Ladeanzeige vorbereiten (bleibt anfangs verborgen)
+  if (!document.getElementById('loading-indicator')) {
+    const loader = document.createElement("div");
+    loader.id = "loading-indicator";
+    loader.style.display = "none";
+    loader.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="spinner" style="width:22px;height:22px;border:4px solid #2166c2;border-right-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+        <span style="font-size:1.1em;color:#2166c2;">Dein persönlicher KI-Report wird erstellt...</span>
+      </div>
+      <style>
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+      </style>
+    `;
+    form.parentNode.insertBefore(loader, form.nextSibling);
+  }
+
+  // Button einfügen, falls nicht vorhanden
   if (!form.querySelector('button, [type=submit]')) {
-    form.innerHTML += `<button type="submit">Absenden</button>`;
+    form.innerHTML += `<button type="submit" id="submit-btn">Absenden</button>`;
   }
 }
 
@@ -512,7 +530,6 @@ renderForm(fields);
 document.getElementById("formbuilder").addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  // Datenschutz-Pflichtcheck
   const dsCheckbox = document.getElementById('datenschutz');
   if (!dsCheckbox || !dsCheckbox.checked) {
     alert('Bitte akzeptieren Sie die Datenschutzhinweise, um fortzufahren.');
@@ -534,9 +551,15 @@ document.getElementById("formbuilder").addEventListener("submit", async function
     }
   }
 
-  // Optional: Button deaktivieren während Sendung
-  const button = this.querySelector("button[type=submit]");
+  // Button & Ladeanimation
+  const button = this.querySelector("button[type=submit]") || document.getElementById("submit-btn");
+  const loader = document.getElementById('loading-indicator');
   if (button) button.disabled = true;
+  if (loader) loader.style.display = "block";
+
+  const feedback = document.getElementById("feedback");
+  feedback.style.display = "none";
+  feedback.innerHTML = "";
 
   try {
     const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
@@ -545,29 +568,26 @@ document.getElementById("formbuilder").addEventListener("submit", async function
       body: JSON.stringify(data)
     });
 
-    const feedback = document.getElementById("feedback");
     feedback.style.display = "block";
 
     if (response.ok) {
       const respData = await response.json();
       feedback.textContent = "Die Bewertung wurde fertiggestellt.";
-
-      // Prüfen, ob ein Download-Link im Response ist (z.B. respData.pdf_url)
       if (respData.pdf_url) {
-       const baseUrl = "https://make-ki-backend-neu-production.up.railway.app";
-feedback.innerHTML += `<br><a href="${baseUrl}${respData.pdf_url}" class="download-btn" target="_blank" style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>`;
-
+        const baseUrl = "https://make-ki-backend-neu-production.up.railway.app";
+        feedback.innerHTML += `<br><a href="${baseUrl}${respData.pdf_url}" class="download-btn" target="_blank" style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>`;
       }
       this.reset();
     } else {
       feedback.textContent = "Fehler: Ihre Angaben konnten nicht verarbeitet werden (Status " + response.status + ").";
     }
   } catch (err) {
-    const feedback = document.getElementById("feedback");
     feedback.textContent = "Fehler beim Übertragen Ihrer Angaben. Bitte versuchen Sie es später erneut.";
     feedback.style.display = "block";
     console.error(err);
   }
 
+  // Button & Loader zurücksetzen
   if (button) button.disabled = false;
+  if (loader) loader.style.display = "none";
 });
