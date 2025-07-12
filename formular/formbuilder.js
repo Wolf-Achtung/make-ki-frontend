@@ -410,11 +410,13 @@ const fields = [
   },
   {
     key: "datenschutz",
-    label: "Ich habe die <a href=\"datenschutz.html\" onclick=\"window.open(this.href, 'DatenschutzPopup', 'width=600,height=400'); return false;\">Datenschutzhinweise</a> gelesen und bin einverstanden.",
+    label: "Ich habe die <a href=\"datenschutz.html\" onclick=\"window.open(this.href, 'DatenschutzPopup', 'width=600,height=700'); return false;\">Datenschutzhinweise</a> gelesen und bin einverstanden.",
     type: "privacy",
     description: "Ihre Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
   }
 ];
+
+// ... (deine bisherige Definition von fields bleibt wie gehabt)
 
 // Renderfunktion und Submit-Handler:
 function renderForm(fields, formId = "formbuilder") {
@@ -476,14 +478,12 @@ function renderForm(fields, formId = "formbuilder") {
         input = `<input type="text" id="${field.key}" name="${field.key}" />`;
     }
 
-    // Guidance/Hilfetext
     const guidance = field.description
       ? (window.renderGuidance
           ? window.renderGuidance(field.description)
           : `<div>${field.description}</div>`)
       : "";
 
-    // NUR für das Datenschutzfeld kein zusätzliches Label oben!
     if (field.type === "privacy") {
       return `
         <div class="form-group privacy-group">
@@ -507,11 +507,19 @@ function renderForm(fields, formId = "formbuilder") {
   }
 }
 
-
 renderForm(fields);
 
 document.getElementById("formbuilder").addEventListener("submit", async function(e) {
   e.preventDefault();
+
+  // Datenschutz-Pflichtcheck
+  const dsCheckbox = document.getElementById('datenschutz');
+  if (!dsCheckbox || !dsCheckbox.checked) {
+    alert('Bitte akzeptieren Sie die Datenschutzhinweise, um fortzufahren.');
+    dsCheckbox && dsCheckbox.focus();
+    return false;
+  }
+
   const formData = new FormData(this);
   const data = {};
   for (let [key, value] of formData.entries()) {
@@ -540,7 +548,6 @@ document.getElementById("formbuilder").addEventListener("submit", async function
       const feedback = document.getElementById("feedback");
       feedback.textContent = "Danke, Ihre Angaben wurden übermittelt.";
       feedback.style.display = "block";
-      // Formular zurücksetzen (optional)
       this.reset();
     } else {
       throw new Error("Serverfehler: " + response.status);
