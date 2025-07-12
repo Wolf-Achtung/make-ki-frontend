@@ -544,13 +544,21 @@ document.getElementById("formbuilder").addEventListener("submit", async function
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
+
+    const feedback = document.getElementById("feedback");
+    feedback.style.display = "block";
+
     if (response.ok) {
-      const feedback = document.getElementById("feedback");
-      feedback.textContent = "Danke, Ihre Angaben wurden übermittelt.";
-      feedback.style.display = "block";
+      const respData = await response.json();
+      feedback.textContent = "Die Bewertung wurde fertiggestellt.";
+
+      // Prüfen, ob ein Download-Link im Response ist (z.B. respData.pdf_url)
+      if (respData.pdf_url) {
+        feedback.innerHTML += `<br><a href="${respData.pdf_url}" class="download-btn" target="_blank" style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>`;
+      }
       this.reset();
     } else {
-      throw new Error("Serverfehler: " + response.status);
+      feedback.textContent = "Fehler: Ihre Angaben konnten nicht verarbeitet werden (Status " + response.status + ").";
     }
   } catch (err) {
     const feedback = document.getElementById("feedback");
