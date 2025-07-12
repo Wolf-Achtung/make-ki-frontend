@@ -412,7 +412,7 @@ const fields = [
     key: "datenschutz",
     label: "Ich habe die <a href=\"datenschutz.html\" onclick=\"window.open(this.href, 'DatenschutzPopup', 'width=600,height=700'); return false;\">Datenschutzhinweise</a> gelesen und bin einverstanden.",
     type: "privacy",
-    description: "Bitte beachten Sie: Die Erstellung Ihres Executive Briefings kann mehrere Minuten dauern. Bitte lassen Sie diese Seite so lange geöffnet. Nach Fertigstellung erscheint unten auf der Seite ein PDF-Download-Button. Ihr Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
+    description: "Bitte beachten: Die Erstellung Ihres Executive Briefings kann mehrere Minuten dauern. Während dieser Zeit den ABSENDEN-Button nicht wiederholt drücken. Bitte lassen Sie diese Seite geöffnet. Nach Fertigstellung erscheint unten auf der Seite ein PDF-Download-Button. Ihr Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
   }
 ];
 
@@ -510,7 +510,7 @@ function renderForm(fields, formId = "formbuilder") {
     loader.innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;">
         <div class="spinner" style="width:22px;height:22px;border:4px solid #2166c2;border-right-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-        <span style="font-size:1.1em;color:#2166c2;">Dein persönlicher KI-Report wird erstellt...</span>
+        <span style="font-size:1.1em;color:#2166c2;">Ihr persönlicher KI-Report wird erstellt...</span>
       </div>
       <style>
         @keyframes spin { 100% { transform: rotate(360deg); } }
