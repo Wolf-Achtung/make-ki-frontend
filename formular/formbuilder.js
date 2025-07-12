@@ -554,7 +554,9 @@ document.getElementById("formbuilder").addEventListener("submit", async function
 
       // Prüfen, ob ein Download-Link im Response ist (z.B. respData.pdf_url)
       if (respData.pdf_url) {
-        feedback.innerHTML += `<br><a href="${respData.pdf_url}" class="download-btn" target="_blank" style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>`;
+       const baseUrl = "https://make-ki-backend-neu-production.up.railway.app";
+feedback.innerHTML += `<br><a href="${baseUrl}${respData.pdf_url}" class="download-btn" target="_blank" style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>`;
+
       }
       this.reset();
     } else {
