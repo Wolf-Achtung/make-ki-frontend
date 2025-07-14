@@ -250,9 +250,10 @@ footer {
 
 /* Fehleranzeige für Pflichtfelder */
 input:invalid, select:invalid, textarea:invalid {
-  border-color: #e6606d;
-  background: #fff6f7;
+  border-color: #dde8f3;
+  background: #fafdff;
 }
+
 .datenschutz-modal, .privacy-section {
   max-height: 90vh;
   overflow-y: auto;
