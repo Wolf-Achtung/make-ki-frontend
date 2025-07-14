@@ -97,6 +97,7 @@
   </style>
 </head>
 <body>
+
 <img src="badges/ki-sicherheit-logo.png" alt="KI-Sicherheit.jetzt" class="logo" />
 
 <h1>Zertifiziert. Dokumentiert. KI-konform.</h1>
@@ -118,7 +119,7 @@
 
 <div class="preisbox">
   <p><strong>Nur XXX,- € einmalig</strong><br>inkl. Maßnahmen-Plan & Förder-Übersicht</p>
-  <a href="/formular/" class="button">Jetzt Voll-Check starten</a>
+  <a href="/login.html" class="button">Jetzt Voll-Check starten</a>
 </div>
 
 <div class="pro-tipp">
@@ -127,15 +128,14 @@
 
 <h2>Ihre konkreten Vorteile:</h2>
 <div class="testimonial-container">
-  <div class="testimonial show"><strong>„Endlich ein Audit, das konkrete Maßnahmen liefert.“</strong><p></p></div>
-  <div class="testimonial"><strong>„Für den Handel Gold wert. Gerade gegenüber Investoren.“</strong><p></p></div>
-  <div class="testimonial"><strong>„Hilft, den EU AI Act stressfrei anzugehen.“</strong><p></p></div>
-  <div class="testimonial"><strong>„Tipp: das Zertifikat direkt in Angeboten nutzen.“</strong><p></p></div>
-  <div class="testimonial"><strong>„Super schneller Voll-Check mit klarem Ergebnis.“</strong><p></p></div>
-  <div class="testimonial"><strong>„Erleichtert die jährliche Risikoanalyse enorm.“</strong><p></p></div>
-  <div class="testimonial"><strong>„Zeigt, wo man DSGVO-technisch wirklich steht.“</strong><p></p></div>
+  <div class="testimonial show"><strong>„Endlich ein Audit, das konkrete Maßnahmen liefert.“</strong></div>
+  <div class="testimonial"><strong>„Für den Handel Gold wert. Gerade gegenüber Investoren.“</strong></div>
+  <div class="testimonial"><strong>„Hilft, den EU AI Act stressfrei anzugehen.“</strong></div>
+  <div class="testimonial"><strong>„Tipp: das Zertifikat direkt in Angeboten nutzen.“</strong></div>
+  <div class="testimonial"><strong>„Super schneller Voll-Check mit klarem Ergebnis.“</strong></div>
+  <div class="testimonial"><strong>„Erleichtert die jährliche Risikoanalyse enorm.“</strong></div>
+  <div class="testimonial"><strong>„Zeigt, wo man DSGVO-technisch wirklich steht.“</strong></div>
 </div>
-
 
 <script>
 const testimonials = document.querySelectorAll('.testimonial');
@@ -150,115 +150,6 @@ function showTestimonial() {
 
 showTestimonial();
 setInterval(showTestimonial, 4000);
-</script>
-<script>
-const PASSWORDS = [
-  "#6pwSd",
-"ZKm4w:",
-"Nwz9g?",
-"M?EH4c",
-"K9zJ#t",
-"Dk4&MF",
-"N:3jZz",
-"EXD7(q",
-"tB\"qd3",
-"tuky(4",
-"K/an6t",
-"x\"sa9z",
-"8B)Yfw",
-"3ep&nw",
-"WH=4pY",
-"GV!8WW",
-"@Azn6R",
-"Qp!sr4",
-"nk7V_S",
-"QJx4.fh",
-"yEE8Y@",
-"Y8yCc,",
-"c\"aVg7",
-"9ppP\"Y",
-"T9:kuk",
-"R7t=Mf",
-"G&8wxm",
-"wj/2gq",
-"!ZeTp8",
-"y4w!mC",
-"Y5GC=B",
-"uXh@d5",
-"&cq4hW",
-"c(F8HH",
-"U7yFj:",
-"4x#hXf",
-"K=Zjp4",
-"\"8PmZn",
-"@Fh5Mk",
-"k/9vmD",
-"+wVj2t",
-"WmW!2Q",
-"SW?7Pt",
-"?HY3Ar",
-"LAc:Q5",
-"u=L4nw",
-"(s6eGa",
-"UJJ=s7",
-"x,RQ3s",
-"PAH6(p",
-"9\"pyhv"
-]; // Deine Pwgen-Listen-Passwörter hier eintragen
-
-const loginModal = document.getElementById('login-modal');
-const loginForm = document.getElementById('login-form');
-const loginError = document.getElementById('login-error');
-const requestForm = document.getElementById('request-form');
-const requestSuccess = document.getElementById('request-success');
-const showRequest = document.getElementById('show-request-form');
-const backToLogin = document.getElementById('back-to-login');
-
-loginForm.onsubmit = function(e) {
-  e.preventDefault();
-  if(PASSWORDS.includes(document.getElementById('login-password').value)) {
-    loginModal.style.display = 'none';
-    document.body.style.overflow = '';
-  } else {
-    loginError.style.display = 'block';
-    setTimeout(() => loginError.style.display = 'none', 2200);
-  }
-};
-
-showRequest.onclick = function(e){
-  e.preventDefault();
-  loginForm.style.display = 'none';
-  requestForm.style.display = 'block';
-  showRequest.style.display = 'none';
-  backToLogin.style.display = 'inline-block';
-};
-backToLogin.onclick = function(e){
-  e.preventDefault();
-  loginForm.style.display = 'block';
-  requestForm.style.display = 'none';
-  showRequest.style.display = 'inline';
-  backToLogin.style.display = 'none';
-};
-
-// Für Netlify: zeigt "Danke"-Text bei Submit
-requestForm.onsubmit = function(e){
-  e.preventDefault();
-  requestForm.style.display = 'none';
-  requestSuccess.style.display = 'block';
-  backToLogin.style.display = 'inline-block';
-  setTimeout(function() {
-    requestSuccess.style.display = 'none';
-    loginForm.style.display = 'block';
-    showRequest.style.display = 'inline';
-    backToLogin.style.display = 'none';
-  }, 2500);
-};
-
-// Seite erst nach Login benutzbar machen
-window.onload = function() {
-  loginModal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-};
 </script>
 
 </body>

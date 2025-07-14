@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | KI-Check</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="form-container">
+    <div class="form-header" style="text-align:center;">
+      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="margin-bottom:10px;" />
+      <h1>Login für Ihren KI-Check</h1>
+    </div>
+    <form id="login-form" style="max-width:500px;margin:0 auto;">
+      <div class="form-group">
+        <label for="email">E-Mail</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Passwort</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <div id="feedback" class="feedback" style="display:none;"></div>
+  </div>
+
+  <script>
+    document.getElementById("login-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const feedback = document.getElementById("feedback");
+      feedback.style.display = "none";
+
+      try {
+        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem("jwt", data.token);
+          window.location.href = "/formular/";
+        } else {
+          feedback.innerText = "Login fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben.";
+          feedback.classList.add("error");
+          feedback.style.display = "block";
+        }
+      } catch (err) {
+        console.error(err);
+        feedback.innerText = "Serverfehler. Bitte später erneut versuchen.";
+        feedback.classList.add("error");
+        feedback.style.display = "block";
+      }
+    };
+  </script>
+</body>
+</html>
