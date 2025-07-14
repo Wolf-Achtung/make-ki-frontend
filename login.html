@@ -58,7 +58,7 @@
 <div class="popup-container">
   <div class="popup">
     <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo">
-    <h2>Login für Ihren KI-Check</h2>
+    <h2>Login für Deinen KI-Check</h2>
     <p>Bitte beachten: Die Erstellung des KI-Readiness-Checks während der Testphase kann bis zu 10 Minuten dauern. Los geht's!</p>
     <form id="login-form">
       <input type="email" id="email" name="email" placeholder="E-Mail" required />
@@ -70,34 +70,40 @@
 </div>
 
 <script>
-  document.getElementById("login-form").onsubmit = async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const feedback = document.getElementById("feedback");
-    feedback.classList.remove("show");
+document.getElementById("login-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const feedback = document.getElementById("feedback");
+  feedback.classList.remove("show");
 
-    try {
-      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
+  try {
+    console.log("Sende Login-Daten an API...");
+    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
 
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("jwt", data.token);
-        window.location.href = "/formular/";
-      } else {
-        feedback.innerText = "Login fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben.";
-        feedback.classList.add("show");
-      }
-    } catch (err) {
-      console.error(err);
-      feedback.innerText = "Serverfehler. Bitte später erneut versuchen.";
+    console.log("Antwort-Status:", res.status);
+
+    if (res.ok) {
+      const data = await res.json();
+      console.log("Login erfolgreich, Token:", data.token);
+      localStorage.setItem("jwt", data.token);
+      window.location.href = "/formular/index.html"; // absoluter Redirect
+    } else {
+      const errorText = await res.text();
+      console.error("Login fehlgeschlagen:", errorText);
+      feedback.innerText = "Login fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben.";
       feedback.classList.add("show");
     }
-  };
+  } catch (err) {
+    console.error("Server- oder Netzwerkfehler:", err);
+    feedback.innerText = "Serverfehler. Bitte später erneut versuchen.";
+    feedback.classList.add("show");
+  }
+};
 </script>
 
 </body>
