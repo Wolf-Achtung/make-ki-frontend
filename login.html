@@ -5,29 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | KI-Check</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .popup-container {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+    .popup img {
+      max-width: 160px;
+      margin-bottom: 1rem;
+    }
+    .popup p {
+      font-size: 0.95rem;
+      margin-top: 0.8rem;
+      margin-bottom: 1.5rem;
+      color: #1c3763;
+    }
+    .popup input, .popup button {
+      width: 100%;
+      padding: 0.6rem;
+      margin: 0.4rem 0;
+    }
+    .feedback {
+      margin-top: 1rem;
+      color: #2166c2;
+      background: #e0f4ff;
+      font-size: 0.95rem;
+      padding: 0.8rem;
+      border-radius: 6px;
+      display: none;
+    }
+    .feedback.show {
+      display: block;
+    }
+  </style>
 </head>
 <body>
 
-<div class="form-container">
-  <div class="form-header" style="text-align:center;">
-    <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" />
-    <h1>Login für Ihren KI-Check</h1>
-    <p style="font-size:1.05em; color:#1c3763; margin-top:12px;">
-      Bitte beachten: Die Erstellung des KI-Readiness-Checks während der Testphase kann bis zu 10 Minuten dauern. Los geht's!
-    </p>
+<div class="popup-container">
+  <div class="popup">
+    <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo">
+    <h2>Login für Ihren KI-Check</h2>
+    <p>Bitte beachten: Die Erstellung des KI-Readiness-Checks während der Testphase kann bis zu 10 Minuten dauern. Los geht's!</p>
+    <form id="login-form">
+      <input type="email" id="email" name="email" placeholder="E-Mail" required />
+      <input type="password" id="password" name="password" placeholder="Passwort" required />
+      <button type="submit">Login</button>
+      <div id="feedback" class="feedback"></div>
+    </form>
   </div>
-  <form id="login-form">
-    <div class="form-group">
-      <label for="email">E-Mail</label>
-      <input type="email" id="email" name="email" required placeholder="Ihre E-Mail-Adresse" />
-    </div>
-    <div class="form-group">
-      <label for="password">Passwort</label>
-      <input type="password" id="password" name="password" required placeholder="Ihr Passwort" />
-    </div>
-    <button type="submit">Login</button>
-    <div id="feedback" class="feedback"></div>
-  </form>
 </div>
 
 <script>
@@ -36,7 +75,7 @@
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const feedback = document.getElementById("feedback");
-    feedback.style.display = "none";
+    feedback.classList.remove("show");
 
     try {
       const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/login", {
@@ -51,14 +90,12 @@
         window.location.href = "/formular/";
       } else {
         feedback.innerText = "Login fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben.";
-        feedback.classList.add("error");
-        feedback.style.display = "block";
+        feedback.classList.add("show");
       }
     } catch (err) {
       console.error(err);
       feedback.innerText = "Serverfehler. Bitte später erneut versuchen.";
-      feedback.classList.add("error");
-      feedback.style.display = "block";
+      feedback.classList.add("show");
     }
   };
 </script>
