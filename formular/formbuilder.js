@@ -1,3 +1,9 @@
+// JWT-Check: nur eingeloggte User dürfen dieses Formular nutzen
+const token = localStorage.getItem("jwt");
+if (!token) {
+    window.location.href = "/login.html";
+}
+
 const fields = [
   {
     key: "branche",
@@ -416,9 +422,7 @@ const fields = [
   }
 ];
 
-// ... (deine bisherige Definition von fields bleibt wie gehabt)
-
-// Renderfunktion und Submit-Handler:
+// Deine bisherige Renderfunktion:
 function renderForm(fields, formId = "formbuilder") {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -436,13 +440,9 @@ function renderForm(fields, formId = "formbuilder") {
           </select>
         `;
         break;
-
       case "textarea":
-        input = `
-          <textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder || ""}"></textarea>
-        `;
+        input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder || ""}"></textarea>`;
         break;
-
       case "checkbox":
         input = `
           <div class="checkbox-group">
@@ -455,14 +455,12 @@ function renderForm(fields, formId = "formbuilder") {
           </div>
         `;
         break;
-
       case "slider":
         input = `
-          <input type="range" id="${field.key}" name="${field.key}" min="${field.min || 1}" max="${field.max || 10}" step="${field.step || 1}" value="${field.min || 1}" oninput="this.nextElementSibling.innerText=this.value"/>
-          <span class="slider-value-label">${field.min || 1}</span>
+          <input type="range" id="${field.key}" name="${field.key}" min="${field.min||1}" max="${field.max||10}" step="${field.step||1}" value="${field.min||1}" oninput="this.nextElementSibling.innerText=this.value"/>
+          <span class="slider-value-label">${field.min||1}</span>
         `;
         break;
-
       case "privacy":
         input = `
           <div class="privacy-section">
@@ -473,36 +471,15 @@ function renderForm(fields, formId = "formbuilder") {
           </div>
         `;
         break;
-
       default:
         input = `<input type="text" id="${field.key}" name="${field.key}" />`;
     }
-
-    const guidance = field.description
-      ? (window.renderGuidance
-          ? window.renderGuidance(field.description)
-          : `<div>${field.description}</div>`)
-      : "";
-
-    if (field.type === "privacy") {
-      return `
-        <div class="form-group privacy-group">
-          ${input}
-          ${guidance}
-        </div>
-      `;
-    } else {
-      return `
-        <div class="form-group">
-          <label for="${field.key}">${field.label}</label>
-          ${guidance}
-          ${input}
-        </div>
-      `;
-    }
+    const guidance = field.description ? `<div class="guidance">${field.description}</div>` : "";
+    return field.type === "privacy"
+      ? `<div class="form-group privacy-group">${input}${guidance}</div>`
+      : `<div class="form-group"><label for="${field.key}">${field.label}</label>${guidance}${input}</div>`;
   }).join('');
 
-  // Ladeanzeige vorbereiten (bleibt anfangs verborgen)
   if (!document.getElementById('loading-indicator')) {
     const loader = document.createElement("div");
     loader.id = "loading-indicator";
@@ -512,14 +489,10 @@ function renderForm(fields, formId = "formbuilder") {
         <div class="spinner" style="width:22px;height:22px;border:4px solid #2166c2;border-right-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
         <span style="font-size:1.1em;color:#2166c2;">Ihr persönlicher KI-Report wird erstellt...</span>
       </div>
-      <style>
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-      </style>
+      <style>@keyframes spin{100%{transform:rotate(360deg);}}</style>
     `;
     form.parentNode.insertBefore(loader, form.nextSibling);
   }
-
-  // Button einfügen, falls nicht vorhanden
   if (!form.querySelector('button, [type=submit]')) {
     form.innerHTML += `<button type="submit" id="submit-btn">Absenden</button>`;
   }
@@ -529,10 +502,9 @@ renderForm(fields);
 
 document.getElementById("formbuilder").addEventListener("submit", async function(e) {
   e.preventDefault();
-
   const dsCheckbox = document.getElementById('datenschutz');
   if (!dsCheckbox || !dsCheckbox.checked) {
-    alert('Bitte akzeptieren Sie die Datenschutzhinweise, um fortzufahren.');
+    alert('Bitte akzeptieren Sie die Datenschutzhinweise.');
     dsCheckbox && dsCheckbox.focus();
     return false;
   }
@@ -541,35 +513,31 @@ document.getElementById("formbuilder").addEventListener("submit", async function
   const data = {};
   for (let [key, value] of formData.entries()) {
     if (data[key]) {
-      if (Array.isArray(data[key])) {
-        data[key].push(value);
-      } else {
-        data[key] = [data[key], value];
-      }
+      data[key] = Array.isArray(data[key]) ? [...data[key], value] : [data[key], value];
     } else {
       data[key] = value;
     }
   }
 
-  // Button & Ladeanimation
-  const button = this.querySelector("button[type=submit]") || document.getElementById("submit-btn");
+  const button = this.querySelector("button[type=submit]");
   const loader = document.getElementById('loading-indicator');
+  const feedback = document.getElementById("feedback");
   if (button) button.disabled = true;
   if (loader) loader.style.display = "block";
-
-  const feedback = document.getElementById("feedback");
   feedback.style.display = "none";
   feedback.innerHTML = "";
 
   try {
     const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
       body: JSON.stringify(data)
     });
 
     feedback.style.display = "block";
-
     if (response.ok) {
       const respData = await response.json();
       feedback.textContent = "Die Bewertung wurde fertiggestellt.";
@@ -579,15 +547,13 @@ document.getElementById("formbuilder").addEventListener("submit", async function
       }
       this.reset();
     } else {
-      feedback.textContent = "Fehler: Ihre Angaben konnten nicht verarbeitet werden (Status " + response.status + ").";
+      feedback.textContent = "Fehler: Ihre Angaben konnten nicht verarbeitet werden.";
     }
   } catch (err) {
-    feedback.textContent = "Fehler beim Übertragen Ihrer Angaben. Bitte versuchen Sie es später erneut.";
-    feedback.style.display = "block";
     console.error(err);
+    feedback.textContent = "Fehler beim Übertragen. Bitte später erneut versuchen.";
   }
 
-  // Button & Loader zurücksetzen
   if (button) button.disabled = false;
   if (loader) loader.style.display = "none";
 });
