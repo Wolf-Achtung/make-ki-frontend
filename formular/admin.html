@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard | KI-Check</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    table { border-collapse: collapse; width: 100%; margin-top:20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #e0f4ff; }
+    .filter { margin: 1em 0; }
+    .filter input { padding: 6px; margin-right: 6px; }
+    .filter button { padding: 6px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <div class="filter">
+    <label>Start-Datum: <input type="date" id="start"></label>
+    <label>End-Datum: <input type="date" id="end"></label>
+    <button onclick="loadStats()">Filter anwenden</button>
+    <button onclick="exportCSV()">CSV exportieren</button>
+  </div>
+  <table id="stats-table">
+    <thead>
+      <tr><th>Email</th><th>Total</th><th>Letzte Nutzung</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const token = localStorage.getItem("jwt");
+    if (!token) window.location.href = "/login.html";
+
+    async function loadStats() {
+      const start = document.getElementById("start").value;
+      const end = document.getElementById("end").value;
+      let url = "https://make-ki-backend-neu-production.up.railway.app/api/stats";
+      const params = [];
+      if (start) params.push(`start=${start}`);
+      if (end) params.push(`end=${end}`);
+      if (params.length) url += "?" + params.join("&");
+
+      const res = await fetch(url, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok) return alert("Nicht berechtigt oder Serverfehler.");
+      const data = await res.json();
+      const tbody = document.querySelector("#stats-table tbody");
+      tbody.innerHTML = data.map(row => `
+        <tr>
+          <td>${row.email}</td>
+          <td>${row.total}</td>
+          <td>${row.last_use || ""}</td>
+        </tr>
+      `).join("");
+    }
+
+    function exportCSV() {
+      const start = document.getElementById("start").value;
+      const end = document.getElementById("end").value;
+      let url = "https://make-ki-backend-neu-production.up.railway.app/api/export-logs";
+      const params = [];
+      if (start) params.push(`start=${start}`);
+      if (end) params.push(`end=${end}`);
+      if (params.length) url += "?" + params.join("&");
+      window.open(url, "_blank");
+    }
+
+    loadStats();
+  </script>
+</body>
+</html>
