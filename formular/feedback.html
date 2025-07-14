@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feedback zum KI-Readiness-Check</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { max-width: 700px; margin: 2rem auto; padding: 1rem; font-family: sans-serif; }
+    h1 { color: #1c3763; }
+    label { display: block; margin: 1rem 0 0.3rem; font-weight: bold; }
+    textarea, input, select {
+      width: 100%; padding: 0.6rem; border: 2px solid #dde8f3; border-radius: 6px; background: #fafdff;
+    }
+    button {
+      margin-top: 1.5rem; padding: 0.8rem 1.5rem; font-size: 1rem;
+      background: #1c3763; color: white; border: none; border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #274d85; }
+  </style>
+</head>
+<body>
+
+<h1>Feedback zum KI-Readiness-Check</h1>
+<p>Vielen Dank, dass Du unseren KI-Readiness-Check getestet hast!
+Dein Feedback ist extrem wertvoll, um das Tool noch besser anzupassen zu können.
+Diese Umfrage dauert max. 2 Minuten.</p>
+
+<form id="feedback-form" action="feedback.php" method="POST">
+  <label>Als wie hilfreich schätzt Du den KI-Readiness-Check insgesamt ein?
+    <select name="hilfe" required>
+      <option value="">Bitte wählen</option>
+      <option>1 - gar nicht hilfreich</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5 - sehr hilfreich</option>
+    </select>
+  </label>
+
+  <label>Wie verständlich findest Du die Analyse und die Auswertung?
+    <select name="verstaendlich" required>
+      <option value="">Bitte wählen</option>
+      <option>1 - überhaupt nicht</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5 - sehr verständlich</option>
+    </select>
+  </label>
+
+<label>Sind die konkreten Handlungsempfehlungen klar genug formuliert?
+    <select name="verstaendlich" required>
+      <option value="">Bitte wählen</option>
+      <option>1 - überhaupt nicht klar</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5 - sehr verständlich</option>
+    </select>
+  </label>
+
+  <label>Wie seriös und vertrauenswürdig wirkt der KI-Readiness-Check auf Dich?
+    <select name="vertrauen" required>
+      <option value="">Bitte wählen</option>
+      <option>1 - unseriös</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5 - sehr seriös</option>
+    </select>
+  </label>
+
+  <label>Zusatz-Frage, falls "unseriös": was könnte die Seriösität untermauern?
+    <textarea name="sonstiges" placeholder="Alles, was Dir einfällt"></textarea>
+  </label>
+
+  <label>Gab es Textstellen im Report, die zu kompliziert oder zu lang sind?
+    <textarea name="textstellen" placeholder="Dein Feedback"></textarea>
+  </label>
+
+  <label>Wie fandest Du den Umfang des KI-Check-Fragebogens?
+    <select name="dauer" required>
+      <option value="">Bitte wählen</option>
+      <option>Okay so</option>
+      <option>Etwas lang, aber noch akzeptabel</option>
+      <option>Viel zu lang</option>
+    </select>
+  </label>
+
+  <label>Gab es Stellen, an denen Du unsicher warst oder gerne weiterführende Fragen dazu gestellt hättest?
+    <textarea name="unsicher" placeholder="Dein Feedback"></textarea>
+  </label>
+
+  <label>Welche zusätzlichen Features oder Inhalte würdest Du Dir wünschen?
+    <textarea name="features" placeholder="Deine Ideen"></textarea>
+  </label>
+
+  <label>Sonst noch Feedback, Ideen oder Vorschläge?
+    <textarea name="sonstiges" placeholder="Alles, was Dir einfällt"></textarea>
+  </label>
+
+  <label>Und die letze Frage: Fällt Dir jemand ein, der schon jetzt in der Testphase vom KI-Readiness-Check erfahren sollte – um sich möglichst früh einbringen oder davon profitieren zu können?
+(Name oder E-Mail genügt.)  
+    <input type="text" name="kontakt" placeholder="Name & E-Mail" />
+  </label>
+
+  <button type="submit">Feedback absenden</button>
+</form>
+
+</body>
+</html>
