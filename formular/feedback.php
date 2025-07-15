@@ -1,40 +1,27 @@
 <?php
-// Empfänger-Adresse hier eintragen:
-$to = "kontakt@ki-sicherheit.jetzt"; // <-- HIER DEINE EIGENE MAIL ADRESSE EINTRAGEN
+require_once("config.php"); // hier stehen $dsn, $user, $pass
 
-// Formulareingaben abholen
-$hilfe = $_POST['hilfe'] ?? '';
-$verstaendlich = $_POST['verstaendlich'] ?? '';
-$vertrauen = $_POST['vertrauen'] ?? '';
-$design = $_POST['design'] ?? '';
-$textstellen = $_POST['textstellen'] ?? '';
-$dauer = $_POST['dauer'] ?? '';
-$unsicher = $_POST['unsicher'] ?? '';
-$features = $_POST['features'] ?? '';
-$sonstiges = $_POST['sonstiges'] ?? '';
-$kontakt = $_POST['kontakt'] ?? '';
+try {
+    // Mit deiner Postgres-Datenbank verbinden
+    $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $pdo->exec("CREATE EXTENSION IF NOT EXISTS pgcrypto;");
 
-// E-Mail zusammenbauen
-$subject = "Neues Feedback zum KI-Readiness-Check";
-$message = "Feedback zum KI-Readiness-Check:\n\n"
-  . "Wie hilfreich: $hilfe\n"
-  . "Verständlichkeit: $verstaendlich\n"
-  . "Vertrauen: $vertrauen\n"
-  . "Design: $design\n"
-  . "Zu lange Texte: $textstellen\n"
-  . "Dauer: $dauer\n"
-  . "Unsicherheiten: $unsicher\n"
-  . "Feature-Wünsche: $features\n"
-  . "Sonstiges: $sonstiges\n"
-  . "Kontakt: $kontakt\n";
+    // Email aus dem versteckten Feld ziehen
+    $email = $_POST['email'] ?? 'unbekannt';
+    unset($_POST['email']);
 
-$headers = "From: noreply@" . $_SERVER['SERVER_NAME'] . "\r\n";
+    // Den Rest als JSON kodieren
+    $feedbackJson = json_encode($_POST);
 
-// Mail senden
-if(mail($to, $subject, $message, $headers)){
+    // In die Tabelle feedback_logs eintragen
+    $stmt = $pdo->prepare("INSERT INTO feedback_logs (email, feedback_data) VALUES (:email, :feedback)");
+    $stmt->execute(['email' => $email, 'feedback' => $feedbackJson]);
+
+    // Nach Danke-Seite weiterleiten
     header("Location: danke.html");
     exit;
-} else {
-    echo "<h2 style='font-family:sans-serif;color:#c22;'>Es gab ein Problem beim Absenden. Bitte später erneut versuchen.</h2>";
+} catch (Exception $e) {
+    echo "<h2>Es ist ein Fehler aufgetreten</h2>";
+    echo "<p>".$e->getMessage()."</p>";
 }
 ?>

@@ -28,6 +28,7 @@ Dein Feedback ist extrem wertvoll, um das Tool noch besser anzupassen zu können
 Diese Umfrage dauert max. 2 Minuten.</p>
 
 <form id="feedback-form" action="feedback.php" method="POST">
+  <input type="hidden" name="email" id="feedback-email" />
   <label>Als wie hilfreich schätzt Du den KI-Readiness-Check insgesamt ein?
     <select name="hilfe" required>
       <option value="">Bitte wählen</option>
@@ -108,6 +109,18 @@ Diese Umfrage dauert max. 2 Minuten.</p>
 
   <button type="submit">Feedback absenden</button>
 </form>
+
+<script>
+const token = localStorage.getItem("jwt");
+if (token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    document.getElementById("feedback-email").value = payload.sub;
+  } catch(e) {
+    console.error("Token parsing error:", e);
+  }
+}
+</script>
 
 </body>
 </html>

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css" />
   <style>
     table { border-collapse: collapse; width: 100%; margin-top:20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
     th { background: #e0f4ff; }
     .filter { margin: 1em 0; }
     .filter input { padding: 6px; margin-right: 6px; }
@@ -16,15 +16,26 @@
 </head>
 <body>
   <h1>Admin Dashboard</h1>
+
   <div class="filter">
     <label>Start-Datum: <input type="date" id="start"></label>
     <label>End-Datum: <input type="date" id="end"></label>
     <button onclick="loadStats()">Filter anwenden</button>
-    <button onclick="exportCSV()">CSV exportieren</button>
+    <button onclick="exportCSV()">CSV exportieren (Nutzung)</button>
   </div>
+
   <table id="stats-table">
     <thead>
       <tr><th>Email</th><th>Total</th><th>Letzte Nutzung</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2 style="margin-top:40px;">Feedback Logs</h2>
+  <button onclick="exportFeedbackCSV()">CSV exportieren (Feedback)</button>
+  <table id="feedback-table">
+    <thead>
+      <tr><th>Email</th><th>Feedback</th><th>Datum</th></tr>
     </thead>
     <tbody></tbody>
   </table>
@@ -42,9 +53,7 @@
       if (end) params.push(`end=${end}`);
       if (params.length) url += "?" + params.join("&");
 
-      const res = await fetch(url, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      const res = await fetch(url, { headers: { "Authorization": `Bearer ${token}` } });
       if (!res.ok) return alert("Nicht berechtigt oder Serverfehler.");
       const data = await res.json();
       const tbody = document.querySelector("#stats-table tbody");
@@ -53,6 +62,22 @@
           <td>${row.email}</td>
           <td>${row.total}</td>
           <td>${row.last_use || ""}</td>
+        </tr>
+      `).join("");
+    }
+
+    async function loadFeedback() {
+      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/feedback-logs", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok) return console.error("Fehler beim Laden der Feedback-Logs");
+      const data = await res.json();
+      const tbody = document.querySelector("#feedback-table tbody");
+      tbody.innerHTML = data.map(row => `
+        <tr>
+          <td>${row.email}</td>
+          <td><pre style="white-space:pre-wrap;font-size:0.9em">${JSON.stringify(row.feedback_data, null, 2)}</pre></td>
+          <td>${row.created_at}</td>
         </tr>
       `).join("");
     }
@@ -68,7 +93,12 @@
       window.open(url, "_blank");
     }
 
+    function exportFeedbackCSV() {
+      window.open("https://make-ki-backend-neu-production.up.railway.app/api/export-feedback", "_blank");
+    }
+
     loadStats();
+    loadFeedback();
   </script>
 </body>
 </html>
