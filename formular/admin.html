@@ -41,7 +41,7 @@
   </table>
 
   <script>
-    const token = localStorage.getItem("jwt");
+    const token = localStorage.getItem("token");
     if (!token) window.location.href = "/login.html";
 
     async function loadStats() {
@@ -53,7 +53,9 @@
       if (end) params.push(`end=${end}`);
       if (params.length) url += "?" + params.join("&");
 
-      const res = await fetch(url, { headers: { "Authorization": `Bearer ${token}` } });
+      const res = await fetch(url, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
       if (!res.ok) return alert("Nicht berechtigt oder Serverfehler.");
       const data = await res.json();
       const tbody = document.querySelector("#stats-table tbody");
@@ -90,11 +92,11 @@
       if (start) params.push(`start=${start}`);
       if (end) params.push(`end=${end}`);
       if (params.length) url += "?" + params.join("&");
-      window.open(url, "_blank");
+      window.open(url + `&token=${token}`, "_blank");
     }
 
     function exportFeedbackCSV() {
-      window.open("https://make-ki-backend-neu-production.up.railway.app/api/export-feedback", "_blank");
+      window.open(`https://make-ki-backend-neu-production.up.railway.app/api/export-feedback?token=${token}`, "_blank");
     }
 
     loadStats();
