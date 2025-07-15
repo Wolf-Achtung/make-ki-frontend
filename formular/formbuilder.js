@@ -540,10 +540,24 @@ document.getElementById("formbuilder").addEventListener("submit", async function
     feedback.style.display = "block";
     if (response.ok) {
       const respData = await response.json();
-      feedback.textContent = "Die Bewertung wurde fertiggestellt.";
       if (respData.pdf_url) {
         const baseUrl = "https://make-ki-backend-neu-production.up.railway.app";
-        feedback.innerHTML += `<br><a href="${baseUrl}${respData.pdf_url}" class="download-btn" target="_blank" style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>`;
+        feedback.innerHTML = `
+          <div style="margin-top:16px;">
+            <a href="${baseUrl}${respData.pdf_url}" class="download-btn" target="_blank"
+            style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;
+            text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>
+            <div style="margin-top:24px;font-size:1.05em;color:#204769;">
+              📣 Wie hat Dir der KI-Check gefallen?<br>
+              Gib uns bitte 1 Minute Feedback, um ihn noch besser zu machen.<br>
+              <a href="feedback.html" style="display:inline-block;margin-top:12px;padding:10px 26px;background:#e3eeff;
+              color:#2166c2;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1em;">
+              💬 Jetzt Feedback geben</a>
+            </div>
+          </div>
+        `;
+      } else {
+        feedback.textContent = "Dein Report wurde erstellt, aber der PDF-Link fehlt.";
       }
       this.reset();
     } else {
