@@ -99,8 +99,48 @@
       window.open(`https://make-ki-backend-neu-production.up.railway.app/api/export-feedback?token=${token}`, "_blank");
     }
 
-    loadStats();
-    loadFeedback();
   </script>
+<script>
+(function(){
+  let token = localStorage.getItem("token");
+
+  if (!token) {
+    // Kein Token gespeichert? Fallback-Feld einblenden
+    document.body.innerHTML = `
+      <div style="max-width:400px;margin:100px auto;font-family:sans-serif;">
+        <h2>Admin-Token eingeben</h2>
+        <input type="text" id="tokenInput" placeholder="JWT Token" style="width:100%;padding:8px;">
+        <button style="margin-top:12px;padding:8px 14px;" onclick="saveToken()">Speichern & Weiter</button>
+      </div>
+    `;
+  } else {
+    loadAdminData(token);
+  }
+
+  window.saveToken = function(){
+    const t = document.getElementById("tokenInput").value.trim();
+    if (!t) return alert("Bitte Token eingeben");
+    localStorage.setItem("token", t);
+    location.reload();
+  }
+
+  async function loadAdminData(token) {
+    // Dein bestehender Load-Mechanismus hier, Beispiel:
+    try {
+      const res = await fetch("/api/admin-check", { headers: { "Authorization": `Bearer ${token}` }});
+      if (!res.ok) throw new Error("Token ungültig oder kein Admin");
+      console.log("Admin Zugriff erlaubt");
+      // Hier kannst du deine anderen Admin-Loads starten:
+      loadStats();
+      loadFeedback();
+    } catch(e){
+      alert("Zugriff verweigert: " + e.message);
+      localStorage.removeItem("token");
+      location.reload();
+    }
+  }
+})();
+</script>
+
 </body>
 </html>
