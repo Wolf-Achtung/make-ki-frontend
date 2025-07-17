@@ -18,108 +18,140 @@
       cursor: pointer;
     }
     button:hover { background: #274d85; }
+    #success-msg { color: green; margin-top: 1rem; font-weight: bold; }
   </style>
 </head>
 <body>
 
 <h1>Feedback zum KI-Readiness-Check</h1>
-<p>Vielen Dank, dass Du unseren KI-Readiness-Check getestet hast!
-Dein Feedback ist extrem wertvoll, um das Tool noch besser anzupassen zu können.
-Diese Umfrage dauert max. 2 Minuten.</p>
+<p>Vielen Dank, dass Du unseren KI-Readiness-Check getestet hast!  
+Dein Feedback ist extrem wertvoll. Diese Umfrage dauert max. 2 Minuten.</p>
 
-<form id="feedback-form" action="feedback.php" method="POST">
+<form id="feedback-form">
   <input type="hidden" name="email" id="feedback-email" />
-  <label>Als wie hilfreich schätzt Du den KI-Readiness-Check insgesamt ein?
-    <select name="hilfe" required>
-      <option value="">Bitte wählen</option>
-      <option>1 - gar nicht hilfreich</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5 - sehr hilfreich</option>
-    </select>
-  </label>
 
-  <label>Wie verständlich findest Du die Analyse und die Auswertung?
-    <select name="verstaendlich" required>
-      <option value="">Bitte wählen</option>
-      <option>1 - überhaupt nicht</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5 - sehr verständlich</option>
-    </select>
-  </label>
+  <label for="hilfe">Als wie hilfreich schätzt Du den KI-Readiness-Check insgesamt ein?</label>
+  <select name="hilfe" id="hilfe" required>
+    <option value="">Bitte wählen</option>
+    <option>1 - gar nicht hilfreich</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5 - sehr hilfreich</option>
+  </select>
 
-<label>Sind die konkreten Handlungsempfehlungen klar genug formuliert?
-    <select name="verstaendlich" required>
-      <option value="">Bitte wählen</option>
-      <option>1 - überhaupt nicht klar</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5 - sehr verständlich</option>
-    </select>
-  </label>
+  <label for="verstaendlich1">Wie verständlich findest Du die Analyse und die Auswertung?</label>
+  <select name="verstaendlich_analyse" id="verstaendlich1" required>
+    <option value="">Bitte wählen</option>
+    <option>1 - überhaupt nicht</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5 - sehr verständlich</option>
+  </select>
 
-  <label>Wie seriös und vertrauenswürdig wirkt der KI-Readiness-Check auf Dich?
-    <select name="vertrauen" required>
-      <option value="">Bitte wählen</option>
-      <option>1 - unseriös</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5 - sehr seriös</option>
-    </select>
-  </label>
+  <label for="verstaendlich2">Sind die konkreten Handlungsempfehlungen klar genug formuliert?</label>
+  <select name="verstaendlich_empfehlung" id="verstaendlich2" required>
+    <option value="">Bitte wählen</option>
+    <option>1 - überhaupt nicht klar</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5 - sehr verständlich</option>
+  </select>
 
-  <label>Zusatz-Frage, falls "unseriös": was könnte die Seriösität untermauern?
-    <textarea name="sonstiges" placeholder="Alles, was Dir einfällt"></textarea>
-  </label>
+  <label for="vertrauen">Wie seriös und vertrauenswürdig wirkt der KI-Readiness-Check auf Dich?</label>
+  <select name="vertrauen" id="vertrauen" required>
+    <option value="">Bitte wählen</option>
+    <option>1 - unseriös</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5 - sehr seriös</option>
+  </select>
 
-  <label>Gab es Textstellen im Report, die zu kompliziert oder zu lang sind?
-    <textarea name="textstellen" placeholder="Dein Feedback"></textarea>
-  </label>
+  <label for="serio">Falls "unseriös": Was könnte die Seriösität untermauern?</label>
+  <textarea name="serio" id="serio" placeholder="Dein Vorschlag"></textarea>
 
-  <label>Wie fandest Du den Umfang des KI-Check-Fragebogens?
-    <select name="dauer" required>
-      <option value="">Bitte wählen</option>
-      <option>Okay so</option>
-      <option>Etwas lang, aber noch akzeptabel</option>
-      <option>Viel zu lang</option>
-    </select>
-  </label>
+  <label for="textstellen">Gab es Textstellen im Report, die zu kompliziert oder zu lang sind?</label>
+  <textarea name="textstellen" id="textstellen" placeholder="Dein Feedback"></textarea>
 
-  <label>Gab es Stellen, an denen Du unsicher warst oder gerne weiterführende Fragen dazu gestellt hättest?
-    <textarea name="unsicher" placeholder="Dein Feedback"></textarea>
-  </label>
+  <label for="dauer">Wie fandest Du den Umfang des KI-Check-Fragebogens?</label>
+  <select name="dauer" id="dauer" required>
+    <option value="">Bitte wählen</option>
+    <option>Okay so</option>
+    <option>Etwas lang, aber noch akzeptabel</option>
+    <option>Viel zu lang</option>
+  </select>
 
-  <label>Welche zusätzlichen Features oder Inhalte würdest Du Dir wünschen?
-    <textarea name="features" placeholder="Deine Ideen"></textarea>
-  </label>
+  <label for="unsicher">Gab es Stellen, an denen Du unsicher warst oder gerne weiterführende Fragen dazu gestellt hättest?</label>
+  <textarea name="unsicher" id="unsicher" placeholder="Dein Feedback"></textarea>
 
-  <label>Sonst noch Feedback, Ideen oder Vorschläge?
-    <textarea name="sonstiges" placeholder="Alles, was Dir einfällt"></textarea>
-  </label>
+  <label for="features">Welche zusätzlichen Features oder Inhalte würdest Du Dir wünschen?</label>
+  <textarea name="features" id="features" placeholder="Deine Ideen"></textarea>
 
-  <label>Und die letze Frage: Fällt Dir jemand ein, der schon jetzt in der Testphase vom KI-Readiness-Check erfahren sollte – um sich möglichst früh einbringen oder davon profitieren zu können?
-(Name oder E-Mail genügt.)  
-    <input type="text" name="kontakt" placeholder="Name & E-Mail" />
-  </label>
+  <label for="freitext">Sonst noch Feedback, Ideen oder Vorschläge?</label>
+  <textarea name="freitext" id="freitext" placeholder="Alles, was Dir einfällt"></textarea>
+  <p style="font-weight: bold; margin-top: 1.5rem;">
+    Und die letze Frage: Fällt Dir jemand ein, der schon jetzt in der Testphase vom KI-Readiness-Check erfahren sollte?
+  </p>
+
+  <label for="tipp_name">Name</label>
+  <input type="text" name="tipp_name" id="tipp_name" placeholder="Vor- und Nachname" />
+
+  <label for="tipp_firma">Unternehmen</label>
+  <input type="text" name="tipp_firma" id="tipp_firma" placeholder="Unternehmen" />
+
+  <label for="tipp_email">E-Mail</label>
+  <input type="email" name="tipp_email" id="tipp_email" placeholder="E-Mail-Adresse" />
 
   <button type="submit">Feedback absenden</button>
 </form>
 
+<p id="success-msg" style="display:none;">✅ Vielen Dank! Dein Feedback wurde erfolgreich übermittelt.</p>
+
 <script>
-const token = localStorage.getItem("jwt");
-if (token) {
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    document.getElementById("feedback-email").value = payload.sub;
-  } catch(e) {
-    console.error("Token parsing error:", e);
+  const token = localStorage.getItem("jwt");
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      document.getElementById("feedback-email").value = payload.sub;
+    } catch(e) {
+      console.error("Token-Fehler:", e);
+    }
   }
-}
+
+  document.getElementById("feedback-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const payload = {};
+    formData.forEach((value, key) => {
+      if (payload[key]) {
+        if (!Array.isArray(payload[key])) payload[key] = [payload[key]];
+        payload[key].push(value);
+      } else {
+        payload[key] = value;
+      }
+    });
+
+    try {
+      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById("success-msg").style.display = "block";
+        e.target.reset();
+      } else {
+        alert("❌ Fehler beim Absenden.");
+      }
+    } catch (err) {
+      console.error("❌ Netzwerkfehler", err);
+      alert("Netzwerkfehler beim Absenden.");
+    }
+  });
 </script>
 
 </body>
