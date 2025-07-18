@@ -142,7 +142,7 @@ Dein Feedback ist extrem wertvoll. Diese Umfrage dauert max. 2 Minuten.</p>
       });
 
       if (res.ok) {
-        document.getElementById("success-msg").style.display = "block";
+        window.location.href = "danke.html";
         e.target.reset();
       } else {
         alert("❌ Fehler beim Absenden.");
