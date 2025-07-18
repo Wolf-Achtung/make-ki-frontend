@@ -259,3 +259,7 @@ input:invalid, select:invalid, textarea:invalid {
   max-height: 90vh;
   overflow-y: auto;
 }
+.guidance.important {
+  color: #d7263d !important; /* kräftiges Rot */
+  font-weight: bold;
+}

@@ -427,7 +427,8 @@ const fields = [
     key: "datenschutz",
     label: "Ich habe die <a href=\"datenschutz.html\" onclick=\"window.open(this.href, 'DatenschutzPopup', 'width=600,height=700'); return false;\">Datenschutzhinweise</a> gelesen und bin einverstanden.",
     type: "privacy",
-    description: "Bitte beachten: Die Erstellung Ihres Executive Briefings kann mehrere Minuten dauern. Während dieser Zeit den ABSENDEN-Button nicht wiederholt drücken. Bitte lassen Sie diese Seite geöffnet. Nach Fertigstellung erscheint unten auf der Seite ein PDF-Download-Button. Ihr Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
+    description: "<span class='important'>Bitte beachten: Die Erstellung Ihres Executive Briefings kann mehrere Minuten dauern. Während dieser Zeit den ABSENDEN-Button nicht wiederholt drücken. Bitte lassen Sie diese Seite geöffnet. Nach Fertigstellung erscheint hier ein PDF-Download-Button.</span> Ihr Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
+
   }
 ];
 
@@ -581,6 +582,8 @@ if (email) {
     feedback.textContent = "Fehler beim Übertragen. Bitte später erneut versuchen.";
   }
 
-  if (button) button.disabled = false;
   if (loader) loader.style.display = "none";
+// Button nur bei Fehler wieder aktivieren
+if (!response.ok || feedback.textContent.startsWith("Fehler")) {
+  if (button) button.disabled = false;
 });
