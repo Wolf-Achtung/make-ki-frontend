@@ -586,4 +586,4 @@ if (email) {
 // Button nur bei Fehler wieder aktivieren
 if (!response.ok || feedback.textContent.startsWith("Fehler")) {
   if (button) button.disabled = false;
-});
+}
