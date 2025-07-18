@@ -528,7 +528,7 @@ document.getElementById("formbuilder").addEventListener("submit", async function
   feedback.innerHTML = "";
 
   try {
-    const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/briefing", {
+    const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
