@@ -510,6 +510,7 @@ function renderForm(fields, formId = "formbuilder") {
 }
 
 renderForm(fields);
+
 document.getElementById("formbuilder").addEventListener("submit", async function(e) {
   e.preventDefault();
   const dsCheckbox = document.getElementById('datenschutz');
@@ -528,7 +529,7 @@ document.getElementById("formbuilder").addEventListener("submit", async function
       data[key] = value;
     }
   }
-  // <-- NEU: E-Mail aus JWT hinzufügen
+  // E-Mail aus JWT hinzufügen
   const email = getEmailFromJWT(token);
   if (email) {
     data.email = email;
@@ -556,10 +557,9 @@ document.getElementById("formbuilder").addEventListener("submit", async function
     if (response.ok) {
       const respData = await response.json();
       if (respData.pdf_url) {
-        const baseUrl = "https://make-ki-backend-neu-production.up.railway.app";
         feedback.innerHTML = `
           <div style="margin-top:16px;">
-            <a href="${baseUrl}${respData.pdf_url}" class="download-btn" target="_blank"
+            <a href="${respData.pdf_url}" class="download-btn" target="_blank"
             style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;
             text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>
             <div style="margin-top:24px;font-size:1.05em;color:#204769;">

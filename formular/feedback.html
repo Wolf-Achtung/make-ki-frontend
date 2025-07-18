@@ -31,44 +31,45 @@ Dein Feedback ist extrem wertvoll. Diese Umfrage dauert max. 2 Minuten.</p>
   <input type="hidden" name="email" id="feedback-email" />
 
   <label for="hilfe">Als wie hilfreich schätzt Du den KI-Readiness-Check insgesamt ein?</label>
-  <select name="hilfe" id="hilfe" required>
-    <option value="">Bitte wählen</option>
-    <option>1 - gar nicht hilfreich</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5 - sehr hilfreich</option>
-  </select>
+<select name="hilfe" id="hilfe" required>
+  <option value="">Bitte wählen</option>
+  <option value="gar nicht hilfreich">Gar nicht hilfreich</option>
+  <option value="eher wenig hilfreich">Eher wenig hilfreich</option>
+  <option value="teils/teils">Teils/teils</option>
+  <option value="ziemlich hilfreich">Ziemlich hilfreich</option>
+  <option value="sehr hilfreich">Sehr hilfreich</option>
+</select>
 
-  <label for="verstaendlich1">Wie verständlich findest Du die Analyse und die Auswertung?</label>
-  <select name="verstaendlich_analyse" id="verstaendlich1" required>
-    <option value="">Bitte wählen</option>
-    <option>1 - überhaupt nicht</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5 - sehr verständlich</option>
-  </select>
+<label for="verstaendlich1">Wie verständlich findest Du die Analyse und die Auswertung?</label>
+<select name="verstaendlich_analyse" id="verstaendlich1" required>
+  <option value="">Bitte wählen</option>
+  <option value="überhaupt nicht verständlich">Überhaupt nicht verständlich</option>
+  <option value="eher schwer verständlich">Eher schwer verständlich</option>
+  <option value="teils verständlich, teils nicht">Teils verständlich, teils nicht</option>
+  <option value="größtenteils verständlich">Größtenteils verständlich</option>
+  <option value="sehr verständlich">Sehr verständlich</option>
+</select>
 
-  <label for="verstaendlich2">Sind die konkreten Handlungsempfehlungen klar genug formuliert?</label>
-  <select name="verstaendlich_empfehlung" id="verstaendlich2" required>
-    <option value="">Bitte wählen</option>
-    <option>1 - überhaupt nicht klar</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5 - sehr verständlich</option>
-  </select>
+<label for="verstaendlich2">Sind die konkreten Handlungsempfehlungen klar genug formuliert?</label>
+<select name="verstaendlich_empfehlung" id="verstaendlich2" required>
+  <option value="">Bitte wählen</option>
+  <option value="überhaupt nicht klar">Überhaupt nicht klar</option>
+  <option value="teilweise unklar">Teilweise unklar</option>
+  <option value="teils klar, teils unklar">Teils klar, teils unklar</option>
+  <option value="größtenteils klar">Größtenteils klar</option>
+  <option value="sehr klar und verständlich">Sehr klar und verständlich</option>
+</select>
 
-  <label for="vertrauen">Wie seriös und vertrauenswürdig wirkt der KI-Readiness-Check auf Dich?</label>
-  <select name="vertrauen" id="vertrauen" required>
-    <option value="">Bitte wählen</option>
-    <option>1 - unseriös</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5 - sehr seriös</option>
-  </select>
+<label for="vertrauen">Wie seriös und vertrauenswürdig wirkt der KI-Readiness-Check auf Dich?</label>
+<select name="vertrauen" id="vertrauen" required>
+  <option value="">Bitte wählen</option>
+  <option value="überhaupt nicht seriös">Überhaupt nicht seriös</option>
+  <option value="eher wenig seriös">Eher wenig seriös</option>
+  <option value="mittelmäßig seriös">Mittelmäßig seriös</option>
+  <option value="ziemlich seriös">Ziemlich seriös</option>
+  <option value="sehr seriös und vertrauenswürdig">Sehr seriös und vertrauenswürdig</option>
+</select>
+
 
   <label for="serio">Falls "unseriös": Was könnte die Seriösität untermauern?</label>
   <textarea name="serio" id="serio" placeholder="Dein Vorschlag"></textarea>
@@ -111,46 +112,58 @@ Dein Feedback ist extrem wertvoll. Diese Umfrage dauert max. 2 Minuten.</p>
 <p id="success-msg" style="display:none;">✅ Vielen Dank! Dein Feedback wurde erfolgreich übermittelt.</p>
 
 <script>
-  const token = localStorage.getItem("jwt");
-  if (token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      document.getElementById("feedback-email").value = payload.sub;
-    } catch(e) {
-      console.error("Token-Fehler:", e);
+  document.addEventListener("DOMContentLoaded", function() {
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+      window.location.href = "/login.html";
+      return;
     }
-  }
+    function getEmailFromJWT(token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.email || payload.sub || null;
+      } catch (e) {
+        return null;
+      }
+    }
 
-  document.getElementById("feedback-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const payload = {};
-    formData.forEach((value, key) => {
-      if (payload[key]) {
-        if (!Array.isArray(payload[key])) payload[key] = [payload[key]];
-        payload[key].push(value);
-      } else {
-        payload[key] = value;
+    // E-Mail aus Token holen und ins versteckte Feld schreiben (optional)
+    const email = getEmailFromJWT(token);
+    const emailInput = document.getElementById("feedback-email");
+    if (emailInput && email) emailInput.value = email;
+
+    document.getElementById("feedback-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const feedbackData = {};
+      for (let [key, value] of formData.entries()) {
+        feedbackData[key] = value;
+      }
+      // Email aus JWT (NICHT aus Feld!) mitschicken
+      if (email) feedbackData.email = email;
+
+      const button = this.querySelector("button[type=submit]");
+      if (button) button.disabled = true;
+
+      try {
+        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(feedbackData)
+        });
+
+        if (res.ok) {
+          window.location.href = "danke.html";
+        } else {
+          alert("❌ Fehler beim Absenden.");
+          if (button) button.disabled = false;
+        }
+      } catch (err) {
+        alert("❌ Netzwerkfehler beim Absenden. Bitte später erneut versuchen.");
+        if (button) button.disabled = false;
       }
     });
-
-    try {
-      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        window.location.href = "danke.html";
-        e.target.reset();
-      } else {
-        alert("❌ Fehler beim Absenden.");
-      }
-    } catch (err) {
-      console.error("❌ Netzwerkfehler", err);
-      alert("Netzwerkfehler beim Absenden.");
-    }
   });
 </script>
 
