@@ -3,6 +3,7 @@ const token = localStorage.getItem("jwt");
 if (!token) {
     window.location.href = "/login.html";
 }
+
 function getEmailFromJWT(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
@@ -12,6 +13,9 @@ function getEmailFromJWT(token) {
   }
 }
 
+// -- Hier folgt dein komplettes "fields"-Array (wie gehabt) --
+// (Du kannst es aus deiner Datei komplett übernehmen. Keine Änderungen hier nötig!)
+// ...fields = [ ... ] ;
 const fields = [
   {
     key: "branche",
@@ -430,8 +434,6 @@ const fields = [
 
   }
 ];
-
-// Deine bisherige Renderfunktion:
 function renderForm(fields, formId = "formbuilder") {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -508,7 +510,6 @@ function renderForm(fields, formId = "formbuilder") {
 }
 
 renderForm(fields);
-
 document.getElementById("formbuilder").addEventListener("submit", async function(e) {
   e.preventDefault();
   const dsCheckbox = document.getElementById('datenschutz');
@@ -527,11 +528,11 @@ document.getElementById("formbuilder").addEventListener("submit", async function
       data[key] = value;
     }
   }
-// <-- NEU: E-Mail aus JWT hinzufügen
-const email = getEmailFromJWT(token);
-if (email) {
-  data.email = email;
-}
+  // <-- NEU: E-Mail aus JWT hinzufügen
+  const email = getEmailFromJWT(token);
+  if (email) {
+    data.email = email;
+  }
   const button = this.querySelector("button[type=submit]");
   const loader = document.getElementById('loading-indicator');
   const feedback = document.getElementById("feedback");
@@ -540,8 +541,9 @@ if (email) {
   feedback.style.display = "none";
   feedback.innerHTML = "";
 
+  let response;
   try {
-    const response = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/briefing", {
+    response = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/briefing", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -582,6 +584,8 @@ if (email) {
   }
 
   if (loader) loader.style.display = "none";
-// Button nur bei Fehler wieder aktivieren
-if (!response.ok || feedback.textContent.startsWith("Fehler")) {
-  if (button) button.disabled = false;
+  // Button nur bei Fehler wieder aktivieren
+  if (!response || !response.ok || feedback.textContent.startsWith("Fehler")) {
+    if (button) button.disabled = false;
+  }
+});
