@@ -2,6 +2,7 @@
 const token = localStorage.getItem("jwt");
 if (!token) {
     window.location.href = "/login.html";
+}
 function getEmailFromJWT(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
