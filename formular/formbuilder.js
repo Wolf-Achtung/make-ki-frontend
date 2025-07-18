@@ -12,8 +12,6 @@ function getEmailFromJWT(token) {
   }
 }
 
-}
-
 const fields = [
   {
     key: "branche",
