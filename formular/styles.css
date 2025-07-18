@@ -157,6 +157,13 @@ input[type="submit"]:hover {
   background: linear-gradient(90deg, #1863a7 0%, #337ff8 100%);
   box-shadow: 0 6px 24px #1863a720;
 }
+button:disabled {
+  background: #bbc7da !important;
+  color: #fff !important;
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
 
 #feedback, .feedback {
   margin: 30px 0 0 0;

@@ -485,7 +485,10 @@ function renderForm(fields, formId = "formbuilder") {
       default:
         input = `<input type="text" id="${field.key}" name="${field.key}" />`;
     }
-    const guidance = field.description ? `<div class="guidance">${field.description}</div>` : "";
+    const guidance = field.description
+  ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
+  : "";
+
     return field.type === "privacy"
       ? `<div class="form-group privacy-group">${input}${guidance}</div>`
       : `<div class="form-group"><label for="${field.key}">${field.label}</label>${guidance}${input}</div>`;
