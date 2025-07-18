@@ -2,6 +2,15 @@
 const token = localStorage.getItem("jwt");
 if (!token) {
     window.location.href = "/login.html";
+function getEmailFromJWT(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.email || payload.sub || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 }
 
 const fields = [
@@ -518,7 +527,11 @@ document.getElementById("formbuilder").addEventListener("submit", async function
       data[key] = value;
     }
   }
-
+// <-- NEU: E-Mail aus JWT hinzufügen
+const email = getEmailFromJWT(token);
+if (email) {
+  data.email = email;
+}
   const button = this.querySelector("button[type=submit]");
   const loader = document.getElementById('loading-indicator');
   const feedback = document.getElementById("feedback");
