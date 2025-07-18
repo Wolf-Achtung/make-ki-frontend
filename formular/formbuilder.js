@@ -486,8 +486,8 @@ function renderForm(fields, formId = "formbuilder") {
         input = `<input type="text" id="${field.key}" name="${field.key}" />`;
     }
     const guidance = field.description
-  ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
-  : "";
+      ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
+      : "";
 
     return field.type === "privacy"
       ? `<div class="form-group privacy-group">${input}${guidance}</div>`
@@ -566,9 +566,9 @@ document.getElementById("formbuilder").addEventListener("submit", async function
           : "https://make-ki-backend-neu-production.up.railway.app" + respData.pdf_url;
         feedback.innerHTML = `
           <div style="margin-top:16px;">
-            <a href="${downloadUrl}" class="download-btn" target="_blank"
-            style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;
-            text-decoration:none;font-weight:600;font-size:1.12em;">PDF-Download</a>
+            <button id="download-btn" data-file="KI-Readiness-Report.pdf" class="download-btn"
+              style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;
+              font-weight:600;font-size:1.12em;">PDF-Download</button>
             <div style="margin-top:24px;font-size:1.05em;color:#204769;">
               📣 Wie hat Dir der KI-Check gefallen?<br>
               Gib uns bitte 1 Minute Feedback, um ihn noch besser zu machen.<br>
@@ -578,6 +578,41 @@ document.getElementById("formbuilder").addEventListener("submit", async function
             </div>
           </div>
         `;
+
+        // PDF-Download mit Token im Header
+        setTimeout(() => {
+          const downloadBtn = document.getElementById('download-btn');
+          if (downloadBtn) {
+            downloadBtn.addEventListener('click', async function (ev) {
+              ev.preventDefault();
+              const token = localStorage.getItem("jwt");
+              if (!token) {
+                alert('Nicht eingeloggt – kein Download möglich.');
+                return;
+              }
+              const file = this.getAttribute('data-file') || "KI-Readiness-Report.pdf";
+              const res = await fetch(`https://make-ki-backend-neu-production.up.railway.app/api/pdf-download?file=${encodeURIComponent(file)}`, {
+                headers: { "Authorization": "Bearer " + token }
+              });
+              if (res.ok) {
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+              } else if (res.status === 401) {
+                alert("Nicht eingeloggt oder Session abgelaufen.");
+              } else {
+                alert("Fehler beim PDF-Download.");
+              }
+            });
+          }
+        }, 100);
+
       } else {
         feedback.textContent = "Dein Report wurde erstellt, aber der PDF-Link fehlt.";
       }

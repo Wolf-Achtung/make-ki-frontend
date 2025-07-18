@@ -132,38 +132,27 @@ Dein Feedback ist extrem wertvoll. Diese Umfrage dauert max. 2 Minuten.</p>
     const emailInput = document.getElementById("feedback-email");
     if (emailInput && email) emailInput.value = email;
 
-    document.getElementById("feedback-form").addEventListener("submit", async function(e) {
-      e.preventDefault();
+document.getElementById('feedback-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const data = {};
+  formData.forEach((value, key) => data[key] = value);
+  const token = localStorage.getItem("jwt");
+  const res = await fetch('https://make-ki-backend-neu-production.up.railway.app/api/feedback', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { "Authorization": "Bearer " + token } : {})
+    },
+    body: JSON.stringify(data)
+  });
+  if (res.ok) {
+    window.location.href = "danke.html";
+  } else {
+    alert("Fehler beim Absenden. Bitte später erneut versuchen.");
+  }
+});
 
-      const formData = new FormData(this);
-      const feedbackData = {};
-      for (let [key, value] of formData.entries()) {
-        feedbackData[key] = value;
-      }
-      // Email aus JWT (NICHT aus Feld!) mitschicken
-      if (email) feedbackData.email = email;
-
-      const button = this.querySelector("button[type=submit]");
-      if (button) button.disabled = true;
-
-      try {
-        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/feedback", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(feedbackData)
-        });
-
-        if (res.ok) {
-          window.location.href = "danke.html";
-        } else {
-          alert("❌ Fehler beim Absenden.");
-          if (button) button.disabled = false;
-        }
-      } catch (err) {
-        alert("❌ Netzwerkfehler beim Absenden. Bitte später erneut versuchen.");
-        if (button) button.disabled = false;
-      }
-    });
   });
 </script>
 
