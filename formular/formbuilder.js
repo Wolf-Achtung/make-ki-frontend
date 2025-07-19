@@ -564,54 +564,42 @@ document.getElementById("formbuilder").addEventListener("submit", async function
         const downloadUrl = respData.pdf_url.startsWith("http")
           ? respData.pdf_url
           : "https://make-ki-backend-neu-production.up.railway.app" + respData.pdf_url;
-        feedback.innerHTML = `
-          <div style="margin-top:16px;">
-            <button id="download-btn" data-file="KI-Readiness-Report.pdf" class="download-btn"
-              style="display:inline-block;margin-top:18px;padding:10px 26px;background:#2166c2;color:#fff;border-radius:8px;
-              font-weight:600;font-size:1.12em;">PDF-Download</button>
-            <div style="margin-top:24px;font-size:1.05em;color:#204769;">
-              📣 Wie hat Dir der KI-Check gefallen?<br>
-              Gib uns bitte 1 Minute Feedback, um ihn noch besser zu machen.<br>
-              <a href="feedback.html" style="display:inline-block;margin-top:12px;padding:10px 26px;background:#e3eeff;
-              color:#2166c2;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1em;">
-              💬 Jetzt Feedback geben</a>
-            </div>
-          </div>
-        `;
 
-        // PDF-Download mit Token im Header
-        setTimeout(() => {
-          const downloadBtn = document.getElementById('download-btn');
-          if (downloadBtn) {
-            downloadBtn.addEventListener('click', async function (ev) {
-              ev.preventDefault();
-              const token = localStorage.getItem("jwt");
-              if (!token) {
-                alert('Nicht eingeloggt – kein Download möglich.');
-                return;
-              }
-              const file = this.getAttribute('data-file') || "KI-Readiness-Report.pdf";
-              const res = await fetch(`https://make-ki-backend-neu-production.up.railway.app/api/pdf-download?file=${encodeURIComponent(file)}`, {
-                headers: { "Authorization": "Bearer " + token }
-              });
-              if (res.ok) {
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = file;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-              } else if (res.status === 401) {
-                alert("Nicht eingeloggt oder Session abgelaufen.");
-              } else {
-                alert("Fehler beim PDF-Download.");
-              }
-            });
+        // *** SOFORT-DOWNLOAD ***
+        const token = localStorage.getItem("jwt");
+        const file = "KI-Readiness-Report.pdf";
+        try {
+          const res = await fetch(`https://make-ki-backend-neu-production.up.railway.app/api/pdf-download?file=${encodeURIComponent(file)}`, {
+            headers: { "Authorization": "Bearer " + token }
+          });
+          if (res.ok) {
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = file;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            feedback.innerHTML = `
+              <div style="margin-top:16px;">
+                <span style="color:#267B3B;font-weight:600;">PDF wurde erfolgreich generiert und automatisch heruntergeladen.</span>
+                <div style="margin-top:24px;font-size:1.05em;color:#204769;">
+                   Wie hat Dir der KI-Check gefallen?<br>
+                  Gib uns bitte 1 Minute Feedback, um ihn noch besser zu machen.<br>
+                  <a href="feedback.html" style="display:inline-block;margin-top:12px;padding:10px 26px;background:#e3eeff;
+                  color:#2166c2;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1em;">
+                   Jetzt Feedback geben</a>
+                </div>
+              </div>
+            `;
+          } else {
+            feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim PDF-Download (Code ${res.status})</span>`;
           }
-        }, 100);
+        } catch (err) {
+          feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim Download: ${err.message}</span>`;
+        }
 
       } else {
         feedback.textContent = "Dein Report wurde erstellt, aber der PDF-Link fehlt.";
