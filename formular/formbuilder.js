@@ -434,6 +434,7 @@ const fields = [
 
   }
 ];
+
 function renderForm(fields, formId = "formbuilder") {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -545,9 +546,8 @@ document.getElementById("formbuilder").addEventListener("submit", async function
   feedback.style.display = "none";
   feedback.innerHTML = "";
 
-  let response;
   try {
-    response = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/briefing", {
+    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/briefing", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -556,66 +556,43 @@ document.getElementById("formbuilder").addEventListener("submit", async function
       body: JSON.stringify(data)
     });
 
-    feedback.style.display = "block";
-    if (response.ok) {
-      const respData = await response.json();
-      if (respData.pdf_url) {
-        // Download-Link immer absolut bauen!
-        const downloadUrl = respData.pdf_url.startsWith("http")
-          ? respData.pdf_url
-          : "https://make-ki-backend-neu-production.up.railway.app" + respData.pdf_url;
+    if (res.ok) {
+      const blob = await res.blob();
+      // PDF-Download auslösen
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "KI-Readiness-Report.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
 
-        // *** SOFORT-DOWNLOAD ***
-        const token = localStorage.getItem("jwt");
-        const file = "KI-Readiness-Report.pdf";
-        try {
-          const res = await fetch(`https://make-ki-backend-neu-production.up.railway.app/api/pdf-download?file=${encodeURIComponent(file)}`, {
-            headers: { "Authorization": "Bearer " + token }
-          });
-          if (res.ok) {
-            const blob = await res.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = file;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-            feedback.innerHTML = `
-              <div style="margin-top:16px;">
-                <span style="color:#267B3B;font-weight:600;">PDF wurde erfolgreich generiert und automatisch heruntergeladen.</span>
-                <div style="margin-top:24px;font-size:1.05em;color:#204769;">
-                   Wie hat Dir der KI-Check gefallen?<br>
-                  Gib uns bitte 1 Minute Feedback, um ihn noch besser zu machen.<br>
-                  <a href="feedback.html" style="display:inline-block;margin-top:12px;padding:10px 26px;background:#e3eeff;
-                  color:#2166c2;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1em;">
-                   Jetzt Feedback geben</a>
-                </div>
-              </div>
-            `;
-          } else {
-            feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim PDF-Download (Code ${res.status})</span>`;
-          }
-        } catch (err) {
-          feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim Download: ${err.message}</span>`;
-        }
-
-      } else {
-        feedback.textContent = "Dein Report wurde erstellt, aber der PDF-Link fehlt.";
-      }
+      // Feedback anzeigen
+      feedback.style.display = "block";
+      feedback.innerHTML = `
+        <div style="margin-top:16px;">
+          <span style="color:#267B3B;font-weight:600;">PDF wurde erfolgreich generiert und automatisch heruntergeladen.</span>
+          <div style="margin-top:24px;font-size:1.05em;color:#204769;">
+            Wie hat Dir der KI-Check gefallen?<br>
+            Gib uns bitte 1 Minute Feedback, um ihn noch besser zu machen.<br>
+            <a href="feedback.html" style="display:inline-block;margin-top:12px;padding:10px 26px;background:#e3eeff;
+            color:#2166c2;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1em;">
+             Jetzt Feedback geben</a>
+          </div>
+        </div>
+      `;
       this.reset();
     } else {
-      feedback.textContent = "Fehler: Ihre Angaben konnten nicht verarbeitet werden.";
+      feedback.style.display = "block";
+      feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler: Ihre Angaben konnten nicht verarbeitet werden.</span>`;
+      if (button) button.disabled = false;
     }
   } catch (err) {
-    console.error(err);
-    feedback.textContent = "Fehler beim Übertragen. Bitte später erneut versuchen.";
-  }
-
-  if (loader) loader.style.display = "none";
-  // Button nur bei Fehler wieder aktivieren
-  if (!response || !response.ok || feedback.textContent.startsWith("Fehler")) {
+    feedback.style.display = "block";
+    feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim Übertragen: ${err.message}</span>`;
     if (button) button.disabled = false;
+  } finally {
+    if (loader) loader.style.display = "none";
   }
 });
