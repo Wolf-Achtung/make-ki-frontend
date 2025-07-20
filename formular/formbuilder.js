@@ -430,7 +430,7 @@ const fields = [
     key: "datenschutz",
     label: "Ich habe die <a href=\"datenschutz.html\" onclick=\"window.open(this.href, 'DatenschutzPopup', 'width=600,height=700'); return false;\">Datenschutzhinweise</a> gelesen und bin einverstanden.",
     type: "privacy",
-    description: "<span class='important'>Bitte beachten: Die Erstellung Ihres Executive Briefings kann mehrere Minuten dauern. Während dieser Zeit den ABSENDEN-Button nicht wiederholt drücken. Bitte lassen Sie diese Seite geöffnet. Nach Fertigstellung erscheint hier ein PDF-Download-Button.</span> Ihr Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
+    description: "<span class='important'>Bitte beachten: Die Erstellung Ihres Executive Briefings kann mehrere Minuten dauern. Während dieser Zeit den ABSENDEN-Button nicht wiederholt drücken. Bitte lassen Sie diese Webseite geöffnet. Nach Fertigstellung wird das PDF zum Download bereitgestellt.</span> Ihre Daten werden nur zur individuellen Auswertung verwendet. Es erfolgt keine Weitergabe an Dritte."
 
   }
 ];
