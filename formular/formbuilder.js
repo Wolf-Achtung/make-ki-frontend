@@ -590,7 +590,8 @@ document.getElementById("formbuilder").addEventListener("submit", async function
     }
   } catch (err) {
     feedback.style.display = "block";
-    feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim Übertragen: ${err.message}</span>`;
+    feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim Übertragen: ${err?.message || err}</span>`;
+    console.error("FEHLER:", error);
     if (button) button.disabled = false;
   } finally {
     if (loader) loader.style.display = "none";
