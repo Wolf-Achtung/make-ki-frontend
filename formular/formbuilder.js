@@ -12,6 +12,49 @@ function getEmailFromJWT(token) {
     return null;
   }
 }
+function isAdmin(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.role === "admin";
+  } catch (e) {
+    return false;
+  }
+}
+
+// Optionaler Admin-Button für Demo-Auslösung
+window.addEventListener("DOMContentLoaded", () => {
+  if (isAdmin(token)) {
+    const btn = document.createElement("button");
+    btn.innerText = "🧪 Demo-Daten absenden";
+    btn.style = "margin-bottom:20px;background:#eee;border:1px solid #ccc;padding:8px 12px;cursor:pointer;";
+    btn.onclick = async () => {
+      const demo = await fetch("demodaten.json").then(r => r.json());
+      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/briefing", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(demo)
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "KI-Readiness-Report-DEMO.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        alert("Demo-PDF erfolgreich erstellt.");
+      } else {
+        alert("Fehler beim Senden der Demo-Daten.");
+      }
+    };
+    document.body.insertBefore(btn, document.getElementById("formbuilder"));
+  }
+});
 
 // -- Hier folgt dein komplettes "fields"-Array (wie gehabt) --
 // (Du kannst es aus deiner Datei komplett übernehmen. Keine Änderungen hier nötig!)
