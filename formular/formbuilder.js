@@ -613,7 +613,7 @@ window.addEventListener("DOMContentLoaded", () => {
     btn.style = "margin: 12px auto; display:block; background:#eee; border:1px solid #ccc; padding:8px 12px; cursor:pointer;";
     btn.onclick = async () => {
       const demo = await fetch("demodaten.json").then(r => r.json());
-      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/briefing", {
+      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
