@@ -138,7 +138,7 @@ document.getElementById('feedback-form').addEventListener('submit', async functi
   const data = {};
   formData.forEach((value, key) => data[key] = value);
   const token = localStorage.getItem("jwt");
-  const res = await fetch('https://make-ki-backend-neu-production.up.railway.app/api/feedback', {
+  const res = await fetch('https://make-ki-backend-neu-production.up.railway.app/feedback', {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
