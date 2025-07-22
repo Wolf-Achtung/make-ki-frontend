@@ -21,6 +21,22 @@
       box-shadow: 0 4px 32px #2166c214;
       min-height: 80vh;
     }
+    .logo-header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .logo-header img {
+      height: 48px;
+      margin: 0 16px 0 0;
+      vertical-align: middle;
+    }
+    .logo-header span {
+      font-size: 1.55em;
+      font-weight: 700;
+      color: #2261b8;
+      letter-spacing: 1px;
+      vertical-align: middle;
+    }
     .pdf-download-btn {
       background: linear-gradient(90deg, #2261b8 0%, #2d8cff 80%);
       color: #fff;
@@ -75,22 +91,40 @@
       .report-container-outer { padding: 6px 2vw; }
       .pdf-download-btn { width: 96vw; max-width: 98%; }
       .feedback-block a { width: 98vw; max-width: 99%; }
+      .logo-header img { height: 34px; margin: 0 7px 0 0; }
+      .logo-header span { font-size: 1em; }
     }
   </style>
 </head>
 <body>
   <div class="report-container-outer">
-    <button class="pdf-download-btn" onclick="downloadPDF()">⬇️ PDF speichern</button>
+    <!-- Logo-Header -->
+    <div class="logo-header">
+      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo">
+      <img src="ki-ready-2025.webp" alt="KI Ready 2025" style="height:38px;">
+      <img src="tuev-logo-transparent.webp" alt="TÜV Logo" style="height:34px;">
+      <span>KI-Readiness-Report</span>
+    </div>
 
-    <!-- Feedback-Link Block -->
+    <div class="report-container-outer">
+  <button class="pdf-download-btn" onclick="downloadPDF()">⬇️ PDF speichern</button>
+  <div id="report-preview"></div>
+  <div id="no-report" style="display:none;">Kein Report zum Anzeigen gefunden.</div>
+
+  <!-- Feedback-Link Block ans ENDE verschoben -->
+  <div class="feedback-block">
+    Wie hat dir der KI-Readiness-Report gefallen?<br>
+    Hilf uns, das Tool noch besser zu machen!<br>
+    <a href="feedback.html">⭐ Jetzt Feedback geben</a>
+  </div>
+</div>
+
+    <!-- Feedback-Link Block jetzt unten -->
     <div class="feedback-block">
       Wie hat dir der KI-Readiness-Report gefallen?<br>
       Hilf uns, das Tool noch besser zu machen!<br>
       <a href="feedback.html">⭐ Jetzt Feedback geben</a>
     </div>
-
-    <div id="report-preview"></div>
-    <div id="no-report" style="display:none;">Kein Report zum Anzeigen gefunden.</div>
   </div>
 
   <!-- PDF Export: html2pdf.js -->
@@ -107,13 +141,12 @@
 
     function downloadPDF() {
       const element = document.getElementById('report-preview');
-      // Optional: Einstellungen für bessere PDF-Qualität
       const opt = {
-        margin:       0,
-        filename:     'KI-Readiness-Report.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        margin: 0,
+        filename: 'KI-Readiness-Report.pdf',
+        image: { type: 'jpeg', quality: 0.87 },
+        html2canvas: { scale: 1, useCORS: true, backgroundColor: "#fff" },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       html2pdf().set(opt).from(element).save();
     }
