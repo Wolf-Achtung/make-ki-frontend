@@ -18,7 +18,6 @@
       padding: 28px 18px 60px 18px;
       background: #fff;
       border-radius: 24px;
-      box-shadow: 0 4px 32px #2166c214;
       min-height: 80vh;
     }
     .logo-header {
@@ -87,6 +86,20 @@
       font-weight: 700;
       margin: 40px 0;
     }
+    .footer {
+      font-size: 0.89rem;
+      color: #7b8ca3;
+      border-top: 1.3px solid #ecf2fa;
+      padding-top: 10px;
+      margin-top: 36px;
+      text-align: center;
+      opacity: 0.89;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      background: #fff;
+    }
     @media (max-width: 700px) {
       .report-container-outer { padding: 6px 2vw; }
       .pdf-download-btn { width: 96vw; max-width: 98%; }
@@ -99,32 +112,32 @@
 <body>
   <div class="report-container-outer">
     <!-- Logo-Header -->
-    <div class="logo-header">
-      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo">
-      <img src="ki-ready-2025.webp" alt="KI Ready 2025" style="height:38px;">
+    <div class="logo-header" style="margin-bottom:26px;">
+      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="height:66px;margin-bottom:-10px;">
+      <img src="dsgvo.svg" alt="DSGVO-Logo" style="height:38px;">
+      <img src="eu-ai.svg" alt="EU AI-Logo" style="height:38px;">
+      <img src="ki-ready-2025.webp" alt="KI Ready 2025" style="height:34px;">
       <img src="tuev-logo-transparent.webp" alt="TÜV Logo" style="height:34px;">
-      <span>KI-Readiness-Report</span>
+      <span style="margin-left:10px;">KI-Readiness-Report</span>
     </div>
 
-    <div class="report-container-outer">
-  <button class="pdf-download-btn" onclick="downloadPDF()">⬇️ PDF speichern</button>
-  <div id="report-preview"></div>
-  <div id="no-report" style="display:none;">Kein Report zum Anzeigen gefunden.</div>
+    <button class="pdf-download-btn" onclick="downloadPDF()">⬇️ PDF speichern</button>
+    <div id="report-preview"></div>
+    <div id="no-report" style="display:none;">Kein Report zum Anzeigen gefunden.</div>
 
-  <!-- Feedback-Link Block ans ENDE verschoben -->
-  <div class="feedback-block">
-    Wie hat dir der KI-Readiness-Report gefallen?<br>
-    Hilf uns, das Tool noch besser zu machen!<br>
-    <a href="feedback.html">⭐ Jetzt Feedback geben</a>
-  </div>
-</div>
-
-    <!-- Feedback-Link Block jetzt unten -->
+    <!-- Feedback-Link Block ans ENDE verschoben -->
     <div class="feedback-block">
       Wie hat dir der KI-Readiness-Report gefallen?<br>
       Hilf uns, das Tool noch besser zu machen!<br>
       <a href="feedback.html">⭐ Jetzt Feedback geben</a>
     </div>
+
+    <footer class="footer">
+      <span class="lizenz">
+        TÜV-zertifiziertes KI-Management und Copyright © 2025: Wolf Hohl,
+        E-Mail: kontakt@ki-sicherheit.jetzt
+      </span>
+    </footer>
   </div>
 
   <!-- PDF Export: html2pdf.js -->
