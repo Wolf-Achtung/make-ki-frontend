@@ -565,31 +565,17 @@ document.getElementById("formbuilder").addEventListener("submit", async function
     });
 
     if (res.ok) {
-      const blob = await res.blob();
-      // PDF-Download auslösen
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = "KI-Readiness-Report.pdf";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-
-      // Feedback anzeigen
-      feedback.style.display = "block";
-      feedback.innerHTML = `
-        <div style="margin-top:16px;">
-          <span style="color:#267B3B;font-weight:600;">PDF wurde erfolgreich generiert und automatisch heruntergeladen.</span>
-          <div style="margin-top:24px;font-size:1.05em;color:#204769;">
-            Wie hat Dir der KI-Check gefallen?<br>
-            Gib uns bitte 1 Minute Feedback, um ihn noch besser zu machen.<br>
-            <a href="feedback.html" style="display:inline-block;margin-top:12px;padding:10px 26px;background:#e3eeff;
-            color:#2166c2;border-radius:8px;text-decoration:none;font-weight:600;font-size:1.1em;">
-             Jetzt Feedback geben</a>
-          </div>
-        </div>
-      `;
+      const result = await res.json();
+      if (result.html) {
+        // Speichere das HTML im LocalStorage
+        localStorage.setItem("report_html", result.html);
+        // Zur Vorschau-Seite weiterleiten
+        window.location.href = "report.html";
+      } else {
+        feedback.style.display = "block";
+        feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler: Kein Report-HTML erhalten.</span>`;
+        if (button) button.disabled = false;
+      }
       this.reset();
     } else {
       feedback.style.display = "block";
@@ -599,12 +585,13 @@ document.getElementById("formbuilder").addEventListener("submit", async function
   } catch (err) {
     feedback.style.display = "block";
     feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim Übertragen: ${err?.message || err}</span>`;
-    console.error("FEHLER:", error);
+    console.error("FEHLER:", err);
     if (button) button.disabled = false;
   } finally {
     if (loader) loader.style.display = "none";
   }
 });
+
 // Optionaler Admin-Button für Demo-Auslösung
 window.addEventListener("DOMContentLoaded", () => {
   if (isAdmin(token)) {
@@ -622,16 +609,13 @@ window.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(demo)
       });
       if (res.ok) {
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "KI-Readiness-Report-DEMO.pdf";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-        alert("Demo-PDF erfolgreich erstellt.");
+        const result = await res.json();
+        if (result.html) {
+          localStorage.setItem("report_html", result.html);
+          window.location.href = "report.html";
+        } else {
+          alert("Fehler: Kein Report-HTML erhalten.");
+        }
       } else {
         alert("Fehler beim Senden der Demo-Daten.");
       }

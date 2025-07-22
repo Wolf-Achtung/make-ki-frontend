@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KI-Readiness-Report Vorschau & Download</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background: #f5faff;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    }
+    .report-container-outer {
+      max-width: 900px;
+      margin: 32px auto;
+      padding: 28px 18px 60px 18px;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 4px 32px #2166c214;
+      min-height: 80vh;
+    }
+    .pdf-download-btn {
+      background: linear-gradient(90deg, #2261b8 0%, #2d8cff 80%);
+      color: #fff;
+      font-size: 1.18em;
+      font-weight: 700;
+      border: none;
+      border-radius: 18px;
+      box-shadow: 0 3px 20px #2261b824, 0 1.5px 8px #2d8cff14;
+      padding: 18px 38px;
+      cursor: pointer;
+      margin-bottom: 28px;
+      margin-top: 10px;
+      letter-spacing: 0.01em;
+      transition: background 0.18s, box-shadow 0.19s;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pdf-download-btn:hover {
+      background: linear-gradient(90deg, #1863a7 0%, #337ff8 100%);
+      box-shadow: 0 6px 24px #1863a720;
+    }
+    .feedback-block {
+      text-align: center;
+      margin: 24px 0 22px 0;
+      color: #204769;
+      font-size: 1.11em;
+    }
+    .feedback-block a {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 11px 28px;
+      background: #e3eeff;
+      color: #2166c2;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.14em;
+      transition: background 0.18s, color 0.18s;
+    }
+    .feedback-block a:hover {
+      background: #d3e5ff;
+      color: #163671;
+    }
+    #no-report {
+      text-align: center;
+      color: #c12a2a;
+      font-weight: 700;
+      margin: 40px 0;
+    }
+    @media (max-width: 700px) {
+      .report-container-outer { padding: 6px 2vw; }
+      .pdf-download-btn { width: 96vw; max-width: 98%; }
+      .feedback-block a { width: 98vw; max-width: 99%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-container-outer">
+    <button class="pdf-download-btn" onclick="downloadPDF()">⬇️ PDF speichern</button>
+
+    <!-- Feedback-Link Block -->
+    <div class="feedback-block">
+      Wie hat dir der KI-Readiness-Report gefallen?<br>
+      Hilf uns, das Tool noch besser zu machen!<br>
+      <a href="feedback.html">⭐ Jetzt Feedback geben</a>
+    </div>
+
+    <div id="report-preview"></div>
+    <div id="no-report" style="display:none;">Kein Report zum Anzeigen gefunden.</div>
+  </div>
+
+  <!-- PDF Export: html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    // Lade das HTML aus LocalStorage
+    const html = localStorage.getItem("report_html");
+    if (html) {
+      document.getElementById('report-preview').innerHTML = html;
+    } else {
+      document.getElementById('report-preview').style.display = "none";
+      document.getElementById('no-report').style.display = "block";
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('report-preview');
+      // Optional: Einstellungen für bessere PDF-Qualität
+      const opt = {
+        margin:       0,
+        filename:     'KI-Readiness-Report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+  </script>
+</body>
+</html>
