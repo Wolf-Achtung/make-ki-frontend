@@ -36,7 +36,8 @@
       letter-spacing: 1px;
       vertical-align: middle;
     }
-    .pdf-download-btn {
+    .pdf-download-btn,
+    .profi-pdf-btn {
       background: linear-gradient(90deg, #2261b8 0%, #2d8cff 80%);
       color: #fff;
       font-size: 1.18em;
@@ -46,7 +47,7 @@
       box-shadow: 0 3px 20px #2261b824, 0 1.5px 8px #2d8cff14;
       padding: 18px 38px;
       cursor: pointer;
-      margin-bottom: 28px;
+      margin-bottom: 18px;
       margin-top: 10px;
       letter-spacing: 0.01em;
       transition: background 0.18s, box-shadow 0.19s;
@@ -54,7 +55,7 @@
       margin-left: auto;
       margin-right: auto;
     }
-    .pdf-download-btn:hover {
+    .pdf-download-btn:hover, .profi-pdf-btn:hover {
       background: linear-gradient(90deg, #1863a7 0%, #337ff8 100%);
       box-shadow: 0 6px 24px #1863a720;
     }
@@ -102,7 +103,7 @@
     }
     @media (max-width: 700px) {
       .report-container-outer { padding: 6px 2vw; }
-      .pdf-download-btn { width: 96vw; max-width: 98%; }
+      .pdf-download-btn, .profi-pdf-btn { width: 96vw; max-width: 98%; }
       .feedback-block a { width: 98vw; max-width: 99%; }
       .logo-header img { height: 34px; margin: 0 7px 0 0; }
       .logo-header span { font-size: 1em; }
@@ -111,12 +112,19 @@
 </head>
 <body>
   <div class="report-container-outer">
-    <!-- Logo-Header -->
+    <div class="logo-header">
+      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit" />
+      <img src="eu-ai.svg" alt="EU AI Act" />
+      <img src="dsgvo.svg" alt="DSGVO" />
+      <img src="ki-ready-2025.webp" alt="KI-Ready" />
+      <span>KI-Readiness-Report 2025</span>
+    </div>
 
-    <button class="pdf-download-btn" onclick="downloadPDF()">⬇️ PDF speichern</button>
+    <button class="pdf-download-btn" onclick="downloadPDF()">⬇️ PDF (html2pdf.js)</button>
+    <button class="profi-pdf-btn" id="profi-pdf-btn">🖨️ Profi-PDF (Railway) erzeugen</button>
+
     <div id="report-preview"></div>
     <div id="no-report" style="display:none;">Kein Report zum Anzeigen gefunden.</div>
-
     <!-- Feedback-Link Block ans ENDE verschoben -->
     <div class="feedback-block">
       Wie hat dir der KI-Readiness-Report gefallen?<br>
@@ -126,7 +134,7 @@
 
     <footer class="footer">
       <span class="lizenz">
-        TÜV-zertifiziertes KI-Management und Copyright © 2025: Wolf Hohl,
+        TÜV-zertifiziertes KI-Management © 2025: Wolf Hohl,
         E-Mail: kontakt@ki-sicherheit.jetzt
       </span>
     </footer>
@@ -155,6 +163,68 @@
       };
       html2pdf().set(opt).from(element).save();
     }
+
+    // Profi-PDF mit Railway/Puppeteer
+    document.getElementById('profi-pdf-btn').onclick = async function() {
+      const htmlContent = document.getElementById('report-preview').innerHTML;
+      if (!htmlContent) {
+        alert("Kein Report zum Export gefunden.");
+        return;
+      }
+      // Optional: komplettes HTML um den Report-Content bauen
+      const fullHtml = `
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+          <meta charset="UTF-8">
+          <title>KI-Readiness-Report 2025</title>
+          <style>
+            body { font-family: "Inter", Arial, sans-serif; margin:0; background:#fff; color:#1d3250; }
+            .logo-header { text-align:center; margin:18px 0 24px 0; }
+            .logo-header img { height:44px; margin:0 10px 0 0; }
+            h1 { color:#2261b8; font-size:2.1em; margin-bottom:0.3em; text-align:center; }
+            .footer { margin-top:44px; color:#7b8ca3; text-align:center; font-size:0.98em; }
+          </style>
+        </head>
+        <body>
+          <div class="logo-header">
+            <img src="/templates/ki-sicherheit-logo.png" alt="KI-Sicherheit" />
+            <img src="/templates/eu-ai.svg" alt="EU AI Act" />
+            <img src="/templates/dsgvo.svg" alt="DSGVO" />
+            <img src="/templates/ki-ready-2025.webp" alt="KI-Ready" />
+          </div>
+          <h1>KI-Readiness-Report 2025</h1>
+          <div>
+            ${htmlContent}
+          </div>
+          <div class="footer">
+            TÜV-zertifiziertes KI-Management © 2025: Wolf Hohl, E-Mail: kontakt@ki-sicherheit.jetzt
+          </div>
+        </body>
+        </html>
+      `;
+
+      // Railway-Endpoint hier eintragen!
+      const endpoint = 'https://make-ki-pdfservice-production.up.railway.app/generate-pdf';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/html' },
+        body: fullHtml
+      });
+      if (!response.ok) {
+        alert("Fehler beim PDF-Export: " + await response.text());
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'KI-Readiness-Report.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    };
   </script>
 </body>
 </html>
