@@ -22,9 +22,10 @@ function isAdmin(token) {
 
 // --- Felder wie gehabt (aus deiner bisherigen Datei), KEINE Kürzungen! ---
 const fields = [
+  // Block 1: Unternehmensinfos
   {
     key: "branche",
-    label: "In welcher Branche ist Ihr Unternehmen hauptsächlich aktiv?",
+    label: "In welcher Branche ist Ihr Unternehmen tätig?",
     type: "select",
     options: [
       { value: "marketing", label: "Marketing & Werbung" },
@@ -40,7 +41,7 @@ const fields = [
       { value: "industrie", label: "Industrie & Produktion" },
       { value: "logistik", label: "Transport & Logistik" }
     ],
-    description: "Bitte wählen Sie die Branche, die am besten zu Ihrem aktuellen Kerngeschäft passt. Ihre Auswahl hilft uns, alle Analysen und Empfehlungen auf Ihren Bereich zuzuschneiden."
+    description: "Ihre Hauptbranche beeinflusst Benchmarks, Tool-Empfehlungen und die Auswertung. Wählen Sie bitte das Kerngeschäft, auf das Ihr Report zugeschnitten sein soll."
   },
   {
     key: "unternehmensgroesse",
@@ -51,7 +52,7 @@ const fields = [
       { value: "team", label: "2–10 (Kleines Team)" },
       { value: "kmu", label: "11–100 (KMU)" }
     ],
-    description: "Die Größe Ihres Unternehmens beeinflusst individuelle Fördermöglichkeiten, Benchmarks und Handlungsempfehlungen."
+    description: "Die Unternehmensgröße beeinflusst Empfehlungen, Fördermöglichkeiten und Vergleichswerte."
   },
   {
     key: "selbststaendig",
@@ -63,45 +64,89 @@ const fields = [
       { value: "einzelunternehmer", label: "Einzelunternehmer (mit Gewerbe)" },
       { value: "sonstiges", label: "Sonstiges" }
     ],
-    description: "Bitte wählen Sie die zutreffende Rechtsform.",
+    description: "Bitte wählen Sie die zutreffende Rechtsform. So erhalten Sie Auswertungen, die genau auf Ihre Unternehmenssituation passen.",
     showIf: (data) => data.unternehmensgroesse === "solo"
-  },
-    description: "Bitte wählen Sie 'Ja', wenn Sie allein arbeiten (z. B. Freelancer, Einzelunternehmen, Solopreneur). So erhalten Sie besonders maßgeschneiderte Empfehlungen."
   },
   {
     key: "bundesland",
-    label: "In welchem Bundesland hat Ihr Unternehmen seinen Sitz?",
+    label: "Bundesland (regionale Fördermöglichkeiten)",
     type: "select",
     options: [
-      { value: "bw", label: "Baden-Württemberg" },
-      { value: "by", label: "Bayern" },
-      { value: "be", label: "Berlin" },
-      { value: "bb", label: "Brandenburg" },
-      { value: "hb", label: "Bremen" },
-      { value: "hh", label: "Hamburg" },
-      { value: "he", label: "Hessen" },
-      { value: "mv", label: "Mecklenburg-Vorpommern" },
-      { value: "ni", label: "Niedersachsen" },
-      { value: "nw", label: "Nordrhein-Westfalen" },
-      { value: "rp", label: "Rheinland-Pfalz" },
-      { value: "sl", label: "Saarland" },
-      { value: "sn", label: "Sachsen" },
-      { value: "st", label: "Sachsen-Anhalt" },
-      { value: "sh", label: "Schleswig-Holstein" },
-      { value: "th", label: "Thüringen" }
+      { value: "bw", label: "Baden-Württemberg" }, { value: "by", label: "Bayern" },
+      { value: "be", label: "Berlin" }, { value: "bb", label: "Brandenburg" },
+      { value: "hb", label: "Bremen" }, { value: "hh", label: "Hamburg" },
+      { value: "he", label: "Hessen" }, { value: "mv", label: "Mecklenburg-Vorpommern" },
+      { value: "ni", label: "Niedersachsen" }, { value: "nw", label: "Nordrhein-Westfalen" },
+      { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
+      { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" },
+      { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
     ],
-    description: "Ihr Standort entscheidet häufig über passende Fördermittel und regionale Programme. Bitte wählen Sie das relevante Bundesland aus."
+    description: "Ihr Standort entscheidet, welche Fördermittel, Programme und Beratungsangebote Sie optimal nutzen können."
   },
   {
     key: "hauptleistung",
     label: "Was ist das wichtigste Produkt oder die Hauptdienstleistung Ihres Unternehmens?",
     type: "textarea",
-    placeholder: "Beispiel: Softwareentwicklung (Individuallösungen für KMU), Marketingberatung (Social Media/Content), CNC-Fertigung (Einzel- und Kleinserien), Personalvermittlung (Fachkräfte IT), Onlinehandel (regionale Produkte), ...",
-    description: "Beschreiben Sie Ihr Hauptgeschäftsfeld so konkret wie möglich, um gezielte Empfehlungen für Ihre Zielgruppe zu erhalten."
+    placeholder: "z. B. Social Media Kampagnen, CNC-Fertigung von Einzelteilen, Steuerberatung für Startups",
+    description: "Beschreiben Sie Ihr Angebot so konkret wie möglich – gerne mit Beispielen, Zielgruppe oder Besonderheiten."
+  },
+
+  // Block 2: Status Quo & Digitalisierungsgrad
+  {
+    key: "digitalisierungsgrad",
+    label: "Wie digital sind Ihre internen Prozesse bereits? (1 = analog, 10 = voll digital)",
+    type: "slider",
+    min: 1,
+    max: 10,
+    step: 1,
+    description: "Schätzen Sie den aktuellen Stand: 1 = vor allem Papier und manuelle Abläufe, 10 = alles läuft digital und automatisiert."
   },
   {
+    key: "prozesse_papierlos",
+    label: "Wie hoch ist der Anteil papierloser Prozesse in Ihrem Unternehmen?",
+    type: "select",
+    options: [
+      { value: "0-20", label: "0–20 %" },
+      { value: "21-50", label: "21–50 %" },
+      { value: "51-80", label: "51–80 %" },
+      { value: "81-100", label: "81–100 %" }
+    ],
+    description: "Schätzen Sie grob: Wie viel läuft komplett digital ohne Papierakten oder Ausdrucke?"
+  },
+  {
+    key: "automatisierungsgrad",
+    label: "Wie hoch ist der Automatisierungsgrad Ihrer Arbeitsabläufe?",
+    type: "select",
+    options: [
+      { value: "sehr_niedrig", label: "Sehr niedrig" },
+      { value: "eher_niedrig", label: "Eher niedrig" },
+      { value: "mittel", label: "Mittel" },
+      { value: "eher_hoch", label: "Eher hoch" },
+      { value: "sehr_hoch", label: "Sehr hoch" }
+    ],
+    description: "Sind viele Arbeitsschritte noch Handarbeit oder läuft vieles automatisch (z. B. durch KI, Scripte oder smarte Tools)?"
+  },
+  {
+    key: "ki_knowhow",
+    label: "Wie schätzen Sie das interne KI-Know-how Ihres Teams ein?",
+    type: "select",
+    options: [
+      { value: "keine", label: "Keine Erfahrung" },
+      { value: "grundkenntnisse", label: "Grundkenntnisse" },
+      { value: "mittel", label: "Mittel" },
+      { value: "fortgeschritten", label: "Fortgeschritten" },
+      { value: "expertenwissen", label: "Expertenwissen" }
+    ],
+    description: "Wie fit sind Sie und Ihr Team beim Thema KI? Nutzen Sie KI schon produktiv oder kennen Sie sich bereits tiefer aus?"
+  }
+  // ...weiter mit Teil 2!
+];
+// ... Fortsetzung des fields-Arrays aus Teil 1
+
+  // Zielgruppen
+  {
     key: "zielgruppen",
-    label: "Wer sind die wichtigsten Kundengruppen Ihres Unternehmens?",
+    label: "Für welche Zielgruppen oder Kundensegmente bieten Sie Ihre Leistungen an?",
     type: "checkbox",
     options: [
       { value: "b2b", label: "B2B (Geschäftskunden)" },
@@ -114,11 +159,13 @@ const fields = [
       { value: "startups", label: "Startups" },
       { value: "andere", label: "Andere" }
     ],
-    description: "Markieren Sie alle Segmente, die Sie mit Ihren Leistungen ansprechen. Ihre Auswahl hilft, Usecases und Tools optimal auf Ihre Zielgruppen auszurichten."
-  },
+    description: "Wählen Sie alle Zielgruppen aus, die Sie typischerweise ansprechen. Das hilft, die Analyse und Empfehlungen an Ihren Markt anzupassen."
+  }
+
+  // Projektziele
   {
     key: "projektziel",
-    label: "Was möchten Sie mit Ihrem nächsten KI-/Digitalisierungsprojekt erreichen?",
+    label: "Welches Ziel steht bei Ihrem nächsten KI-/Digitalisierungsprojekt im Vordergrund?",
     type: "checkbox",
     options: [
       { value: "prozessautomatisierung", label: "Prozessautomatisierung" },
@@ -131,311 +178,310 @@ const fields = [
       { value: "foerdermittel", label: "Fördermittel beantragen" },
       { value: "andere", label: "Andere" }
     ],
-    description: "Was ist Ihr Hauptfokus beim nächsten Projekt? Sie können gerne mehrere Ziele auswählen, damit die Analyse noch genauer wird."
+    description: "Was möchten Sie mit Ihrem nächsten Vorhaben vorrangig erreichen? Sie können gerne mehrere Ziele auswählen."
   },
+
+  // Aktuelle KI-Einsatzbereiche
   {
     key: "ki_einsatz",
-    label: "In welchen Bereichen Ihres Unternehmens wird KI aktuell schon genutzt?",
+    label: "In welchen Bereichen nutzen Sie bereits Künstliche Intelligenz oder Automatisierung?",
     type: "checkbox",
     options: [
-      { value: "marketing", label: "Marketing (z. B. Kampagnen, Social Media)" },
-      { value: "vertrieb", label: "Vertrieb (z. B. Angebotsautomatisierung)" },
-      { value: "buchhaltung", label: "Buchhaltung (z. B. Belegerkennung, Automatisierung)" },
-      { value: "produktion", label: "Produktion (z. B. Qualitätskontrolle, Prozessoptimierung)" },
-      { value: "kundenservice", label: "Kundenservice (z. B. Chatbots, Support)" },
-      { value: "it", label: "IT (z. B. IT-Sicherheit, Monitoring)" },
-      { value: "forschung", label: "Forschung & Entwicklung (z. B. Datenanalyse)" },
-      { value: "personal", label: "Personal (z. B. Recruiting, Skill-Matching)" },
+      { value: "marketing", label: "Marketing" },
+      { value: "vertrieb", label: "Vertrieb" },
+      { value: "buchhaltung", label: "Buchhaltung" },
+      { value: "produktion", label: "Produktion" },
+      { value: "kundenservice", label: "Kundenservice" },
+      { value: "it", label: "IT" },
+      { value: "forschung", label: "Forschung & Entwicklung" },
+      { value: "personal", label: "Personal" },
       { value: "keine", label: "Noch keine Nutzung" },
       { value: "sonstiges", label: "Sonstiges" }
     ],
-    description: "Bitte wählen Sie alle Bereiche, in denen Sie bereits KI- oder Automatisierungslösungen nutzen – auch kleinere Lösungen zählen!"
+    description: "Wählen Sie alle Unternehmensbereiche aus, in denen KI-Tools, Automatisierungen oder smarte Workflows heute schon eine Rolle spielen."
   },
-  {
-    key: "digitalisierungsgrad",
-    label: "Wie digital sind Ihre internen Prozesse auf einer Skala von 1 bis 10?",
-    type: "slider",
-    min: 1,
-    max: 10,
-    step: 1,
-    description: "Bewerten Sie bitte, wie weit Ihre Arbeitsabläufe digitalisiert sind: 1 = fast alles papierbasiert, 10 = komplett digital & automatisiert."
-  },
-  {
-    key: "prozesse_papierlos",
-    label: "Welcher Anteil Ihrer Prozesse läuft bereits papierlos?",
-    type: "select",
-    options: [
-      { value: "0-20", label: "0-20%" },
-      { value: "21-50", label: "21-50%" },
-      { value: "51-80", label: "51-80%" },
-      { value: "81-100", label: "81-100%" }
-    ],
-    description: "Bitte schätzen Sie, wie hoch der Anteil an papierlosen Abläufen in Ihrem Unternehmen ist (Rechnungen, Dokumente, Verwaltung etc.)."
-  },
-  {
-    key: "automatisierungsgrad",
-    label: "Wie automatisiert laufen Ihre Arbeitsprozesse bereits ab?",
-    type: "select",
-    options: [
-      { value: "sehr_niedrig", label: "Sehr niedrig (fast alles manuell)" },
-      { value: "eher_niedrig", label: "Eher niedrig" },
-      { value: "mittel", label: "Mittel" },
-      { value: "eher_hoch", label: "Eher hoch" },
-      { value: "sehr_hoch", label: "Sehr hoch (kaum manuelle Arbeit)" }
-    ],
-    description: "Automatisierung heißt: Prozesse laufen ohne händisches Zutun. Wie viele Abläufe sind in Ihrem Unternehmen schon automatisiert?"
-  },
-  {
-    key: "ki_knowhow",
-    label: "Wie schätzen Sie das interne KI-Knowhow in Ihrem Unternehmen ein?",
-    type: "select",
-    options: [
-      { value: "keine", label: "Keine Erfahrung" },
-      { value: "grundkenntnisse", label: "Grundkenntnisse" },
-      { value: "mittel", label: "Mittel" },
-      { value: "fortgeschritten", label: "Fortgeschritten" },
-      { value: "expertenwissen", label: "Expertenwissen" }
-    ],
-    description: "Gibt es Erfahrung mit KI-Tools im Team? Arbeiten Sie schon aktiv mit KI oder gibt es sogar spezialisierte Expert:innen?"
-  },
+
+  // Geplante oder laufende KI-Projekte
   {
     key: "ki_projekte",
-    label: "Gibt es bei Ihnen aktuell laufende oder geplante KI-Projekte?",
+    label: "Gibt es aktuell laufende oder geplante KI-Projekte in Ihrem Unternehmen?",
     type: "textarea",
-    placeholder: "Beispiele: Automatisierter Kunden-Chatbot, Vorhersagemodell für Verkaufszahlen, KI-gestützte Texterstellung, automatisierte Angebotskalkulation, digitale Prozessoptimierung, ...",
-    description: "Bitte beschreiben Sie kurz Ihre laufenden oder geplanten KI-Projekte, gerne auch erste Ideen oder Experimente."
+    placeholder: "z. B. Chatbot für Kundenanfragen, automatisierte Angebotserstellung, Text- oder Bildgeneratoren, Analyse-Tools für Vertrieb",
+    description: "Beschreiben Sie laufende oder geplante Projekte möglichst konkret. Gibt es bereits Überlegungen, Experimente oder Pilotprojekte?"
   },
+
+  // Wunsch-Usecases
   {
     key: "ki_usecases",
-    label: "Welche konkreten Anwendungsfälle interessieren Sie für den KI-Einsatz?",
+    label: "Welche KI-Anwendungsfälle interessieren Sie besonders?",
     type: "checkbox",
     options: [
-      { value: "texterstellung", label: "Texterstellung (Berichte, Marketing, Kommunikation)" },
-      { value: "bildgenerierung", label: "Bildgenerierung (z. B. Grafiken, Produktbilder)" },
-      { value: "spracherkennung", label: "Spracherkennung (z. B. Transkripte, Sprachsteuerung)" },
-      { value: "prozessautomatisierung", label: "Prozessautomatisierung (Abläufe, Workflows)" },
-      { value: "datenanalyse", label: "Datenanalyse & Prognose (Dashboards, Auswertung)" },
-      { value: "kundensupport", label: "Kundensupport (z. B. FAQ, Chatbots)" },
-      { value: "wissensmanagement", label: "Wissensmanagement (z. B. Doku, interne Suche)" },
-      { value: "marketing", label: "Marketing (z. B. Zielgruppen, Kampagnen)" },
+      { value: "texterstellung", label: "Texterstellung (z. B. automatisierte Berichte, Posts)" },
+      { value: "bildgenerierung", label: "Bildgenerierung (z. B. KI-Grafiken, Logovarianten)" },
+      { value: "spracherkennung", label: "Spracherkennung (z. B. Transkription, Voicebots)" },
+      { value: "prozessautomatisierung", label: "Prozessautomatisierung (z. B. Belegprüfung, Rechnungsversand)" },
+      { value: "datenanalyse", label: "Datenanalyse & Prognose (z. B. Markttrends, Kundenverhalten)" },
+      { value: "kundensupport", label: "Kundensupport (z. B. Chatbots, FAQ-Automation)" },
+      { value: "wissensmanagement", label: "Wissensmanagement (z. B. Dokumentenverwaltung, intelligente Suche)" },
+      { value: "marketing", label: "Marketing (z. B. Zielgruppen-Segmentierung, Kampagnenoptimierung)" },
       { value: "sonstiges", label: "Sonstiges" }
     ],
-    description: "Wählen Sie alle Anwendungsbereiche, in denen Sie KI testen oder gezielt einsetzen möchten."
+    description: "Was wäre für Sie der spannendste oder nützlichste Anwendungsfall für KI? Kreuzen Sie alles an, was für Sie Potenzial bietet."
   },
+
+  // Einschätzung KI-Potenzial
   {
     key: "ki_potenzial",
     label: "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
     type: "textarea",
-    placeholder: "Beispiel: Automatisierte Berichte für Kunden, prädiktive Wartung in der Produktion, KI-unterstützte Beratung, Optimierung der Personalplanung, ...",
-    description: "Teilen Sie uns gerne Ihre persönliche Einschätzung, Wünsche oder auch Visionen mit."
+    placeholder: "z. B. Schnelleres Reporting, personalisierte Angebote, Kostenreduktion durch Automatisierung, neue Services ...",
+    description: "Teilen Sie uns Ihre Einschätzung oder Wünsche mit. Ob Vision, Problem oder Strategie – alles ist willkommen!"
   },
-{
-  key: "usecase_priority",
-  label: "In welchem Bereich möchten Sie den ersten (oder nächsten) KI-Einsatz besonders vorantreiben?",
-  type: "select",
-  options: [
-    { value: "marketing", label: "Marketing (z. B. Kampagnen, Kundengewinnung)" },
-    { value: "vertrieb", label: "Vertrieb (z. B. Angebotserstellung, Pipeline)" },
-    { value: "buchhaltung", label: "Buchhaltung (z. B. Belegerkennung, Buchungen)" },
-    { value: "produktion", label: "Produktion (z. B. Qualitätsprüfung, Wartung)" },
-    { value: "kundenservice", label: "Kundenservice (z. B. Chatbots, Support)" },
-    { value: "it", label: "IT (z. B. Sicherheit, Automatisierung)" },
-    { value: "forschung", label: "Forschung & Entwicklung (z. B. Analyse, Simulation)" },
-    { value: "personal", label: "Personal (z. B. Recruiting, Skill-Matching)" },
-    { value: "unbekannt", label: "Noch unklar / weiß ich nicht genau" }
-  ],
-  description: "Gibt es einen Bereich in Ihrem Unternehmen, in dem der Einsatz von KI besonders spannend oder dringend erscheint? Ihre Antwort hilft uns, konkrete Empfehlungen für den Einstieg zu geben."
-},
-{
-  key: "ki_geschaeftsmodell_vision",
-  label: "Wie könnte KI Ihr Geschäftsmodell, Ihre Prozesse oder Ihre Branche grundlegend verändern?",
-  type: "textarea",
-  placeholder: "Beispiel: Komplette Digitalisierung des Vertriebs, neue datenbasierte Services, skalierbare Online-Plattform, ...",
-  description: "Wo sehen Sie mit Blick auf KI die größten Chancen für Ihr Unternehmen – ob neue Produkte, effizientere Abläufe, neue Kundengruppen oder andere Marktchancen?"
-},
-{
-  key: "moonshot",
-  label: "Was wäre ein echter 'Gamechanger'? Was ist Ihre Traumvorstellung für Ihr Unternehmen in 3 Jahren mit KI?",
-  type: "textarea",
-  placeholder: "Beispiel: KI automatisiert 80 % der Routinearbeiten, wir bieten weltweit einen innovativen Service an, ...",
-  description: "Denken Sie ruhig visionär! Was wäre Ihr persönlicher Traum oder ein mutiges Ziel, das Sie mit KI gern erreichen möchten?"
-},
-{
-  key: "datenschutzbeauftragter",
-  label: "Gibt es in Ihrem Unternehmen einen Datenschutzbeauftragten oder eine zuständige Person?",
-  type: "select",
-  options: [
-    { value: "ja", label: "Ja" },
-    { value: "nein", label: "Nein" },
-    { value: "teilweise", label: "Teilweise (externer Berater oder in Planung)" }
-  ],
-  description: "Wer kümmert sich bei Ihnen um den Datenschutz? Dies ist nicht nur für große Unternehmen wichtig, sondern erhöht das Vertrauen aller Kunden und Partner."
-},
-{
-  key: "technische_massnahmen",
-  label: "Welche technischen Maßnahmen schützen Ihre Daten aktuell?",
-  type: "select",
-  options: [
-    { value: "alle", label: "Alle relevanten Maßnahmen sind vorhanden" },
-    { value: "teilweise", label: "Teilweise umgesetzt" },
-    { value: "keine", label: "Noch keine Maßnahmen" }
-  ],
-  description: "Technische Maßnahmen wie Firewalls, Zugriffsbeschränkungen oder regelmäßige Backups sind essenziell. Wo stehen Sie gerade?"
-},
-{
-  key: "folgenabschaetzung",
-  label: "Wurde für KI-Anwendungen eine DSGVO-Folgenabschätzung (DSFA) durchgeführt?",
-  type: "select",
-  options: [
-    { value: "ja", label: "Ja" },
-    { value: "nein", label: "Nein" },
-    { value: "teilweise", label: "Teilweise (in Planung oder extern vergeben)" }
-  ],
-  description: "Bei sensiblen KI-Systemen ist eine Datenschutz-Folgenabschätzung oft Pflicht. Das schafft Rechtssicherheit – auch bei Anfragen von Kunden oder Behörden."
-},
-{
-  key: "meldewege",
-  label: "Gibt es definierte Meldewege für Datenschutzvorfälle oder Datenpannen?",
-  type: "select",
-  options: [
-    { value: "ja", label: "Ja, festgelegt und bekannt" },
-    { value: "teilweise", label: "Teilweise (Regeln existieren, sind aber nicht allen bekannt)" },
-    { value: "nein", label: "Nein" }
-  ],
-  description: "Klare Meldewege sorgen dafür, dass im Ernstfall schnell und professionell reagiert werden kann – auch das erhöht das Vertrauen in Ihr Unternehmen."
-},
-{
-  key: "loeschregeln",
-  label: "Gibt es verbindliche Regeln für das Löschen oder Anonymisieren von Daten?",
-  type: "select",
-  options: [
-    { value: "ja", label: "Ja, gibt es" },
-    { value: "teilweise", label: "Teilweise (in Planung oder in manchen Bereichen)" },
-    { value: "nein", label: "Nein, noch nicht" }
-  ],
-  description: "Daten-Löschkonzepte sind zentral für Datenschutz und IT-Sicherheit. Wie klar und verbindlich sind Ihre Prozesse bereits geregelt?"
-},
-{
-  key: "ai_act_kenntnis",
-  label: "Wie gut kennen Sie den EU AI Act und seine Anforderungen?",
-  type: "select",
-  options: [
-    { value: "sehr_gut", label: "Sehr gut (wir setzen schon um)" },
-    { value: "gut", label: "Gut (Kernanforderungen bekannt)" },
-    { value: "gehört", label: "Schon gehört, aber wenig im Detail" },
-    { value: "unbekannt", label: "Nein, noch gar nicht beschäftigt" }
-  ],
-  description: "Der neue EU AI Act bringt viele neue Regeln für KI-Anwendungen. Wie fit fühlen Sie sich oder Ihr Team in Bezug auf die wichtigsten Anforderungen?"
-},
-{
-  key: "ki_hemmnisse",
-  label: "Wo sehen Sie aktuell die größten Hürden oder Risiken beim Einsatz von KI?",
-  type: "checkbox",
-  options: [
-    { value: "rechtsunsicherheit", label: "Unsicherheit bei Rechtslage" },
-    { value: "datenschutz", label: "Datenschutz" },
-    { value: "knowhow", label: "Knowhow (fehlendes Wissen/Kompetenzen)" },
-    { value: "budget", label: "Budget (Kosten/Nutzen unklar)" },
-    { value: "teamakzeptanz", label: "Akzeptanz im Team" },
-    { value: "zeitmangel", label: "Zeitmangel (zu wenig Kapazität)" },
-    { value: "it_integration", label: "IT-Integration (Schnittstellen, Systeme)" },
-    { value: "keine", label: "Keine Hemmnisse" },
-    { value: "andere", label: "Andere" }
-  ],
-  description: "Sie können mehrere Punkte auswählen. Ihre ehrliche Einschätzung hilft, die Empfehlungen gezielt auf Ihre aktuellen Herausforderungen abzustimmen."
-},
-{
-  key: "bisherige_foerdermittel",
-  label: "Haben Sie bereits Fördermittel für Digitalisierung oder KI erhalten bzw. genutzt?",
-  type: "select",
-  options: [
-    { value: "ja", label: "Ja" },
-    { value: "nein", label: "Nein" }
-  ],
-  description: "Haben Sie schon mit Fördermitteln Erfahrung gemacht? Dies ist hilfreich für die nächste Förderstrategie."
-},
-{
-  key: "interesse_foerderung",
-  label: "Haben Sie Interesse an Fördermitteln für KI- oder Digitalisierungsprojekte?",
-  type: "select",
-  options: [
-    { value: "ja", label: "Ja, gezielte Recherche gewünscht" },
-    { value: "nein", label: "Nein" },
-    { value: "unklar", label: "Bin mir noch unsicher" }
-  ],
-  description: "Falls Sie gezielte Fördermittel suchen, geben Sie das gern an – wir berücksichtigen es in der Empfehlung und der Roadmap."
-},
-{
-  key: "erfahrung_beratung",
-  label: "Gab es bereits Beratung oder Workshops zum Thema Digitalisierung/KI?",
-  type: "select",
-  options: [
-    { value: "ja", label: "Ja" },
-    { value: "nein", label: "Nein" },
-    { value: "unklar", label: "Weiß ich nicht / unklar" }
-  ],
-  description: "Hatten Sie bereits externe Unterstützung bei Digital- oder KI-Projekten? Das beeinflusst die nächsten Schritte und Empfehlungen."
-},
-{
-  key: "investitionsbudget",
-  label: "Welches Investitionsbudget steht in den nächsten 12 Monaten für KI/Digitalisierung zur Verfügung?",
-  type: "select",
-  options: [
-    { value: "unter_2000", label: "Unter 2.000 €" },
-    { value: "2000_10000", label: "2.000–10.000 €" },
-    { value: "10000_50000", label: "10.000–50.000 €" },
-    { value: "ueber_50000", label: "Mehr als 50.000 €" },
-    { value: "unklar", label: "Noch unklar" }
-  ],
-  description: "Bitte schätzen Sie, wieviel Sie für Digitalisierungs- und KI-Projekte einplanen. Die Angabe hilft bei Empfehlungen zu Fördermitteln und Tools."
-},
-{
-  key: "marktposition",
-  label: "Wie schätzen Sie Ihre aktuelle Marktposition im Wettbewerb ein?",
-  type: "select",
-  options: [
-    { value: "marktfuehrer", label: "Marktführer" },
-    { value: "oberes_drittel", label: "Im oberen Drittel" },
-    { value: "mittelfeld", label: "Mittelfeld" },
-    { value: "nachzuegler", label: "Aufholer/Nachzügler" },
-    { value: "unsicher", label: "Schwer einzuschätzen" }
-  ],
-  description: "Wie sehen Sie Ihr Unternehmen im Vergleich zum Wettbewerb? Diese Selbsteinschätzung erleichtert branchengerechte Analysen."
-},
-{
-  key: "benchmark_wettbewerb",
-  label: "Vergleichen Sie Ihre Digitalisierung oder KI-Readiness aktiv mit Wettbewerbern?",
-  type: "select",
-  options: [
-    { value: "ja", label: "Ja, regelmäßig" },
-    { value: "nein", label: "Nein" },
-    { value: "selten", label: "Selten / sporadisch" }
-  ],
-  description: "Wie stark beobachten Sie, was die Konkurrenz in Sachen KI/Digitalisierung macht? (Kein Muss, aber hilft, Potenziale zu erkennen!)"
-},
-{
-  key: "innovationsprozess",
-  label: "Wie entstehen Innovationen bei Ihnen im Unternehmen?",
-  type: "select",
-  options: [
-    { value: "innovationsteam", label: "Durch ein internes Innovationsteam" },
-    { value: "mitarbeitende", label: "Durch Mitarbeitende (Ideen aus dem Team)" },
-    { value: "kunden", label: "Gemeinsam mit Kunden (Co-Creation)" },
-    { value: "berater", label: "Mit externen Beratern/Partnern" },
-    { value: "zufall", label: "Zufällig, ohne festen Prozess" },
-    { value: "unbekannt", label: "Ist mir nicht bekannt / nicht definiert" }
-  ],
-  description: "Wer ist bei Ihnen der Motor für Innovation? Gibt es einen festen Prozess oder läuft alles eher spontan?"
-},
-{
-  key: "risikofreude",
-  label: "Wie risikofreudig ist Ihr Unternehmen, wenn es um Innovationen geht? (1 = sehr vorsichtig, 5 = sehr mutig)",
-  type: "slider",
-  min: 1,
-  max: 5,
-  step: 1,
-  description: "Bitte schätzen Sie ein: Ist Ihr Unternehmen eher sicherheitsorientiert oder probiert es gern neue, mutige Wege aus?"
-}
+  // Priorisierter KI-Einsatzbereich
+  {
+    key: "usecase_priority",
+    label: "In welchem Bereich soll KI am ehesten zum Einsatz kommen?",
+    type: "select",
+    options: [
+      { value: "marketing", label: "Marketing" },
+      { value: "vertrieb", label: "Vertrieb" },
+      { value: "buchhaltung", label: "Buchhaltung" },
+      { value: "produktion", label: "Produktion" },
+      { value: "kundenservice", label: "Kundenservice" },
+      { value: "it", label: "IT" },
+      { value: "forschung", label: "Forschung & Entwicklung" },
+      { value: "personal", label: "Personal" },
+      { value: "unbekannt", label: "Noch unklar / Entscheide ich später" }
+    ],
+    description: "Gibt es einen Unternehmensbereich, in dem KI besonders dringend gebraucht wird oder das größte Potenzial bietet?"
+  },
+
+  // Vision / Geschäftsmodell-Transformation
+  {
+    key: "ki_geschaeftsmodell_vision",
+    label: "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern?",
+    type: "textarea",
+    placeholder: "z. B. Automatisierte Online-Beratungen, datenbasierte Plattform-Services, völlig neue Produkte, …",
+    description: "Was wäre Ihre große Vision für Ihr Unternehmen? Welche Möglichkeiten ergeben sich durch KI, die heute noch gar nicht voll ausgeschöpft werden?"
+  },
+
+  // Moonshot / Big Dream
+  {
+    key: "moonshot",
+    label: "Was wäre ein mutiger Durchbruch – Ihre KI-Vision in 3 Jahren?",
+    type: "textarea",
+    placeholder: "z. B. 80% meiner Routinearbeiten übernimmt KI; mein Umsatz verdoppelt sich durch smarte Automatisierung …",
+    description: "Denken Sie ruhig groß! Was wäre ein echtes Highlight oder 'Moonshot', das Sie mit KI in Ihrem Unternehmen erreichen möchten?"
+  },
+
+  // Datenschutzbeauftragter
+  {
+    key: "datenschutzbeauftragter",
+    label: "Gibt es eine:n Datenschutzbeauftragte:n in Ihrem Unternehmen?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja" },
+      { value: "nein", label: "Nein" },
+      { value: "teilweise", label: "Teilweise (externer Berater / noch in Planung)" }
+    ],
+    description: "Ein:e Datenschutzbeauftragte:r ist oft Pflicht – unabhängig davon, ob intern oder extern. Wie ist die Situation bei Ihnen?"
+  },
+
+  // Technische Maßnahmen Datenschutz
+  {
+    key: "technische_massnahmen",
+    label: "Welche technischen Schutzmaßnahmen für Daten sind bei Ihnen umgesetzt?",
+    type: "select",
+    options: [
+      { value: "alle", label: "Alle relevanten Maßnahmen vorhanden (Firewall, Zugriffskontrolle …)" },
+      { value: "teilweise", label: "Teilweise vorhanden" },
+      { value: "keine", label: "Noch keine umgesetzt" }
+    ],
+    description: "Bitte wählen Sie, wie umfassend Sie Ihre Daten technisch schützen (Firewalls, Backups, Zugriffsbeschränkungen etc.)."
+  },
+
+  // DSGVO-Folgenabschätzung
+  {
+    key: "folgenabschaetzung",
+    label: "Wurde für KI-Anwendungen eine DSGVO-Folgenabschätzung (DSFA) erstellt?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja" },
+      { value: "nein", label: "Nein" },
+      { value: "teilweise", label: "Teilweise (in Planung)" }
+    ],
+    description: "Gerade bei sensiblen KI-Systemen ist eine DSFA empfohlen. Trifft das bei Ihnen bereits zu?"
+  },
+
+  // Meldewege Datenschutzvorfälle
+  {
+    key: "meldewege",
+    label: "Gibt es definierte Meldewege bei Datenschutzvorfällen?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja, klare Prozesse" },
+      { value: "teilweise", label: "Teilweise geregelt" },
+      { value: "nein", label: "Nein" }
+    ],
+    description: "Wie stellen Sie sicher, dass bei Datenschutzverstößen schnell und systematisch gehandelt wird?"
+  },
+
+  // Löschregeln
+  {
+    key: "loeschregeln",
+    label: "Existieren klare Regeln zur Löschung oder Anonymisierung von Daten?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja" },
+      { value: "teilweise", label: "Teilweise" },
+      { value: "nein", label: "Nein" }
+    ],
+    description: "Haben Sie definierte Abläufe, um Daten gesetzeskonform zu löschen oder zu anonymisieren?"
+  },
+
+  // Kenntnis EU AI Act
+  {
+    key: "ai_act_kenntnis",
+    label: "Wie gut kennen Sie die Anforderungen des EU AI Act?",
+    type: "select",
+    options: [
+      { value: "sehr_gut", label: "Sehr gut" },
+      { value: "gut", label: "Gut" },
+      { value: "gehört", label: "Schon mal gehört" },
+      { value: "unbekannt", label: "Noch nicht beschäftigt" }
+    ],
+    description: "Der EU AI Act regelt viele neue Pflichten für KI-Anwendungen. Wie gut fühlen Sie sich informiert?"
+  },
+
+  // Hemmnisse / Barrieren
+  {
+    key: "ki_hemmnisse",
+    label: "Was hindert Ihr Unternehmen aktuell am (weiteren) KI-Einsatz?",
+    type: "checkbox",
+    options: [
+      { value: "rechtsunsicherheit", label: "Unsicherheit bei Rechtslage" },
+      { value: "datenschutz", label: "Datenschutz" },
+      { value: "knowhow", label: "Fehlendes Know-how" },
+      { value: "budget", label: "Begrenztes Budget" },
+      { value: "teamakzeptanz", label: "Akzeptanz im Team" },
+      { value: "zeitmangel", label: "Zeitmangel" },
+      { value: "it_integration", label: "IT-Integration" },
+      { value: "keine", label: "Keine Hemmnisse" },
+      { value: "andere", label: "Andere" }
+    ],
+    description: "Bitte kreuzen Sie alle Barrieren an, die für Sie relevant sind. Je ehrlicher, desto gezielter kann beraten werden!"
+  },
+
+  // Fördermittel bisher
+  {
+    key: "bisherige_foerdermittel",
+    label: "Haben Sie bisher schon Fördermittel für Digitalisierung oder KI genutzt?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja" },
+      { value: "nein", label: "Nein" }
+    ],
+    description: "Haben Sie bereits Fördermittel erhalten oder beantragt? Das hilft, die Auswertung gezielt zu gestalten."
+  },
+
+  // Fördermittel Interesse
+  {
+    key: "interesse_foerderung",
+    label: "Wären gezielte Fördermöglichkeiten für Ihre Projekte interessant?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja, bitte passende Programme vorschlagen" },
+      { value: "nein", label: "Nein, kein Bedarf" },
+      { value: "unklar", label: "Unklar, bitte beraten" }
+    ],
+    description: "Wünschen Sie individuelle Empfehlungen für Förderprogramme? Wir filtern auf Wunsch passende Angebote für Sie heraus."
+  },
+
+  // Beratungserfahrung
+  {
+    key: "erfahrung_beratung",
+    label: "Gab es schon Beratung zum Thema Digitalisierung/KI?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja" },
+      { value: "nein", label: "Nein" },
+      { value: "unklar", label: "Unklar" }
+    ],
+    description: "Wurde Ihr Unternehmen bereits extern beraten? Das beeinflusst die Tiefe und Ausrichtung der Empfehlungen."
+  },
+
+  // Investitionsbudget
+  {
+    key: "investitionsbudget",
+    label: "Welches Budget planen Sie für KI/Digitalisierung im nächsten Jahr ein?",
+    type: "select",
+    options: [
+      { value: "unter_2000", label: "Unter 2.000 €" },
+      { value: "2000_10000", label: "2.000–10.000 €" },
+      { value: "10000_50000", label: "10.000–50.000 €" },
+      { value: "ueber_50000", label: "Mehr als 50.000 €" },
+      { value: "unklar", label: "Noch unklar" }
+    ],
+    description: "Wie hoch ist Ihr geplantes Investitionsbudget für KI- oder Digitalisierungsprojekte im nächsten Jahr? Grobe Schätzung reicht."
+  },
+
+  // Marktposition
+  {
+    key: "marktposition",
+    label: "Wie schätzen Sie Ihre Position im Markt?",
+    type: "select",
+    options: [
+      { value: "marktfuehrer", label: "Marktführer" },
+      { value: "oberes_drittel", label: "Im oberen Drittel" },
+      { value: "mittelfeld", label: "Mittelfeld" },
+      { value: "nachzuegler", label: "Nachzügler / Aufholer" },
+      { value: "unsicher", label: "Schwer einzuschätzen" }
+    ],
+    description: "Wie positioniert sich Ihr Unternehmen im Wettbewerbsvergleich?"
+  },
+
+  // Benchmarking
+  {
+    key: "benchmark_wettbewerb",
+    label: "Vergleichen Sie Ihre Digitalisierung/KI-Readiness mit Wettbewerbern?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja, regelmäßig" },
+      { value: "nein", label: "Nein" },
+      { value: "selten", label: "Nur selten / informell" }
+    ],
+    description: "Gibt es regelmäßige Vergleiche oder Analysen zum Stand der Digitalisierung im Wettbewerb?"
+  },
+
+  // Innovationsprozess
+  {
+    key: "innovationsprozess",
+    label: "Wie entstehen Innovationen in Ihrem Unternehmen?",
+    type: "select",
+    options: [
+      { value: "innovationsteam", label: "Durch internes Innovationsteam" },
+      { value: "mitarbeitende", label: "Durch Mitarbeitende" },
+      { value: "kunden", label: "In Zusammenarbeit mit Kunden" },
+      { value: "berater", label: "Mit externen Beratern/Partnern" },
+      { value: "zufall", label: "Eher zufällig/ungeplant" },
+      { value: "unbekannt", label: "Keine klare Strategie" }
+    ],
+    description: "Gibt es einen strukturierten Innovationsprozess, oder entstehen neue Ideen eher spontan?"
+  },
+
+  // Risikofreude
+  {
+    key: "risikofreude",
+    label: "Wie risikofreudig ist Ihr Unternehmen bei Innovationen? (1 = wenig, 5 = sehr)",
+    type: "slider",
+    min: 1,
+    max: 5,
+    step: 1,
+    description: "Sind Sie bei neuen Ideen und Innovationen eher sicherheitsorientiert oder offen für mutige, neue Wege?"
+  }
+
+]; // Ende des fields-Arrays
+
 
 // --- Blockstruktur ---
 const blocks = [
