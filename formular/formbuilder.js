@@ -160,7 +160,7 @@ const fields = [
       { value: "andere", label: "Andere" }
     ],
     description: "Wählen Sie alle Zielgruppen aus, die Sie typischerweise ansprechen. Das hilft, die Analyse und Empfehlungen an Ihren Markt anzupassen."
-  }
+  },
 
   // Projektziele
   {
