@@ -534,7 +534,7 @@ async function handleSubmit(e) {
 
   // API-Call (dein Backend-Endpoint anpassen!)
   try {
-    const res = await fetch("/api/submit", {
+    const res = await fetch("/briefing", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
