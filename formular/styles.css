@@ -270,3 +270,74 @@ input:invalid, select:invalid, textarea:invalid {
   color: #d7263d !important; /* kräftiges Rot */
   font-weight: bold;
 }
+#mainForm {
+  max-width: 650px;
+  margin: 0 auto;
+  background: #fafdff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px #e4eefc48;
+  padding: 34px 32px 30px 32px;
+}
+.block-header h2 {
+  font-size: 1.27em;
+  color: #1e3a8a;
+  margin-top: 0;
+}
+.block-description {
+  font-size: 1.06em;
+  color: #22528b;
+}
+.form-field {
+  margin-bottom: 28px;
+}
+.description {
+  color: #557;
+  font-size: 0.97em;
+  margin-top: 2px;
+  margin-bottom: 9px;
+  opacity: 0.85;
+}
+.checkbox-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.12em;
+  padding-left: 2px;
+}
+fieldset {
+  border: none;
+  margin: 0 0 6px 0;
+  padding: 0;
+}
+legend {
+  font-size: 1.12em;
+  margin-bottom: 7px;
+}
+input[type="range"] {
+  width: 160px;
+  margin-right: 9px;
+}
+.nav-buttons {
+  text-align: right;
+  margin-top: 25px;
+}
+.nav-buttons button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 10px 23px;
+  margin-left: 6px;
+  font-size: 1.09em;
+  cursor: pointer;
+  box-shadow: 0 2px 9px #dbeafe38;
+  transition: background 0.2s;
+}
+.nav-buttons button:hover {
+  background: #174bb8;
+}
+#progress {
+  margin-bottom: 22px;
+  font-size: 1.07em;
+  color: #22528b;
+  letter-spacing: 0.03em;
+}
