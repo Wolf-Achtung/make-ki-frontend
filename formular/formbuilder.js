@@ -554,4 +554,7 @@ async function handleSubmit(e) {
 }
 
 // --- Initiales Rendern
-window.onload = () => renderForm(currentBlock);
+document.addEventListener("DOMContentLoaded", function() {
+  renderForm(currentBlock);
+});
+
