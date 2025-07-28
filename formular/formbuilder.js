@@ -138,10 +138,7 @@ const fields = [
       { value: "expertenwissen", label: "Expertenwissen" }
     ],
     description: "Wie fit sind Sie und Ihr Team beim Thema KI? Nutzen Sie KI schon produktiv oder kennen Sie sich bereits tiefer aus?"
-  }
-  // ...weiter mit Teil 2!
-];
-// ... Fortsetzung des fields-Arrays aus Teil 1
+  },
 
   // Zielgruppen
   {
