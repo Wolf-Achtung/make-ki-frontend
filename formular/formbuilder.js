@@ -1,24 +1,18 @@
-// --- SECURITY: JWT-Check, nur eingeloggte User dürfen dieses Formular nutzen ---
+// --- JWT & Security ---
 const token = localStorage.getItem("jwt");
-if (!token) {
-    window.location.href = "/login.html";
-}
+if (!token) window.location.href = "/login.html";
 
 function getEmailFromJWT(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.email || payload.sub || null;
-  } catch (e) {
-    return null;
-  }
+  } catch (e) { return null; }
 }
 function isAdmin(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.role === "admin";
-  } catch (e) {
-    return false;
-  }
+  } catch (e) { return false; }
 }
 
 // --- Alle Felder (siehe vollständiges Array oben) ---
@@ -43,17 +37,31 @@ const fields = [
     ],
     description: "Bestimmt Benchmarks, Tool-Empfehlungen und die branchenspezifische Auswertung."
   },
-  {
-    key: "unternehmensgroesse",
-    label: "Unternehmensgröße (Mitarbeiterzahl)",
-    type: "select",
-    options: [
-      { value: "solo", label: "1 (Solo-Selbstständig/Freiberuflich)" },
-      { value: "team", label: "2–10 (Kleines Team)" },
-      { value: "kmu", label: "11–100 (KMU)" }
-    ],
-    description: "Beeinflusst Score, Förderoptionen, Tools und Praxisbeispiele."
-  },
+{
+  key: "unternehmensgroesse",
+  label: "Wie groß ist das Unternehmen?",
+  type: "select",
+  options: [
+    { value: "solo", label: "1 Person (Einzelunternehmen, Solo-Selbstständig, Freiberufler, 1-Personen-GmbH/UG)" },
+    { value: "team", label: "2–10 Personen (Kleines Team)" },
+    { value: "kmu", label: "11–100 Personen (KMU)" }
+  ],
+  description: "Bitte wählen Sie die passende Größe entsprechend der Zahl der Mitarbeitenden oder Inhaber."
+},
+{
+  key: "selbststaendig",
+  label: "Unternehmensform bei 1 Person",
+  type: "select",
+  options: [
+    { value: "freiberufler", label: "Freiberuflich/Selbstständig" },
+    { value: "kapitalgesellschaft", label: "1-Personen-Kapitalgesellschaft (GmbH/UG)" },
+    { value: "einzelunternehmer", label: "Einzelunternehmer (mit Gewerbe)" },
+    { value: "sonstiges", label: "Sonstiges" }
+  ],
+  description: "Bitte wählen Sie die zutreffende Rechtsform.",
+  showIf: (data) => data.unternehmensgroesse === "solo"
+},
+
   {
     key: "bundesland",
     label: "Bundesland",
@@ -421,204 +429,129 @@ const fields = [
     max: 5,
     step: 1,
     description: "Eher sicherheitsorientiert oder bereit, Neues auszuprobieren?"
-  },
-  {
-    key: "datenschutz",
-    label: "Datenschutzhinweise gelesen & akzeptiert",
-    type: "privacy",
-    description: "Mit dem Absenden bestätigt das Unternehmen die Kenntnisnahme der Datenschutzerklärung."
-  }
+  }  // <--- Komma hier weg! (letztes Feld im Array)
+]; // <--- FELD-ARRAY SCHLIESSEN!
+
+// --- State & Progress ---
+let formData = {};
+let currentBlock = 0; // Start-Block
+const blocks = [
+  // Blöcke für Abschnitt-Splitting (optional)
+  ["branche", "unternehmensgroesse", "selbststaendig"],
+  ["bundesland", "hauptleistung", "zielgruppen", "projektziel"],
+  // ... restliche Block-Einteilung
 ];
 
-// --- Render-Logik ---
-function renderForm(fields, formId = "formbuilder") {
-  const form = document.getElementById(formId);
-  if (!form) return;
-
-  form.innerHTML = fields.map(field => {
-    let input = "";
-    switch (field.type) {
-      case "select":
-        input = `
-          <select id="${field.key}" name="${field.key}">
-            <option value="">Bitte wählen...</option>
-            ${field.options.map(opt => `
-              <option value="${opt.value}">${opt.label}</option>
-            `).join("")}
-          </select>
-        `;
-        break;
-      case "textarea":
-        input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder || ""}"></textarea>`;
-        break;
-      case "checkbox":
-        input = `
-          <div class="checkbox-group">
-            ${field.options.map(opt => `
-              <label class="checkbox-label">
-                <input type="checkbox" name="${field.key}" value="${opt.value}" />
-                ${opt.label}
-              </label>
-            `).join("")}
-          </div>
-        `;
-        break;
-      case "slider":
-        input = `
-          <input type="range" id="${field.key}" name="${field.key}" min="${field.min||1}" max="${field.max||10}" step="${field.step||1}" value="${field.min||1}" oninput="this.nextElementSibling.innerText=this.value"/>
-          <span class="slider-value-label">${field.min||1}</span>
-        `;
-        break;
-      case "privacy":
-        input = `
-          <div class="privacy-section">
-            <label>
-              <input type="checkbox" id="${field.key}" name="${field.key}" required />
-              ${field.label}
-            </label>
-          </div>
-        `;
-        break;
-      default:
-        input = `<input type="text" id="${field.key}" name="${field.key}" />`;
-    }
-    const guidance = field.description
-      ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
-      : "";
-
-    return field.type === "privacy"
-      ? `<div class="form-group privacy-group">${input}${guidance}</div>`
-      : `<div class="form-group"><label for="${field.key}">${field.label}</label>${guidance}${input}</div>`;
-  }).join('');
-
-  if (!document.getElementById('loading-indicator')) {
-    const loader = document.createElement("div");
-    loader.id = "loading-indicator";
-    loader.style.display = "none";
-    loader.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="spinner" style="width:22px;height:22px;border:4px solid #2166c2;border-right-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-        <span style="font-size:1.1em;color:#2166c2;">Ihr persönlicher KI-Report wird erstellt...</span>
-      </div>
-      <style>@keyframes spin{100%{transform:rotate(360deg);}}</style>
-    `;
-    form.parentNode.insertBefore(loader, form.nextSibling);
+// --- Hilfsfunktionen für Feld-Rendering ---
+function createFieldHTML(field, value = "") {
+  let html = `<label for="${field.key}">${field.label}</label>`;
+  if (field.type === "select") {
+    html += `<select id="${field.key}" name="${field.key}">` +
+      field.options.map(opt =>
+        `<option value="${opt.value}" ${value === opt.value ? "selected" : ""}>${opt.label}</option>`
+      ).join("") +
+      `</select>`;
+  } else if (field.type === "checkbox") {
+    html += field.options.map(opt =>
+      `<label><input type="checkbox" name="${field.key}" value="${opt.value}" ${Array.isArray(value) && value.includes(opt.value) ? "checked" : ""}/> ${opt.label}</label>`
+    ).join("<br>");
+  } else if (field.type === "slider") {
+    html += `<input type="range" id="${field.key}" name="${field.key}" min="${field.min}" max="${field.max}" step="${field.step}" value="${value || field.min}" />` +
+      `<span id="${field.key}-value">${value || field.min}</span>`;
+  } else if (field.type === "textarea") {
+    html += `<textarea id="${field.key}" name="${field.key}">${value || ""}</textarea>`;
+  } else {
+    html += `<input type="text" id="${field.key}" name="${field.key}" value="${value || ""}" />`;
   }
-  if (!form.querySelector('button, [type=submit]')) {
-    form.innerHTML += `<button type="submit" id="submit-btn">Absenden</button>`;
-  }
+  if (field.description)
+    html += `<div class="description">${field.description}</div>`;
+  return `<div class="form-field">${html}</div>`;
 }
 
-// Initial render
-renderForm(fields);
+// --- Haupt-Rendering-Funktion ---
+function renderForm(blockIdx = 0) {
+  const mainForm = document.getElementById("mainForm");
+  mainForm.innerHTML = "";
 
-document.getElementById("formbuilder").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  const dsCheckbox = document.getElementById('datenschutz');
-  if (!dsCheckbox || !dsCheckbox.checked) {
-    alert('Bitte akzeptieren Sie die Datenschutzhinweise.');
-    dsCheckbox && dsCheckbox.focus();
-    return false;
-  }
+  // Progressbar
+  const progress = document.getElementById("progress");
+  const percent = Math.round((blockIdx + 1) / blocks.length * 100);
+  progress.innerHTML = `Fortschritt: ${percent}%`;
 
-  const formData = new FormData(this);
-  const data = {};
-  for (let [key, value] of formData.entries()) {
-    if (data[key]) {
-      data[key] = Array.isArray(data[key]) ? [...data[key], value] : [data[key], value];
+  // Felder für diesen Block
+  const blockFields = fields.filter(f => blocks[blockIdx].includes(f.key));
+  blockFields.forEach(field => {
+    // showIf prüfen (für dynamische Felder)
+    if (typeof field.showIf === "function" && !field.showIf(formData)) return;
+    mainForm.innerHTML += createFieldHTML(field, formData[field.key]);
+  });
+
+  // Weiter/Zurück Buttons
+  let navHtml = "";
+  if (blockIdx > 0)
+    navHtml += `<button type="button" id="backBtn">Zurück</button> `;
+  if (blockIdx < blocks.length - 1)
+    navHtml += `<button type="button" id="nextBtn">Weiter</button>`;
+  else
+    navHtml += `<button type="submit">Absenden</button>`;
+  mainForm.innerHTML += `<div class="nav-buttons">${navHtml}</div>`;
+
+  // Event Listener für Weiter/Zurück
+  document.getElementById("mainForm").onsubmit = handleSubmit;
+  if (document.getElementById("nextBtn"))
+    document.getElementById("nextBtn").onclick = () => { saveBlock(blockIdx); renderForm(blockIdx + 1); };
+  if (document.getElementById("backBtn"))
+    document.getElementById("backBtn").onclick = () => { renderForm(blockIdx - 1); };
+
+  // Slider Live-Update
+  Array.from(document.querySelectorAll('input[type="range"]')).forEach(slider => {
+    slider.oninput = (e) => {
+      document.getElementById(`${slider.id}-value`).textContent = e.target.value;
+    };
+  });
+}
+
+// --- Block speichern ---
+function saveBlock(blockIdx) {
+  blocks[blockIdx].forEach(key => {
+    const field = fields.find(f => f.key === key);
+    if (!field) return;
+    if (field.type === "checkbox") {
+      formData[key] = Array.from(document.querySelectorAll(`[name="${key}"]:checked`)).map(el => el.value);
     } else {
-      data[key] = value;
+      const el = document.getElementById(key);
+      if (el) formData[key] = el.value;
     }
-  }
-  // E-Mail aus JWT hinzufügen
-  const email = getEmailFromJWT(token);
-  if (email) {
-    data.email = email;
-  }
-  const button = this.querySelector("button[type=submit]");
-  const loader = document.getElementById('loading-indicator');
-  const feedback = document.getElementById("feedback");
-  if (button) button.disabled = true;
-  if (loader) loader.style.display = "block";
-  feedback.style.display = "none";
-  feedback.innerHTML = "";
+  });
+}
 
+// --- Submit-Handler ---
+async function handleSubmit(e) {
+  e.preventDefault();
+  saveBlock(currentBlock);
+  // JWT-Mail anhängen:
+  formData.email = getEmailFromJWT(token);
+
+  // API-Call (dein Backend-Endpoint anpassen!)
   try {
-    const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
+    const res = await fetch("/api/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        "Authorization": "Bearer " + token
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(formData)
     });
-
     if (res.ok) {
-      const result = await res.json();
-      if (result.html) {
-        // Speichere das HTML im LocalStorage
-        localStorage.setItem("report_html", result.html);
-        // Zur Vorschau-Seite weiterleiten
-        window.location.href = "report.html";
-      } else {
-        feedback.style.display = "block";
-        feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler: Kein Report-HTML erhalten.</span>`;
-        if (button) button.disabled = false;
-      }
-      this.reset();
+      alert("Erfolgreich abgesendet!");
+      window.location.href = "/report.html";
     } else {
-      feedback.style.display = "block";
-      feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler: Ihre Angaben konnten nicht verarbeitet werden.</span>`;
-      if (button) button.disabled = false;
+      alert("Fehler beim Absenden!");
     }
   } catch (err) {
-    feedback.style.display = "block";
-    feedback.innerHTML = `<span style="color:#c22;font-weight:600;">Fehler beim Übertragen: ${err?.message || err}</span>`;
-    console.error("FEHLER:", err);
-    if (button) button.disabled = false;
-  } finally {
-    if (loader) loader.style.display = "none";
+    alert("Netzwerkfehler: " + err.message);
   }
-});
+}
 
-// Optionaler Admin-Button für Demo-Auslösung
-window.addEventListener("DOMContentLoaded", () => {
-  if (isAdmin(token)) {
-    const btn = document.createElement("button");
-    btn.innerText = "🧪 Demo-Daten absenden";
-    btn.style = "margin: 12px auto; display:block; background:#eee; border:1px solid #ccc; padding:8px 12px; cursor:pointer;";
-    btn.onclick = async () => {
-      const demo = await fetch("demodaten.json").then(r => r.json());
-      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/briefing", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(demo)
-      });
-      if (res.ok) {
-        const result = await res.json();
-        if (result.html) {
-          localStorage.setItem("report_html", result.html);
-          window.location.href = "report.html";
-        } else {
-          alert("Fehler: Kein Report-HTML erhalten.");
-        }
-      } else {
-        alert("Fehler beim Senden der Demo-Daten.");
-      }
-    };
-
-    // Sicherstellen, dass das Formular existiert
-    const tryInsert = () => {
-      const form = document.getElementById("formbuilder");
-      if (form && form.parentNode) {
-        form.parentNode.insertBefore(btn, form);
-      } else {
-        setTimeout(tryInsert, 100);
-      }
-    };
-    tryInsert();
-  }
-});
+// --- Initiales Rendern
+window.onload = () => renderForm(currentBlock);
