@@ -652,7 +652,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function submitAllBlocks() {
   const data = {};
-  fields.forEach(field => data[field.key] = formData[field.key]);
+  fields.forEach(field => {
+    data[field.key] = formData[field.key];
+  });
+
+  const token = localStorage.getItem("jwt") || "";
 
   const BASE_URL = location.hostname.includes("localhost")
     ? "https://make-ki-backend-neu-production.up.railway.app"
@@ -668,17 +672,25 @@ function submitAllBlocks() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": token
+      "Authorization": `Bearer ${token}` // ✅ Fix hier!
     },
     body: JSON.stringify(data)
   })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Antwort vom Server war nicht OK");
+      }
+      return res.json();
+    })
     .then(data => {
       localStorage.removeItem("autosave_form");
       showSuccess(data);
     })
     .catch(() => {
-      document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;
+      document.getElementById("formbuilder").innerHTML = `
+        <div class="form-error">
+          Fehler bei der Übertragung. Bitte erneut versuchen.
+        </div>`;
     });
 }
 
