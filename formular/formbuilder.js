@@ -3,6 +3,7 @@ const token = localStorage.getItem("jwt");
 if (!token) {
     window.location.href = "/login.html";
 }
+
 function getEmailFromJWT(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
@@ -88,7 +89,24 @@ const fields = [
     label: "Was ist das wichtigste Produkt oder die Hauptdienstleistung Ihres Unternehmens?",
     type: "textarea",
     placeholder: "z. B. Social Media Kampagnen, CNC-Fertigung von Einzelteilen, Steuerberatung für Startups",
-    description: "Beschreiben Sie Ihr Angebot so konkret wie möglich – gerne mit Beispielen, Zielgruppe oder Besonderheiten."
+    description: "Beschreiben Sie Ihre zentrale Leistung möglichst konkret. Beispiele helfen uns, Ihre Positionierung und passende Empfehlungen besser zu verstehen."
+  },
+  {
+    key: "zielgruppen",
+    label: "Für welche Zielgruppen oder Kundensegmente bieten Sie Ihre Leistungen an?",
+    type: "checkbox",
+    options: [
+      { value: "b2b", label: "B2B (Geschäftskunden)" },
+      { value: "b2c", label: "B2C (Endverbraucher)" },
+      { value: "kmu", label: "KMU (Kleine & mittlere Unternehmen)" },
+      { value: "grossunternehmen", label: "Großunternehmen" },
+      { value: "selbststaendige", label: "Selbstständige/Freiberufler" },
+      { value: "oeffentliche_hand", label: "Öffentliche Hand" },
+      { value: "privatpersonen", label: "Privatpersonen" },
+      { value: "startups", label: "Startups" },
+      { value: "andere", label: "Andere" }
+    ],
+    description: "Für welche Kundengruppen bieten Sie Leistungen an? Bitte wählen Sie alle Zielgruppen aus, die für Sie relevant sind (Mehrfachauswahl möglich)."
   },
 
   // Block 2: Status Quo & Digitalisierungsgrad
@@ -124,7 +142,7 @@ const fields = [
       { value: "eher_hoch", label: "Eher hoch" },
       { value: "sehr_hoch", label: "Sehr hoch" }
     ],
-    description: "Sind viele Arbeitsschritte noch Handarbeit oder läuft vieles automatisch (z. B. durch KI, Scripte oder smarte Tools)?"
+    description: "Sind viele Arbeitsschritte noch Handarbeit oder läuft vieles automatisch (z. B. durch KI, Scripte oder smarte Tools)?"
   },
   {
     key: "ki_knowhow",
@@ -139,27 +157,7 @@ const fields = [
     ],
     description: "Wie fit sind Sie und Ihr Team beim Thema KI? Nutzen Sie KI schon produktiv oder kennen Sie sich bereits tiefer aus?"
   },
-
-  // Zielgruppen
-  {
-    key: "zielgruppen",
-    label: "Für welche Zielgruppen oder Kundensegmente bieten Sie Ihre Leistungen an?",
-    type: "checkbox",
-    options: [
-      { value: "b2b", label: "B2B (Geschäftskunden)" },
-      { value: "b2c", label: "B2C (Endverbraucher)" },
-      { value: "kmu", label: "KMU (Kleine & mittlere Unternehmen)" },
-      { value: "grossunternehmen", label: "Großunternehmen" },
-      { value: "selbststaendige", label: "Selbstständige/Freiberufler" },
-      { value: "oeffentliche_hand", label: "Öffentliche Hand" },
-      { value: "privatpersonen", label: "Privatpersonen" },
-      { value: "startups", label: "Startups" },
-      { value: "andere", label: "Andere" }
-    ],
-    description: "Wählen Sie alle Zielgruppen aus, die Sie typischerweise ansprechen. Das hilft, die Analyse und Empfehlungen an Ihren Markt anzupassen."
-  },
-
-  // Projektziele
+  // Block 3: Ziele & Projekte
   {
     key: "projektziel",
     label: "Welches Ziel steht bei Ihrem nächsten KI-/Digitalisierungsprojekt im Vordergrund?",
@@ -175,66 +173,39 @@ const fields = [
       { value: "foerdermittel", label: "Fördermittel beantragen" },
       { value: "andere", label: "Andere" }
     ],
-    description: "Was möchten Sie mit Ihrem nächsten Vorhaben vorrangig erreichen? Sie können gerne mehrere Ziele auswählen."
+    description: "Was möchten Sie mit Ihrem nächsten Vorhaben vorrangig erreichen? Mehrfachauswahl möglich."
   },
-
-  // Aktuelle KI-Einsatzbereiche
-  {
-    key: "ki_einsatz",
-    label: "In welchen Bereichen nutzen Sie bereits Künstliche Intelligenz oder Automatisierung?",
-    type: "checkbox",
-    options: [
-      { value: "marketing", label: "Marketing" },
-      { value: "vertrieb", label: "Vertrieb" },
-      { value: "buchhaltung", label: "Buchhaltung" },
-      { value: "produktion", label: "Produktion" },
-      { value: "kundenservice", label: "Kundenservice" },
-      { value: "it", label: "IT" },
-      { value: "forschung", label: "Forschung & Entwicklung" },
-      { value: "personal", label: "Personal" },
-      { value: "keine", label: "Noch keine Nutzung" },
-      { value: "sonstiges", label: "Sonstiges" }
-    ],
-    description: "Wählen Sie alle Unternehmensbereiche aus, in denen KI-Tools, Automatisierungen oder smarte Workflows heute schon eine Rolle spielen."
-  },
-
-  // Geplante oder laufende KI-Projekte
   {
     key: "ki_projekte",
     label: "Gibt es aktuell laufende oder geplante KI-Projekte in Ihrem Unternehmen?",
     type: "textarea",
-    placeholder: "z. B. Chatbot für Kundenanfragen, automatisierte Angebotserstellung, Text- oder Bildgeneratoren, Analyse-Tools für Vertrieb",
+    placeholder: "z. B. Chatbot für Kundenanfragen, automatisierte Angebotserstellung, Text- oder Bildgeneratoren, Analyse-Tools für Vertrieb",
     description: "Beschreiben Sie laufende oder geplante Projekte möglichst konkret. Gibt es bereits Überlegungen, Experimente oder Pilotprojekte?"
   },
-
-  // Wunsch-Usecases
   {
     key: "ki_usecases",
     label: "Welche KI-Anwendungsfälle interessieren Sie besonders?",
     type: "checkbox",
     options: [
-      { value: "texterstellung", label: "Texterstellung (z. B. automatisierte Berichte, Posts)" },
-      { value: "bildgenerierung", label: "Bildgenerierung (z. B. KI-Grafiken, Logovarianten)" },
-      { value: "spracherkennung", label: "Spracherkennung (z. B. Transkription, Voicebots)" },
-      { value: "prozessautomatisierung", label: "Prozessautomatisierung (z. B. Belegprüfung, Rechnungsversand)" },
-      { value: "datenanalyse", label: "Datenanalyse & Prognose (z. B. Markttrends, Kundenverhalten)" },
-      { value: "kundensupport", label: "Kundensupport (z. B. Chatbots, FAQ-Automation)" },
-      { value: "wissensmanagement", label: "Wissensmanagement (z. B. Dokumentenverwaltung, intelligente Suche)" },
-      { value: "marketing", label: "Marketing (z. B. Zielgruppen-Segmentierung, Kampagnenoptimierung)" },
+      { value: "texterstellung", label: "Texterstellung (z. B. automatisierte Berichte, Posts)" },
+      { value: "bildgenerierung", label: "Bildgenerierung (z. B. KI-Grafiken, Logovarianten)" },
+      { value: "spracherkennung", label: "Spracherkennung (z. B. Transkription, Voicebots)" },
+      { value: "prozessautomatisierung", label: "Prozessautomatisierung (z. B. Belegprüfung, Rechnungsversand)" },
+      { value: "datenanalyse", label: "Datenanalyse & Prognose (z. B. Markttrends, Kundenverhalten)" },
+      { value: "kundensupport", label: "Kundensupport (z. B. Chatbots, FAQ-Automation)" },
+      { value: "wissensmanagement", label: "Wissensmanagement (z. B. Dokumentenverwaltung, intelligente Suche)" },
+      { value: "marketing", label: "Marketing (z. B. Zielgruppen-Segmentierung, Kampagnenoptimierung)" },
       { value: "sonstiges", label: "Sonstiges" }
     ],
-    description: "Was wäre für Sie der spannendste oder nützlichste Anwendungsfall für KI? Kreuzen Sie alles an, was für Sie Potenzial bietet."
+    description: "Welche KI-Anwendungsbereiche interessieren Sie besonders? Mehrfachauswahl möglich."
   },
-
-  // Einschätzung KI-Potenzial
   {
     key: "ki_potenzial",
     label: "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
     type: "textarea",
-    placeholder: "z. B. Schnelleres Reporting, personalisierte Angebote, Kostenreduktion durch Automatisierung, neue Services ...",
-    description: "Teilen Sie uns Ihre Einschätzung oder Wünsche mit. Ob Vision, Problem oder Strategie – alles ist willkommen!"
+    placeholder: "z. B. Schnelleres Reporting, personalisierte Angebote, Kostenreduktion durch Automatisierung, neue Services ...",
+    description: "Wo sehen Sie für Ihr Unternehmen das größte Potenzial durch KI? Gerne frei formulieren – alles ist willkommen."
   },
-  // Priorisierter KI-Einsatzbereich
   {
     key: "usecase_priority",
     label: "In welchem Bereich soll KI am ehesten zum Einsatz kommen?",
@@ -252,26 +223,22 @@ const fields = [
     ],
     description: "Gibt es einen Unternehmensbereich, in dem KI besonders dringend gebraucht wird oder das größte Potenzial bietet?"
   },
-
-  // Vision / Geschäftsmodell-Transformation
   {
     key: "ki_geschaeftsmodell_vision",
     label: "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern?",
     type: "textarea",
-    placeholder: "z. B. Automatisierte Online-Beratungen, datenbasierte Plattform-Services, völlig neue Produkte, …",
-    description: "Was wäre Ihre große Vision für Ihr Unternehmen? Welche Möglichkeiten ergeben sich durch KI, die heute noch gar nicht voll ausgeschöpft werden?"
+    placeholder: "z. B. Automatisierte Online-Beratungen, datenbasierte Plattform-Services, völlig neue Produkte, …",
+    description: "Welche Veränderungen oder neuen Möglichkeiten sehen Sie langfristig durch KI? Hier geht es um Ihre größere Vision – ob konkret oder visionär."
   },
-
-  // Moonshot / Big Dream
   {
     key: "moonshot",
     label: "Was wäre ein mutiger Durchbruch – Ihre KI-Vision in 3 Jahren?",
     type: "textarea",
-    placeholder: "z. B. 80% meiner Routinearbeiten übernimmt KI; mein Umsatz verdoppelt sich durch smarte Automatisierung …",
-    description: "Denken Sie ruhig groß! Was wäre ein echtes Highlight oder 'Moonshot', das Sie mit KI in Ihrem Unternehmen erreichen möchten?"
+    placeholder: "z. B. 80 % meiner Routinearbeiten übernimmt KI; mein Umsatz verdoppelt sich durch smarte Automatisierung …",
+    description: "Was wäre Ihre visionäre KI-Zukunft in 3 Jahren? Denken Sie groß."
   },
 
-  // Datenschutzbeauftragter
+  // Block 4: Rechtliches & Förderung
   {
     key: "datenschutzbeauftragter",
     label: "Gibt es eine:n Datenschutzbeauftragte:n in Ihrem Unternehmen?",
@@ -283,8 +250,6 @@ const fields = [
     ],
     description: "Ein:e Datenschutzbeauftragte:r ist oft Pflicht – unabhängig davon, ob intern oder extern. Wie ist die Situation bei Ihnen?"
   },
-
-  // Technische Maßnahmen Datenschutz
   {
     key: "technische_massnahmen",
     label: "Welche technischen Schutzmaßnahmen für Daten sind bei Ihnen umgesetzt?",
@@ -296,8 +261,6 @@ const fields = [
     ],
     description: "Bitte wählen Sie, wie umfassend Sie Ihre Daten technisch schützen (Firewalls, Backups, Zugriffsbeschränkungen etc.)."
   },
-
-  // DSGVO-Folgenabschätzung
   {
     key: "folgenabschaetzung",
     label: "Wurde für KI-Anwendungen eine DSGVO-Folgenabschätzung (DSFA) erstellt?",
@@ -309,8 +272,6 @@ const fields = [
     ],
     description: "Gerade bei sensiblen KI-Systemen ist eine DSFA empfohlen. Trifft das bei Ihnen bereits zu?"
   },
-
-  // Meldewege Datenschutzvorfälle
   {
     key: "meldewege",
     label: "Gibt es definierte Meldewege bei Datenschutzvorfällen?",
@@ -322,8 +283,6 @@ const fields = [
     ],
     description: "Wie stellen Sie sicher, dass bei Datenschutzverstößen schnell und systematisch gehandelt wird?"
   },
-
-  // Löschregeln
   {
     key: "loeschregeln",
     label: "Existieren klare Regeln zur Löschung oder Anonymisierung von Daten?",
@@ -335,8 +294,6 @@ const fields = [
     ],
     description: "Haben Sie definierte Abläufe, um Daten gesetzeskonform zu löschen oder zu anonymisieren?"
   },
-
-  // Kenntnis EU AI Act
   {
     key: "ai_act_kenntnis",
     label: "Wie gut kennen Sie die Anforderungen des EU AI Act?",
@@ -349,8 +306,6 @@ const fields = [
     ],
     description: "Der EU AI Act regelt viele neue Pflichten für KI-Anwendungen. Wie gut fühlen Sie sich informiert?"
   },
-
-  // Hemmnisse / Barrieren
   {
     key: "ki_hemmnisse",
     label: "Was hindert Ihr Unternehmen aktuell am (weiteren) KI-Einsatz?",
@@ -366,10 +321,8 @@ const fields = [
       { value: "keine", label: "Keine Hemmnisse" },
       { value: "andere", label: "Andere" }
     ],
-    description: "Bitte kreuzen Sie alle Barrieren an, die für Sie relevant sind. Je ehrlicher, desto gezielter kann beraten werden!"
+    description: "Welche Herausforderungen erschweren bei Ihnen den Einsatz von KI? Mehrfachauswahl möglich."
   },
-
-  // Fördermittel bisher
   {
     key: "bisherige_foerdermittel",
     label: "Haben Sie bisher schon Fördermittel für Digitalisierung oder KI genutzt?",
@@ -380,8 +333,6 @@ const fields = [
     ],
     description: "Haben Sie bereits Fördermittel erhalten oder beantragt? Das hilft, die Auswertung gezielt zu gestalten."
   },
-
-  // Fördermittel Interesse
   {
     key: "interesse_foerderung",
     label: "Wären gezielte Fördermöglichkeiten für Ihre Projekte interessant?",
@@ -393,8 +344,6 @@ const fields = [
     ],
     description: "Wünschen Sie individuelle Empfehlungen für Förderprogramme? Wir filtern auf Wunsch passende Angebote für Sie heraus."
   },
-
-  // Beratungserfahrung
   {
     key: "erfahrung_beratung",
     label: "Gab es schon Beratung zum Thema Digitalisierung/KI?",
@@ -406,8 +355,6 @@ const fields = [
     ],
     description: "Wurde Ihr Unternehmen bereits extern beraten? Das beeinflusst die Tiefe und Ausrichtung der Empfehlungen."
   },
-
-  // Investitionsbudget
   {
     key: "investitionsbudget",
     label: "Welches Budget planen Sie für KI/Digitalisierung im nächsten Jahr ein?",
@@ -421,8 +368,6 @@ const fields = [
     ],
     description: "Wie hoch ist Ihr geplantes Investitionsbudget für KI- oder Digitalisierungsprojekte im nächsten Jahr? Grobe Schätzung reicht."
   },
-
-  // Marktposition
   {
     key: "marktposition",
     label: "Wie schätzen Sie Ihre Position im Markt?",
@@ -436,8 +381,6 @@ const fields = [
     ],
     description: "Wie positioniert sich Ihr Unternehmen im Wettbewerbsvergleich?"
   },
-
-  // Benchmarking
   {
     key: "benchmark_wettbewerb",
     label: "Vergleichen Sie Ihre Digitalisierung/KI-Readiness mit Wettbewerbern?",
@@ -449,8 +392,6 @@ const fields = [
     ],
     description: "Gibt es regelmäßige Vergleiche oder Analysen zum Stand der Digitalisierung im Wettbewerb?"
   },
-
-  // Innovationsprozess
   {
     key: "innovationsprozess",
     label: "Wie entstehen Innovationen in Ihrem Unternehmen?",
@@ -465,8 +406,6 @@ const fields = [
     ],
     description: "Gibt es einen strukturierten Innovationsprozess, oder entstehen neue Ideen eher spontan?"
   },
-
-  // Risikofreude
   {
     key: "risikofreude",
     label: "Wie risikofreudig ist Ihr Unternehmen bei Innovationen? (1 = wenig, 5 = sehr)",
@@ -475,11 +414,16 @@ const fields = [
     max: 5,
     step: 1,
     description: "Sind Sie bei neuen Ideen und Innovationen eher sicherheitsorientiert oder offen für mutige, neue Wege?"
+  },
+
+  // Block 5: Datenschutz & Absenden
+  {
+    key: "datenschutz",
+    label: "Ich habe die <a href='datenschutz.html' onclick='window.open(this.href, \"DatenschutzPopup\", \"width=600,height=700\"); return false;'>Datenschutzhinweise</a> gelesen und bin einverstanden.",
+    type: "privacy",
+    description: "Bitte bestätigen Sie, dass Sie die Datenschutzhinweise gelesen haben. Ihre Angaben werden ausschließlich zur Erstellung Ihrer persönlichen Auswertung genutzt."
   }
-
-]; // Ende des fields-Arrays
-
-
+];
 // --- Blockstruktur ---
 const blocks = [
   {
@@ -530,33 +474,27 @@ function renderBlock(blockIdx) {
     const field = fields.find(f => f.key === key);
     if (!field) return "";
     let input = "";
-    // Input-Render wie im bisherigen Code ...
     switch (field.type) {
       case "select":
         input = `
           <label for="${field.key}"><b>${field.label}</b></label>
           <select id="${field.key}" name="${field.key}">
             <option value="">Bitte wählen...</option>
-            ${field.options.map(opt => `
-              <option value="${opt.value}">${opt.label}</option>
-            `).join("")}
-          </select>
-        `;
+            ${field.options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join("")}
+          </select>`;
         break;
       case "textarea":
         input = `<label for="${field.key}"><b>${field.label}</b></label>
           <textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder||""}">${formData[field.key]||""}</textarea>`;
         break;
       case "checkbox":
-        input = `<b>${field.label}</b>
-          <div class="checkbox-group">
-            ${field.options.map(opt => `
-              <label class="checkbox-label">
-                <input type="checkbox" name="${field.key}" value="${opt.value}" ${formData[field.key]&&formData[field.key].includes(opt.value)?'checked':''} />
-                ${opt.label}
-              </label>
-            `).join("")}
-          </div>`;
+        input = `<b>${field.label}</b><div class="checkbox-group">
+          ${field.options.map(opt => `
+            <label class="checkbox-label">
+              <input type="checkbox" name="${field.key}" value="${opt.value}" ${formData[field.key]?.includes(opt.value) ? 'checked' : ''} />
+              ${opt.label}
+            </label>`).join("")}
+        </div>`;
         break;
       case "slider":
         input = `<label for="${field.key}"><b>${field.label}</b></label>
@@ -566,7 +504,7 @@ function renderBlock(blockIdx) {
       case "privacy":
         input = `<div class="privacy-section">
           <label>
-            <input type="checkbox" id="${field.key}" name="${field.key}" ${formData[field.key]?'checked':''} required />
+            <input type="checkbox" id="${field.key}" name="${field.key}" ${formData[field.key] ? 'checked' : ''} required />
             ${field.label}
           </label>
         </div>`;
@@ -575,30 +513,26 @@ function renderBlock(blockIdx) {
         input = `<label for="${field.key}"><b>${field.label}</b></label>
           <input type="text" id="${field.key}" name="${field.key}" value="${formData[field.key]||""}" />`;
     }
+
     const guidance = field.description
       ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
       : "";
     return `<div class="form-group">${input}${guidance}</div>`;
   }).join("");
 
-  // Navigation
   form.innerHTML += `
     <div class="form-nav">
       ${blockIdx > 0 ? `<button type="button" id="btn-prev">Zurück</button>` : ""}
-      ${blockIdx < blocks.length-1
+      ${blockIdx < blocks.length - 1
         ? `<button type="button" id="btn-next">Weiter</button>`
         : `<button type="submit" id="submit-btn">Absenden</button>`}
     </div>
-    <div id="feedback"></div>
-  `;
+    <div id="feedback"></div>`;
 }
-// --- Teil 2: Events, Autosave, Navigation, Autosave, Submission ---
-// (Bitte direkt unter Teil 1 einfügen!)
 
 function saveAutosave() {
   localStorage.setItem("autosave_form", JSON.stringify(formData));
 }
-
 function loadAutosave() {
   formData = JSON.parse(localStorage.getItem("autosave_form") || "{}");
 }
@@ -606,94 +540,74 @@ function loadAutosave() {
 function getFieldValue(field) {
   switch (field.type) {
     case "checkbox":
-      const checked = Array.from(document.querySelectorAll(`input[name="${field.key}"]:checked`)).map(e => e.value);
-      return checked;
+      return Array.from(document.querySelectorAll(`input[name="${field.key}"]:checked`)).map(e => e.value);
     case "slider":
       return document.getElementById(field.key)?.value || field.min || 1;
     case "privacy":
-      return document.getElementById(field.key)?.checked ? true : false;
+      return document.getElementById(field.key)?.checked || false;
     default:
       return document.getElementById(field.key)?.value || "";
   }
 }
 
 function setFieldValues(blockIdx) {
-  // Füllt die Felder aus autosave wieder ein
   const block = blocks[blockIdx];
   for (const key of block.keys) {
     const field = fields.find(f => f.key === key);
     if (!field) continue;
-    switch (field.type) {
-      case "checkbox":
-        if (formData[key] && Array.isArray(formData[key])) {
-          for (const v of formData[key]) {
-            const el = document.querySelector(`input[name="${field.key}"][value="${v}"]`);
-            if (el) el.checked = true;
-          }
-        }
-        break;
-      case "slider":
-        const sl = document.getElementById(field.key);
-        if (sl && formData[key]) {
-          sl.value = formData[key];
-          if (sl.nextElementSibling) sl.nextElementSibling.innerText = formData[key];
-        }
-        break;
-      case "privacy":
-        const chk = document.getElementById(field.key);
-        if (chk && formData[key]) chk.checked = true;
-        break;
-      default:
-        const inp = document.getElementById(field.key);
-        if (inp && formData[key]) inp.value = formData[key];
+    const el = document.getElementById(field.key);
+    if (!el) continue;
+    if (field.type === "checkbox") {
+      if (formData[key]) {
+        formData[key].forEach(v => {
+          const box = document.querySelector(`input[name="${field.key}"][value="${v}"]`);
+          if (box) box.checked = true;
+        });
+      }
+    } else if (field.type === "slider") {
+      el.value = formData[key];
+      if (el.nextElementSibling) el.nextElementSibling.innerText = formData[key];
+    } else if (field.type === "privacy") {
+      el.checked = formData[key] || false;
+    } else {
+      el.value = formData[key] || "";
     }
   }
 }
 
 function blockIsValid(blockIdx) {
-  // Validierung: (minimal) alle Pflichtfelder im Block ausgefüllt?
   const block = blocks[blockIdx];
-  let valid = true;
-  for (const key of block.keys) {
+  return block.keys.every(key => {
     const field = fields.find(f => f.key === key);
-    if (!field) continue;
-    // Checkboxen: mindestens eine? Textfelder: nicht leer
-    if (field.type === "checkbox" && (!formData[key] || !formData[key].length)) valid = false;
-    if ((field.type === "select" || field.type === "slider" || field.type === "textarea" || field.type === "text") && !formData[key]) valid = false;
-    if (field.type === "privacy" && !formData[key]) valid = false;
-  }
-  return valid;
+    if (!field) return true;
+    const val = formData[key];
+    if (field.type === "checkbox") return val && val.length > 0;
+    if (field.type === "privacy") return val === true;
+    return val !== undefined && val !== "";
+  });
 }
 
-// --- Event-Handler für Navigation ---
 function handleFormEvents() {
-  document.getElementById("formbuilder").addEventListener("change", e => {
-    // Save all fields in current block
+  document.getElementById("formbuilder").addEventListener("change", () => {
     const block = blocks[currentBlock];
     for (const key of block.keys) {
       const field = fields.find(f => f.key === key);
-      if (field) {
-        formData[key] = getFieldValue(field);
-      }
+      if (field) formData[key] = getFieldValue(field);
     }
     saveAutosave();
   });
 
-  // Navigation-Buttons
   document.getElementById("formbuilder").addEventListener("click", e => {
+    const feedback = document.getElementById("feedback");
     if (e.target.id === "btn-next") {
-      // Validate
-      const feedback = document.getElementById("feedback");
       if (!blockIsValid(currentBlock)) {
-        feedback.innerHTML = `<span class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus!</span>`;
+        feedback.innerHTML = `<div class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus.</div>`;
         return;
       }
-      feedback.innerHTML = "";
       currentBlock++;
       renderBlock(currentBlock);
       setFieldValues(currentBlock);
-    }
-    if (e.target.id === "btn-prev") {
+    } else if (e.target.id === "btn-prev") {
       currentBlock--;
       renderBlock(currentBlock);
       setFieldValues(currentBlock);
@@ -701,93 +615,52 @@ function handleFormEvents() {
   });
 }
 
-// --- Initialisierung aufrufen (am Ende der Datei!) ---
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
   renderBlock(currentBlock);
   setFieldValues(currentBlock);
   handleFormEvents();
 });
-// --- Teil 3: Datenübertragung, Abschlussanzeige, Autosave, Reset ---
-// (Bitte UNTER Teil 2 einfügen!)
 
 function submitAllBlocks() {
-  // Sammle alle Felder aus allen Blöcken
-  let completeData = {};
-  for (const field of fields) {
-    completeData[field.key] = formData[field.key];
-  }
-  // JWT-Token holen
-  const token = localStorage.getItem("jwt") || "";
-  // Ladeanzeige
+  const data = {};
+  fields.forEach(field => data[field.key] = formData[field.key]);
+
+  const BASE_URL = location.hostname.includes("localhost")
+    ? "https://make-ki-backend-neu-production.up.railway.app"
+    : "";
+
   document.getElementById("formbuilder").innerHTML = `
     <div class="loading-msg">
       <div class="loader"></div>
-      <div>Ihre Angaben werden analysiert...<br>Bitte einen Moment Geduld.</div>
-    </div>
-  `;
-  // Senden
-  fetch("/briefing", {
+      <div>Ihre Angaben werden analysiert … bitte einen Moment Geduld.</div>
+    </div>`;
+
+  fetch(`${BASE_URL}/briefing`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": token
     },
-    body: JSON.stringify(completeData)
+    body: JSON.stringify(data)
   })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
       localStorage.removeItem("autosave_form");
       showSuccess(data);
     })
-    .catch(err => {
-      document.getElementById("formbuilder").innerHTML = `<div class="form-error">
-        Es gab ein Problem bei der Übertragung. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.
-      </div>`;
+    .catch(() => {
+      document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;
     });
 }
 
 function showSuccess(data) {
-  // Zeigt Erfolgsmeldung & Button zum Download/Bericht (oder direkt HTML-Report)
-  let resultBlock = `<h2>KI-Readiness-Analyse abgeschlossen!</h2>
+  const report = data?.html ? `<div class="report-html-preview">${data.html}</div>` : "";
+  document.getElementById("formbuilder").innerHTML = `
+    <h2>KI-Readiness-Analyse abgeschlossen!</h2>
     <div class="success-msg">
       Ihre Angaben wurden erfolgreich übermittelt.<br>
-      Der KI-Readiness-Report wurde erstellt.<br>
-      ${data?.html ? "<div class='report-html-preview'>" + data.html + "</div>" : ""}
+      Der KI-Readiness-Report wurde erstellt.<br>${report}
     </div>
-    <a href="/dashboard.html" class="btn-next">Zum Dashboard</a>
-  `;
-  document.getElementById("formbuilder").innerHTML = resultBlock;
+    <a href="/dashboard.html" class="btn-next">Zum Dashboard</a>`;
 }
-
-// --- Anpassung: Im letzten Block "Absenden"-Button ersetzen ---
-function renderBlock(blockIdx) {
-  const block = blocks[blockIdx];
-  let blockHtml = `<div class="block-progress">Block ${blockIdx + 1} von ${blocks.length}</div>`;
-  blockHtml += `<h3>${block.label}</h3><div class="block-fields">`;
-  // Felder
-  for (const key of block.keys) {
-    const field = fields.find(f => f.key === key);
-    if (field) blockHtml += renderField(field, key);
-  }
-  blockHtml += `</div>
-    <div id="feedback" class="form-feedback"></div>
-    <div class="form-nav">`;
-  if (blockIdx > 0) blockHtml += `<button type="button" id="btn-prev" class="btn-prev">Zurück</button>`;
-  if (blockIdx < blocks.length - 1) blockHtml += `<button type="button" id="btn-next" class="btn-next">Weiter</button>`;
-  if (blockIdx === blocks.length - 1) blockHtml += `<button type="button" id="btn-send" class="btn-next">Absenden</button>`;
-  blockHtml += `</div>`;
-  document.getElementById("formbuilder").innerHTML = blockHtml;
-  setFieldValues(blockIdx);
-  // "Absenden"-Handler
-  if (blockIdx === blocks.length - 1) {
-    document.getElementById("btn-send").onclick = submitAllBlocks;
-  }
-}
-
-// --- Zusätzliche Features & Hinweise für Copy-Paste ---
-// - Passe ggf. die fetch-URL auf dein Backend an ("/briefing" → deine API-Route)
-// - Styles für .loading-msg, .success-msg, .report-html-preview, .form-error, .btn-next in deiner CSS-Datei ergänzen
-// - Guidance-Text kannst du nach Wunsch oben in jedem Block ergänzen, z.B. mit <div class="block-guidance">...</div> direkt im renderBlock()
-// - Preview des Berichts direkt in showSuccess (ggf. anpassen)
-
