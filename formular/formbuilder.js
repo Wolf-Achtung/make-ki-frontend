@@ -491,39 +491,49 @@ function renderBlock(blockIdx) {
   form.innerHTML = block.keys.map(key => {
     const field = fields.find(f => f.key === key);
     if (!field) return "";
+    if (field.showIf && !field.showIf(formData)) return "";
+
+    // Beschreibung / Guidance
+    const guidance = field.description
+      ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
+      : "";
+
+    // Eingabefeld erzeugen
     let input = "";
     switch (field.type) {
       case "select":
         input = `
-          <label for="${field.key}"><b>${field.label}</b></label>
           <select id="${field.key}" name="${field.key}">
             <option value="">Bitte wählen...</option>
             ${field.options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join("")}
           </select>`;
         break;
+
       case "textarea":
-        input = `<label for="${field.key}"><b>${field.label}</b></label>
-          <textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder||""}">${formData[field.key]||""}</textarea>`;
+        input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder || ""}">${formData[field.key] || ""}</textarea>`;
         break;
-case "checkbox":
-  input = `<b>${field.label}</b><div class="checkbox-group twocol">
-    ${field.options.map(opt => {
-      const [mainLabel, sub] = opt.label.split(" (z. B.");
-      const subText = sub ? `<div class="option-example">z. B. ${sub.replace(")", "")}</div>` : "";
-      const checked = formData[field.key]?.includes(opt.value) ? 'checked' : '';
-      return `<label class="checkbox-label">
-        <input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}>
-        ${mainLabel.trim()}
-        ${subText}
-      </label>`;
-    }).join("")}
-  </div>`;
-  break;
+
+      case "checkbox":
+        input = `<div class="checkbox-group twocol">
+          ${field.options.map(opt => {
+            const [mainLabel, sub] = opt.label.split(" (z. B.");
+            const subText = sub ? `<div class="option-example">z. B. ${sub.replace(")", "")}</div>` : "";
+            const checked = formData[field.key]?.includes(opt.value) ? 'checked' : '';
+            return `<label class="checkbox-label">
+              <input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}>
+              ${mainLabel.trim()}
+              ${subText}
+            </label>`;
+          }).join("")}
+        </div>`;
+        break;
+
       case "slider":
-        input = `<label for="${field.key}"><b>${field.label}</b></label>
-          <input type="range" id="${field.key}" name="${field.key}" min="${field.min||1}" max="${field.max||10}" step="${field.step||1}" value="${formData[field.key]||field.min||1}" oninput="this.nextElementSibling.innerText=this.value"/>
-          <span class="slider-value-label">${formData[field.key]||field.min||1}</span>`;
+        input = `
+          <input type="range" id="${field.key}" name="${field.key}" min="${field.min || 1}" max="${field.max || 10}" step="${field.step || 1}" value="${formData[field.key] || field.min || 1}" oninput="this.nextElementSibling.innerText=this.value"/>
+          <span class="slider-value-label">${formData[field.key] || field.min || 1}</span>`;
         break;
+
       case "privacy":
         input = `<div class="privacy-section">
           <label>
@@ -532,17 +542,24 @@ case "checkbox":
           </label>
         </div>`;
         break;
+
       default:
-        input = `<label for="${field.key}"><b>${field.label}</b></label>
-          <input type="text" id="${field.key}" name="${field.key}" value="${formData[field.key]||""}" />`;
+        input = `<input type="text" id="${field.key}" name="${field.key}" value="${formData[field.key] || ""}" />`;
     }
 
-    const guidance = field.description
-      ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
-      : "";
-    return `<div class="form-group">${input}${guidance}</div>`;
+    // Layout: Label → Guidance → Input
+    const labelHtml = field.type !== "privacy"
+      ? `<label for="${field.key}"><b>${field.label}</b></label>`
+      : ""; // privacy hat eigenes Label
+
+    return `<div class="form-group">
+      ${labelHtml}
+      ${guidance}
+      ${input}
+    </div>`;
   }).join("");
 
+  // Navigation
   form.innerHTML += `
     <div class="form-nav">
       ${blockIdx > 0 ? `<button type="button" id="btn-prev">Zurück</button>` : ""}
@@ -599,9 +616,10 @@ function blockIsValid(blockIdx) {
   const block = blocks[blockIdx];
   return block.keys.every(key => {
     const field = fields.find(f => f.key === key);
+    if (!field) return true;
     if (field.showIf && !field.showIf(formData)) return true;
     const val = formData[key];
-    if (field.type === "checkbox") return val && val.length > 0;
+    if (field.type === "checkbox") return Array.isArray(val) && val.length > 0;
     if (field.type === "privacy") return val === true;
     return val !== undefined && val !== "";
   });
@@ -627,14 +645,14 @@ function handleFormEvents() {
       }
       currentBlock++;
       renderBlock(currentBlock);
-      setFieldValues(currentBlock);
+      setTimeout(() => setFieldValues(currentBlock), 20);
       window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
     }
 
     if (e.target.id === "btn-prev") {
       currentBlock--;
       renderBlock(currentBlock);
-      setFieldValues(currentBlock);
+      setTimeout(() => setFieldValues(currentBlock), 20);
       window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
     }
 
@@ -648,7 +666,7 @@ function handleFormEvents() {
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
   renderBlock(currentBlock);
-  setFieldValues(currentBlock);
+  setTimeout(() => setFieldValues(currentBlock), 20);
   handleFormEvents();
 });
 
