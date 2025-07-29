@@ -298,10 +298,13 @@ input:invalid, select:invalid, textarea:invalid {
   opacity: 0.85;
 }
 .checkbox-label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 1.12em;
-  padding-left: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px; /* enger Abstand zwischen Label-Zeile und Beschreibung */
+  margin-bottom: 0.5rem; /* einheitlicher Abstand nach außen */
+  font-size: 1rem;
+  line-height: 1.4;
 }
 fieldset {
   border: none;
@@ -356,11 +359,8 @@ input[type="range"] {
 /* === Styles: Beispielhinweise bei Checkboxen === */
 .option-example {
   font-size: 0.85em;
-  color: #5f6c8a;
-  margin-top: -2px;
-  margin-left: 1.6em;
-  margin-bottom: 10px;
-  display: block;
+color: #6b7280; /* Tailwind: text-gray-500 */
+  line-height: 1.2;
 }
 
 /* === Styles: Schritt-Anzeige auffälliger gestalten === */
@@ -390,7 +390,10 @@ input[type="range"] {
   margin-bottom: 6px;
   overflow: hidden;
 }
-
+/* Optional: Abstand zwischen mehreren Checkbox-Gruppen verringern */
+.checkbox-group {
+  margin-bottom: 1rem;
+}
 .progress-bar-inner {
   background: linear-gradient(to right, #3b82f6, #2563eb);
   height: 100%;
