@@ -506,7 +506,7 @@ function renderBlock(blockIdx) {
           <textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder||""}">${formData[field.key]||""}</textarea>`;
         break;
 case "checkbox":
-  input = `<b>${field.label}</b><div class="checkbox-group">
+  input = `<b>${field.label}</b><div class="checkbox-group twocol">
     ${field.options.map(opt => {
       const [mainLabel, sub] = opt.label.split(" (z. B.");
       const subText = sub ? `<div class="option-example">z. B. ${sub.replace(")", "")}</div>` : "";
@@ -588,13 +588,10 @@ function setFieldValues(blockIdx) {
         });
       }
     } else if (field.type === "slider") {
-      el.value = formData[key];
-      if (el.nextElementSibling) el.nextElementSibling.innerText = formData[key];
-    } else if (field.type === "privacy") {
-      el.checked = formData[key] || false;
-    } else {
-      el.value = formData[key] || "";
-    }
+  const val = formData[key] ?? field.min ?? 1;
+  el.value = val;
+  if (el.nextElementSibling) el.nextElementSibling.innerText = val;
+}
   }
 }
 
@@ -673,49 +670,56 @@ function submitAllBlocks() {
       <div>Ihre Angaben werden analysiert … bitte einen Moment Geduld.</div>
     </div>`;
 
-  fetch(`${BASE_URL}/briefing`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}` // ✅ Fix hier!
-    },
-    body: JSON.stringify(data)
+fetch(`${BASE_URL}/briefing`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    ...(token ? { "Authorization": `Bearer ${token}` } : {})
+  },
+  body: JSON.stringify(data)
+})
+  .then(async res => {
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Antwort vom Server war nicht OK: ${res.status} – ${errText}`);
+    }
+    return res.json();
   })
-    .then(res => {
-      if (!res.ok) {
-        throw new Error("Antwort vom Server war nicht OK");
-      }
-      return res.json();
-    })
-    .then(data => {
-      localStorage.removeItem("autosave_form");
-      localStorage.setItem("report_html", data.html);
-      showSuccess(data);
-    })
-    .catch(() => {
-      document.getElementById("formbuilder").innerHTML = `
-        <div class="form-error">
-          Fehler bei der Übertragung. Bitte erneut versuchen.
-        </div>`;
-    });
+  .then(data => {
+    localStorage.removeItem("autosave_form");
+    if (data?.html) {
+      localStorage.setItem("report_html", data.html); // ✅ PDF/Download-Link braucht das
+    }
+    showSuccess(data);
+  })
+  .catch(err => {
+    console.error("Fehler beim Senden des Formulars:", err);
+    document.getElementById("formbuilder").innerHTML = `
+      <div class="form-error">
+        Fehler bei der Übertragung. Bitte erneut versuchen.<br><small>${err.message}</small>
+      </div>`;
+  });
 }
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
-  const report = data?.html ? `<div class="report-html-preview">${data.html}</div>` : "";
+  // 🔐 Absichern: fallback für HTML
+  const html = data?.html || localStorage.getItem("report_html") || "";
 
-  // Speichere die HTML-Ausgabe für report.html + Redirect
+  // ✅ Autosave löschen, Report sichern
   localStorage.removeItem("autosave_form");
-  localStorage.setItem("report_html", data.html);
+  localStorage.setItem("report_html", html);
 
-document.getElementById("formbuilder").innerHTML = `
-  <h2>KI-Readiness-Analyse abgeschlossen!</h2>
-  <div class="success-msg">
-    Ihre Angaben wurden erfolgreich übermittelt.<br>
-    Der KI–Readiness–Report wurde erstellt.<br>
-  </div>
-  ${report}
-`; // ← Semikolon gehört hier hin, *nach* der Template-Zuweisung
-  // Weiterleitung zum PDF-Download (optional)
+  // ✅ Report im Browser anzeigen
+  document.getElementById("formbuilder").innerHTML = `
+    <h2>KI-Readiness-Analyse abgeschlossen!</h2>
+    <div class="success-msg">
+      Ihre Angaben wurden erfolgreich übermittelt.<br>
+      Der KI–Readiness–Report wurde erstellt.
+    </div>
+    <div class="report-html-preview">${html}</div>
+  `;
+
+  // ⏳ Optional: Redirect zur PDF-Seite nach kurzer Wartezeit
   setTimeout(() => {
     window.location.href = "/report.html";
   }, 1000);

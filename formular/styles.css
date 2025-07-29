@@ -396,4 +396,16 @@ input[type="range"] {
   height: 100%;
   transition: width 0.4s ease-in-out;
 }
+/* Zweispaltiges Layout für Checkbox-Gruppen */
+.checkbox-group.twocol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.6em 1.2em;
+}
+
+@media (max-width: 600px) {
+  .checkbox-group.twocol {
+    grid-template-columns: 1fr;
+  }
+}
 
