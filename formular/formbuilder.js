@@ -483,6 +483,7 @@ function showProgress(blockIdx) {
 }
 
 function renderBlock(blockIdx) {
+  formData = JSON.parse(localStorage.getItem("autosave_form") || "{}");
   showProgress(blockIdx);
   const block = blocks[blockIdx];
   const form = document.getElementById("formbuilder");
