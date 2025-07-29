@@ -405,7 +405,11 @@ color: #6b7280; /* Tailwind: text-gray-500 */
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 0.6em 1.2em;
 }
-
+.report-html-preview {
+  margin-top: 2rem;
+  padding: 1rem;
+  border-top: 2px solid #eee;
+}
 @media (max-width: 600px) {
   .checkbox-group.twocol {
     grid-template-columns: 1fr;

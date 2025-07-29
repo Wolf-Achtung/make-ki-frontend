@@ -702,25 +702,23 @@ fetch(`${BASE_URL}/briefing`, {
 }
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
-  // 🔐 Absichern: fallback für HTML
-  const html = data?.html || localStorage.getItem("report_html") || "";
+  const reportHTML = data?.html || "";
 
-  // ✅ Autosave löschen, Report sichern
+  // Speichere die HTML-Ausgabe im localStorage (optional)
   localStorage.removeItem("autosave_form");
-  localStorage.setItem("report_html", html);
+  localStorage.setItem("report_html", reportHTML);
 
-  // ✅ Report im Browser anzeigen
+  // Zeige Report direkt im Interface, ohne Weiterleitung
   document.getElementById("formbuilder").innerHTML = `
     <h2>KI-Readiness-Analyse abgeschlossen!</h2>
     <div class="success-msg">
       Ihre Angaben wurden erfolgreich übermittelt.<br>
       Der KI–Readiness–Report wurde erstellt.
     </div>
-    <div class="report-html-preview">${html}</div>
+    <div class="report-html-preview">${reportHTML}</div>
   `;
-
   // ⏳ Optional: Redirect zur PDF-Seite nach kurzer Wartezeit
   setTimeout(() => {
-    window.location.href = "/report.html";
+    window.location.href = "report.html";
   }, 1000);
 }
