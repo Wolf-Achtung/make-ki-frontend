@@ -66,7 +66,7 @@ const fields = [
       { value: "sonstiges", label: "Sonstiges" }
     ],
     description: "Bitte wählen Sie die zutreffende Rechtsform. So erhalten Sie Auswertungen, die genau auf Ihre Unternehmenssituation passen.",
-    showIf: (data) => data.unternehmensgroesse === "solo"
+    showIf: (data) => data.unternehmensgroesse === "1"
   },
   {
     key: "bundesland",
@@ -627,14 +627,31 @@ function blockIsValid(blockIdx) {
 }
 
 function handleFormEvents() {
-  document.getElementById("formbuilder").addEventListener("change", () => {
-    const block = blocks[currentBlock];
-    for (const key of block.keys) {
-      const field = fields.find(f => f.key === key);
-      if (field) formData[key] = getFieldValue(field);
+document.getElementById("formbuilder").addEventListener("change", () => {
+  const block = blocks[currentBlock];
+  let needsRerender = false;
+
+  for (const key of block.keys) {
+    const field = fields.find(f => f.key === key);
+    if (field) {
+      const prev = formData[key];
+      const curr = getFieldValue(field);
+      formData[key] = curr;
+      if (prev !== curr && field.key === "unternehmensgroesse") {
+        needsRerender = true; // nur bei diesem Feld notwendig
+      }
     }
-    saveAutosave();
-  });
+  }
+
+  saveAutosave();
+
+  if (needsRerender) {
+    renderBlock(currentBlock);
+    setTimeout(() => {
+    setFieldValues(currentBlock);
+    handleFormEvents();
+  } 20);
+});
 
   document.getElementById("formbuilder").addEventListener("click", e => {
     const feedback = document.getElementById("feedback");
@@ -667,9 +684,14 @@ function handleFormEvents() {
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
   renderBlock(currentBlock);
-  setTimeout(() => setFieldValues(currentBlock), 20);
+  setTimeout(() => {
+    setFieldValues(currentBlock);
+    renderBlock(currentBlock); // ⬅️ neu!
+    setTimeout(() => setFieldValues(currentBlock), 20); // nochmal nachziehen
+  }, 20);
   handleFormEvents();
 });
+
 
 function submitAllBlocks() {
   const data = {};
