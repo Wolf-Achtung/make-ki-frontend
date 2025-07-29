@@ -656,7 +656,7 @@ function submitAllBlocks() {
 
   const BASE_URL = location.hostname.includes("localhost")
     ? "https://make-ki-backend-neu-production.up.railway.app"
-    : "";
+    : "https://make-ki-backend-neu-production.up.railway.app";
 
   document.getElementById("formbuilder").innerHTML = `
     <div class="loading-msg">
