@@ -144,6 +144,24 @@ const fields = [
     ],
     description: "Sind viele Arbeitsschritte noch Handarbeit oder läuft vieles automatisch (z. B. durch KI, Scripte oder smarte Tools)?"
   },
+{
+  key: "ki_einsatz",
+  label: "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
+  type: "checkbox",
+  options: [
+    { value: "marketing", label: "Marketing" },
+    { value: "vertrieb", label: "Vertrieb" },
+    { value: "buchhaltung", label: "Buchhaltung" },
+    { value: "produktion", label: "Produktion" },
+    { value: "kundenservice", label: "Kundenservice" },
+    { value: "it", label: "IT" },
+    { value: "forschung", label: "Forschung & Entwicklung" },
+    { value: "personal", label: "Personal" },
+    { value: "keine", label: "Noch keine Nutzung" },
+    { value: "sonstiges", label: "Sonstiges" }
+  ],
+  description: "Wo nutzen Sie bereits Künstliche Intelligenz oder Automatisierung? Wählen Sie alle Bereiche aus, die relevant sind."
+},
   {
     key: "ki_knowhow",
     label: "Wie schätzen Sie das interne KI-Know-how Ihres Teams ein?",
