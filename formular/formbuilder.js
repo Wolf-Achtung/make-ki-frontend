@@ -339,7 +339,7 @@ const fields = [
       { value: "keine", label: "Keine Hemmnisse" },
       { value: "andere", label: "Andere" }
     ],
-    description: "Welche Herausforderungen erschweren bei Ihnen den Einsatz von KI? Mehrfachauswahl möglich."
+    description: "Typische Hürden sind Unsicherheit bei Datenschutz, fehlendes Know-how oder begrenzte Kapazitäten. Wählen Sie alle Punkte aus, die für Sie relevant sind."
   },
   {
     key: "bisherige_foerdermittel",
@@ -349,7 +349,7 @@ const fields = [
       { value: "ja", label: "Ja" },
       { value: "nein", label: "Nein" }
     ],
-    description: "Haben Sie bereits Fördermittel erhalten oder beantragt? Das hilft, die Auswertung gezielt zu gestalten."
+    description: "Haben Sie in der Vergangenheit staatliche oder regionale Fördermittel für Digitalisierung, IT oder KI beantragt oder erhalten? Diese Angabe hilft, passende Anschlussprogramme oder neue Optionen vorzuschlagen."
   },
   {
     key: "interesse_foerderung",
@@ -384,7 +384,7 @@ const fields = [
       { value: "ueber_50000", label: "Mehr als 50.000 €" },
       { value: "unklar", label: "Noch unklar" }
     ],
-    description: "Wie hoch ist Ihr geplantes Investitionsbudget für KI- oder Digitalisierungsprojekte im nächsten Jahr? Grobe Schätzung reicht."
+    description: "Schon mit kleinen Budgets lassen sich Fortschritte erzielen – Förderprogramme können zusätzlich helfen. Grobe Schätzung reicht."
   },
   {
     key: "marktposition",
@@ -408,7 +408,7 @@ const fields = [
       { value: "nein", label: "Nein" },
       { value: "selten", label: "Nur selten / informell" }
     ],
-    description: "Gibt es regelmäßige Vergleiche oder Analysen zum Stand der Digitalisierung im Wettbewerb?"
+    description: "Solche Benchmarks helfen, die eigene Position einzuordnen und Chancen zu erkennen."
   },
   {
     key: "innovationsprozess",
@@ -422,7 +422,7 @@ const fields = [
       { value: "zufall", label: "Eher zufällig/ungeplant" },
       { value: "unbekannt", label: "Keine klare Strategie" }
     ],
-    description: "Gibt es einen strukturierten Innovationsprozess, oder entstehen neue Ideen eher spontan?"
+    description: "Wie entstehen bei Ihnen neue Ideen, Produkte oder digitale Lösungen? Je klarer Ihr Innovationsprozess, desto gezielter können KI-Projekte geplant und umgesetzt werden."
   },
   {
     key: "risikofreude",
