@@ -108,7 +108,7 @@ input:hover, select:hover, textarea:hover {
   align-items: center;
   gap: 0.6em;
   cursor: pointer;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 input[type="checkbox"] {
   width: 21px;
@@ -357,17 +357,23 @@ input[type="range"] {
 .option-example {
   font-size: 0.85em;
   color: #5f6c8a;
-  margin-top: 2px;
-  margin-left: 1.5em;
+  margin-top: -2px;
+  margin-left: 1.6em;
+  margin-bottom: 10px;
+  display: block;
 }
 
 /* === Styles: Schritt-Anzeige auffälliger gestalten === */
 .progress-label {
-  text-align: center;
+  background: #f0f4fd;
+  padding: 6px 12px;
+  border-radius: 12px;
+  display: inline-block;
   font-size: 1.1em;
-  color: #1e40af;
   font-weight: 500;
-  margin-bottom: 14px;
+  color: #1e40af;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
 }
 
 .progress-label b {

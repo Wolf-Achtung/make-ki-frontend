@@ -505,18 +505,20 @@ function renderBlock(blockIdx) {
         input = `<label for="${field.key}"><b>${field.label}</b></label>
           <textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder||""}">${formData[field.key]||""}</textarea>`;
         break;
-      case "checkbox":
-        input = `<b>${field.label}</b><div class="checkbox-group">
-          ${field.options.map(opt => {
-          const [mainLabel, sub] = opt.label.split(" (z. B.");
-          const subText = sub ? `<div class="option-example">z. B. ${sub.replace(")", "")}</div>` : "";
-            return `<label class="checkbox-label">
-              <input type="checkbox" name="${field.key}" value="${opt.value}" ${formData[field.key]?.includes(opt.value) ? 'checked' : ${mainLabel.trim()}${subText}
-              ${opt.label}
-            </label>`;
-        }).join("")}
-        </div>`;
-        break;
+case "checkbox":
+  input = `<b>${field.label}</b><div class="checkbox-group">
+    ${field.options.map(opt => {
+      const [mainLabel, sub] = opt.label.split(" (z. B.");
+      const subText = sub ? `<div class="option-example">z. B. ${sub.replace(")", "")}</div>` : "";
+      const checked = formData[field.key]?.includes(opt.value) ? 'checked' : '';
+      return `<label class="checkbox-label">
+        <input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}>
+        ${mainLabel.trim()}
+        ${subText}
+      </label>`;
+    }).join("")}
+  </div>`;
+  break;
       case "slider":
         input = `<label for="${field.key}"><b>${field.label}</b></label>
           <input type="range" id="${field.key}" name="${field.key}" min="${field.min||1}" max="${field.max||10}" step="${field.step||1}" value="${formData[field.key]||field.min||1}" oninput="this.nextElementSibling.innerText=this.value"/>
