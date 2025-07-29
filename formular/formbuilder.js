@@ -707,15 +707,17 @@ function showSuccess(data) {
   localStorage.removeItem("autosave_form");
   localStorage.setItem("report_html", data.html);
 
-  document.getElementById("formbuilder").innerHTML = `
-    <h2>KI-Readiness-Analyse abgeschlossen!</h2>
-    <div class="success-msg">
-      Ihre Angaben wurden erfolgreich übermittelt.<br>
-      Der KI-Readiness-Report wurde erstellt.<br>${report}
-    </div>
+document.getElementById("formbuilder").innerHTML = `
+  <h2>KI-Readiness-Analyse abgeschlossen!</h2>
+  <div class="success-msg">
+    Ihre Angaben wurden erfolgreich übermittelt.<br>
+    Der KI–Readiness–Report wurde erstellt.<br>
+  </div>
+  ${report}
+`; // ← Semikolon gehört hier hin, *nach* der Template-Zuweisung
   // Weiterleitung zum PDF-Download (optional)
   setTimeout(() => {
     window.location.href = "/report.html";
   }, 1000);
-}
-
+  }
+});
