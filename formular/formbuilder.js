@@ -599,7 +599,7 @@ function blockIsValid(blockIdx) {
   const block = blocks[blockIdx];
   return block.keys.every(key => {
     const field = fields.find(f => f.key === key);
-    if (!field) return true;
+    if (field.showIf && !field.showIf(formData)) return true;
     const val = formData[key];
     if (field.type === "checkbox") return val && val.length > 0;
     if (field.type === "privacy") return val === true;
