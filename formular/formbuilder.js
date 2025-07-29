@@ -654,11 +654,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function submitAllBlocks() {
   const data = {};
-  fields.forEach(field => {
-    data[field.key] = formData[field.key];
-  });
-
-  const token = localStorage.getItem("jwt") || "";
+  fields.forEach(field => data[field.key] = formData[field.key]);
 
   const BASE_URL = location.hostname.includes("localhost")
     ? "https://make-ki-backend-neu-production.up.railway.app"
@@ -670,52 +666,42 @@ function submitAllBlocks() {
       <div>Ihre Angaben werden analysiert … bitte einen Moment Geduld.</div>
     </div>`;
 
-fetch(`${BASE_URL}/briefing`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    ...(token ? { "Authorization": `Bearer ${token}` } : {})
-  },
-  body: JSON.stringify(data)
-})
-  .then(async res => {
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Antwort vom Server war nicht OK: ${res.status} – ${errText}`);
-    }
-    return res.json();
+  fetch(`${BASE_URL}/briefing`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": token
+    },
+    body: JSON.stringify(data)
   })
-  .then(data => {
-    localStorage.removeItem("autosave_form");
-    if (data?.html) {
-      localStorage.setItem("report_html", data.html); // ✅ PDF/Download-Link braucht das
-    }
-    showSuccess(data);
-  })
-  .catch(err => {
-    console.error("Fehler beim Senden des Formulars:", err);
-    document.getElementById("formbuilder").innerHTML = `
-      <div class="form-error">
-        Fehler bei der Übertragung. Bitte erneut versuchen.<br><small>${err.message}</small>
-      </div>`;
-  });
+    .then(res => res.json())
+    .then(data => {
+      localStorage.removeItem("autosave_form");
+      showSuccess(data);
+    })
+    .catch(() => {
+      document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;
+    });
 }
+
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
-  const reportHTML = data?.html || "";
+  const report = data?.html
+    ? `<div class="report-html-preview">${data.html}</div>`
+    : "";
 
-  // Speichere die HTML-Ausgabe im localStorage (optional)
+  // Autosave aufräumen und HTML-Report lokal speichern (für spätere Nutzung, falls gewünscht)
   localStorage.removeItem("autosave_form");
-  localStorage.setItem("report_html", reportHTML);
+  localStorage.setItem("report_html", data.html);
 
-  // Zeige Report direkt im Interface, ohne Weiterleitung
+  // HTML-Report direkt anzeigen – ohne Redirect
   document.getElementById("formbuilder").innerHTML = `
     <h2>KI-Readiness-Analyse abgeschlossen!</h2>
     <div class="success-msg">
       Ihre Angaben wurden erfolgreich übermittelt.<br>
-      Der KI–Readiness–Report wurde erstellt.
+      Der KI–Readiness–Report wurde erstellt.<br>
     </div>
-    <div class="report-html-preview">${reportHTML}</div>
+    ${report}
   `;
   // ⏳ Optional: Redirect zur PDF-Seite nach kurzer Wartezeit
   setTimeout(() => {
