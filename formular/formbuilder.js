@@ -719,5 +719,4 @@ document.getElementById("formbuilder").innerHTML = `
   setTimeout(() => {
     window.location.href = "/report.html";
   }, 1000);
-  }
 });
