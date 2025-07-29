@@ -684,6 +684,7 @@ function submitAllBlocks() {
     })
     .then(data => {
       localStorage.removeItem("autosave_form");
+      localStorage.setItem("report_html", data.html);
       showSuccess(data);
     })
     .catch(() => {
