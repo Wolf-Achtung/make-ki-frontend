@@ -543,7 +543,7 @@ function renderBlock(blockIdx) {
       ${blockIdx > 0 ? `<button type="button" id="btn-prev">Zurück</button>` : ""}
       ${blockIdx < blocks.length - 1
         ? `<button type="button" id="btn-next">Weiter</button>`
-        : `<button type="submit" id="submit-btn">Absenden</button>`}
+        : `<button type="button" id="btn-send" class="btn-next">Absenden</button>`}
     </div>
     <div id="feedback"></div>`;
 }
@@ -617,6 +617,7 @@ function handleFormEvents() {
 
   document.getElementById("formbuilder").addEventListener("click", e => {
     const feedback = document.getElementById("feedback");
+
     if (e.target.id === "btn-next") {
       if (!blockIsValid(currentBlock)) {
         feedback.innerHTML = `<div class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus.</div>`;
@@ -625,13 +626,22 @@ function handleFormEvents() {
       currentBlock++;
       renderBlock(currentBlock);
       setFieldValues(currentBlock);
-    } else if (e.target.id === "btn-prev") {
+      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
+    }
+
+    if (e.target.id === "btn-prev") {
       currentBlock--;
       renderBlock(currentBlock);
       setFieldValues(currentBlock);
+      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
+    }
+
+    if (e.target.id === "submit-btn" || e.target.id === "btn-send") {
+      submitAllBlocks(); // ✅ wird jetzt auch korrekt ausgelöst
     }
   });
 }
+
 
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
