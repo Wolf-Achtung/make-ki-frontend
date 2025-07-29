@@ -650,8 +650,8 @@ document.getElementById("formbuilder").addEventListener("change", () => {
     setTimeout(() => {
     setFieldValues(currentBlock);
     handleFormEvents();
-  } 20);
-});
+  }, 20);
+}
 
   document.getElementById("formbuilder").addEventListener("click", e => {
     const feedback = document.getElementById("feedback");
