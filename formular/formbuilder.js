@@ -687,10 +687,13 @@ window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     setFieldValues(currentBlock);
     renderBlock(currentBlock); // ⬅️ neu!
-    setTimeout(() => setFieldValues(currentBlock), 20); // nochmal nachziehen
+    setTimeout(() => {
+      setFieldValues(currentBlock);
+      handleFormEvents();
+    }, 20);
   }, 20);
-  handleFormEvents();
 });
+
 
 
 function submitAllBlocks() {
