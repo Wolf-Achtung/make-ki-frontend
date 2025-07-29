@@ -288,7 +288,7 @@ const fields = [
       { value: "nein", label: "Nein" },
       { value: "teilweise", label: "Teilweise (in Planung)" }
     ],
-    description: "Gerade bei sensiblen KI-Systemen ist eine DSFA empfohlen. Trifft das bei Ihnen bereits zu?"
+    description: "Bei vielen KI-Anwendungen ist eine sogenannte „DSFA“ (Datenschutz-Folgenabschätzung) laut DSGVO verpflichtend oder empfohlen – z. B. bei sensiblen Daten, automatisierten Entscheidungen oder Risiko für Betroffene."
   },
   {
     key: "meldewege",
@@ -310,7 +310,7 @@ const fields = [
       { value: "teilweise", label: "Teilweise" },
       { value: "nein", label: "Nein" }
     ],
-    description: "Haben Sie definierte Abläufe, um Daten gesetzeskonform zu löschen oder zu anonymisieren?"
+    description: "Haben Sie definierte Abläufe, um Informationen wie Mitarbeiterdaten, Kundenanfragen, Trainingsdaten etc. gesetzeskonform zu löschen oder zu anonymisieren?Das ist wichtig für KI-Compliance und DSGVO."
   },
   {
     key: "ai_act_kenntnis",
@@ -343,13 +343,13 @@ const fields = [
   },
   {
     key: "bisherige_foerdermittel",
-    label: "Haben Sie bisher schon Fördermittel für Digitalisierung oder KI genutzt?",
+    label: "Haben Sie bereits Fördermittel für Digitalisierung oder KI beantragt und erhalten?",
     type: "select",
     options: [
       { value: "ja", label: "Ja" },
       { value: "nein", label: "Nein" }
     ],
-    description: "Haben Sie in der Vergangenheit staatliche oder regionale Fördermittel für Digitalisierung, IT oder KI beantragt oder erhalten? Diese Angabe hilft, passende Anschlussprogramme oder neue Optionen vorzuschlagen."
+    description: "Egal, ob staatliche oder regionale Fördermittel für Digitalisierung, IT oder KI: Diese Angabe hilft, passende Anschlussprogramme oder neue Optionen vorzuschlagen."
   },
   {
     key: "interesse_foerderung",
@@ -360,7 +360,7 @@ const fields = [
       { value: "nein", label: "Nein, kein Bedarf" },
       { value: "unklar", label: "Unklar, bitte beraten" }
     ],
-    description: "Wünschen Sie individuelle Empfehlungen für Förderprogramme? Wir filtern auf Wunsch passende Angebote für Sie heraus."
+    description: "Wünschen Sie individuelle Empfehlungen für Förderprogramme? Wir filtern bei Interesse passende Optionen heraus – ohne Werbung oder Verpflichtung."
   },
   {
     key: "erfahrung_beratung",
@@ -371,7 +371,7 @@ const fields = [
       { value: "nein", label: "Nein" },
       { value: "unklar", label: "Unklar" }
     ],
-    description: "Wurde Ihr Unternehmen bereits extern beraten? Das beeinflusst die Tiefe und Ausrichtung der Empfehlungen."
+    description: "Haben Sie bereits externe Beratung zu KI, Digitalisierung oder IT-Strategie genutzt – etwa durch Förderprojekte, Kammern, Berater oder Tech-Partner? Diese Erfahrung kann Ihre Ausgangslage stärken."
   },
   {
     key: "investitionsbudget",
@@ -397,7 +397,7 @@ const fields = [
       { value: "nachzuegler", label: "Nachzügler / Aufholer" },
       { value: "unsicher", label: "Schwer einzuschätzen" }
     ],
-    description: "Wie positioniert sich Ihr Unternehmen im Wettbewerbsvergleich?"
+    description: "Diese Einschätzung hilft, Ihre Ergebnisse im Report besser einzuordnen – etwa bei Handlungstempo, Budget und Potenzialen."
   },
   {
     key: "benchmark_wettbewerb",
@@ -422,7 +422,7 @@ const fields = [
       { value: "zufall", label: "Eher zufällig/ungeplant" },
       { value: "unbekannt", label: "Keine klare Strategie" }
     ],
-    description: "Wie entstehen bei Ihnen neue Ideen, Produkte oder digitale Lösungen? Je klarer Ihr Innovationsprozess, desto gezielter können KI-Projekte geplant und umgesetzt werden."
+    description: "Ob neue Ideen, Produkte oder digitale Lösungen: Strukturierte Innovationswege – intern oder extern – erleichtern es, KI gezielt einzusetzen und weiterzuentwickeln."
   },
   {
     key: "risikofreude",
