@@ -341,3 +341,16 @@ input[type="range"] {
   color: #22528b;
   letter-spacing: 0.03em;
 }
+.form-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.form-nav button {
+  flex: 1;
+  min-width: 120px;
+}
+
