@@ -353,4 +353,41 @@ input[type="range"] {
   flex: 1;
   min-width: 120px;
 }
+/* === Styles: Beispielhinweise bei Checkboxen === */
+.option-example {
+  font-size: 0.85em;
+  color: #5f6c8a;
+  margin-top: 2px;
+  margin-left: 1.5em;
+}
+
+/* === Styles: Schritt-Anzeige auffälliger gestalten === */
+.progress-label {
+  text-align: center;
+  font-size: 1.1em;
+  color: #1e40af;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+
+.progress-label b {
+  color: #2563eb;
+  font-size: 1.15em;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.progress-bar {
+  background: #e4edfb;
+  border-radius: 8px;
+  height: 10px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-inner {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  height: 100%;
+  transition: width 0.4s ease-in-out;
+}
 

@@ -507,11 +507,14 @@ function renderBlock(blockIdx) {
         break;
       case "checkbox":
         input = `<b>${field.label}</b><div class="checkbox-group">
-          ${field.options.map(opt => `
-            <label class="checkbox-label">
-              <input type="checkbox" name="${field.key}" value="${opt.value}" ${formData[field.key]?.includes(opt.value) ? 'checked' : ''} />
+          ${field.options.map(opt => {
+          const [mainLabel, sub] = opt.label.split(" (z. B.");
+          const subText = sub ? `<div class="option-example">z. B. ${sub.replace(")", "")}</div>` : "";
+            return `<label class="checkbox-label">
+              <input type="checkbox" name="${field.key}" value="${opt.value}" ${formData[field.key]?.includes(opt.value) ? 'checked' : ${mainLabel.trim()}${subText}
               ${opt.label}
-            </label>`).join("")}
+            </label>`;
+        }).join("")}
         </div>`;
         break;
       case "slider":
@@ -694,14 +697,23 @@ function submitAllBlocks() {
         </div>`;
     });
 }
-
+// === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
   const report = data?.html ? `<div class="report-html-preview">${data.html}</div>` : "";
+
+  // Speichere die HTML-Ausgabe für report.html + Redirect
+  localStorage.removeItem("autosave_form");
+  localStorage.setItem("report_html", data.html);
+
   document.getElementById("formbuilder").innerHTML = `
     <h2>KI-Readiness-Analyse abgeschlossen!</h2>
     <div class="success-msg">
       Ihre Angaben wurden erfolgreich übermittelt.<br>
       Der KI-Readiness-Report wurde erstellt.<br>${report}
     </div>
-    <a href="/dashboard.html" class="btn-next">Zum Dashboard</a>`;
+  // Weiterleitung zum PDF-Download (optional)
+  setTimeout(() => {
+    window.location.href = "/report.html";
+  }, 1000);
 }
+
