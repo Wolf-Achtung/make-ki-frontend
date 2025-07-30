@@ -127,17 +127,17 @@ const fields = [
     ],
     description: "Bitte schätzen Sie Ihren Jahresumsatz. Die Klassifizierung hilft bei Benchmarks, Förderprogrammen und Empfehlungen."
   },
-  {
-    key: "it_infrastruktur",
-    label: "Wie ist Ihre IT‑Infrastruktur aufgebaut?",
-    type: "select",
-    options: [
-      { value: "cloud", label: "Cloud‑basiert" },
-      { value: "on_premise", label: "On‑Premise" },
-      { value: "hybrid", label: "Hybrid (Cloud & On‑Prem)" },
-      { value: "unklar", label: "Unklar / Keine Angabe" }
-    ],
-    description: "Diese Information beeinflusst Empfehlungen zu Sicherheitsmaßnahmen, Systemintegration und Tool‑Auswahl."
+{
+  key: "it_infrastruktur",
+  label: "Wie ist Ihre IT-Infrastruktur aktuell organisiert?",
+  type: "select",
+  options: [
+    { value: "cloud", label: "Cloud-basiert (externe Services, z. B. Microsoft 365, Google Cloud…)" },
+    { value: "on_premise", label: "Eigenes Rechenzentrum (On-Premises)" },
+    { value: "hybrid", label: "Hybrid (Cloud + eigene Server)" },
+    { value: "unklar", label: "Unklar / Noch offen" }
+  ],
+  description: "Ihre Antwort hilft uns, passende Empfehlungen für Sicherheit, Integration und moderne Tools auszuwählen."
   },
   {
     key: "interne_ki_kompetenzen",
@@ -151,18 +151,18 @@ const fields = [
     description: "Ein internes Kompetenzteam kann Prozesse beschleunigen. Diese Angabe hilft bei der Empfehlung von Schulungen und internen Strukturen."
   },
   {
-    key: "datenquellen",
-    label: "Welche Datenquellen nutzen Sie hauptsächlich?",
-    type: "checkbox",
-    options: [
-      { value: "kundendaten", label: "Kundendaten" },
-      { value: "verkaufsdaten", label: "Verkaufs- und Bestelldaten" },
-      { value: "produktionsdaten", label: "Produktions- oder Betriebsdaten" },
-      { value: "personaldaten", label: "Personal- oder HR-Daten" },
-      { value: "marketingdaten", label: "Marketing- und Kampagnendaten" },
-      { value: "sonstige", label: "Sonstige" }
-    ],
-    description: "Welche Datentypen stehen Ihnen für Analysen und KI‑Projekte zur Verfügung? Mehrfachauswahl möglich."
+  key: "datenquellen",
+  label: "Welche Datentypen stehen Ihnen für KI-Projekte und Analysen zur Verfügung?",
+  type: "checkbox",
+  options: [
+    { value: "kundendaten", label: "Kundendaten (CRM, Service, Historie)" },
+    { value: "verkaufsdaten", label: "Verkaufs- und Bestelldaten (z. B. Shop, Aufträge)" },
+    { value: "produktionsdaten", label: "Produktions- oder Betriebsdaten (Maschinen, Sensoren, Logistik)" },
+    { value: "personaldaten", label: "Personal- oder HR-Daten (Mitarbeiter, Bewerbungen, Zeitwirtschaft)" },
+    { value: "marketingdaten", label: "Marketing- und Kampagnendaten (Ads, Social Media, Newsletter)" },
+    { value: "sonstige", label: "Sonstige / Weitere Datenquellen" }
+  ],
+  description: "Bitte wählen Sie alle Datenquellen aus, die für Ihr Unternehmen relevant sind (Mehrfachauswahl möglich)."
   },
 
   // Block 2: Status Quo & Digitalisierungsgrad
