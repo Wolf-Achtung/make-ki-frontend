@@ -112,6 +112,59 @@ const fields = [
     description: "Für welche Kundengruppen bieten Sie Leistungen an? Bitte wählen Sie alle Zielgruppen aus, die für Sie relevant sind (Mehrfachauswahl möglich)."
   },
 
+  // Erweiterte Unternehmensangaben (Gold‑Standard)
+  {
+    key: "jahresumsatz",
+    label: "Jahresumsatz (Schätzung)",
+    type: "select",
+    options: [
+      { value: "unter_100k", label: "Bis 100.000 €" },
+      { value: "100k_500k", label: "100.000–500.000 €" },
+      { value: "500k_2m", label: "500.000–2 Mio. €" },
+      { value: "2m_10m", label: "2–10 Mio. €" },
+      { value: "ueber_10m", label: "Über 10 Mio. €" },
+      { value: "keine_angabe", label: "Keine Angabe" }
+    ],
+    description: "Bitte schätzen Sie Ihren Jahresumsatz. Die Klassifizierung hilft bei Benchmarks, Förderprogrammen und Empfehlungen."
+  },
+  {
+    key: "it_infrastruktur",
+    label: "Wie ist Ihre IT‑Infrastruktur aufgebaut?",
+    type: "select",
+    options: [
+      { value: "cloud", label: "Cloud‑basiert" },
+      { value: "on_premise", label: "On‑Premise" },
+      { value: "hybrid", label: "Hybrid (Cloud & On‑Prem)" },
+      { value: "unklar", label: "Unklar / Keine Angabe" }
+    ],
+    description: "Diese Information beeinflusst Empfehlungen zu Sicherheitsmaßnahmen, Systemintegration und Tool‑Auswahl."
+  },
+  {
+    key: "interne_ki_kompetenzen",
+    label: "Gibt es ein internes KI‑/Digitalisierungsteam?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja" },
+      { value: "nein", label: "Nein" },
+      { value: "in_planung", label: "In Planung" }
+    ],
+    description: "Ein internes Kompetenzteam kann Prozesse beschleunigen. Diese Angabe hilft bei der Empfehlung von Schulungen und internen Strukturen."
+  },
+  {
+    key: "datenquellen",
+    label: "Welche Datenquellen nutzen Sie hauptsächlich?",
+    type: "checkbox",
+    options: [
+      { value: "kundendaten", label: "Kundendaten" },
+      { value: "verkaufsdaten", label: "Verkaufs- und Bestelldaten" },
+      { value: "produktionsdaten", label: "Produktions- oder Betriebsdaten" },
+      { value: "personaldaten", label: "Personal- oder HR-Daten" },
+      { value: "marketingdaten", label: "Marketing- und Kampagnendaten" },
+      { value: "sonstige", label: "Sonstige" }
+    ],
+    description: "Welche Datentypen stehen Ihnen für Analysen und KI‑Projekte zur Verfügung? Mehrfachauswahl möglich."
+  },
+
   // Block 2: Status Quo & Digitalisierungsgrad
   {
     key: "digitalisierungsgrad",
@@ -449,7 +502,18 @@ const fields = [
 const blocks = [
   {
     name: "Unternehmensinfos",
-    keys: ["branche", "unternehmensgroesse", "selbststaendig", "bundesland", "hauptleistung", "zielgruppen"]
+    keys: [
+      "branche",
+      "unternehmensgroesse",
+      "selbststaendig",
+      "bundesland",
+      "hauptleistung",
+      "zielgruppen",
+      "jahresumsatz",
+      "it_infrastruktur",
+      "interne_ki_kompetenzen",
+      "datenquellen"
+    ]
   },
   {
     name: "Status Quo",
