@@ -66,7 +66,10 @@ const fields = [
       { value: "sonstiges", label: "Sonstiges" }
     ],
     description: "Bitte wählen Sie die zutreffende Rechtsform. So erhalten Sie Auswertungen, die genau auf Ihre Unternehmenssituation passen.",
-    showIf: (data) => data.unternehmensgroesse === "1"
+    // Die Rechtsform-Auswahl soll nur angezeigt werden, wenn die Unternehmensgröße auf Solo gestellt ist.
+    // Ursprünglich wurde hier auf den Wert "1" geprüft, aber die Optionswerte sind
+    // "solo", "team" und "kmu". Daher prüfen wir explizit auf "solo".
+    showIf: (data) => data.unternehmensgroesse === "solo"
   },
   {
     key: "bundesland",
@@ -503,10 +506,17 @@ function renderBlock(blockIdx) {
     let input = "";
     switch (field.type) {
       case "select":
+        // Beim Rendern wird der gespeicherte Wert als selected markiert, damit Auswahl nicht zurückspringt
+        const selectedValue = formData[field.key] || "";
         input = `
           <select id="${field.key}" name="${field.key}">
             <option value="">Bitte wählen...</option>
-            ${field.options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join("")}
+            ${field.options
+              .map(opt => {
+                const isSelected = selectedValue === opt.value ? ' selected' : '';
+                return `<option value="${opt.value}"${isSelected}>${opt.label}</option>`;
+              })
+              .join("")}
           </select>`;
         break;
 
@@ -599,6 +609,7 @@ function setFieldValues(blockIdx) {
     const el = document.getElementById(field.key);
     if (!el) continue;
     if (field.type === "checkbox") {
+      // Bei Checkboxen alle gespeicherten Werte wieder anhaken
       if (formData[key]) {
         formData[key].forEach(v => {
           const box = document.querySelector(`input[name="${field.key}"][value="${v}"]`);
@@ -606,10 +617,19 @@ function setFieldValues(blockIdx) {
         });
       }
     } else if (field.type === "slider") {
-  const val = formData[key] ?? field.min ?? 1;
-  el.value = val;
-  if (el.nextElementSibling) el.nextElementSibling.innerText = val;
-}
+      // Slider auf gespeicherten Wert setzen und Label aktualisieren
+      const val = formData[key] ?? field.min ?? 1;
+      el.value = val;
+      if (el.nextElementSibling) el.nextElementSibling.innerText = val;
+    } else if (field.type === "privacy") {
+      // Checkbox für Datenschutzhinweis setzen
+      el.checked = formData[key] === true;
+    } else {
+      // Für select, textarea und text inputs den gespeicherten Wert setzen
+      if (formData[key] !== undefined) {
+        el.value = formData[key];
+      }
+    }
   }
 }
 
