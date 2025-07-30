@@ -103,18 +103,35 @@ input:hover, select:hover, textarea:hover {
   gap: 0.65em;
 }
 .checkbox-label {
-  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 0.6em;
+  font-size: 1.05em;
+  padding: 0.2em 0.1em;
   cursor: pointer;
-  margin-bottom: 4px;
+  gap: 0.7em;
+  border-radius: 7px;
+  transition: background 0.15s;
 }
-input[type="checkbox"] {
-  width: 21px;
-  height: 21px;
-  accent-color: #2d8cff;
-  margin-right: 7px;
+.checkbox-label input[type="checkbox"] {
+  width: 1.1em;
+  height: 1.1em;
+  accent-color: #2563eb; /* modernes Blau */
+}
+.checkbox-label:hover {
+  background: #f4f8fc;
+}
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* für 2 Spalten, bei vielen Optionen ggf. 3 */
+  gap: 0.8em 2em;
+}
+
+.checkbox-grid label {
+  display: flex;
+  align-items: center;
+  font-size: 1.05em;
+  font-weight: 400;
+  cursor: pointer;
 }
 
 /* Datenschutz-Checkbox */
@@ -402,15 +419,16 @@ color: #6b7280; /* Tailwind: text-gray-500 */
 /* Zweispaltiges Layout für Checkbox-Gruppen */
 .checkbox-group.twocol {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 0.6em 1.2em;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5em 2em;
+  margin-bottom: 0.6em;
 }
 .report-html-preview {
   margin-top: 2rem;
   padding: 1rem;
   border-top: 2px solid #eee;
 }
-@media (max-width: 600px) {
+@media (max-width: 650px) {
   .checkbox-group.twocol {
     grid-template-columns: 1fr;
   }
