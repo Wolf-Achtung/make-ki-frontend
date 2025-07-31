@@ -591,12 +591,16 @@ function renderBlock(blockIdx) {
       case "checkbox":
         input = `<div class="checkbox-group twocol">
           ${field.options.map(opt => {
-            const [mainLabel, sub] = opt.label.split(" (z. B.");
-            const subText = sub ? `<div class="option-example">z. B. ${sub.replace(")", "")}</div>` : "";
+            const labelMatch = opt.label.match(/^([^(]+)\s*\(([^)]+)\)/);
+            let mainLabel = opt.label, subText = "";
+            if (labelMatch) {
+            mainLabel = labelMatch[1].trim();
+            subText = `<div class="option-example">${labelMatch[2].trim()}</div>`;
+}
             const checked = formData[field.key]?.includes(opt.value) ? 'checked' : '';
             return `<label class="checkbox-label">
               <input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}>
-              ${mainLabel.trim()}
+              ${mainLabel}
               ${subText}
             </label>`;
           }).join("")}
