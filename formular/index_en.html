@@ -19,8 +19,8 @@
 <div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
   <label for="lang-select" style="font-weight:600; font-size:1.01em; color:#195;">Sprache: </label>
   <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em;">
-    <option value="de" selected>Deutsch</option>
-    <option value="en">English</option>
+    <option value="de">Deutsch</option>
+    <option value="en" selected>English</option>
   </select>
 </div>
 
@@ -48,7 +48,7 @@
       return `<div class="guidance">${description}</div>`;
     }
   </script>
-  <script src="formbuilder_de.js"></script>
+  <script src="formbuilder_en.js"></script>
 <script>
   document.getElementById("lang-select").addEventListener("change", function(e) {
     const lang = e.target.value;
