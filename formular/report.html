@@ -145,22 +145,31 @@
 
     // Profi-PDF mit Railway/Puppeteer
     document.getElementById('profi-pdf-btn').onclick = async function() {
-      const htmlContent = document.getElementById('report-preview').innerHTML;
-      if (!htmlContent) {
-        alert("Kein Report zum Export gefunden.");
-        return;
-      }
-      // Komplettes HTML-Template für den PDF-Service bauen:
+      const btn = document.getElementById('profi-pdf-btn');
       // Determine report language from localStorage and set labels accordingly
       const lang = localStorage.getItem("report_lang") || "de";
       const isEnglish = lang === "en";
+      // Set waiting label and disable button to prevent multiple clicks
+      const waitingLabel = isEnglish ? 'Generating PDF...' : 'PDF wird generiert...';
+      const defaultLabel = isEnglish ? 'Generate PDF' : 'PDF erzeugen';
+      btn.disabled = true;
+      btn.innerText = waitingLabel;
+
+      const htmlContent = document.getElementById('report-preview').innerHTML;
+      if (!htmlContent) {
+        alert(isEnglish ? 'No report found to export.' : 'Kein Report zum Export gefunden.');
+        btn.disabled = false;
+        btn.innerText = defaultLabel;
+        return;
+      }
+      // Build complete HTML template for the PDF service:
       const htmlLang = isEnglish ? "en" : "de";
       const reportTitle = isEnglish ? "AI-Readiness Report 2025" : "KI-Readiness-Report 2025";
       const altReady = isEnglish ? "AI-Ready" : "KI-Ready";
       const altDsgvo = isEnglish ? "GDPR" : "DSGVO";
-      const footerText = isEnglish ?
-        "TÜV‑certified AI management © 2025: Wolf Hohl<br> Email: kontakt@ki-sicherheit.jetzt" :
-        "TÜV-zertifiziertes KI-Management © 2025: Wolf Hohl<br> E-Mail: kontakt@ki-sicherheit.jetzt";
+      const footerText = isEnglish
+        ? "TÜV‑certified AI management © 2025: Wolf Hohl<br> Email: kontakt@ki-sicherheit.jetzt"
+        : "TÜV-zertifiziertes KI-Management © 2025: Wolf Hohl<br> E-Mail: kontakt@ki-sicherheit.jetzt";
       const fullHtml = `
         <!DOCTYPE html>
         <html lang="${htmlLang}">
@@ -202,18 +211,24 @@
         body: fullHtml
       });
       if (!response.ok) {
-        alert("Fehler beim PDF-Export: " + await response.text());
+        alert((isEnglish ? 'Error exporting PDF: ' : 'Fehler beim PDF-Export: ') + await response.text());
+        btn.disabled = false;
+        btn.innerText = defaultLabel;
         return;
       }
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'KI-Readiness-Report.pdf';
+      // Set filename based on language
+      a.download = isEnglish ? 'AI-Readiness-Report.pdf' : 'KI-Readiness-Report.pdf';
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+      // Restore button state
+      btn.disabled = false;
+      btn.innerText = defaultLabel;
     };
   </script>
 </body>
