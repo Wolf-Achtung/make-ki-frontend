@@ -703,13 +703,26 @@ function setFieldValues(blockIdx) {
 
 function blockIsValid(blockIdx) {
   const block = blocks[blockIdx];
+  // Define optional keys: these fields are not mandatory and may be left blank
+  const optionalKeys = new Set([
+    "jahresumsatz",
+    "it_infrastruktur",
+    "interne_ki_kompetenzen",
+    "datenquellen"
+  ]);
   return block.keys.every(key => {
     const field = fields.find(f => f.key === key);
     if (!field) return true;
+    // If the field is conditionally hidden, it's considered valid
     if (field.showIf && !field.showIf(formData)) return true;
+    // Skip validation for optional fields
+    if (optionalKeys.has(key)) return true;
     const val = formData[key];
+    // Checkbox fields (except optional ones) require at least one selection
     if (field.type === "checkbox") return Array.isArray(val) && val.length > 0;
+    // Privacy checkbox must be checked on the last block
     if (field.type === "privacy") return val === true;
+    // Other fields must have a non-empty value
     return val !== undefined && val !== "";
   });
 }
