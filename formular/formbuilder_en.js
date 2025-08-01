@@ -800,6 +800,9 @@ window.addEventListener("DOMContentLoaded", () => {
 function submitAllBlocks() {
   const data = {};
   fields.forEach(field => data[field.key] = formData[field.key]);
+  // Ensure the backend recognises that this form is in English.  
+  // The API will use this flag to select English prompts and context.
+  data.language = "en";
 
   const BASE_URL = location.hostname.includes("localhost")
     ? "https://make-ki-backend-neu-production.up.railway.app"
