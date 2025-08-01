@@ -838,6 +838,8 @@ function showSuccess(data) {
   // Autosave aufräumen und HTML-Report lokal speichern (für spätere Nutzung, falls gewünscht)
   localStorage.removeItem("autosave_form");
   localStorage.setItem("report_html", data.html);
+  // Persist the language for the report so report.html can adjust its template
+  localStorage.setItem("report_lang", "de");
 
   // HTML-Report direkt anzeigen – ohne Redirect
   document.getElementById("formbuilder").innerHTML = `

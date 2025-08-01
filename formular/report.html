@@ -151,12 +151,22 @@
         return;
       }
       // Komplettes HTML-Template für den PDF-Service bauen:
+      // Determine report language from localStorage and set labels accordingly
+      const lang = localStorage.getItem("report_lang") || "de";
+      const isEnglish = lang === "en";
+      const htmlLang = isEnglish ? "en" : "de";
+      const reportTitle = isEnglish ? "AI-Readiness Report 2025" : "KI-Readiness-Report 2025";
+      const altReady = isEnglish ? "AI-Ready" : "KI-Ready";
+      const altDsgvo = isEnglish ? "GDPR" : "DSGVO";
+      const footerText = isEnglish ?
+        "TÜV‑certified AI management © 2025: Wolf Hohl<br> Email: kontakt@ki-sicherheit.jetzt" :
+        "TÜV-zertifiziertes KI-Management © 2025: Wolf Hohl<br> E-Mail: kontakt@ki-sicherheit.jetzt";
       const fullHtml = `
         <!DOCTYPE html>
-        <html lang="de">
+        <html lang="${htmlLang}">
         <head>
           <meta charset="UTF-8">
-          <title>KI-Readiness-Report 2025</title>
+          <title>${reportTitle}</title>
           <link href="https://fonts.googleapis.com/css?family=Inter:400,600,700&display=swap" rel="stylesheet">
           <style>
             body { font-family: "Inter", Arial, sans-serif; margin:0; background:#fff; color:#1d3250; }
@@ -170,15 +180,15 @@
           <div class="logo-header">
             <img src="/templates/ki-sicherheit-logo.png" alt="KI-Sicherheit" />
             <img src="/templates/eu-ai.svg" alt="EU AI Act" />
-            <img src="/templates/dsgvo.svg" alt="DSGVO" />
-            <img src="/templates/ki-ready-2025.webp" alt="KI-Ready" />
+            <img src="/templates/dsgvo.svg" alt="${altDsgvo}" />
+            <img src="/templates/ki-ready-2025.webp" alt="${altReady}" />
           </div>
-          <h1>KI-Readiness-Report 2025</h1>
+          <h1>${reportTitle}</h1>
           <div>
             ${htmlContent}
           </div>
           <div class="footer">
-            TÜV-zertifiziertes KI-Management © 2025: Wolf Hohl<br> E-Mail: kontakt@ki-sicherheit.jetzt
+            ${footerText}
           </div>
         </body>
         </html>
