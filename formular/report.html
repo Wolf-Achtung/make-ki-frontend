@@ -191,9 +191,25 @@
 
       // Railway-Endpoint (PDF-Service) eintragen!
       const endpoint = 'https://make-ki-pdfservice-production.up.railway.app/generate-pdf';
+      // Decode JWT token to extract the user email.  The backend will use
+      // this header to include the originator in the admin notification.  If
+      // the token is missing or cannot be parsed, the header is left empty.
+      let userEmail = "";
+      try {
+        const token = localStorage.getItem('jwt');
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          userEmail = payload.email || payload.sub || "";
+        }
+      } catch (err) {
+        userEmail = "";
+      }
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/html' },
+        headers: {
+          'Content-Type': 'text/html',
+          'X-User-Email': userEmail
+        },
         body: fullHtml
       });
       if (!response.ok) {
