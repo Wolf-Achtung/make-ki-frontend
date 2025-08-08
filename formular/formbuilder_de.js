@@ -800,6 +800,8 @@ window.addEventListener("DOMContentLoaded", () => {
 function submitAllBlocks() {
   const data = {};
   fields.forEach(field => data[field.key] = formData[field.key]);
+  // Sprache explizit setzen (deutsch)
+  data.lang = "de";
 
   const BASE_URL = location.hostname.includes("localhost")
     ? "https://make-ki-backend-neu-production.up.railway.app"
@@ -811,7 +813,8 @@ function submitAllBlocks() {
       <div>Ihre Angaben werden analysiert … bitte einen Moment Geduld.</div>
     </div>`;
 
-  fetch(`${BASE_URL}/briefing`, {
+  // Asynchronen Report anstoßen
+  fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -820,9 +823,29 @@ function submitAllBlocks() {
     body: JSON.stringify(data)
   })
     .then(res => res.json())
-    .then(data => {
-      localStorage.removeItem("autosave_form");
-      showSuccess(data);
+    .then(job => {
+      const jobId = job.job_id;
+      if (!jobId) throw new Error("Keine Job-ID erhalten");
+      const checkStatus = () => {
+        fetch(`${BASE_URL}/briefing_status/${jobId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        })
+          .then(res => res.json())
+          .then(status => {
+            if (status.status === "completed") {
+              localStorage.removeItem("autosave_form");
+              showSuccess(status);
+            } else if (status.status === "failed") {
+              document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Analyse: ${status.error || ''}</div>`;
+            } else {
+              setTimeout(checkStatus, 3000);
+            }
+          })
+          .catch(() => {
+            document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;
+          });
+      };
+      checkStatus();
     })
     .catch(() => {
       document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;

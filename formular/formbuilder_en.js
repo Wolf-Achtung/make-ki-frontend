@@ -800,9 +800,8 @@ window.addEventListener("DOMContentLoaded", () => {
 function submitAllBlocks() {
   const data = {};
   fields.forEach(field => data[field.key] = formData[field.key]);
-  // Ensure the backend recognises that this form is in English.  
-  // The API will use this flag to select English prompts and context.
-  data.language = "en";
+  // Set language explicitly to English so the backend picks the right prompts
+  data.lang = "en";
 
   const BASE_URL = location.hostname.includes("localhost")
     ? "https://make-ki-backend-neu-production.up.railway.app"
@@ -814,7 +813,8 @@ function submitAllBlocks() {
       <div>Your entries are being analysed … please wait a moment.</div>
     </div>`;
 
-  fetch(`${BASE_URL}/briefing`, {
+  // Start asynchronous report generation
+  fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -823,9 +823,29 @@ function submitAllBlocks() {
     body: JSON.stringify(data)
   })
     .then(res => res.json())
-    .then(data => {
-      localStorage.removeItem("autosave_form");
-      showSuccess(data);
+    .then(job => {
+      const jobId = job.job_id;
+      if (!jobId) throw new Error("No job ID returned");
+      const checkStatus = () => {
+        fetch(`${BASE_URL}/briefing_status/${jobId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        })
+          .then(res => res.json())
+          .then(status => {
+            if (status.status === "completed") {
+              localStorage.removeItem("autosave_form");
+              showSuccess(status);
+            } else if (status.status === "failed") {
+              document.getElementById("formbuilder").innerHTML = `<div class="form-error">Error during analysis: ${status.error || ''}</div>`;
+            } else {
+              setTimeout(checkStatus, 3000);
+            }
+          })
+          .catch(() => {
+            document.getElementById("formbuilder").innerHTML = `<div class="form-error">Error during transmission. Please try again.</div>`;
+          });
+      };
+      checkStatus();
     })
     .catch(() => {
       document.getElementById("formbuilder").innerHTML = `<div class="form-error">Error during transmission. Please try again.</div>`;

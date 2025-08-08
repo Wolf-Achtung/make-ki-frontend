@@ -785,20 +785,25 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 function submitAllBlocks() {
+  // Sammle alle Formularfelder in ein Objekt
   const data = {};
   fields.forEach(field => data[field.key] = formData[field.key]);
+  // explizit die Sprache setzen (Deutsch als Standard)
+  data.lang = "de";
 
   const BASE_URL = location.hostname.includes("localhost")
     ? "https://make-ki-backend-neu-production.up.railway.app"
     : "https://make-ki-backend-neu-production.up.railway.app";
 
+  // Ladeanzeige anzeigen
   document.getElementById("formbuilder").innerHTML = `
     <div class="loading-msg">
       <div class="loader"></div>
       <div>Ihre Angaben werden analysiert … bitte einen Moment Geduld.</div>
     </div>`;
 
-  fetch(`${BASE_URL}/briefing`, {
+  // Asynchronen Briefing-Job starten
+  fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -807,9 +812,32 @@ function submitAllBlocks() {
     body: JSON.stringify(data)
   })
     .then(res => res.json())
-    .then(data => {
-      localStorage.removeItem("autosave_form");
-      showSuccess(data);
+    .then(job => {
+      const jobId = job.job_id;
+      if (!jobId) throw new Error("Keine Job-ID erhalten");
+      // Funktion zum Polling des Status
+      const checkStatus = () => {
+        fetch(`${BASE_URL}/briefing_status/${jobId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        })
+          .then(res => res.json())
+          .then(status => {
+            if (status.status === "completed") {
+              // Erfolgreich: Autosave löschen und Resultat anzeigen
+              localStorage.removeItem("autosave_form");
+              showSuccess(status);
+            } else if (status.status === "failed") {
+              document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Analyse: ${status.error || ''}</div>`;
+            } else {
+              // Noch in Bearbeitung → nach kurzer Zeit erneut prüfen
+              setTimeout(checkStatus, 3000);
+            }
+          })
+          .catch(() => {
+            document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;
+          });
+      };
+      checkStatus();
     })
     .catch(() => {
       document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;
