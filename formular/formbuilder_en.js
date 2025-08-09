@@ -807,12 +807,16 @@ function submitAllBlocks() {
     ? "https://make-ki-backend-neu-production.up.railway.app"
     : "https://make-ki-backend-neu-production.up.railway.app";
 
+  // Show status display with progress bar
   document.getElementById("formbuilder").innerHTML = `
-    <div class="loading-progress">
-      <div class="progress-bar-container">
-        <div class="progress-bar"></div>
+    <div class="loading-msg">
+      <div>Your entries are being analysed … please wait a moment.</div>
+      <div class="progress-wrapper">
+        <div id="progress-text">Analysis started…</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar determinate" id="progress-bar" style="width: 0%"></div>
+        </div>
       </div>
-      <div>Your entries are being analysed … please wait a moment. During the beta phase the evaluation may take several minutes. Please keep this browser window open.</div>
     </div>`;
 
   // Start asynchronous report generation
@@ -834,6 +838,15 @@ function submitAllBlocks() {
         })
           .then(res => res.json())
           .then(status => {
+            // Update progress bar if progress data present
+            if (typeof status.progress !== 'undefined' && typeof status.total !== 'undefined' && status.total > 0) {
+              const progress = Math.min(status.progress, status.total);
+              const percent = Math.floor((progress / status.total) * 100);
+              const bar = document.getElementById('progress-bar');
+              const text = document.getElementById('progress-text');
+              if (bar) bar.style.width = `${percent}%`;
+              if (text) text.textContent = `Section ${progress} of ${status.total} completed …`;
+            }
             if (status.status === "completed") {
               localStorage.removeItem("autosave_form");
               showSuccess(status);
