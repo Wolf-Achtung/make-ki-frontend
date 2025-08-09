@@ -808,9 +808,11 @@ function submitAllBlocks() {
     : "https://make-ki-backend-neu-production.up.railway.app";
 
   document.getElementById("formbuilder").innerHTML = `
-    <div class="loading-msg">
-      <div class="loader"></div>
-      <div>Your entries are being analysed … please wait a moment.</div>
+    <div class="loading-progress">
+      <div class="progress-bar-container">
+        <div class="progress-bar"></div>
+      </div>
+      <div>Your entries are being analysed … please wait a moment. During the beta phase the evaluation may take several minutes. Please keep this browser window open.</div>
     </div>`;
 
   // Start asynchronous report generation

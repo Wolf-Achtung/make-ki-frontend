@@ -117,6 +117,14 @@
 
     <button class="profi-pdf-btn" id="profi-pdf-btn">PDF erzeugen</button>
 
+    <!-- Progress bar for PDF generation -->
+    <div id="pdf-progress" class="loading-progress" style="display:none;">
+      <div class="progress-bar-container">
+        <div class="progress-bar"></div>
+      </div>
+      <div>Das PDF wird erzeugt … bitte einen Moment Geduld.</div>
+    </div>
+
     <div id="report-preview"></div>
     <div id="no-report" style="display:none;">Kein Report zum Anzeigen gefunden.</div>
     <!-- Feedback-Link Block ans ENDE verschoben -->
@@ -145,11 +153,16 @@
 
     // Profi-PDF mit Railway/Puppeteer
     document.getElementById('profi-pdf-btn').onclick = async function() {
+      const btn = document.getElementById('profi-pdf-btn');
+      const progressEl = document.getElementById('pdf-progress');
       const htmlContent = document.getElementById('report-preview').innerHTML;
       if (!htmlContent) {
         alert("Kein Report zum Export gefunden.");
         return;
       }
+      // Zeige Fortschrittsbalken und deaktiviere Button
+      btn.disabled = true;
+      if (progressEl) progressEl.style.display = 'block';
       // Komplettes HTML-Template für den PDF-Service bauen:
       // Determine report language from localStorage and set labels accordingly
       const lang = localStorage.getItem("report_lang") || "de";
@@ -204,27 +217,35 @@
       } catch (err) {
         userEmail = "";
       }
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/html',
-          'X-User-Email': userEmail
-        },
-        body: fullHtml
-      });
-      if (!response.ok) {
-        alert("Fehler beim PDF-Export: " + await response.text());
-        return;
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/html',
+            'X-User-Email': userEmail
+          },
+          body: fullHtml
+        });
+        if (!response.ok) {
+          alert("Fehler beim PDF-Export: " + await response.text());
+        } else {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'KI-Readiness-Report.pdf';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        }
+      } catch (err) {
+        alert("Fehler beim PDF-Export: " + err.message);
+      } finally {
+        // Fortschrittsbalken ausblenden und Button wieder aktivieren
+        if (progressEl) progressEl.style.display = 'none';
+        btn.disabled = false;
       }
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'KI-Readiness-Report.pdf';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
     };
   </script>
 </body>
