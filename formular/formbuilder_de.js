@@ -834,64 +834,24 @@ function submitAllBlocks() {
     ? "https://make-ki-backend-neu-production.up.railway.app"
     : "https://make-ki-backend-neu-production.up.railway.app";
 
-  // Zeige eine Statusanzeige mit Fortschrittsbalken an
-  document.getElementById("formbuilder").innerHTML = `
-    <div class="loading-msg">
-      <div>Ihre Angaben werden analysiert … bitte einen Moment Geduld: während der Testphase kann die Bewertung ein paar Minuten dauern. Dieses Browser-Fenster bitte solange geöffnet lassen.</div>
-      <div class="progress-wrapper">
-        <div id="progress-text">Analyse gestartet …</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar determinate" id="progress-bar" style="width: 0%"></div>
-        </div>
-      </div>
-    </div>`;
-
-  // Asynchronen Report anstoßen
+  // Asynchronen Report anstoßen und im Hintergrund generieren.
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify(data)
-  })
-    .then(res => res.json())
-    .then(job => {
-      const jobId = job.job_id;
-      if (!jobId) throw new Error("Keine Job-ID erhalten");
-      const checkStatus = () => {
-        fetch(`${BASE_URL}/briefing_status/${jobId}`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        })
-          .then(res => res.json())
-          .then(status => {
-            // Aktualisiere Fortschrittsbalken, falls Daten vorhanden
-            if (typeof status.progress !== 'undefined' && typeof status.total !== 'undefined' && status.total > 0) {
-              const progress = Math.min(status.progress, status.total);
-              const percent = Math.floor((progress / status.total) * 100);
-              const bar = document.getElementById('progress-bar');
-              const text = document.getElementById('progress-text');
-              if (bar) bar.style.width = `${percent}%`;
-              if (text) text.textContent = `Kapitel ${progress} von ${status.total} fertig …`;
-            }
-            if (status.status === "completed") {
-              localStorage.removeItem(autosaveKey);
-              showSuccess(status);
-            } else if (status.status === "failed") {
-              document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Analyse: ${status.error || ''}</div>`;
-            } else {
-              setTimeout(checkStatus, 3000);
-            }
-          })
-          .catch(() => {
-            document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;
-          });
-      };
-      checkStatus();
-    })
-    .catch(() => {
-      document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Übertragung. Bitte erneut versuchen.</div>`;
-    });
+    body: JSON.stringify(data),
+    keepalive: true
+  }).catch(() => {
+    // Fehler beim Absenden können hier protokolliert werden; die Anzeige
+    // bleibt davon unberührt.
+    console.error('Fehler bei der Übertragung');
+  });
+  // Leite den Nutzer direkt auf eine separate Dankeseite um. Dort wird der
+  // Hinweis angezeigt, dass der Report per E-Mail versendet wird.
+  window.location.href = "thankyou.html";
+  return;
 }
 
 // === formbuilder.js: Erweiterung von showSuccess() ===

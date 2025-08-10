@@ -834,64 +834,21 @@ function submitAllBlocks() {
     ? "https://make-ki-backend-neu-production.up.railway.app"
     : "https://make-ki-backend-neu-production.up.railway.app";
 
-  // Show status display with progress bar
-  document.getElementById("formbuilder").innerHTML = `
-    <div class="loading-msg">
-      <div>Your entries are being analysed … please wait a moment.</div>
-      <div class="progress-wrapper">
-        <div id="progress-text">Analysis started…</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar determinate" id="progress-bar" style="width: 0%"></div>
-        </div>
-      </div>
-    </div>`;
-
-  // Start asynchronous report generation
+  // Start asynchronous report generation and immediately redirect to a thank you page.
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify(data)
-  })
-    .then(res => res.json())
-    .then(job => {
-      const jobId = job.job_id;
-      if (!jobId) throw new Error("No job ID returned");
-      const checkStatus = () => {
-        fetch(`${BASE_URL}/briefing_status/${jobId}`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        })
-          .then(res => res.json())
-          .then(status => {
-            // Update progress bar if progress data present
-            if (typeof status.progress !== 'undefined' && typeof status.total !== 'undefined' && status.total > 0) {
-              const progress = Math.min(status.progress, status.total);
-              const percent = Math.floor((progress / status.total) * 100);
-              const bar = document.getElementById('progress-bar');
-              const text = document.getElementById('progress-text');
-              if (bar) bar.style.width = `${percent}%`;
-              if (text) text.textContent = `Section ${progress} of ${status.total} completed …`;
-            }
-            if (status.status === "completed") {
-              localStorage.removeItem(autosaveKey);
-              showSuccess(status);
-            } else if (status.status === "failed") {
-              document.getElementById("formbuilder").innerHTML = `<div class="form-error">Error during analysis: ${status.error || ''}</div>`;
-            } else {
-              setTimeout(checkStatus, 3000);
-            }
-          })
-          .catch(() => {
-            document.getElementById("formbuilder").innerHTML = `<div class="form-error">Error during transmission. Please try again.</div>`;
-          });
-      };
-      checkStatus();
-    })
-    .catch(() => {
-      document.getElementById("formbuilder").innerHTML = `<div class="form-error">Error during transmission. Please try again.</div>`;
-    });
+    body: JSON.stringify(data),
+    keepalive: true
+  }).catch(() => {
+    console.error('Error during transmission');
+  });
+  // Redirect to a thank you page to let the user close the tab.
+  window.location.href = "thankyou.html";
+  return;
 }
 
 // === formbuilder.js: Erweiterung von showSuccess() ===

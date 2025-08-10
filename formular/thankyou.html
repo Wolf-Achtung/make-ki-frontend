@@ -1,52 +1,17 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ihre KI-Readiness-Analyse ist fertig!</title>
-  <style>
-    body {
-      font-family: 'Courier New', Courier, monospace;
-      background: #f7f9fa;
-      color: #0a2c3d;
-      padding: 3em;
-      line-height: 1.6;
-    }
-    h1 {
-      color: #003b5a;
-      font-size: 1.8em;
-    }
-    .btn {
-      display: inline-block;
-      background: #003b5a;
-      color: white;
-      padding: 0.7em 1.4em;
-      margin-top: 1.5em;
-      text-decoration: none;
-      border-radius: 6px;
-    }
-    .btn:hover {
-      background: #005f89;
-    }
-  </style>
-</head>
-<body>
-  <h1>Ihre KI–Readiness–Analyse ist fertig!</h1>
-  <p>Vielen Dank für Ihre Angaben. Ihre individuelle Executive-Auswertung wurde erfolgreich erstellt.</p>
-  <p>Sie können den PDF-Bericht hier herunterladen:</p>
-
-  <a id="downloadLink" class="btn" href="#">PDF herunterladen</a>
-
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const file = params.get('file');
-    if (file) {
-      document.getElementById('downloadLink').href = file;
-    } else {
-      document.getElementById('downloadLink').innerText = "Kein PDF gefunden.";
-      document.getElementById('downloadLink').style.background = "#ccc";
-      document.getElementById('downloadLink').style.pointerEvents = "none";
-    }
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Vielen Dank</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="form-container" style="margin-top: 60px; text-align:center;">
+      <h2>Vielen Dank für Ihre Angaben!</h2>
+      <p>Ihre KI‑Analyse wird jetzt erstellt.</p>
+      <p>Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E‑Mail.</p>
+      <p>Sie können dieses Fenster jetzt schließen.</p>
+    </div>
+  </body>
 </html>
