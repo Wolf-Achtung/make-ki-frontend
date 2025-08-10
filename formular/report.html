@@ -117,14 +117,6 @@
 
     <button class="profi-pdf-btn" id="profi-pdf-btn">PDF erzeugen</button>
 
-    <!-- Progress bar for PDF generation -->
-    <div id="pdf-progress" class="loading-progress" style="display:none;">
-      <div class="progress-bar-container">
-        <div class="progress-bar"></div>
-      </div>
-      <div>Das PDF wird erzeugt … bitte einen Moment Geduld.</div>
-    </div>
-
     <div id="report-preview"></div>
     <div id="no-report" style="display:none;">Kein Report zum Anzeigen gefunden.</div>
     <!-- Feedback-Link Block ans ENDE verschoben -->
@@ -153,27 +145,19 @@
 
     // Profi-PDF mit Railway/Puppeteer
     document.getElementById('profi-pdf-btn').onclick = async function() {
-      const btn = document.getElementById('profi-pdf-btn');
-      const progressEl = document.getElementById('pdf-progress');
       const htmlContent = document.getElementById('report-preview').innerHTML;
       if (!htmlContent) {
         alert("Kein Report zum Export gefunden.");
         return;
       }
-      // Zeige Fortschrittsbalken und deaktiviere Button
-      btn.disabled = true;
-      if (progressEl) progressEl.style.display = 'block';
-      // Komplettes HTML-Template für den PDF-Service bauen:
-      // Determine report language from localStorage and set labels accordingly
+      // Erstelle vollständiges HTML für den PDF-Service
       const lang = localStorage.getItem("report_lang") || "de";
       const isEnglish = lang === "en";
       const htmlLang = isEnglish ? "en" : "de";
-      const reportTitle = isEnglish ? "AI-Readiness Report 2025" : "KI-Readiness-Report 2025";
-      const altReady = isEnglish ? "AI-Ready" : "KI-Ready";
-      const altDsgvo = isEnglish ? "GDPR" : "DSGVO";
+      const reportTitle = isEnglish ? "AI‑Readiness Report 2025" : "KI‑Readiness‑Report 2025";
       const footerText = isEnglish ?
         "TÜV‑certified AI management © 2025: Wolf Hohl<br> Email: kontakt@ki-sicherheit.jetzt" :
-        "TÜV-zertifiziertes KI-Management © 2025: Wolf Hohl<br> E-Mail: kontakt@ki-sicherheit.jetzt";
+        "TÜV‑zertifiziertes KI‑Management © 2025: Wolf Hohl<br> E‑Mail: kontakt@ki-sicherheit.jetzt";
       const fullHtml = `
         <!DOCTYPE html>
         <html lang="${htmlLang}">
@@ -183,15 +167,11 @@
           <link href="https://fonts.googleapis.com/css?family=Inter:400,600,700&display=swap" rel="stylesheet">
           <style>
             body { font-family: "Inter", Arial, sans-serif; margin:0; background:#fff; color:#1d3250; }
-            .logo-header { text-align:center; margin:18px 0 24px 0; }
-            .logo-header img { height:44px; margin:0 10px 0 0; }
             h1 { color:#1e3a8a; font-size:2.1em; margin-bottom:0.3em; text-align:center; }
             .footer { margin-top:44px; color:#aab8cc; text-align:center; font-size:0.95em; }
           </style>
         </head>
         <body>
-          <!-- Logo header intentionally left blank for PDF generation -->
-          <div class="logo-header"></div>
           <div>
             ${htmlContent}
           </div>
@@ -201,12 +181,7 @@
         </body>
         </html>
       `;
-
-      // Railway-Endpoint (PDF-Service) eintragen!
       const endpoint = 'https://make-ki-pdfservice-production.up.railway.app/generate-pdf';
-      // Decode JWT token to extract the user email.  The backend will use
-      // this header to include the originator in the admin notification.  If
-      // the token is missing or cannot be parsed, the header is left empty.
       let userEmail = "";
       try {
         const token = localStorage.getItem('jwt');
@@ -218,7 +193,7 @@
         userEmail = "";
       }
       try {
-        const response = await fetch(endpoint, {
+        await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'text/html',
@@ -226,25 +201,15 @@
           },
           body: fullHtml
         });
-        if (!response.ok) {
-          alert("Fehler beim PDF-Export: " + await response.text());
-        } else {
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'KI-Readiness-Report.pdf';
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(url);
-        }
-      } catch (err) {
-        alert("Fehler beim PDF-Export: " + err.message);
-      } finally {
-        // Fortschrittsbalken ausblenden und Button wieder aktivieren
-        if (progressEl) progressEl.style.display = 'none';
-        btn.disabled = false;
+        // Inform user about email delivery
+        const msg = isEnglish
+          ? "Thank you! Your report will be generated and delivered to your email soon. You may close this window."
+          : "Vielen Dank! Ihr Bericht wird erstellt und in Kürze per E‑Mail zugestellt. Sie können dieses Fenster schließen.";
+        alert(msg);
+        // Disable button to prevent multiple submissions
+        document.getElementById('profi-pdf-btn').disabled = true;
+      } catch (e) {
+        alert(isEnglish ? "Error sending your report." : "Fehler beim Senden Ihres Berichts.");
       }
     };
   </script>
