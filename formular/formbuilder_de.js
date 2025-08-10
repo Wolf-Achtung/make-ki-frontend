@@ -538,7 +538,19 @@ const blocks = [
 ];
 
 let currentBlock = 0;
-let formData = JSON.parse(localStorage.getItem("autosave_form") || "{}");
+// Verwende einen benutzerspezifischen Schlüssel für Autosave, damit Testnutzer ihre Eingaben wiederverwenden können.
+let autosaveKey = (() => {
+  try {
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const email = payload.email || payload.sub;
+      if (email) return `autosave_form_${email}`;
+    }
+  } catch (e) {}
+  return 'autosave_form_test';
+})();
+let formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
 
 function showProgress(blockIdx) {
   const el = document.getElementById("progress");
@@ -550,7 +562,7 @@ function showProgress(blockIdx) {
 }
 
 function renderBlock(blockIdx) {
-  formData = JSON.parse(localStorage.getItem("autosave_form") || "{}");
+  formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
   showProgress(blockIdx);
   const block = blocks[blockIdx];
   const form = document.getElementById("formbuilder");
@@ -645,15 +657,17 @@ function renderBlock(blockIdx) {
       ${blockIdx < blocks.length - 1
         ? `<button type="button" id="btn-next">Weiter</button>`
         : `<button type="button" id="btn-send" class="btn-next">Absenden</button>`}
+      <!-- Reset button to clear stored answers and restart from the first block -->
+      <button type="button" id="btn-reset" class="btn-reset">Zurücksetzen</button>
     </div>
     <div id="feedback"></div>`;
 }
 
 function saveAutosave() {
-  localStorage.setItem("autosave_form", JSON.stringify(formData));
+  localStorage.setItem(autosaveKey, JSON.stringify(formData));
 }
 function loadAutosave() {
-  formData = JSON.parse(localStorage.getItem("autosave_form") || "{}");
+  formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
 }
 
 function getFieldValue(field) {
@@ -775,6 +789,19 @@ document.getElementById("formbuilder").addEventListener("change", () => {
       window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
     }
 
+    // Handle reset: clear saved data and restart the questionnaire from the beginning
+    if (e.target.id === "btn-reset") {
+      // Remove autosaved data for the current user
+      localStorage.removeItem(autosaveKey);
+      // Reset form data and start again from block 0
+      formData = {};
+      currentBlock = 0;
+      renderBlock(currentBlock);
+      setTimeout(() => setFieldValues(currentBlock), 20);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     if (e.target.id === "submit-btn" || e.target.id === "btn-send") {
       submitAllBlocks(); // ✅ wird jetzt auch korrekt ausgelöst
     }
@@ -848,7 +875,7 @@ function submitAllBlocks() {
               if (text) text.textContent = `Kapitel ${progress} von ${status.total} fertig …`;
             }
             if (status.status === "completed") {
-              localStorage.removeItem("autosave_form");
+              localStorage.removeItem(autosaveKey);
               showSuccess(status);
             } else if (status.status === "failed") {
               document.getElementById("formbuilder").innerHTML = `<div class="form-error">Fehler bei der Analyse: ${status.error || ''}</div>`;
@@ -874,7 +901,7 @@ function showSuccess(data) {
     : "";
 
   // Autosave aufräumen und HTML-Report lokal speichern (für spätere Nutzung, falls gewünscht)
-  localStorage.removeItem("autosave_form");
+  localStorage.removeItem(autosaveKey);
   localStorage.setItem("report_html", data.html);
   // Persist the language for the report so report.html can adjust its template
   localStorage.setItem("report_lang", "de");
