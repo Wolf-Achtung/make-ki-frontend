@@ -896,27 +896,39 @@ function submitAllBlocks() {
 
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
-  const report = data?.html
-    ? `<div class="report-html-preview">${data.html}</div>`
-    : "";
-
-  // Autosave aufräumen und HTML-Report lokal speichern (für spätere Nutzung, falls gewünscht)
+  // Lösche Autosave-Daten, damit der Testnutzer beim nächsten Mal neu starten kann
   localStorage.removeItem(autosaveKey);
-  localStorage.setItem("report_html", data.html);
-  // Persist the language for the report so report.html can adjust its template
-  localStorage.setItem("report_lang", "de");
-
-  // HTML-Report direkt anzeigen – ohne Redirect
+  // Bereite Versand per PDF-Service vor
+  const htmlContent = data?.html || "";
+  let userEmail = "";
+  try {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      userEmail = payload.email || payload.sub || "";
+    }
+  } catch (err) {
+    userEmail = "";
+  }
+  // PDF-Service aufrufen, um den Report für Admin und Nutzer per Mail zu verschicken
+  if (htmlContent) {
+    fetch("https://make-ki-pdfservice-production.up.railway.app/generate-pdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/html",
+        "X-User-Email": userEmail
+      },
+      body: htmlContent
+    }).catch(() => {
+      // Bei Fehler einfach ignorieren – der Admin erhält die Kopie in jedem Fall
+    });
+  }
+  // Zeige dem Nutzer eine Bestätigung und kündige den Mailversand an
   document.getElementById("formbuilder").innerHTML = `
-    <h2>KI-Readiness-Analyse abgeschlossen!</h2>
+    <h2>Vielen Dank für Ihre Angaben!</h2>
     <div class="success-msg">
-      Ihre Angaben wurden erfolgreich übermittelt.<br>
-      Der KI–Readiness–Report wurde erstellt.<br>
+      Ihre KI‑Analyse wird jetzt erstellt.<br>
+      Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E‑Mail zugestellt.<br>
     </div>
-    ${report}
   `;
-  // ⏳ Optional: Redirect zur PDF-Seite nach kurzer Wartezeit
-  setTimeout(() => {
-    window.location.href = "report.html";
-  }, 1000);
 }

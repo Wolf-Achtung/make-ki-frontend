@@ -896,27 +896,38 @@ function submitAllBlocks() {
 
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
-  const report = data?.html
-    ? `<div class="report-html-preview">${data.html}</div>`
-    : "";
-
-  // Autosave aufräumen und HTML-Report lokal speichern (für spätere Nutzung, falls gewünscht)
+  // Remove autosave so the test user starts fresh next time
   localStorage.removeItem(autosaveKey);
-  localStorage.setItem("report_html", data.html);
-  // Persist the language for the report so report.html can adjust its template
-  localStorage.setItem("report_lang", "en");
-
-  // HTML-Report direkt anzeigen – ohne Redirect
+  const htmlContent = data?.html || "";
+  let userEmail = "";
+  try {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      userEmail = payload.email || payload.sub || "";
+    }
+  } catch (err) {
+    userEmail = "";
+  }
+  // Trigger PDF generation and mail delivery via the PDF service
+  if (htmlContent) {
+    fetch("https://make-ki-pdfservice-production.up.railway.app/generate-pdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/html",
+        "X-User-Email": userEmail
+      },
+      body: htmlContent
+    }).catch(() => {
+      // On error just ignore – admin will still get the PDF
+    });
+  }
+  // Show a confirmation message and mention the email delivery
   document.getElementById("formbuilder").innerHTML = `
-    <h2>AI readiness analysis completed!</h2>
+    <h2>Thank you for your answers!</h2>
     <div class="success-msg">
-      Great! Your information has been successfully submitted.<br>
-      Your AI readiness report has been created.<br>
+      Your AI analysis is now being created.<br>
+      Once finished you will receive your individual report as a PDF by email.<br>
     </div>
-    ${report}
   `;
-  // ⏳ Optional: Redirect zur PDF-Seite nach kurzer Wartezeit
-  setTimeout(() => {
-    window.location.href = "report.html";
-  }, 1000);
 }
