@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KI-Readiness • PDF Smoke-Test</title>
+<title>KI-Readiness • PDF Smoke-Test (Option A)</title>
 <style>
   :root{--bg:#0b0f14;--card:#141a21;--text:#e6e9ee;--muted:#9aa3ad;--ok:#22c55e;--warn:#f59e0b;--fail:#ef4444;--line:#1f2730}
   *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -20,12 +20,13 @@
   .chip.ok{color:var(--ok)} .chip.warn{color:var(--warn)} .chip.fail{color:var(--fail)}
   #log, pre{background:#0f141a;border:1px solid var(--line);border-radius:10px;padding:10px;overflow:auto;white-space:pre-wrap}
   a.btn{display:inline-block;margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0f141a;color:var(--text);text-decoration:none}
+  .hint{font-size:12px;color:var(--muted);margin-top:4px}
 </style>
 </head>
 <body>
 <header>
   <h1>KI-Readiness • PDF Smoke-Test</h1>
-  <div class="muted">Teste schnell PDF-Service & Backend ohne CLI</div>
+  <div class="muted">Login mit Admin-E-Mail & Passwort – Token wird automatisch geholt.</div>
 </header>
 
 <main>
@@ -34,7 +35,7 @@
     <h2>Direkt: /generate-pdf</h2>
     <label>PDF_SERVICE_URL</label>
     <input id="pdfUrl" value="https://make-ki-pdfservice-production.up.railway.app">
-    <label>Empfänger-E-Mail (X-User-Email / JSON "to")</label>
+    <label>Empfänger-E-Mail (X-User-Email / JSON &quot;to&quot;)</label>
     <input id="userEmail" placeholder="kunde@example.com">
     <div class="row">
       <div>
@@ -69,17 +70,27 @@
     <button id="btnDirect">➡️ PDF jetzt erzeugen & herunterladen</button>
     <div id="directResult" class="chips"></div>
     <div><a id="downloadLink" class="btn" href="#" style="display:none">📥 PDF herunterladen</a></div>
+    <div class="hint">Tipp: Bei 413/415 bitte im PDF-Service Body-Limit erhöhen &amp; JSON akzeptieren.</div>
   </section>
 
-  <!-- Backend: /pdf_test -->
+  <!-- Backend: Login + /pdf_test -->
   <section>
-    <h2>Backend: /pdf_test (Admin)</h2>
+    <h2>Backend: Login & /pdf_test</h2>
     <label>Backend-URL</label>
     <input id="backendUrl" value="https://make-ki-backend-neu-production.up.railway.app">
-    <label>JWT-Token (Admin)</label>
-    <input id="jwt" type="password" placeholder="Bearer-Token">
-    <button id="btnPdfTest">▶️ /pdf_test ausführen</button>
+    <div class="row">
+      <div>
+        <label>Admin-E-Mail</label>
+        <input id="adminEmail" placeholder="admin@example.com">
+      </div>
+      <div>
+        <label>Admin-Passwort</label>
+        <input id="adminPwd" type="password" placeholder="••••••••">
+      </div>
+    </div>
+    <button id="btnLoginAndTest">🔐 Login & ▶️ /pdf_test</button>
     <pre id="backendOut" class="muted"></pre>
+    <div class="hint">Nutzt /api/login → JWT → ruft /pdf_test. Keine manuelle Token-Eingabe nötig.</div>
   </section>
 
   <!-- Async-Flow -->
@@ -102,7 +113,7 @@
     </div>
     <label>Interesse Förderung</label>
     <select id="foerd"><option>ja</option><option>nein</option><option>unklar</option></select>
-    <button id="btnAsync">🏗️ Flow starten</button>
+    <button id="btnAsync">🏗️ Login & Flow starten</button>
     <pre id="asyncLog" class="muted"></pre>
   </section>
 </main>
@@ -114,6 +125,8 @@
 
 <script>
 const $ = (id) => document.getElementById(id);
+const state = { token: "", lastLoginEmail: "", lastLoginAt: 0 };
+
 const log = (m, lvl="info") => {
   const ts = new Date().toLocaleTimeString();
   $("log").textContent += `[${ts}] ${m}\n`;
@@ -124,6 +137,26 @@ function makeTimeoutController(sec){
   const ctrl = new AbortController();
   const t = setTimeout(()=>ctrl.abort("timeout"), Math.max(5, sec)*1000);
   return {signal: ctrl.signal, cancel: ()=>clearTimeout(t)};
+}
+
+async function doLogin(base, email, pwd){
+  const url = base.replace(/\/+$/,"") + "/api/login";
+  log(`→ POST ${url}`);
+  const r = await fetch(url, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ email, password: pwd })
+  });
+  const js = await r.json().catch(()=>({}));
+  if(!r.ok || !js.token){
+    log(`❌ Login fehlgeschlagen: ${r.status}`);
+    throw new Error(js?.detail || "Login fehlgeschlagen");
+  }
+  state.token = js.token;
+  state.lastLoginEmail = email;
+  state.lastLoginAt = Date.now();
+  log("✅ Login ok");
+  return js.token;
 }
 
 /* --- Direct PDF --- */
@@ -189,42 +222,49 @@ $("btnDirect").onclick = async () => {
   }
 };
 
-/* --- Backend /pdf_test --- */
-$("btnPdfTest").onclick = async () => {
+/* --- Backend: Login & /pdf_test --- */
+$("btnLoginAndTest").onclick = async () => {
+  $("backendOut").textContent = "";
   const base = $("backendUrl").value.trim().replace(/\/+$/,"");
-  const token = $("jwt").value.trim();
-  if(!base || !token){ alert("Backend-URL und JWT angeben."); return; }
-  const url = base + "/pdf_test";
-  log(`→ POST ${url}`);
-  const t = makeTimeoutController(60);
-  try {
-    const r = await fetch(url, { method:"POST", headers:{ "Authorization": "Bearer "+token }, signal:t.signal });
+  const email = $("adminEmail").value.trim();
+  const pwd   = $("adminPwd").value;
+  if(!base || !email || !pwd){ alert("Bitte Backend-URL, Admin-E-Mail und Passwort angeben."); return; }
+  try{
+    const token = await doLogin(base, email, pwd);
+    const url = base + "/pdf_test";
+    log(`→ POST ${url}`);
+    const r = await fetch(url, { method:"POST", headers:{ "Authorization":"Bearer "+token } });
     const js = await r.json().catch(()=>({rawStatus:r.status}));
     $("backendOut").textContent = JSON.stringify(js,null,2);
     log(`↩ ${r.status} /pdf_test`);
-  } catch(e){ log(`❌ ${e}`); } finally { t.cancel(); }
+  }catch(e){
+    $("backendOut").textContent = String(e);
+  }
 };
 
-/* --- Async Flow --- */
+/* --- Async Flow (mit Login) --- */
 $("btnAsync").onclick = async () => {
   const base = $("backendUrl").value.trim().replace(/\/+$/,"");
-  const token = $("jwt").value.trim();
-  if(!base || !token){ alert("Backend-URL und JWT angeben."); return; }
-
-  const startUrl = base + "/briefing_async";
-  const statUrl  = base + "/briefing_status/";
-  const payload = {
-    lang: $("lang").value, language: $("lang").value,
-    unternehmensgroesse: $("ug").value,
-    interesse_foerderung: $("foerd").value,
-    branche: "agentur"
-  };
+  const email = $("adminEmail").value.trim();
+  const pwd   = $("adminPwd").value;
+  if(!base || !email || !pwd){ alert("Bitte Backend-URL, Admin-E-Mail und Passwort angeben."); return; }
 
   $("asyncLog").textContent = "";
   const alog = (m)=> $("asyncLog").textContent += m + "\n";
 
-  log(`→ POST ${startUrl}`);
   try{
+    const token = state.token && state.lastLoginEmail===email ? state.token : await doLogin(base, email, pwd);
+
+    const startUrl = base + "/briefing_async";
+    const statUrl  = base + "/briefing_status/";
+    const payload = {
+      lang: $("lang").value, language: $("lang").value,
+      unternehmensgroesse: $("ug").value,
+      interesse_foerderung: $("foerd").value,
+      branche: "agentur"
+    };
+
+    log(`→ POST ${startUrl}`);
     const r = await fetch(startUrl, {
       method:"POST",
       headers: {"Authorization":"Bearer "+token, "Content-Type":"application/json"},
@@ -244,7 +284,9 @@ $("btnAsync").onclick = async () => {
       alog(`[${tries}] ${st.status}  pdf_sent=${st.pdf_sent}  pdf_status=${st.pdf_status||"-"}`);
       if(st.status==="completed" || st.status==="failed"){ done=true; }
     }
-  }catch(e){ alog("❌ "+e); }
+  }catch(e){
+    alog("❌ "+e);
+  }
 };
 </script>
 </body>
