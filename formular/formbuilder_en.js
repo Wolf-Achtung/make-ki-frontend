@@ -711,14 +711,15 @@ function renderBlock(blockIdx) {
     </div>`;
   }).join("");
 
-  // Navigation
+  // Navigation: group previous/next in flex container, show reset separately with smaller width
   form.innerHTML += `
     <div class="form-nav">
-      ${blockIdx > 0 ? `<button type="button" id="btn-prev">Back</button>` : ""}
-      ${blockIdx < blocks.length - 1
-        ? `<button type="button" id="btn-next">Next</button>`
-        : `<button type="button" id="btn-send" class="btn-next">Submit</button>`}
-      <!-- Reset button to clear stored answers and restart from the first block -->
+      <div class="nav-buttons">
+        ${blockIdx > 0 ? `<button type="button" id="btn-prev">Back</button>` : ""}
+        ${blockIdx < blocks.length - 1
+          ? `<button type="button" id="btn-next">Next</button>`
+          : `<button type="button" id="btn-send" class="btn-next">Submit</button>`}
+      </div>
       <button type="button" id="btn-reset" class="btn-reset">Reset</button>
     </div>
     <div id="feedback"></div>`;
@@ -915,6 +916,12 @@ function submitAllBlocks() {
     },
     body: JSON.stringify(data),
     keepalive: true
+  }).then(response => {
+    // If the token has expired, redirect to the login page
+    if (response.status === 401) {
+      localStorage.removeItem("jwt");
+      window.location.href = "/login.html";
+    }
   }).catch(() => {
     console.error('Error during transmission');
   });

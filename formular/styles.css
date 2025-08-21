@@ -361,17 +361,34 @@ input[type="range"] {
   color: #22528b;
   letter-spacing: 0.03em;
 }
+/* Navigation container for previous/next and reset buttons */
 .form-nav {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 10px;
   margin-top: 20px;
   flex-wrap: wrap;
 }
 
-.form-nav button {
+/* Wrapper for previous/next or submit buttons */
+.form-nav .nav-buttons {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+}
+
+/* Style for the navigation buttons (prev/next/submit) */
+.form-nav .nav-buttons button {
   flex: 1;
   min-width: 120px;
+}
+
+/* Reset button should be smaller and not grow */
+.form-nav .btn-reset {
+  flex: 0 0 auto;
+  min-width: auto;
+  padding: 8px 16px;
 }
 /* === Styles: Beispielhinweise bei Checkboxen === */
 .option-example {

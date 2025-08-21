@@ -711,14 +711,15 @@ function renderBlock(blockIdx) {
     </div>`;
   }).join("");
 
-  // Navigation
+  // Navigation: group previous/next in flex container, show reset separately with smaller width
   form.innerHTML += `
     <div class="form-nav">
-      ${blockIdx > 0 ? `<button type="button" id="btn-prev">Zurück</button>` : ""}
-      ${blockIdx < blocks.length - 1
-        ? `<button type="button" id="btn-next">Weiter</button>`
-        : `<button type="button" id="btn-send" class="btn-next">Absenden</button>`}
-      <!-- Reset button to clear stored answers and restart from the first block -->
+      <div class="nav-buttons">
+        ${blockIdx > 0 ? `<button type="button" id="btn-prev">Zurück</button>` : ""}
+        ${blockIdx < blocks.length - 1
+          ? `<button type="button" id="btn-next">Weiter</button>`
+          : `<button type="button" id="btn-send" class="btn-next">Absenden</button>`}
+      </div>
       <button type="button" id="btn-reset" class="btn-reset">Zurücksetzen</button>
     </div>
     <div id="feedback"></div>`;
@@ -916,6 +917,12 @@ function submitAllBlocks() {
     },
     body: JSON.stringify(data),
     keepalive: true
+  }).then(response => {
+    // Wenn der Token abgelaufen ist, umgehend auf die Login-Seite umleiten
+    if (response.status === 401) {
+      localStorage.removeItem("jwt");
+      window.location.href = "/login.html";
+    }
   }).catch(() => {
     // Fehler beim Absenden können hier protokolliert werden; die Anzeige
     // bleibt davon unberührt.
