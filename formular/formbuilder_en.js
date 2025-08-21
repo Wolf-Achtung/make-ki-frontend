@@ -832,25 +832,26 @@ document.getElementById("formbuilder").addEventListener("change", () => {
   document.getElementById("formbuilder").addEventListener("click", e => {
     const feedback = document.getElementById("feedback");
 
-// ⬇️ direkt vor: if (e.target.id === "btn-next") { ... }
-if (e.target.id === "btn-next") {
-  // 1) Alle Felder des aktuellen Blocks nochmal auslesen (Textarea löst evtl. kein change aus)
-  const block = blocks[currentBlock];
-  for (const key of block.keys) {
-    const f = fields.find(x => x.key === key);
-    if (f) formData[key] = getFieldValue(f);
-  }
-  saveAutosave();
-
-  // 2) Erst jetzt validieren
-  if (!blockIsValid(currentBlock)) {
-    feedback.innerHTML = `<div class="form-error">Please fill in all fields in this section.</div>`;
-    return;
-  }
+    if (e.target.id === "btn-next") {
+      // Update the values of the current block right before validation is performed.
+      const block = blocks[currentBlock];
+      for (const key of block.keys) {
+        const f = fields.find(x => x.key === key);
+        if (f) {
+          formData[key] = getFieldValue(f);
+        }
+      }
+      // Persist autosave of the current form data.
+      saveAutosave();
+      // Validate all required fields for this block.
+      if (!blockIsValid(currentBlock)) {
+        feedback.innerHTML = `<div class="form-error">Please fill in all fields in this section.</div>`;
+        return;
+      }
       currentBlock++;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
+      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrolls to top
     }
 
     if (e.target.id === "btn-prev") {

@@ -832,21 +832,23 @@ document.getElementById("formbuilder").addEventListener("change", () => {
   document.getElementById("formbuilder").addEventListener("click", e => {
     const feedback = document.getElementById("feedback");
 
-// ⬇️ direkt vor: if (e.target.id === "btn-next") { ... }
-if (e.target.id === "btn-next") {
-  // 1) Alle Felder des aktuellen Blocks nochmal auslesen (Textarea löst evtl. kein change aus)
-  const block = blocks[currentBlock];
-  for (const key of block.keys) {
-    const f = fields.find(x => x.key === key);
-    if (f) formData[key] = getFieldValue(f);
-  }
-  saveAutosave();
-
-  // 2) Erst jetzt validieren
-  if (!blockIsValid(currentBlock)) {
-    feedback.innerHTML = `<div class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus.</div>`;
-    return;
-  }
+    if (e.target.id === "btn-next") {
+      // Aktualisiere die Werte des aktuellen Blocks unmittelbar bevor die Validierung ausgeführt wird.
+      const block = blocks[currentBlock];
+      // Schreibe alle Feldwerte (insbesondere Textareas) in formData, falls der Nutzer noch im Feld fokussiert ist.
+      for (const key of block.keys) {
+        const f = fields.find(x => x.key === key);
+        if (f) {
+          formData[key] = getFieldValue(f);
+        }
+      }
+      // Speichere den aktuellen Zustand des Formulars im Autosave.
+      saveAutosave();
+      // Prüfe anschließend, ob alle erforderlichen Felder befüllt sind.
+      if (!blockIsValid(currentBlock)) {
+        feedback.innerHTML = `<div class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus.</div>`;
+        return;
+      }
       currentBlock++;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
