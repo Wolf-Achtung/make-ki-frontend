@@ -832,11 +832,21 @@ document.getElementById("formbuilder").addEventListener("change", () => {
   document.getElementById("formbuilder").addEventListener("click", e => {
     const feedback = document.getElementById("feedback");
 
-    if (e.target.id === "btn-next") {
-      if (!blockIsValid(currentBlock)) {
-        feedback.innerHTML = `<div class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus.</div>`;
-        return;
-      }
+// ⬇️ direkt vor: if (e.target.id === "btn-next") { ... }
+if (e.target.id === "btn-next") {
+  // 1) Alle Felder des aktuellen Blocks nochmal auslesen (Textarea löst evtl. kein change aus)
+  const block = blocks[currentBlock];
+  for (const key of block.keys) {
+    const f = fields.find(x => x.key === key);
+    if (f) formData[key] = getFieldValue(f);
+  }
+  saveAutosave();
+
+  // 2) Erst jetzt validieren
+  if (!blockIsValid(currentBlock)) {
+    feedback.innerHTML = `<div class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus.</div>`;
+    return;
+  }
       currentBlock++;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
