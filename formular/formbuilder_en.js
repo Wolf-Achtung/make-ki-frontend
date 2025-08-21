@@ -490,6 +490,61 @@ const fields = [
     description: "Are you more safety‑oriented or open to bold new paths when it comes to new ideas and innovation?"
   },
 
+  // --- New fields for Gold‑Standard: Strategy & Governance ---
+  {
+    key: "strategic_goals",
+    label: "What specific goals do you pursue with AI?",
+    type: "textarea",
+    placeholder: "e.g. increase efficiency, develop new products, improve customer service",
+    description: "List your main strategic goals for using AI. This helps tailor measures precisely."
+  },
+  {
+    key: "data_quality",
+    label: "How do you rate the quality of your data?",
+    type: "select",
+    options: [
+      { value: "high", label: "High (complete, structured, up to date)" },
+      { value: "medium", label: "Medium (partly structured or incomplete)" },
+      { value: "low", label: "Low (unstructured, many gaps)" }
+    ],
+    description: "Well‑maintained data are the basis for successful AI projects. Choose how clean and structured your data sources are."
+  },
+  {
+    key: "ai_roadmap",
+    label: "Do you already have an AI roadmap or strategy?",
+    type: "select",
+    options: [
+      { value: "yes", label: "Yes – already implemented" },
+      { value: "planning", label: "In planning" },
+      { value: "no", label: "Not yet available" }
+    ],
+    description: "A clearly defined roadmap supports structured and targeted implementation of AI projects."
+  },
+  {
+    key: "governance",
+    label: "Are there internal guidelines for data and AI governance?",
+    type: "select",
+    options: [
+      { value: "yes", label: "Yes" },
+      { value: "partial", label: "Partial" },
+      { value: "no", label: "No" }
+    ],
+    description: "Guidelines and processes for data and AI governance promote responsible and lawful projects."
+  },
+  {
+    key: "innovation_culture",
+    label: "How open is your company to innovation and new technologies?",
+    type: "select",
+    options: [
+      { value: "very_open", label: "Very open" },
+      { value: "rather_open", label: "Rather open" },
+      { value: "neutral", label: "Neutral" },
+      { value: "rather_reluctant", label: "Rather reluctant" },
+      { value: "very_reluctant", label: "Very reluctant" }
+    ],
+    description: "An innovation‑friendly company culture makes it easier to introduce new technologies like AI."
+  },
+
   // Block 5: Datenschutz & Absenden
   {
     key: "datenschutz",
@@ -522,6 +577,12 @@ const blocks = [
   {
     name: "Goals & projects",
     keys: ["projektziel", "ki_projekte", "ki_usecases", "ki_potenzial", "usecase_priority", "ki_geschaeftsmodell_vision", "moonshot"]
+  },
+
+  // New block for strategy and governance
+  {
+    name: "Strategy & Governance",
+    keys: ["strategic_goals", "data_quality", "ai_roadmap", "governance", "innovation_culture"]
   },
   {
     name: "Legal & funding",

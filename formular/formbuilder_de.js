@@ -490,6 +490,61 @@ const fields = [
     description: "Sind Sie bei neuen Ideen und Innovationen eher sicherheitsorientiert oder offen für mutige, neue Wege?"
   },
 
+  // --- Neue Felder für Gold‑Standard: Strategie & Governance ---
+  {
+    key: "strategische_ziele",
+    label: "Welche konkreten Ziele verfolgen Sie mit KI?",
+    type: "textarea",
+    placeholder: "z. B. Effizienz steigern, neue Produkte entwickeln, Kundenservice verbessern",
+    description: "Nennen Sie die strategischen Hauptziele Ihres KI‑Einsatzes. Dies hilft, Maßnahmen passgenau auszurichten."
+  },
+  {
+    key: "datenqualitaet",
+    label: "Wie beurteilen Sie die Qualität Ihrer Daten?",
+    type: "select",
+    options: [
+      { value: "hoch", label: "Hoch (vollständig, strukturiert, aktuell)" },
+      { value: "mittel", label: "Mittel (teilweise strukturiert oder lückenhaft)" },
+      { value: "niedrig", label: "Niedrig (unstrukturiert, viele Lücken)" }
+    ],
+    description: "Gut gepflegte Daten sind die Grundlage für erfolgreiche KI‑Projekte. Wählen Sie, wie sauber und strukturiert Ihre Datenquellen sind."
+  },
+  {
+    key: "ai_roadmap",
+    label: "Gibt es bereits eine KI‑Roadmap oder Strategie?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja – bereits implementiert" },
+      { value: "in_planung", label: "In Planung" },
+      { value: "nein", label: "Noch nicht vorhanden" }
+    ],
+    description: "Eine klar definierte Roadmap unterstützt Sie dabei, KI‑Projekte strukturiert und zielgerichtet umzusetzen."
+  },
+  {
+    key: "governance",
+    label: "Existieren interne Richtlinien für Daten- und KI‑Governance?",
+    type: "select",
+    options: [
+      { value: "ja", label: "Ja" },
+      { value: "teilweise", label: "Teilweise" },
+      { value: "nein", label: "Nein" }
+    ],
+    description: "Richtlinien und Prozesse zur Daten- und KI‑Governance fördern verantwortungsvolle und rechtskonforme Projekte."
+  },
+  {
+    key: "innovationskultur",
+    label: "Wie offen ist Ihr Unternehmen für Innovationen und neue Technologien?",
+    type: "select",
+    options: [
+      { value: "sehr_offen", label: "Sehr offen" },
+      { value: "eher_offen", label: "Eher offen" },
+      { value: "neutral", label: "Neutral" },
+      { value: "eher_zurueckhaltend", label: "Eher zurückhaltend" },
+      { value: "sehr_zurueckhaltend", label: "Sehr zurückhaltend" }
+    ],
+    description: "Eine innovationsfreundliche Unternehmenskultur erleichtert die Einführung neuer Technologien wie KI."
+  },
+
   // Block 5: Datenschutz & Absenden
   {
     key: "datenschutz",
@@ -522,6 +577,12 @@ const blocks = [
   {
     name: "Ziele & Projekte",
     keys: ["projektziel", "ki_projekte", "ki_usecases", "ki_potenzial", "usecase_priority", "ki_geschaeftsmodell_vision", "moonshot"]
+  },
+
+  // Neuer Block für strategische Ziele und Governance
+  {
+    name: "Strategie & Governance",
+    keys: ["strategische_ziele", "datenqualitaet", "ai_roadmap", "governance", "innovationskultur"]
   },
   {
     name: "Rechtliches & Förderung",
