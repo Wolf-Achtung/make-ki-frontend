@@ -66,9 +66,6 @@ const fields = [
       { value: "sonstiges", label: "Sonstiges" }
     ],
     description: "Bitte wählen Sie die zutreffende Rechtsform. So erhalten Sie Auswertungen, die genau auf Ihre Unternehmenssituation passen.",
-    // Die Rechtsform-Auswahl soll nur angezeigt werden, wenn die Unternehmensgröße auf Solo gestellt ist.
-    // Ursprünglich wurde hier auf den Wert "1" geprüft, aber die Optionswerte sind
-    // "solo", "team" und "kmu". Daher prüfen wir explizit auf "solo".
     showIf: (data) => data.unternehmensgroesse === "solo"
   },
   {
@@ -112,7 +109,7 @@ const fields = [
     description: "Für welche Kundengruppen bieten Sie Leistungen an? Bitte wählen Sie alle Zielgruppen aus, die für Sie relevant sind (Mehrfachauswahl möglich)."
   },
 
-  // Erweiterte Unternehmensangaben (Gold‑Standard)
+  // Erweiterte Unternehmensangaben (Gold-Standard)
   {
     key: "jahresumsatz",
     label: "Jahresumsatz (Schätzung)",
@@ -127,21 +124,21 @@ const fields = [
     ],
     description: "Bitte schätzen Sie Ihren Jahresumsatz. Die Klassifizierung hilft bei Benchmarks, Förderprogrammen und Empfehlungen."
   },
-{
-  key: "it_infrastruktur",
-  label: "Wie ist Ihre IT-Infrastruktur aktuell organisiert?",
-  type: "select",
-  options: [
-    { value: "cloud", label: "Cloud-basiert (externe Services, z. B. Microsoft 365, Google Cloud…)" },
-    { value: "on_premise", label: "Eigenes Rechenzentrum (On-Premises)" },
-    { value: "hybrid", label: "Hybrid (Cloud + eigene Server)" },
-    { value: "unklar", label: "Unklar / Noch offen" }
-  ],
-  description: "Ihre Antwort hilft uns, passende Empfehlungen für Sicherheit, Integration und moderne Tools auszuwählen."
+  {
+    key: "it_infrastruktur",
+    label: "Wie ist Ihre IT-Infrastruktur aktuell organisiert?",
+    type: "select",
+    options: [
+      { value: "cloud", label: "Cloud-basiert (externe Services, z. B. Microsoft 365, Google Cloud…)" },
+      { value: "on_premise", label: "Eigenes Rechenzentrum (On-Premises)" },
+      { value: "hybrid", label: "Hybrid (Cloud + eigene Server)" },
+      { value: "unklar", label: "Unklar / Noch offen" }
+    ],
+    description: "Ihre Antwort hilft uns, passende Empfehlungen für Sicherheit, Integration und moderne Tools auszuwählen."
   },
   {
     key: "interne_ki_kompetenzen",
-    label: "Gibt es ein internes KI‑/Digitalisierungsteam?",
+    label: "Gibt es ein internes KI-/Digitalisierungsteam?",
     type: "select",
     options: [
       { value: "ja", label: "Ja" },
@@ -151,18 +148,18 @@ const fields = [
     description: "Ein internes Kompetenzteam kann Prozesse beschleunigen. Diese Angabe hilft bei der Empfehlung von Schulungen und internen Strukturen."
   },
   {
-  key: "datenquellen",
-  label: "Welche Datentypen stehen Ihnen für KI-Projekte und Analysen zur Verfügung?",
-  type: "checkbox",
-  options: [
-    { value: "kundendaten", label: "Kundendaten (CRM, Service, Historie)" },
-    { value: "verkaufsdaten", label: "Verkaufs- und Bestelldaten (z. B. Shop, Aufträge)" },
-    { value: "produktionsdaten", label: "Produktions- oder Betriebsdaten (Maschinen, Sensoren, Logistik)" },
-    { value: "personaldaten", label: "Personal- oder HR-Daten (Mitarbeiter, Bewerbungen, Zeitwirtschaft)" },
-    { value: "marketingdaten", label: "Marketing- und Kampagnendaten (Ads, Social Media, Newsletter)" },
-    { value: "sonstige", label: "Sonstige / Weitere Datenquellen" }
-  ],
-  description: "Bitte wählen Sie alle Datenquellen aus, die für Ihr Unternehmen relevant sind (Mehrfachauswahl möglich)."
+    key: "datenquellen",
+    label: "Welche Datentypen stehen Ihnen für KI-Projekte und Analysen zur Verfügung?",
+    type: "checkbox",
+    options: [
+      { value: "kundendaten", label: "Kundendaten (CRM, Service, Historie)" },
+      { value: "verkaufsdaten", label: "Verkaufs- und Bestelldaten (z. B. Shop, Aufträge)" },
+      { value: "produktionsdaten", label: "Produktions- oder Betriebsdaten (Maschinen, Sensoren, Logistik)" },
+      { value: "personaldaten", label: "Personal- oder HR-Daten (Mitarbeiter, Bewerbungen, Zeitwirtschaft)" },
+      { value: "marketingdaten", label: "Marketing- und Kampagnendaten (Ads, Social Media, Newsletter)" },
+      { value: "sonstige", label: "Sonstige / Weitere Datenquellen" }
+    ],
+    description: "Bitte wählen Sie alle Datenquellen aus, die für Ihr Unternehmen relevant sind (Mehrfachauswahl möglich)."
   },
 
   // Block 2: Status Quo & Digitalisierungsgrad
@@ -180,10 +177,10 @@ const fields = [
     label: "Wie hoch ist der Anteil papierloser Prozesse in Ihrem Unternehmen?",
     type: "select",
     options: [
-      { value: "0-20", label: "0–20 %" },
-      { value: "21-50", label: "21–50 %" },
-      { value: "51-80", label: "51–80 %" },
-      { value: "81-100", label: "81–100 %" }
+      { value: "0-20", label: "0–20 %" },
+      { value: "21-50", label: "21–50 %" },
+      { value: "51-80", label: "51–80 %" },
+      { value: "81-100", label: "81–100 %" }
     ],
     description: "Schätzen Sie grob: Wie viel läuft komplett digital ohne Papierakten oder Ausdrucke?"
   },
@@ -198,26 +195,26 @@ const fields = [
       { value: "eher_hoch", label: "Eher hoch" },
       { value: "sehr_hoch", label: "Sehr hoch" }
     ],
-    description: "Sind viele Arbeitsschritte noch Handarbeit oder läuft vieles automatisch (z. B. durch KI, Scripte oder smarte Tools)?"
+    description: "Sind viele Arbeitsschritte noch Handarbeit oder läuft vieles automatisch (z. B. durch KI, Scripte oder smarte Tools)?"
   },
-{
-  key: "ki_einsatz",
-  label: "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
-  type: "checkbox",
-  options: [
-    { value: "marketing", label: "Marketing" },
-    { value: "vertrieb", label: "Vertrieb" },
-    { value: "buchhaltung", label: "Buchhaltung" },
-    { value: "produktion", label: "Produktion" },
-    { value: "kundenservice", label: "Kundenservice" },
-    { value: "it", label: "IT" },
-    { value: "forschung", label: "Forschung & Entwicklung" },
-    { value: "personal", label: "Personal" },
-    { value: "keine", label: "Noch keine Nutzung" },
-    { value: "sonstiges", label: "Sonstiges" }
-  ],
-  description: "Wo nutzen Sie bereits Künstliche Intelligenz oder Automatisierung? Wählen Sie alle Bereiche aus, die relevant sind."
-},
+  {
+    key: "ki_einsatz",
+    label: "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
+    type: "checkbox",
+    options: [
+      { value: "marketing", label: "Marketing" },
+      { value: "vertrieb", label: "Vertrieb" },
+      { value: "buchhaltung", label: "Buchhaltung" },
+      { value: "produktion", label: "Produktion" },
+      { value: "kundenservice", label: "Kundenservice" },
+      { value: "it", label: "IT" },
+      { value: "forschung", label: "Forschung & Entwicklung" },
+      { value: "personal", label: "Personal" },
+      { value: "keine", label: "Noch keine Nutzung" },
+      { value: "sonstiges", label: "Sonstiges" }
+    ],
+    description: "Wo nutzen Sie bereits Künstliche Intelligenz oder Automatisierung? Wählen Sie alle Bereiche aus, die relevant sind."
+  },
   {
     key: "ki_knowhow",
     label: "Wie schätzen Sie das interne KI-Know-how Ihres Teams ein?",
@@ -231,6 +228,7 @@ const fields = [
     ],
     description: "Wie fit sind Sie und Ihr Team beim Thema KI? Nutzen Sie KI schon produktiv oder kennen Sie sich bereits tiefer aus?"
   },
+
   // Block 3: Ziele & Projekte
   {
     key: "projektziel",
@@ -253,7 +251,7 @@ const fields = [
     key: "ki_projekte",
     label: "Gibt es aktuell laufende oder geplante KI-Projekte in Ihrem Unternehmen?",
     type: "textarea",
-    placeholder: "z. B. Chatbot für Kundenanfragen, automatisierte Angebotserstellung, Text- oder Bildgeneratoren, Analyse-Tools für Vertrieb",
+    placeholder: "z. B. Chatbot für Kundenanfragen, automatisierte Angebotserstellung, Text- oder Bildgeneratoren, Analyse-Tools für Vertrieb",
     description: "Beschreiben Sie laufende oder geplante Projekte möglichst konkret. Gibt es bereits Überlegungen, Experimente oder Pilotprojekte?"
   },
   {
@@ -261,14 +259,14 @@ const fields = [
     label: "Welche KI-Anwendungsfälle interessieren Sie besonders?",
     type: "checkbox",
     options: [
-      { value: "texterstellung", label: "Texterstellung (z. B. automatisierte Berichte, Posts)" },
-      { value: "bildgenerierung", label: "Bildgenerierung (z. B. KI-Grafiken, Logovarianten)" },
-      { value: "spracherkennung", label: "Spracherkennung (z. B. Transkription, Voicebots)" },
-      { value: "prozessautomatisierung", label: "Prozessautomatisierung (z. B. Belegprüfung, Rechnungsversand)" },
-      { value: "datenanalyse", label: "Datenanalyse & Prognose (z. B. Markttrends, Kundenverhalten)" },
-      { value: "kundensupport", label: "Kundensupport (z. B. Chatbots, FAQ-Automation)" },
-      { value: "wissensmanagement", label: "Wissensmanagement (z. B. Dokumentenverwaltung, intelligente Suche)" },
-      { value: "marketing", label: "Marketing (z. B. Zielgruppen-Segmentierung, Kampagnenoptimierung)" },
+      { value: "texterstellung", label: "Texterstellung (z. B. automatisierte Berichte, Posts)" },
+      { value: "bildgenerierung", label: "Bildgenerierung (z. B. KI-Grafiken, Logovarianten)" },
+      { value: "spracherkennung", label: "Spracherkennung (z. B. Transkription, Voicebots)" },
+      { value: "prozessautomatisierung", label: "Prozessautomatisierung (z. B. Belegprüfung, Rechnungsversand)" },
+      { value: "datenanalyse", label: "Datenanalyse & Prognose (z. B. Markttrends, Kundenverhalten)" },
+      { value: "kundensupport", label: "Kundensupport (z. B. Chatbots, FAQ-Automation)" },
+      { value: "wissensmanagement", label: "Wissensmanagement (z. B. Dokumentenverwaltung, intelligente Suche)" },
+      { value: "marketing", label: "Marketing (z. B. Zielgruppen-Segmentierung, Kampagnenoptimierung)" },
       { value: "sonstiges", label: "Sonstiges" }
     ],
     description: "Welche KI-Anwendungsbereiche interessieren Sie besonders? Mehrfachauswahl möglich."
@@ -277,7 +275,7 @@ const fields = [
     key: "ki_potenzial",
     label: "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
     type: "textarea",
-    placeholder: "z. B. Schnelleres Reporting, personalisierte Angebote, Kostenreduktion durch Automatisierung, neue Services ...",
+    placeholder: "z. B. Schnelleres Reporting, personalisierte Angebote, Kostenreduktion durch Automatisierung, neue Services ...",
     description: "Wo sehen Sie für Ihr Unternehmen das größte Potenzial durch KI? Gerne frei formulieren – alles ist willkommen."
   },
   {
@@ -301,14 +299,14 @@ const fields = [
     key: "ki_geschaeftsmodell_vision",
     label: "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern?",
     type: "textarea",
-    placeholder: "z. B. Automatisierte Online-Beratungen, datenbasierte Plattform-Services, völlig neue Produkte, …",
+    placeholder: "z. B. Automatisierte Online-Beratungen, datenbasierte Plattform-Services, völlig neue Produkte, …",
     description: "Welche Veränderungen oder neuen Möglichkeiten sehen Sie langfristig durch KI? Hier geht es um Ihre größere Vision – ob konkret oder visionär."
   },
   {
     key: "moonshot",
     label: "Was wäre ein mutiger Durchbruch – Ihre KI-Vision in 3 Jahren?",
     type: "textarea",
-    placeholder: "z. B. 80 % meiner Routinearbeiten übernimmt KI; mein Umsatz verdoppelt sich durch smarte Automatisierung …",
+    placeholder: "z. B. 80 % meiner Routinearbeiten übernimmt KI; mein Umsatz verdoppelt sich durch smarte Automatisierung …",
     description: "Was wäre Ihre visionäre KI-Zukunft in 3 Jahren? Denken Sie groß."
   },
 
@@ -344,7 +342,7 @@ const fields = [
       { value: "nein", label: "Nein" },
       { value: "teilweise", label: "Teilweise (in Planung)" }
     ],
-    description: "Bei vielen KI-Anwendungen ist eine sogenannte „DSFA“ (Datenschutz-Folgenabschätzung) laut DSGVO verpflichtend oder empfohlen – z. B. bei sensiblen Daten, automatisierten Entscheidungen oder Risiko für Betroffene."
+    description: "Bei vielen KI-Anwendungen ist eine sogenannte „DSFA“ (Datenschutz-Folgenabschätzung) laut DSGVO verpflichtend oder empfohlen – z. B. bei sensiblen Daten, automatisierten Entscheidungen oder Risiko für Betroffene."
   },
   {
     key: "meldewege",
@@ -366,7 +364,7 @@ const fields = [
       { value: "teilweise", label: "Teilweise" },
       { value: "nein", label: "Nein" }
     ],
-    description: "Haben Sie definierte Abläufe, um Informationen wie Mitarbeiterdaten, Kundenanfragen, Trainingsdaten etc. gesetzeskonform zu löschen oder zu anonymisieren?Das ist wichtig für KI-Compliance und DSGVO."
+    description: "Haben Sie definierte Abläufe, um Informationen wie Mitarbeiterdaten, Kundenanfragen, Trainingsdaten etc. gesetzeskonform zu löschen oder zu anonymisieren? Das ist wichtig für KI-Compliance und DSGVO."
   },
   {
     key: "ai_act_kenntnis",
@@ -490,13 +488,13 @@ const fields = [
     description: "Sind Sie bei neuen Ideen und Innovationen eher sicherheitsorientiert oder offen für mutige, neue Wege?"
   },
 
-  // --- Neue Felder für Gold‑Standard: Strategie & Governance ---
+  // --- Neue Felder für Gold-Standard: Strategie & Governance ---
   {
     key: "strategische_ziele",
     label: "Welche konkreten Ziele verfolgen Sie mit KI?",
     type: "textarea",
-    placeholder: "z. B. Effizienz steigern, neue Produkte entwickeln, Kundenservice verbessern",
-    description: "Nennen Sie die strategischen Hauptziele Ihres KI‑Einsatzes. Dies hilft, Maßnahmen passgenau auszurichten."
+    placeholder: "z. B. Effizienz steigern, neue Produkte entwickeln, Kundenservice verbessern",
+    description: "Nennen Sie die strategischen Hauptziele Ihres KI-Einsatzes. Dies hilft, Maßnahmen passgenau auszurichten."
   },
   {
     key: "datenqualitaet",
@@ -507,29 +505,29 @@ const fields = [
       { value: "mittel", label: "Mittel (teilweise strukturiert oder lückenhaft)" },
       { value: "niedrig", label: "Niedrig (unstrukturiert, viele Lücken)" }
     ],
-    description: "Gut gepflegte Daten sind die Grundlage für erfolgreiche KI‑Projekte. Wählen Sie, wie sauber und strukturiert Ihre Datenquellen sind."
+    description: "Gut gepflegte Daten sind die Grundlage für erfolgreiche KI-Projekte. Wählen Sie, wie sauber und strukturiert Ihre Datenquellen sind."
   },
   {
     key: "ai_roadmap",
-    label: "Gibt es bereits eine KI‑Roadmap oder Strategie?",
+    label: "Gibt es bereits eine KI-Roadmap oder Strategie?",
     type: "select",
     options: [
       { value: "ja", label: "Ja – bereits implementiert" },
       { value: "in_planung", label: "In Planung" },
       { value: "nein", label: "Noch nicht vorhanden" }
     ],
-    description: "Eine klar definierte Roadmap unterstützt Sie dabei, KI‑Projekte strukturiert und zielgerichtet umzusetzen."
+    description: "Eine klar definierte Roadmap unterstützt Sie dabei, KI-Projekte strukturiert und zielgerichtet umzusetzen."
   },
   {
     key: "governance",
-    label: "Existieren interne Richtlinien für Daten- und KI‑Governance?",
+    label: "Existieren interne Richtlinien für Daten- und KI-Governance?",
     type: "select",
     options: [
       { value: "ja", label: "Ja" },
       { value: "teilweise", label: "Teilweise" },
       { value: "nein", label: "Nein" }
     ],
-    description: "Richtlinien und Prozesse zur Daten- und KI‑Governance fördern verantwortungsvolle und rechtskonforme Projekte."
+    description: "Richtlinien und Prozesse zur Daten- und KI-Governance fördern verantwortungsvolle und rechtskonforme Projekte."
   },
   {
     key: "innovationskultur",
@@ -643,7 +641,6 @@ function renderBlock(blockIdx) {
     let input = "";
     switch (field.type) {
       case "select":
-        // Beim Rendern wird der gespeicherte Wert als selected markiert, damit Auswahl nicht zurückspringt
         const selectedValue = formData[field.key] || "";
         input = `
           <select id="${field.key}" name="${field.key}">
@@ -667,9 +664,9 @@ function renderBlock(blockIdx) {
             const labelMatch = opt.label.match(/^([^(]+)\s*\(([^)]+)\)/);
             let mainLabel = opt.label, subText = "";
             if (labelMatch) {
-            mainLabel = labelMatch[1].trim();
-            subText = `<div class="option-example">${labelMatch[2].trim()}</div>`;
-}
+              mainLabel = labelMatch[1].trim();
+              subText = `<div class="option-example">${labelMatch[2].trim()}</div>`;
+            }
             const checked = formData[field.key]?.includes(opt.value) ? 'checked' : '';
             return `<label class="checkbox-label">
               <input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}>
@@ -699,10 +696,9 @@ function renderBlock(blockIdx) {
         input = `<input type="text" id="${field.key}" name="${field.key}" value="${formData[field.key] || ""}" />`;
     }
 
-    // Layout: Label → Guidance → Input
     const labelHtml = field.type !== "privacy"
       ? `<label for="${field.key}"><b>${field.label}</b></label>`
-      : ""; // privacy hat eigenes Label
+      : "";
 
     return `<div class="form-group">
       ${labelHtml}
@@ -714,15 +710,17 @@ function renderBlock(blockIdx) {
   // Navigation: group previous/next in flex container, show reset separately with smaller width
   form.innerHTML += `
     <div class="form-nav">
-      <div class="nav-buttons">
+      <div class="nav-left">
         ${blockIdx > 0 ? `<button type="button" id="btn-prev">Zurück</button>` : ""}
+      </div>
+      <div class="nav-right">
         ${blockIdx < blocks.length - 1
           ? `<button type="button" id="btn-next">Weiter</button>`
           : `<button type="button" id="btn-send" class="btn-next">Absenden</button>`}
+        <button type="button" id="btn-reset" class="btn-reset">Zurücksetzen</button>
       </div>
-      <button type="button" id="btn-reset" class="btn-reset">Zurücksetzen</button>
     </div>
-    <div id="feedback"></div>`;
+    <div id="feedback"></div>`;   // <-- schließendes </div> für .form-nav jetzt vorhanden!
 }
 
 function saveAutosave() {
@@ -753,7 +751,6 @@ function setFieldValues(blockIdx) {
     const el = document.getElementById(field.key);
     if (!el) continue;
     if (field.type === "checkbox") {
-      // Bei Checkboxen alle gespeicherten Werte wieder anhaken
       if (formData[key]) {
         formData[key].forEach(v => {
           const box = document.querySelector(`input[name="${field.key}"][value="${v}"]`);
@@ -761,15 +758,12 @@ function setFieldValues(blockIdx) {
         });
       }
     } else if (field.type === "slider") {
-      // Slider auf gespeicherten Wert setzen und Label aktualisieren
       const val = formData[key] ?? field.min ?? 1;
       el.value = val;
       if (el.nextElementSibling) el.nextElementSibling.innerText = val;
     } else if (field.type === "privacy") {
-      // Checkbox für Datenschutzhinweis setzen
       el.checked = formData[key] === true;
     } else {
-      // Für select, textarea und text inputs den gespeicherten Wert setzen
       if (formData[key] !== undefined) {
         el.value = formData[key];
       }
@@ -779,73 +773,57 @@ function setFieldValues(blockIdx) {
 
 function blockIsValid(blockIdx) {
   const block = blocks[blockIdx];
-  // Define optional keys: these fields are not mandatory and may be left blank
-  const optionalKeys = new Set([
-    "jahresumsatz",
-    "it_infrastruktur",
-    "interne_ki_kompetenzen",
-    "datenquellen"
-  ]);
+  const optionalKeys = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"]);
   return block.keys.every(key => {
     const field = fields.find(f => f.key === key);
     if (!field) return true;
-    // If the field is conditionally hidden, it's considered valid
     if (field.showIf && !field.showIf(formData)) return true;
-    // Skip validation for optional fields
     if (optionalKeys.has(key)) return true;
     const val = formData[key];
-    // Checkbox fields (except optional ones) require at least one selection
     if (field.type === "checkbox") return Array.isArray(val) && val.length > 0;
-    // Privacy checkbox must be checked on the last block
     if (field.type === "privacy") return val === true;
-    // Other fields must have a non-empty value
     return val !== undefined && val !== "";
   });
 }
 
 function handleFormEvents() {
-document.getElementById("formbuilder").addEventListener("change", () => {
-  const block = blocks[currentBlock];
-  let needsRerender = false;
+  document.getElementById("formbuilder").addEventListener("change", () => {
+    const block = blocks[currentBlock];
+    let needsRerender = false;
 
-  for (const key of block.keys) {
-    const field = fields.find(f => f.key === key);
-    if (field) {
-      const prev = formData[key];
-      const curr = getFieldValue(field);
-      formData[key] = curr;
-      if (prev !== curr && field.key === "unternehmensgroesse") {
-        needsRerender = true; // nur bei diesem Feld notwendig
+    for (const key of block.keys) {
+      const field = fields.find(f => f.key === key);
+      if (field) {
+        const prev = formData[key];
+        const curr = getFieldValue(field);
+        formData[key] = curr;
+        if (prev !== curr && field.key === "unternehmensgroesse") {
+          needsRerender = true;
+        }
       }
     }
-  }
 
-  saveAutosave();
+    saveAutosave();
 
-  if (needsRerender) {
-    renderBlock(currentBlock);
-    setTimeout(() => {
-    setFieldValues(currentBlock);
-    handleFormEvents();
-    }, 20);
-  }
-}); // ⬅️ ✅ HIER die schließende Klammer für den EventListener
+    if (needsRerender) {
+      renderBlock(currentBlock);
+      setTimeout(() => {
+        setFieldValues(currentBlock);
+        handleFormEvents();
+      }, 20);
+    }
+  });
+
   document.getElementById("formbuilder").addEventListener("click", e => {
     const feedback = document.getElementById("feedback");
 
     if (e.target.id === "btn-next") {
-      // Aktualisiere die Werte des aktuellen Blocks unmittelbar bevor die Validierung ausgeführt wird.
       const block = blocks[currentBlock];
-      // Schreibe alle Feldwerte (insbesondere Textareas) in formData, falls der Nutzer noch im Feld fokussiert ist.
       for (const key of block.keys) {
         const f = fields.find(x => x.key === key);
-        if (f) {
-          formData[key] = getFieldValue(f);
-        }
+        if (f) formData[key] = getFieldValue(f);
       }
-      // Speichere den aktuellen Zustand des Formulars im Autosave.
       saveAutosave();
-      // Prüfe anschließend, ob alle erforderlichen Felder befüllt sind.
       if (!blockIsValid(currentBlock)) {
         feedback.innerHTML = `<div class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus.</div>`;
         return;
@@ -853,21 +831,18 @@ document.getElementById("formbuilder").addEventListener("change", () => {
       currentBlock++;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     if (e.target.id === "btn-prev") {
       currentBlock--;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Handle reset: clear saved data and restart the questionnaire from the beginning
     if (e.target.id === "btn-reset") {
-      // Remove autosaved data for the current user
       localStorage.removeItem(autosaveKey);
-      // Reset form data and start again from block 0
       formData = {};
       currentBlock = 0;
       renderBlock(currentBlock);
@@ -877,18 +852,17 @@ document.getElementById("formbuilder").addEventListener("change", () => {
     }
 
     if (e.target.id === "submit-btn" || e.target.id === "btn-send") {
-      submitAllBlocks(); // ✅ wird jetzt auch korrekt ausgelöst
+      submitAllBlocks();
     }
   });
 }
-
 
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
   renderBlock(currentBlock);
   setTimeout(() => {
     setFieldValues(currentBlock);
-    renderBlock(currentBlock); // ⬅️ neu!
+    renderBlock(currentBlock);
     setTimeout(() => {
       setFieldValues(currentBlock);
       handleFormEvents();
@@ -896,19 +870,13 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 20);
 });
 
-
-
 function submitAllBlocks() {
   const data = {};
   fields.forEach(field => data[field.key] = formData[field.key]);
-  // Sprache explizit setzen (deutsch)
   data.lang = "de";
 
-  const BASE_URL = location.hostname.includes("localhost")
-    ? "https://make-ki-backend-neu-production.up.railway.app"
-    : "https://make-ki-backend-neu-production.up.railway.app";
+  const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
 
-  // Asynchronen Report anstoßen und im Hintergrund generieren.
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: {
@@ -917,28 +885,23 @@ function submitAllBlocks() {
     },
     body: JSON.stringify(data),
     keepalive: true
-  }).then(response => {
-    // Wenn der Token abgelaufen ist, umgehend auf die Login-Seite umleiten
-    if (response.status === 401) {
+  })
+  .then(async (res) => {
+    if (res.status === 401) {
       localStorage.removeItem("jwt");
       window.location.href = "/login.html";
+      return;
     }
-  }).catch(() => {
-    // Fehler beim Absenden können hier protokolliert werden; die Anzeige
-    // bleibt davon unberührt.
-    console.error('Fehler bei der Übertragung');
+    window.location.href = "thankyou.html";
+  })
+  .catch(() => {
+    window.location.href = "thankyou.html";
   });
-  // Leite den Nutzer direkt auf eine separate Dankeseite um. Dort wird der
-  // Hinweis angezeigt, dass der Report per E-Mail versendet wird.
-  window.location.href = "thankyou.html";
-  return;
 }
 
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
-  // Lösche Autosave-Daten, damit der Testnutzer beim nächsten Mal neu starten kann
   localStorage.removeItem(autosaveKey);
-  // Bereite Versand per PDF-Service vor
   const htmlContent = data?.html || "";
   let userEmail = "";
   try {
@@ -950,7 +913,6 @@ function showSuccess(data) {
   } catch (err) {
     userEmail = "";
   }
-  // PDF-Service aufrufen, um den Report für Admin und Nutzer per Mail zu verschicken
   if (htmlContent) {
     fetch("https://make-ki-pdfservice-production.up.railway.app/generate-pdf", {
       method: "POST",
@@ -959,16 +921,13 @@ function showSuccess(data) {
         "X-User-Email": userEmail
       },
       body: htmlContent
-    }).catch(() => {
-      // Bei Fehler einfach ignorieren – der Admin erhält die Kopie in jedem Fall
-    });
+    }).catch(() => {});
   }
-  // Zeige dem Nutzer eine Bestätigung und kündige den Mailversand an
   document.getElementById("formbuilder").innerHTML = `
     <h2>Vielen Dank für Ihre Angaben!</h2>
     <div class="success-msg">
-      Ihre KI‑Analyse wird jetzt erstellt.<br>
-      Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E‑Mail zugestellt.<br>
+      Ihre KI-Analyse wird jetzt erstellt.<br>
+      Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail zugestellt.<br>
     </div>
   `;
 }

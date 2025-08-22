@@ -361,7 +361,7 @@ input[type="range"] {
   color: #22528b;
   letter-spacing: 0.03em;
 }
-/* Navigation container for previous/next and reset buttons */
+/* === Formular-Navigation: Zurück links, Weiter/Absenden rechts, Reset klein === */
 .form-nav {
   display: flex;
   justify-content: space-between;
@@ -371,25 +371,42 @@ input[type="range"] {
   flex-wrap: wrap;
 }
 
-/* Wrapper for previous/next or submit buttons */
-.form-nav .nav-buttons {
+/* Zwei Gruppen: links und rechts */
+.form-nav .nav-left,
+.form-nav .nav-right {
   display: flex;
-  flex: 1;
   gap: 10px;
+  align-items: center;
 }
 
-/* Style for the navigation buttons (prev/next/submit) */
-.form-nav .nav-buttons button {
-  flex: 1;
-  min-width: 120px;
-}
+.form-nav .nav-left  { justify-content: flex-start; }
+.form-nav .nav-right { justify-content: flex-end; }
 
-/* Reset button should be smaller and not grow */
+/* Globale 100%-Breite von Buttons innerhalb der Navigation aufheben */
+.form-nav .nav-left  button,
+.form-nav .nav-right button,
 .form-nav .btn-reset {
-  flex: 0 0 auto;
-  min-width: auto;
-  padding: 8px 16px;
+  width: auto;          /* überschreibt width:100% */
+  min-width: 120px;
+  padding: 12px 20px;
+  font-size: 1.05em;
+  border-radius: 12px;
 }
+
+/* Reset-Button bewusst kleiner halten */
+.form-nav .btn-reset {
+  min-width: auto;
+  padding: 8px 14px;
+  opacity: .95;
+}
+
+/* Optional: auf sehr schmalen Screens in zwei Zeilen umbrechen */
+@media (max-width: 520px) {
+  .form-nav { gap: 8px; }
+  .form-nav .nav-left button,
+  .form-nav .nav-right button { min-width: 100px; padding: 10px 14px; }
+}
+
 /* === Styles: Beispielhinweise bei Checkboxen === */
 .option-example {
   font-size: 0.85em;

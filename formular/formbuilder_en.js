@@ -714,15 +714,18 @@ function renderBlock(blockIdx) {
   // Navigation: group previous/next in flex container, show reset separately with smaller width
   form.innerHTML += `
     <div class="form-nav">
-      <div class="nav-buttons">
+      <div class="nav-left">
         ${blockIdx > 0 ? `<button type="button" id="btn-prev">Back</button>` : ""}
+      </div>
+      <div class="nav-right">
         ${blockIdx < blocks.length - 1
           ? `<button type="button" id="btn-next">Next</button>`
           : `<button type="button" id="btn-send" class="btn-next">Submit</button>`}
+        <button type="button" id="btn-reset" class="btn-reset">Reset</button>
       </div>
-      <button type="button" id="btn-reset" class="btn-reset">Reset</button>
     </div>
     <div id="feedback"></div>`;
+
 }
 
 function saveAutosave() {
@@ -900,14 +903,10 @@ window.addEventListener("DOMContentLoaded", () => {
 function submitAllBlocks() {
   const data = {};
   fields.forEach(field => data[field.key] = formData[field.key]);
-  // Set language explicitly to English so the backend picks the right prompts
   data.lang = "en";
 
-  const BASE_URL = location.hostname.includes("localhost")
-    ? "https://make-ki-backend-neu-production.up.railway.app"
-    : "https://make-ki-backend-neu-production.up.railway.app";
+  const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
 
-  // Start asynchronous report generation and immediately redirect to a thank you page.
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: {
@@ -916,19 +915,20 @@ function submitAllBlocks() {
     },
     body: JSON.stringify(data),
     keepalive: true
-  }).then(response => {
-    // If the token has expired, redirect to the login page
-    if (response.status === 401) {
+  })
+  .then(async (res) => {
+    if (res.status === 401) {
       localStorage.removeItem("jwt");
       window.location.href = "/login.html";
+      return;
     }
-  }).catch(() => {
-    console.error('Error during transmission');
+    window.location.href = "thankyou.html";
+  })
+  .catch(() => {
+    window.location.href = "thankyou.html";
   });
-  // Redirect to a thank you page to let the user close the tab.
-  window.location.href = "thankyou.html";
-  return;
 }
+
 
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
