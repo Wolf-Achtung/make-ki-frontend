@@ -1,7 +1,7 @@
 // JWT-Check: nur eingeloggte User dürfen dieses Formular nutzen
 const token = localStorage.getItem("jwt");
 if (!token) {
-    window.location.href = "/login.html";
+  window.location.href = "/login.html";
 }
 
 function getEmailFromJWT(token) {
@@ -22,42 +22,33 @@ function isAdmin(token) {
 }
 
 /* ============================================================================
-   Hilfsfunktionen für Valdierung & Checkbox-Labels
+   Helpers (Validierung & Checkbox-Labels)
    ========================================================================== */
 
 // Robuste Aufteilung von Checkbox-Labels in Hauptlabel + Kurzbeschreibung.
-// 1) "(...)" wird bevorzugt geparst
-// 2) Falls keine Klammern: auf doppelte Leerzeichen / Trennstriche splitten
+// 1) "(...)" wird bevorzugt geparst; 2) Fallback: 2+ Spaces oder Trennstrich
 function splitLabelAndHint(raw) {
   if (!raw) return ["", ""];
   const s = String(raw).trim();
-
-  // 1) Klammerformat "Main (Hint)"
   const m = s.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
   if (m) return [m[1].trim(), m[2].trim()];
-
-  // 2) Fallback: 2+ Spaces oder Trennstriche
   const parts = s.split(/\s{2,}| — | – | - /).map(x => x.trim()).filter(Boolean);
   if (parts.length >= 2) return [parts[0], parts.slice(1).join(" ")];
-
-  // 3) kein Trenner vorhanden
   return [s, ""];
 }
-
-// Ermittelt die Felddefinition zum Key
+// Feld finden / Label holen
 function findField(key) { return fields.find(f => f.key === key); }
-// Liefert das sichtbare Label eines Feldes (Fallback: Key)
 function getFieldLabel(key) { const f = findField(key); return f?.label || key; }
-// Markiert/entfernt Markierung am Eingabefeld/Block
+// Felder visuell markieren/Entmarkieren
 function markInvalid(key, on = true) {
   const el = document.getElementById(key);
   if (el) {
-    if (on) el.classList.add('invalid'); else el.classList.remove('invalid');
+    on ? el.classList.add('invalid') : el.classList.remove('invalid');
     const grp = el.closest('.form-group');
     if (grp) on ? grp.classList.add('invalid-group') : grp.classList.remove('invalid-group');
   }
 }
-// Detaillierte Validierung mit Liste fehlender Felder
+// Detaillierte Validierung des aktuellen Blocks
 function validateBlockDetailed(blockIdx) {
   const block = blocks[blockIdx];
   const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"]);
@@ -65,8 +56,7 @@ function validateBlockDetailed(blockIdx) {
   block.keys.forEach(k => markInvalid(k, false)); // alte Marker entfernen
 
   for (const key of block.keys) {
-    const f = findField(key);
-    if (!f) continue;
+    const f = findField(key); if (!f) continue;
     if (f.showIf && !f.showIf(formData)) continue;
     if (optional.has(key)) continue;
 
@@ -80,16 +70,13 @@ function validateBlockDetailed(blockIdx) {
   }
   return missing;
 }
-// Liefert den Feedback-Container unter der Navigation (falls vorhanden), sonst global
-function getFeedbackBox() {
+function getFeedbackBox(){
   return document.querySelector('#formbuilder .form-nav + #feedback') || document.getElementById('feedback');
 }
 
 /* ============================================================================
-   Felder (de) – wie in deiner Datei
+   FELDER (vollständig)
    ========================================================================== */
-
-// --- Felder wie gehabt (aus deiner bisherigen Datei), KEINE Kürzungen! ---
 const fields = [
   // Block 1: Unternehmensinfos
   {
@@ -156,17 +143,17 @@ const fields = [
     key: "hauptleistung",
     label: "Was ist das wichtigste Produkt oder die Hauptdienstleistung Ihres Unternehmens?",
     type: "textarea",
-    placeholder: "z. B. Social Media Kampagnen, CNC-Fertigung von Einzelteilen, Steuerberatung für Startups",
-    description: "Beschreiben Sie Ihre zentrale Leistung möglichst konkret. Beispiele helfen uns, Ihre Positionierung und passende Empfehlungen besser zu verstehen."
+    placeholder: "z. B. Social-Media-Kampagnen, CNC-Fertigung, Steuerberatung für Startups",
+    description: "Beschreiben Sie Ihre zentrale Leistung möglichst konkret. Beispiele helfen uns, Positionierung und Empfehlungen zu präzisieren."
   },
   {
     key: "zielgruppen",
     label: "Für welche Zielgruppen oder Kundensegmente bieten Sie Ihre Leistungen an?",
     type: "checkbox",
     options: [
-      { value: "b2b", label: "B2B (Geschäftskunden)" },
-      { value: "b2c", label: "B2C (Endverbraucher)" },
-      { value: "kmu", label: "KMU (Kleine & mittlere Unternehmen)" },
+      { value: "b2b", label: "B2B  (Geschäftskunden)" },
+      { value: "b2c", label: "B2C  (Endverbraucher)" },
+      { value: "kmu", label: "KMU  (kleine & mittlere Unternehmen)" },
       { value: "grossunternehmen", label: "Großunternehmen" },
       { value: "selbststaendige", label: "Selbstständige/Freiberufler" },
       { value: "oeffentliche_hand", label: "Öffentliche Hand" },
@@ -174,10 +161,10 @@ const fields = [
       { value: "startups", label: "Startups" },
       { value: "andere", label: "Andere" }
     ],
-    description: "Für welche Kundengruppen bieten Sie Leistungen an? Bitte wählen Sie alle Zielgruppen aus, die für Sie relevant sind (Mehrfachauswahl möglich)."
+    description: "Bitte alle passenden Zielgruppen auswählen (Mehrfachauswahl möglich)."
   },
 
-  // Erweiterte Unternehmensangaben (Gold-Standard)
+  // Erweiterte Unternehmensangaben
   {
     key: "jahresumsatz",
     label: "Jahresumsatz (Schätzung)",
@@ -190,19 +177,19 @@ const fields = [
       { value: "ueber_10m", label: "Über 10 Mio. €" },
       { value: "keine_angabe", label: "Keine Angabe" }
     ],
-    description: "Bitte schätzen Sie Ihren Jahresumsatz. Die Klassifizierung hilft bei Benchmarks, Förderprogrammen und Empfehlungen."
+    description: "Grobe Schätzung genügt – hilft für Benchmarks und Förderprogramme."
   },
   {
     key: "it_infrastruktur",
     label: "Wie ist Ihre IT-Infrastruktur aktuell organisiert?",
     type: "select",
     options: [
-      { value: "cloud", label: "Cloud-basiert (externe Services, z. B. Microsoft 365, Google Cloud…)" },
+      { value: "cloud", label: "Cloud-basiert (z. B. Microsoft 365, Google Cloud …)" },
       { value: "on_premise", label: "Eigenes Rechenzentrum (On-Premises)" },
       { value: "hybrid", label: "Hybrid (Cloud + eigene Server)" },
-      { value: "unklar", label: "Unklar / Noch offen" }
+      { value: "unklar", label: "Unklar / noch offen" }
     ],
-    description: "Ihre Antwort hilft uns, passende Empfehlungen für Sicherheit, Integration und moderne Tools auszuwählen."
+    description: "Hilft, Sicherheit/Integration und Toolauswahl passend zu empfehlen."
   },
   {
     key: "interne_ki_kompetenzen",
@@ -213,205 +200,175 @@ const fields = [
       { value: "nein", label: "Nein" },
       { value: "in_planung", label: "In Planung" }
     ],
-    description: "Ein internes Kompetenzteam kann Prozesse beschleunigen. Diese Angabe hilft bei der Empfehlung von Schulungen und internen Strukturen."
+    description: "Wichtig für Schulungs-/Struktur-Empfehlungen."
   },
   {
     key: "datenquellen",
     label: "Welche Datentypen stehen Ihnen für KI-Projekte und Analysen zur Verfügung?",
     type: "checkbox",
     options: [
-      { value: "kundendaten", label: "Kundendaten (CRM, Service, Historie)" },
-      { value: "verkaufsdaten", label: "Verkaufs- und Bestelldaten (z. B. Shop, Aufträge)" },
-      { value: "produktionsdaten", label: "Produktions- oder Betriebsdaten (Maschinen, Sensoren, Logistik)" },
-      { value: "personaldaten", label: "Personal- oder HR-Daten (Mitarbeiter, Bewerbungen, Zeitwirtschaft)" },
-      { value: "marketingdaten", label: "Marketing- und Kampagnendaten (Ads, Social Media, Newsletter)" },
-      { value: "sonstige", label: "Sonstige / Weitere Datenquellen" }
+      { value: "kundendaten", label: "Kundendaten  (CRM, Service, Historie)" },
+      { value: "verkaufsdaten", label: "Verkaufs-/Bestelldaten  (Shop, Aufträge)" },
+      { value: "produktionsdaten", label: "Produktions-/Betriebsdaten  (Maschinen, Sensoren, Logistik)" },
+      { value: "personaldaten", label: "Personal-/HR-Daten  (Mitarbeiter, Bewerbungen, Zeitwirtschaft)" },
+      { value: "marketingdaten", label: "Marketing-/Kampagnendaten  (Ads, Social, Newsletter)" },
+      { value: "sonstige", label: "Sonstige / weitere Datenquellen" }
     ],
-    description: "Bitte wählen Sie alle Datenquellen aus, die für Ihr Unternehmen relevant sind (Mehrfachauswahl möglich)."
+    description: "Mehrfachauswahl möglich."
   },
 
-  // Block 2: Status Quo & Digitalisierungsgrad
-  {
-    key: "digitalisierungsgrad",
-    label: "Wie digital sind Ihre internen Prozesse bereits? (1 = analog, 10 = voll digital)",
-    type: "slider",
-    min: 1,
-    max: 10,
-    step: 1,
-    description: "Schätzen Sie den aktuellen Stand: 1 = vor allem Papier und manuelle Abläufe, 10 = alles läuft digital und automatisiert."
-  },
-  {
-    key: "prozesse_papierlos",
-    label: "Wie hoch ist der Anteil papierloser Prozesse in Ihrem Unternehmen?",
-    type: "select",
-    options: [
-      { value: "0-20", label: "0–20 %" },
-      { value: "21-50", label: "21–50 %" },
-      { value: "51-80", label: "51–80 %" },
-      { value: "81-100", label: "81–100 %" }
+  // Block 2: Status Quo
+  { key: "digitalisierungsgrad", label: "Wie digital sind Ihre internen Prozesse? (1–10)", type: "slider", min:1, max:10, step:1,
+    description: "1 = vor allem Papier & manuell, 10 = alles digital/automatisiert." },
+  { key: "prozesse_papierlos", label: "Anteil papierloser Prozesse", type:"select",
+    options:[ {value:"0-20",label:"0–20 %"},{value:"21-50",label:"21–50 %"},{value:"51-80",label:"51–80 %"},{value:"81-100",label:"81–100 %"} ],
+    description:"Grobe Schätzung genügt." },
+  { key: "automatisierungsgrad", label: "Automatisierungsgrad", type:"select",
+    options:[ {value:"sehr_niedrig",label:"Sehr niedrig"},{value:"eher_niedrig",label:"Eher niedrig"},{value:"mittel",label:"Mittel"},{value:"eher_hoch",label:"Eher hoch"},{value:"sehr_hoch",label:"Sehr hoch"} ],
+    description:"Handarbeit vs. Automatisierung (KI/Skripte/Tools)." },
+  { key: "ki_einsatz", label: "Wo wird KI heute bereits eingesetzt?", type:"checkbox",
+    options:[ "marketing","vertrieb","buchhaltung","produktion","kundenservice","it","forschung","personal","keine","sonstiges" ]
+      .map(v => ({ value:v, label:
+        v==="marketing"?"Marketing": v==="vertrieb"?"Vertrieb": v==="buchhaltung"?"Buchhaltung":
+        v==="produktion"?"Produktion": v==="kundenservice"?"Kundenservice": v==="it"?"IT":
+        v==="forschung"?"Forschung & Entwicklung": v==="personal"?"Personal":
+        v==="keine"?"Noch keine Nutzung":"Sonstiges"})),
+    description:"Alle relevanten Bereiche ankreuzen." },
+  { key: "ki_knowhow", label:"KI-Know-how im Team", type:"select",
+    options:[
+      { value:"keine",label:"Keine Erfahrung" },{ value:"grundkenntnisse",label:"Grundkenntnisse" },
+      { value:"mittel",label:"Mittel" },{ value:"fortgeschritten",label:"Fortgeschritten" },
+      { value:"expertenwissen",label:"Expertenwissen" }
     ],
-    description: "Schätzen Sie grob: Wie viel läuft komplett digital ohne Papierakten oder Ausdrucke?"
-  },
-  {
-    key: "automatisierungsgrad",
-    label: "Wie hoch ist der Automatisierungsgrad Ihrer Arbeitsabläufe?",
-    type: "select",
-    options: [
-      { value: "sehr_niedrig", label: "Sehr niedrig" },
-      { value: "eher_niedrig", label: "Eher niedrig" },
-      { value: "mittel", label: "Mittel" },
-      { value: "eher_hoch", label: "Eher hoch" },
-      { value: "sehr_hoch", label: "Sehr hoch" }
-    ],
-    description: "Sind viele Arbeitsschritte noch Handarbeit oder läuft vieles automatisch (z. B. durch KI, Scripte oder smarte Tools)?"
-  },
-  {
-    key: "ki_einsatz",
-    label: "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
-    type: "checkbox",
-    options: [
-      { value: "marketing", label: "Marketing" },
-      { value: "vertrieb", label: "Vertrieb" },
-      { value: "buchhaltung", label: "Buchhaltung" },
-      { value: "produktion", label: "Produktion" },
-      { value: "kundenservice", label: "Kundenservice" },
-      { value: "it", label: "IT" },
-      { value: "forschung", label: "Forschung & Entwicklung" },
-      { value: "personal", label: "Personal" },
-      { value: "keine", label: "Noch keine Nutzung" },
-      { value: "sonstiges", label: "Sonstiges" }
-    ],
-    description: "Wo nutzen Sie bereits Künstliche Intelligenz oder Automatisierung? Wählen Sie alle Bereiche aus, die relevant sind."
-  },
-  {
-    key: "ki_knowhow",
-    label: "Wie schätzen Sie das interne KI-Know-how Ihres Teams ein?",
-    type: "select",
-    options: [
-      { value: "keine", label: "Keine Erfahrung" },
-      { value: "grundkenntnisse", label: "Grundkenntnisse" },
-      { value: "mittel", label: "Mittel" },
-      { value: "fortgeschritten", label: "Fortgeschritten" },
-      { value: "expertenwissen", label: "Expertenwissen" }
-    ],
-    description: "Wie fit sind Sie und Ihr Team beim Thema KI? Nutzen Sie KI schon produktiv oder kennen Sie sich bereits tiefer aus?"
+    description:"Selbsteinschätzung genügt."
   },
 
   // Block 3: Ziele & Projekte
-  {
-    key: "projektziel",
-    label: "Welches Ziel steht bei Ihrem nächsten KI-/Digitalisierungsprojekt im Vordergrund?",
-    type: "checkbox",
-    options: [
-      { value: "prozessautomatisierung", label: "Prozessautomatisierung" },
-      { value: "kostensenkung", label: "Kostensenkung" },
-      { value: "compliance", label: "Compliance/Datenschutz" },
-      { value: "produktinnovation", label: "Produktinnovation" },
-      { value: "kundenservice", label: "Kundenservice verbessern" },
-      { value: "markterschliessung", label: "Markterschließung" },
-      { value: "personalentlastung", label: "Personalentlastung" },
-      { value: "foerdermittel", label: "Fördermittel beantragen" },
-      { value: "andere", label: "Andere" }
+  { key:"projektziel", label:"Ziel des nächsten KI-/Digitalisierungsprojekts", type:"checkbox",
+    options:[
+      {value:"prozessautomatisierung",label:"Prozessautomatisierung"},
+      {value:"kostensenkung",label:"Kostensenkung"},
+      {value:"compliance",label:"Compliance/Datenschutz"},
+      {value:"produktinnovation",label:"Produktinnovation"},
+      {value:"kundenservice",label:"Kundenservice verbessern"},
+      {value:"markterschliessung",label:"Markterschließung"},
+      {value:"personalentlastung",label:"Personalentlastung"},
+      {value:"foerdermittel",label:"Fördermittel beantragen"},
+      {value:"andere",label:"Andere"}
     ],
-    description: "Was möchten Sie mit Ihrem nächsten Vorhaben vorrangig erreichen? Mehrfachauswahl möglich."
-  },
-  {
-    key: "ki_projekte",
-    label: "Gibt es aktuell laufende oder geplante KI-Projekte in Ihrem Unternehmen?",
-    type: "textarea",
-    placeholder: "z. B. Chatbot für Kundenanfragen, automatisierte Angebotserstellung, Text- oder Bildgeneratoren, Analyse-Tools für Vertrieb",
-    description: "Beschreiben Sie laufende oder geplante Projekte möglichst konkret. Gibt es bereits Überlegungen, Experimente oder Pilotprojekte?"
-  },
-  {
-    key: "ki_usecases",
-    label: "Welche KI-Anwendungsfälle interessieren Sie besonders?",
-    type: "checkbox",
-    options: [
-      { value: "texterstellung", label: "Texterstellung (z. B. automatisierte Berichte, Posts)" },
-      { value: "bildgenerierung", label: "Bildgenerierung (z. B. KI-Grafiken, Logovarianten)" },
-      { value: "spracherkennung", label: "Spracherkennung (z. B. Transkription, Voicebots)" },
-      { value: "prozessautomatisierung", label: "Prozessautomatisierung (z. B. Belegprüfung, Rechnungsversand)" },
-      { value: "datenanalyse", label: "Datenanalyse & Prognose (z. B. Markttrends, Kundenverhalten)" },
-      { value: "kundensupport", label: "Kundensupport (z. B. Chatbots, FAQ-Automation)" },
-      { value: "wissensmanagement", label: "Wissensmanagement (z. B. Dokumentenverwaltung, intelligente Suche)" },
-      { value: "marketing", label: "Marketing (z. B. Zielgruppen-Segmentierung, Kampagnenoptimierung)" },
-      { value: "sonstiges", label: "Sonstiges" }
+    description:"Mehrfachauswahl möglich." },
+  { key:"ki_projekte", label:"Laufende/geplante KI-Projekte", type:"textarea",
+    placeholder:"z. B. Chatbot, Angebotsautomation, Generatoren, Analytics …",
+    description:"Bitte konkret beschreiben (Pilot/Idee/Planung)." },
+  { key:"ki_usecases", label:"Besonders interessante KI-Use-Cases", type:"checkbox",
+    options:[
+      {value:"texterstellung",label:"Texterstellung (z. B. Berichte, Posts)"},
+      {value:"bildgenerierung",label:"Bildgenerierung (z. B. Grafiken, Logo-Varianten)"},
+      {value:"spracherkennung",label:"Spracherkennung (z. B. Transkription, Voicebots)"},
+      {value:"prozessautomatisierung",label:"Prozessautomatisierung (z. B. Belegprüfung, Versand)"},
+      {value:"datenanalyse",label:"Datenanalyse & Prognose (z. B. Markttrends)"},
+      {value:"kundensupport",label:"Kundensupport (z. B. Chatbots, FAQ-Automation)"},
+      {value:"wissensmanagement",label:"Wissensmanagement (z. B. DMS, intelligente Suche)"},
+      {value:"marketing",label:"Marketing (z. B. Segmentierung, Kampagnenoptimierung)"},
+      {value:"sonstiges",label:"Sonstiges"}
     ],
-    description: "Welche KI-Anwendungsbereiche interessieren Sie besonders? Mehrfachauswahl möglich."
+    description:"Mehrfachauswahl möglich."
   },
-  {
-    key: "ki_potenzial",
-    label: "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
-    type: "textarea",
-    placeholder: "z. B. Schnelleres Reporting, personalisierte Angebote, Kostenreduktion durch Automatisierung, neue Services ...",
-    description: "Wo sehen Sie für Ihr Unternehmen das größte Potenzial durch KI? Gerne frei formulieren – alles ist willkommen."
-  },
-  {
-    key: "usecase_priority",
-    label: "In welchem Bereich soll KI am ehesten zum Einsatz kommen?",
-    type: "select",
-    options: [
-      "marketing","vertrieb","buchhaltung","produktion","kundenservice","it",
-      "forschung","personal","unbekannt"
-    ].map(v => ({ value: v, label:
-      v==="marketing"?"Marketing":
-      v==="vertrieb"?"Vertrieb":
-      v==="buchhaltung"?"Buchhaltung":
-      v==="produktion"?"Produktion":
-      v==="kundenservice"?"Kundenservice":
-      v==="it"?"IT":
-      v==="forschung"?"Forschung & Entwicklung":
-      v==="personal"?"Personal":"Noch unklar / Entscheide ich später"
+  { key:"ki_potenzial", label:"Größtes KI-Potenzial im Unternehmen", type:"textarea",
+    placeholder:"z. B. Reporting, personalisierte Angebote, Automatisierung, neue Services …",
+    description:"Freitext, gerne stichpunktartig." },
+  { key:"usecase_priority", label:"Bereich mit höchster Priorität", type:"select",
+    options:[
+      "marketing","vertrieb","buchhaltung","produktion","kundenservice","it","forschung","personal","unbekannt"
+    ].map(v => ({ value:v, label:
+      v==="marketing"?"Marketing": v==="vertrieb"?"Vertrieb": v==="buchhaltung"?"Buchhaltung":
+      v==="produktion"?"Produktion": v==="kundenservice"?"Kundenservice": v==="it"?"IT":
+      v==="forschung"?"Forschung & Entwicklung": v==="personal"?"Personal":"Noch unklar / später entscheiden"
     })),
-    description: "Gibt es einen Unternehmensbereich, in dem KI besonders dringend gebraucht wird oder das größte Potenzial bietet?"
-  },
-  {
-    key: "ki_geschaeftsmodell_vision",
-    label: "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern?",
-    type: "textarea",
-    placeholder: "z. B. Automatisierte Online-Beratungen, datenbasierte Plattform-Services, völlig neue Produkte, …",
-    description: "Welche Veränderungen oder neuen Möglichkeiten sehen Sie langfristig durch KI? Hier geht es um Ihre größere Vision – ob konkret oder visionär."
-  },
-  {
-    key: "moonshot",
-    label: "Was wäre ein mutiger Durchbruch – Ihre KI-Vision in 3 Jahren?",
-    type: "textarea",
-    placeholder: "z. B. 80 % meiner Routinearbeiten übernimmt KI; mein Umsatz verdoppelt sich durch smarte Automatisierung …",
-    description: "Was wäre Ihre visionäre KI-Zukunft in 3 Jahren? Denken Sie groß."
+    description:"Wo lohnt der Einstieg zuerst?" },
+  { key:"ki_geschaeftsmodell_vision", label:"Wie kann KI Geschäftsmodell/Branche verändern?", type:"textarea",
+    placeholder:"z. B. KI-gestütztes Portal, datenbasierte Plattform, neue Produkte …",
+    description:"Visionär denken – aber realistisch umsetzbar." },
+  { key:"moonshot", label:"Mutiger Durchbruch – 3-Jahres-Vision", type:"textarea",
+    placeholder:"z. B. 80 % Routine übernimmt KI; Umsatz +100 % durch Automation …",
+    description:"Kurze Vision, die begeistert."
   },
 
-  // Block 4: Rechtliches & Förderung
-  {
-    key: "datenschutzbeauftragter",
-    label: "Gibt es eine:n Datenschutzbeauftragte:n in Ihrem Unternehmen?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja" },
-      { value: "nein", label: "Nein" },
-      { value: "teilweise", label: "Teilweise (externer Berater / noch in Planung)" }
-    ],
-    description: "Ein:e Datenschutzbeauftragte:r ist oft Pflicht – unabhängig davon, ob intern oder extern. Wie ist die Situation bei Ihnen?"
-  },
-  // ... (der restliche „Rechtliches & Förderung“-Block aus deiner Datei bleibt unverändert)
+  // Block 4: Strategie & Governance (→ fehlende Felder waren Ursache!)
+  { key:"strategische_ziele", label:"Welche konkreten Ziele verfolgen Sie mit KI?", type:"textarea",
+    placeholder:"z. B. Effizienz steigern, neue Produkte entwickeln, Kundenservice verbessern",
+    description:"Nennen Sie die strategischen Hauptziele Ihres KI-Einsatzes." },
+  { key:"datenqualitaet", label:"Wie beurteilen Sie die Qualität Ihrer Daten?", type:"select",
+    options:[ {value:"hoch",label:"Hoch (vollständig, strukturiert, aktuell)"},{value:"mittel",label:"Mittel (teilweise strukturiert/lückenhaft)"},{value:"niedrig",label:"Niedrig (unstrukturiert, viele Lücken)"} ],
+    description:"Gut gepflegte Daten sind die Grundlage erfolgreicher KI-Projekte." },
+  { key:"ai_roadmap", label:"Gibt es bereits eine KI-Roadmap oder Strategie?", type:"select",
+    options:[ {value:"ja",label:"Ja – bereits implementiert"},{value:"in_planung",label:"In Planung"},{value:"nein",label:"Noch nicht vorhanden"} ],
+    description:"Eine klare Roadmap erleichtert die Umsetzung." },
+  { key:"governance", label:"Existieren interne Richtlinien für Daten-/KI-Governance?", type:"select",
+    options:[ {value:"ja",label:"Ja"},{value:"teilweise",label:"Teilweise"},{value:"nein",label:"Nein"} ],
+    description:"Governance fördert verantwortungsvolle, rechtskonforme Projekte." },
+  { key:"innovationskultur", label:"Wie offen ist Ihr Unternehmen für Innovationen?", type:"select",
+    options:[ {value:"sehr_offen",label:"Sehr offen"},{value:"eher_offen",label:"Eher offen"},{value:"neutral",label:"Neutral"},{value:"eher_zurueckhaltend",label:"Eher zurückhaltend"},{value:"sehr_zurueckhaltend",label:"Sehr zurückhaltend"} ],
+    description:"Offene Kultur erleichtert Einführung neuer Technologien." },
+
+  // Block 5: Rechtliches & Förderung
+  { key:"datenschutzbeauftragter", label:"Gibt es eine:n Datenschutzbeauftragte:n?", type:"select",
+    options:[ {value:"ja",label:"Ja"},{value:"nein",label:"Nein"},{value:"teilweise",label:"Teilweise (extern/Planung)"} ],
+    description:"Oft Pflicht – intern oder extern." },
+  { key:"technische_massnahmen", label:"Technische Schutzmaßnahmen für Daten", type:"select",
+    options:[ {value:"alle",label:"Alle relevanten Maßnahmen"},{value:"teilweise",label:"Teilweise vorhanden"},{value:"keine",label:"Noch keine"} ] },
+  { key:"folgenabschaetzung", label:"DSGVO-Folgenabschätzung (DSFA) für KI-Anwendungen?", type:"select",
+    options:[ {value:"ja",label:"Ja"},{value:"nein",label:"Nein"},{value:"teilweise",label:"Teilweise"} ] },
+  { key:"meldewege", label:"Meldewege bei Datenschutzvorfällen", type:"select",
+    options:[ {value:"ja",label:"Ja, klar geregelt"},{value:"teilweise",label:"Teilweise geregelt"},{value:"nein",label:"Nein"} ] },
+  { key:"loeschregeln", label:"Regeln zur Löschung/Anonymisierung", type:"select",
+    options:[ {value:"ja",label:"Ja"},{value:"teilweise",label:"Teilweise"},{value:"nein",label:"Nein"} ] },
+  { key:"ai_act_kenntnis", label:"Kenntnis EU AI Act", type:"select",
+    options:[ {value:"sehr_gut",label:"Sehr gut"},{value:"gut",label:"Gut"},{value:"gehört",label:"Schon mal gehört"},{value:"unbekannt",label:"Noch nicht beschäftigt"} ] },
+  { key:"ki_hemmnisse", label:"Hemmnisse beim KI-Einsatz", type:"checkbox",
+    options:[
+      {value:"rechtsunsicherheit",label:"Unsicherheit bei Rechtslage"},
+      {value:"datenschutz",label:"Datenschutz"},
+      {value:"knowhow",label:"Fehlendes Know-how"},
+      {value:"budget",label:"Begrenztes Budget"},
+      {value:"teamakzeptanz",label:"Akzeptanz im Team"},
+      {value:"zeitmangel",label:"Zeitmangel"},
+      {value:"it_integration",label:"IT-Integration"},
+      {value:"keine",label:"Keine Hemmnisse"},
+      {value:"andere",label:"Andere"}
+    ] },
+  { key:"bisherige_foerdermittel", label:"Bereits Fördermittel erhalten?", type:"select",
+    options:[ {value:"ja",label:"Ja"},{value:"nein",label:"Nein"} ] },
+  { key:"interesse_foerderung", label:"Fördermöglichkeiten interessant?", type:"select",
+    options:[ {value:"ja",label:"Ja, bitte Programme vorschlagen"},{value:"nein",label:"Nein"},{value:"unklar",label:"Unklar, bitte beraten"} ] },
+  { key:"erfahrung_beratung", label:"Beratung zu Digitalisierung/KI?", type:"select",
+    options:[ {value:"ja",label:"Ja"},{value:"nein",label:"Nein"},{value:"unklar",label:"Unklar"} ] },
+  { key:"investitionsbudget", label:"Budget (nächstes Jahr)", type:"select",
+    options:[ {value:"unter_2000",label:"Unter 2.000 €"},{value:"2000_10000",label:"2.000–10.000 €"},{value:"10000_50000",label:"10.000–50.000 €"},{value:"ueber_50000",label:"Über 50.000 €"},{value:"unklar",label:"Noch unklar"} ] },
+  { key:"marktposition", label:"Marktposition", type:"select",
+    options:[ {value:"marktfuehrer",label:"Marktführer"},{value:"oberes_drittel",label:"Oberes Drittel"},{value:"mittelfeld",label:"Mittelfeld"},{value:"nachzuegler",label:"Nachzügler/Aufholer"},{value:"unsicher",label:"Schwer einzuschätzen"} ] },
+  { key:"benchmark_wettbewerb", label:"Vergleich mit Wettbewerbern", type:"select",
+    options:[ {value:"ja",label:"Ja, regelmäßig"},{value:"nein",label:"Nein"},{value:"selten",label:"Nur selten / informell"} ] },
+  { key:"innovationsprozess", label:"Wie entstehen Innovationen?", type:"select",
+    options:[ {value:"innovationsteam",label:"Internes Innovationsteam"},{value:"mitarbeitende",label:"Durch Mitarbeitende"},{value:"kunden",label:"Mit Kunden"},{value:"berater",label:"Mit externen Partnern"},{value:"zufall",label:"Eher zufällig/ungeplant"},{value:"unbekannt",label:"Keine klare Strategie"} ] },
+  { key:"risikofreude", label:"Risikofreude (1–5)", type:"slider", min:1, max:5, step:1,
+    description:"1 = wenig, 5 = sehr risikofreudig." },
+
+  // Block 6: Datenschutz & Absenden (→ häufig fehlend)
+  { key:"datenschutz", label:"Ich habe die <a href='datenschutz.html' onclick='window.open(this.href,\"DatenschutzPopup\",\"width=600,height=700\"); return false;'>Datenschutzhinweise</a> gelesen und bin einverstanden.", type:"privacy",
+    description:"Ihre Angaben werden ausschließlich zur Erstellung Ihrer persönlichen Auswertung genutzt." }
 ];
-
 /* ============================================================================
-   Blockstruktur / Progress / Renders
+   Blockstruktur / State / Render / Events
    ========================================================================== */
 
 const blocks = [
-  {
-    name: "Unternehmensinfos",
-    keys: [
-      "branche","unternehmensgroesse","selbststaendig","bundesland","hauptleistung",
-      "zielgruppen","jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"
-    ]
-  },
-  { name: "Status Quo", keys: ["digitalisierungsgrad","prozesse_papierlos","automatisierungsgrad","ki_einsatz","ki_knowhow"] },
-  { name: "Ziele & Projekte", keys: ["projektziel","ki_projekte","ki_usecases","ki_potenzial","usecase_priority","ki_geschaeftsmodell_vision","moonshot"] },
-  { name: "Strategie & Governance", keys: ["strategische_ziele","datenqualitaet","ai_roadmap","governance","innovationskultur"] },
-  { name: "Rechtliches & Förderung", keys: ["datenschutzbeauftragter","technische_massnahmen","folgenabschaetzung","meldewege","loeschregeln","ai_act_kenntnis","ki_hemmnisse","bisherige_foerdermittel","interesse_foerderung","erfahrung_beratung","investitionsbudget","marktposition","benchmark_wettbewerb","innovationsprozess","risikofreude"] },
-  { name: "Datenschutz & Absenden", keys: ["datenschutz"] }
+  { name:"Unternehmensinfos", keys:["branche","unternehmensgroesse","selbststaendig","bundesland","hauptleistung","zielgruppen","jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"] },
+  { name:"Status Quo", keys:["digitalisierungsgrad","prozesse_papierlos","automatisierungsgrad","ki_einsatz","ki_knowhow"] },
+  { name:"Ziele & Projekte", keys:["projektziel","ki_projekte","ki_usecases","ki_potenzial","usecase_priority","ki_geschaeftsmodell_vision","moonshot"] },
+  { name:"Strategie & Governance", keys:["strategische_ziele","datenqualitaet","ai_roadmap","governance","innovationskultur"] },
+  { name:"Rechtliches & Förderung", keys:["datenschutzbeauftragter","technische_massnahmen","folgenabschaetzung","meldewege","loeschregeln","ai_act_kenntnis","ki_hemmnisse","bisherige_foerdermittel","interesse_foerderung","erfahrung_beratung","investitionsbudget","marktposition","benchmark_wettbewerb","innovationsprozess","risikofreude"] },
+  { name:"Datenschutz & Absenden", keys:["datenschutz"] }
 ];
 
 let currentBlock = 0;
@@ -446,12 +403,10 @@ function renderBlock(blockIdx) {
 
   form.innerHTML = block.keys.map(key => {
     const field = findField(key);
-    if (!field) return "";
+    if (!field) return ""; // Schutz: unbekannter Key → kein Render
     if (field.showIf && !field.showIf(formData)) return "";
 
-    const guidance = field.description
-      ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
-      : "";
+    const guidance = field.description ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>` : "";
 
     let input = "";
     switch (field.type) {
@@ -529,9 +484,10 @@ function renderBlock(blockIdx) {
     </div>
     <div id="feedback"></div>`;
 }
-function saveAutosave() { localStorage.setItem(autosaveKey, JSON.stringify(formData)); }
-function loadAutosave() { formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}"); }
 
+/* Autosave / Werte lesen/schreiben */
+function saveAutosave(){ localStorage.setItem(autosaveKey, JSON.stringify(formData)); }
+function loadAutosave(){ formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}"); }
 function getFieldValue(field) {
   switch (field.type) {
     case "checkbox":
@@ -544,14 +500,11 @@ function getFieldValue(field) {
       return document.getElementById(field.key)?.value || "";
   }
 }
-
 function setFieldValues(blockIdx) {
   const block = blocks[blockIdx];
   for (const key of block.keys) {
-    const field = findField(key);
-    if (!field) continue;
-    const el = document.getElementById(field.key);
-    if (!el) continue;
+    const field = findField(key); if (!field) continue;
+    const el = document.getElementById(field.key); if (!el) continue;
 
     if (field.type === "checkbox") {
       (formData[key] || []).forEach(v => {
@@ -560,8 +513,7 @@ function setFieldValues(blockIdx) {
       });
     } else if (field.type === "slider") {
       const val = formData[key] ?? field.min ?? 1;
-      el.value = val;
-      if (el.nextElementSibling) el.nextElementSibling.innerText = val;
+      el.value = val; if (el.nextElementSibling) el.nextElementSibling.innerText = val;
     } else if (field.type === "privacy") {
       el.checked = formData[key] === true;
     } else {
@@ -570,12 +522,12 @@ function setFieldValues(blockIdx) {
   }
 }
 
+/* Gültigkeit (grobe) – bleibt für Backward-Kompatibilität bestehen */
 function blockIsValid(blockIdx) {
   const block = blocks[blockIdx];
   const optionalKeys = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"]);
   return block.keys.every(key => {
-    const field = findField(key);
-    if (!field) return true;
+    const field = findField(key); if (!field) return true;
     if (field.showIf && !field.showIf(formData)) return true;
     if (optionalKeys.has(key)) return true;
     const val = formData[key];
@@ -585,19 +537,19 @@ function blockIsValid(blockIdx) {
   });
 }
 
+/* Events */
 function handleFormEvents() {
-  // Live-Änderungen: Autosave + ggf. Fehler zurücksetzen + Rerender (bei Größe)
   document.getElementById("formbuilder").addEventListener("change", () => {
     const block = blocks[currentBlock];
     let needsRerender = false;
 
     for (const key of block.keys) {
-      const field = findField(key);
-      if (!field) continue;
+      const field = findField(key); if (!field) continue;
       const prev = formData[key];
       const curr = getFieldValue(field);
       formData[key] = curr;
-      // Markierung sofort entfernen, wenn Feld ausgefüllt wird
+
+      // Fehler-Markierung nach Benutzeraktion entfernen
       markInvalid(key, false);
 
       if (prev !== curr && field.key === "unternehmensgroesse") needsRerender = true;
@@ -614,31 +566,29 @@ function handleFormEvents() {
     }
   });
 
-  // Buttons
   document.getElementById("formbuilder").addEventListener("click", e => {
-    const box = getFeedbackBox();
+    const fb = getFeedbackBox();
 
     if (e.target.id === "btn-next") {
-      // Werte JIT
+      // Werte JIT übernehmen
       const block = blocks[currentBlock];
       for (const key of block.keys) {
-        const f = findField(key);
-        if (f) formData[key] = getFieldValue(f);
+        const f = findField(key); if (f) formData[key] = getFieldValue(f);
       }
       saveAutosave();
 
-      // Detaillierte Validierung
+      // Detaillierte Validierung + Benutzerfeedback
       const missing = validateBlockDetailed(currentBlock);
       if (missing.length) {
-        if (box) {
-          box.innerHTML = `<div class="form-error">Bitte ergänzen Sie die folgenden Felder:<ul>${missing.map(m => `<li>${m}</li>`).join("")}</ul></div>`;
-          box.style.display = 'block'; box.classList.add('error');
+        if (fb) {
+          fb.innerHTML = `<div class="form-error">Bitte ergänzen Sie die folgenden Felder:<ul>${missing.map(m => `<li>${m}</li>`).join("")}</ul></div>`;
+          fb.style.display = 'block'; fb.classList.add('error');
         }
         const firstInvalid = document.querySelector('.invalid, .invalid-group');
-        if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (firstInvalid) firstInvalid.scrollIntoView({ behavior:'smooth', block:'center' });
         return;
-      } else if (box) {
-        box.innerHTML = ""; box.style.display = 'none'; box.classList.remove('error');
+      } else if (fb) {
+        fb.innerHTML = ""; fb.style.display = 'none'; fb.classList.remove('error');
       }
 
       currentBlock++;
@@ -648,24 +598,29 @@ function handleFormEvents() {
     }
 
     if (e.target.id === "btn-prev") {
-      currentBlock--; renderBlock(currentBlock);
+      currentBlock--;
+      renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     if (e.target.id === "btn-reset") {
       localStorage.removeItem(autosaveKey);
-      formData = {}; currentBlock = 0;
+      formData = {};
+      currentBlock = 0;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
-    if (e.target.id === "submit-btn" || e.target.id === "btn-send") submitAllBlocks();
+    if (e.target.id === "submit-btn" || e.target.id === "btn-send") {
+      submitAllBlocks();
+    }
   });
 }
 
+/* Init */
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
   renderBlock(currentBlock);
@@ -676,6 +631,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 20);
 });
 
+/* Submit */
 function submitAllBlocks() {
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "de";
@@ -683,43 +639,10 @@ function submitAllBlocks() {
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify(data), keepalive: true
+    body: JSON.stringify(data),
+    keepalive: true
   }).then(async (res) => {
     if (res.status === 401) { localStorage.removeItem("jwt"); window.location.href = "/login.html"; return; }
     window.location.href = "thankyou.html";
   }).catch(() => { window.location.href = "thankyou.html"; });
-}
-
-// === showSuccess() unverändert wie in deiner Datei ===
-// === formbuilder.js: Erweiterung von showSuccess() ===
-function showSuccess(data) {
-  localStorage.removeItem(autosaveKey);
-  const htmlContent = data?.html || "";
-  let userEmail = "";
-  try {
-    const token = localStorage.getItem("jwt");
-    if (token) {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      userEmail = payload.email || payload.sub || "";
-    }
-  } catch (err) {
-    userEmail = "";
-  }
-  if (htmlContent) {
-    fetch("https://make-ki-pdfservice-production.up.railway.app/generate-pdf", {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/html",
-        "X-User-Email": userEmail
-      },
-      body: htmlContent
-    }).catch(() => {});
-  }
-  document.getElementById("formbuilder").innerHTML = `
-    <h2>Vielen Dank für Ihre Angaben!</h2>
-    <div class="success-msg">
-      Ihre KI-Analyse wird jetzt erstellt.<br>
-      Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail zugestellt.<br>
-    </div>
-  `;
 }

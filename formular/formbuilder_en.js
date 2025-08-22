@@ -46,7 +46,7 @@ function markInvalid(key, on=true){
 }
 function validateBlockDetailed(blockIdx){
   const block = blocks[blockIdx];
-  const optional = new Set(["annual_revenue","it_infrastructure","internal_ai_skills","data_sources"]);
+  const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"]);
   const missing = [];
   block.keys.forEach(k => markInvalid(k,false));
   for (const key of block.keys){
@@ -829,7 +829,7 @@ function handleFormEvents() {
       // remove error marker when user fixes the field
       markInvalid(key, false);
 
-      if (prev !== curr && field.key === "company_size") needsRerender = true;
+      if (prev !== curr && field.key === "unternehmensgroesse") needsRerender = true;
     }
 
     saveAutosave();
