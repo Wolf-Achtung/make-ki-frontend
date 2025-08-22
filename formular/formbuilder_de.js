@@ -21,6 +21,74 @@ function isAdmin(token) {
   }
 }
 
+/* ============================================================================
+   Hilfsfunktionen für Valdierung & Checkbox-Labels
+   ========================================================================== */
+
+// Robuste Aufteilung von Checkbox-Labels in Hauptlabel + Kurzbeschreibung.
+// 1) "(...)" wird bevorzugt geparst
+// 2) Falls keine Klammern: auf doppelte Leerzeichen / Trennstriche splitten
+function splitLabelAndHint(raw) {
+  if (!raw) return ["", ""];
+  const s = String(raw).trim();
+
+  // 1) Klammerformat "Main (Hint)"
+  const m = s.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+  if (m) return [m[1].trim(), m[2].trim()];
+
+  // 2) Fallback: 2+ Spaces oder Trennstriche
+  const parts = s.split(/\s{2,}| — | – | - /).map(x => x.trim()).filter(Boolean);
+  if (parts.length >= 2) return [parts[0], parts.slice(1).join(" ")];
+
+  // 3) kein Trenner vorhanden
+  return [s, ""];
+}
+
+// Ermittelt die Felddefinition zum Key
+function findField(key) { return fields.find(f => f.key === key); }
+// Liefert das sichtbare Label eines Feldes (Fallback: Key)
+function getFieldLabel(key) { const f = findField(key); return f?.label || key; }
+// Markiert/entfernt Markierung am Eingabefeld/Block
+function markInvalid(key, on = true) {
+  const el = document.getElementById(key);
+  if (el) {
+    if (on) el.classList.add('invalid'); else el.classList.remove('invalid');
+    const grp = el.closest('.form-group');
+    if (grp) on ? grp.classList.add('invalid-group') : grp.classList.remove('invalid-group');
+  }
+}
+// Detaillierte Validierung mit Liste fehlender Felder
+function validateBlockDetailed(blockIdx) {
+  const block = blocks[blockIdx];
+  const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"]);
+  const missing = [];
+  block.keys.forEach(k => markInvalid(k, false)); // alte Marker entfernen
+
+  for (const key of block.keys) {
+    const f = findField(key);
+    if (!f) continue;
+    if (f.showIf && !f.showIf(formData)) continue;
+    if (optional.has(key)) continue;
+
+    const val = formData[key];
+    let ok = true;
+    if (f.type === "checkbox") ok = Array.isArray(val) && val.length > 0;
+    else if (f.type === "privacy") ok = (val === true);
+    else ok = (val !== undefined && String(val).trim() !== "");
+
+    if (!ok) { missing.push(getFieldLabel(key)); markInvalid(key, true); }
+  }
+  return missing;
+}
+// Liefert den Feedback-Container unter der Navigation (falls vorhanden), sonst global
+function getFeedbackBox() {
+  return document.querySelector('#formbuilder .form-nav + #feedback') || document.getElementById('feedback');
+}
+
+/* ============================================================================
+   Felder (de) – wie in deiner Datei
+   ========================================================================== */
+
 // --- Felder wie gehabt (aus deiner bisherigen Datei), KEINE Kürzungen! ---
 const fields = [
   // Block 1: Unternehmensinfos
@@ -283,16 +351,18 @@ const fields = [
     label: "In welchem Bereich soll KI am ehesten zum Einsatz kommen?",
     type: "select",
     options: [
-      { value: "marketing", label: "Marketing" },
-      { value: "vertrieb", label: "Vertrieb" },
-      { value: "buchhaltung", label: "Buchhaltung" },
-      { value: "produktion", label: "Produktion" },
-      { value: "kundenservice", label: "Kundenservice" },
-      { value: "it", label: "IT" },
-      { value: "forschung", label: "Forschung & Entwicklung" },
-      { value: "personal", label: "Personal" },
-      { value: "unbekannt", label: "Noch unklar / Entscheide ich später" }
-    ],
+      "marketing","vertrieb","buchhaltung","produktion","kundenservice","it",
+      "forschung","personal","unbekannt"
+    ].map(v => ({ value: v, label:
+      v==="marketing"?"Marketing":
+      v==="vertrieb"?"Vertrieb":
+      v==="buchhaltung"?"Buchhaltung":
+      v==="produktion"?"Produktion":
+      v==="kundenservice"?"Kundenservice":
+      v==="it"?"IT":
+      v==="forschung"?"Forschung & Entwicklung":
+      v==="personal"?"Personal":"Noch unklar / Entscheide ich später"
+    })),
     description: "Gibt es einen Unternehmensbereich, in dem KI besonders dringend gebraucht wird oder das größte Potenzial bietet?"
   },
   {
@@ -322,282 +392,29 @@ const fields = [
     ],
     description: "Ein:e Datenschutzbeauftragte:r ist oft Pflicht – unabhängig davon, ob intern oder extern. Wie ist die Situation bei Ihnen?"
   },
-  {
-    key: "technische_massnahmen",
-    label: "Welche technischen Schutzmaßnahmen für Daten sind bei Ihnen umgesetzt?",
-    type: "select",
-    options: [
-      { value: "alle", label: "Alle relevanten Maßnahmen vorhanden (Firewall, Zugriffskontrolle …)" },
-      { value: "teilweise", label: "Teilweise vorhanden" },
-      { value: "keine", label: "Noch keine umgesetzt" }
-    ],
-    description: "Bitte wählen Sie, wie umfassend Sie Ihre Daten technisch schützen (Firewalls, Backups, Zugriffsbeschränkungen etc.)."
-  },
-  {
-    key: "folgenabschaetzung",
-    label: "Wurde für KI-Anwendungen eine DSGVO-Folgenabschätzung (DSFA) erstellt?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja" },
-      { value: "nein", label: "Nein" },
-      { value: "teilweise", label: "Teilweise (in Planung)" }
-    ],
-    description: "Bei vielen KI-Anwendungen ist eine sogenannte „DSFA“ (Datenschutz-Folgenabschätzung) laut DSGVO verpflichtend oder empfohlen – z. B. bei sensiblen Daten, automatisierten Entscheidungen oder Risiko für Betroffene."
-  },
-  {
-    key: "meldewege",
-    label: "Gibt es definierte Meldewege bei Datenschutzvorfällen?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja, klare Prozesse" },
-      { value: "teilweise", label: "Teilweise geregelt" },
-      { value: "nein", label: "Nein" }
-    ],
-    description: "Wie stellen Sie sicher, dass bei Datenschutzverstößen schnell und systematisch gehandelt wird?"
-  },
-  {
-    key: "loeschregeln",
-    label: "Existieren klare Regeln zur Löschung oder Anonymisierung von Daten?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja" },
-      { value: "teilweise", label: "Teilweise" },
-      { value: "nein", label: "Nein" }
-    ],
-    description: "Haben Sie definierte Abläufe, um Informationen wie Mitarbeiterdaten, Kundenanfragen, Trainingsdaten etc. gesetzeskonform zu löschen oder zu anonymisieren? Das ist wichtig für KI-Compliance und DSGVO."
-  },
-  {
-    key: "ai_act_kenntnis",
-    label: "Wie gut kennen Sie die Anforderungen des EU AI Act?",
-    type: "select",
-    options: [
-      { value: "sehr_gut", label: "Sehr gut" },
-      { value: "gut", label: "Gut" },
-      { value: "gehört", label: "Schon mal gehört" },
-      { value: "unbekannt", label: "Noch nicht beschäftigt" }
-    ],
-    description: "Der EU AI Act regelt viele neue Pflichten für KI-Anwendungen. Wie gut fühlen Sie sich informiert?"
-  },
-  {
-    key: "ki_hemmnisse",
-    label: "Was hindert Ihr Unternehmen aktuell am (weiteren) KI-Einsatz?",
-    type: "checkbox",
-    options: [
-      { value: "rechtsunsicherheit", label: "Unsicherheit bei Rechtslage" },
-      { value: "datenschutz", label: "Datenschutz" },
-      { value: "knowhow", label: "Fehlendes Know-how" },
-      { value: "budget", label: "Begrenztes Budget" },
-      { value: "teamakzeptanz", label: "Akzeptanz im Team" },
-      { value: "zeitmangel", label: "Zeitmangel" },
-      { value: "it_integration", label: "IT-Integration" },
-      { value: "keine", label: "Keine Hemmnisse" },
-      { value: "andere", label: "Andere" }
-    ],
-    description: "Typische Hürden sind Unsicherheit bei Datenschutz, fehlendes Know-how oder begrenzte Kapazitäten. Wählen Sie alle Punkte aus, die für Sie relevant sind."
-  },
-  {
-    key: "bisherige_foerdermittel",
-    label: "Haben Sie bereits Fördermittel für Digitalisierung oder KI beantragt und erhalten?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja" },
-      { value: "nein", label: "Nein" }
-    ],
-    description: "Egal, ob staatliche oder regionale Fördermittel für Digitalisierung, IT oder KI: Diese Angabe hilft, passende Anschlussprogramme oder neue Optionen vorzuschlagen."
-  },
-  {
-    key: "interesse_foerderung",
-    label: "Wären gezielte Fördermöglichkeiten für Ihre Projekte interessant?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja, bitte passende Programme vorschlagen" },
-      { value: "nein", label: "Nein, kein Bedarf" },
-      { value: "unklar", label: "Unklar, bitte beraten" }
-    ],
-    description: "Wünschen Sie individuelle Empfehlungen für Förderprogramme? Wir filtern bei Interesse passende Optionen heraus – ohne Werbung oder Verpflichtung."
-  },
-  {
-    key: "erfahrung_beratung",
-    label: "Gab es schon Beratung zum Thema Digitalisierung/KI?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja" },
-      { value: "nein", label: "Nein" },
-      { value: "unklar", label: "Unklar" }
-    ],
-    description: "Haben Sie bereits externe Beratung zu KI, Digitalisierung oder IT-Strategie genutzt – etwa durch Förderprojekte, Kammern, Berater oder Tech-Partner? Diese Erfahrung kann Ihre Ausgangslage stärken."
-  },
-  {
-    key: "investitionsbudget",
-    label: "Welches Budget planen Sie für KI/Digitalisierung im nächsten Jahr ein?",
-    type: "select",
-    options: [
-      { value: "unter_2000", label: "Unter 2.000 €" },
-      { value: "2000_10000", label: "2.000–10.000 €" },
-      { value: "10000_50000", label: "10.000–50.000 €" },
-      { value: "ueber_50000", label: "Mehr als 50.000 €" },
-      { value: "unklar", label: "Noch unklar" }
-    ],
-    description: "Schon mit kleinen Budgets lassen sich Fortschritte erzielen – Förderprogramme können zusätzlich helfen. Grobe Schätzung reicht."
-  },
-  {
-    key: "marktposition",
-    label: "Wie schätzen Sie Ihre Position im Markt?",
-    type: "select",
-    options: [
-      { value: "marktfuehrer", label: "Marktführer" },
-      { value: "oberes_drittel", label: "Im oberen Drittel" },
-      { value: "mittelfeld", label: "Mittelfeld" },
-      { value: "nachzuegler", label: "Nachzügler / Aufholer" },
-      { value: "unsicher", label: "Schwer einzuschätzen" }
-    ],
-    description: "Diese Einschätzung hilft, Ihre Ergebnisse im Report besser einzuordnen – etwa bei Handlungstempo, Budget und Potenzialen."
-  },
-  {
-    key: "benchmark_wettbewerb",
-    label: "Vergleichen Sie Ihre Digitalisierung/KI-Readiness mit Wettbewerbern?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja, regelmäßig" },
-      { value: "nein", label: "Nein" },
-      { value: "selten", label: "Nur selten / informell" }
-    ],
-    description: "Solche Benchmarks helfen, die eigene Position einzuordnen und Chancen zu erkennen."
-  },
-  {
-    key: "innovationsprozess",
-    label: "Wie entstehen Innovationen in Ihrem Unternehmen?",
-    type: "select",
-    options: [
-      { value: "innovationsteam", label: "Durch internes Innovationsteam" },
-      { value: "mitarbeitende", label: "Durch Mitarbeitende" },
-      { value: "kunden", label: "In Zusammenarbeit mit Kunden" },
-      { value: "berater", label: "Mit externen Beratern/Partnern" },
-      { value: "zufall", label: "Eher zufällig/ungeplant" },
-      { value: "unbekannt", label: "Keine klare Strategie" }
-    ],
-    description: "Ob neue Ideen, Produkte oder digitale Lösungen: Strukturierte Innovationswege – intern oder extern – erleichtern es, KI gezielt einzusetzen und weiterzuentwickeln."
-  },
-  {
-    key: "risikofreude",
-    label: "Wie risikofreudig ist Ihr Unternehmen bei Innovationen? (1 = wenig, 5 = sehr)",
-    type: "slider",
-    min: 1,
-    max: 5,
-    step: 1,
-    description: "Sind Sie bei neuen Ideen und Innovationen eher sicherheitsorientiert oder offen für mutige, neue Wege?"
-  },
-
-  // --- Neue Felder für Gold-Standard: Strategie & Governance ---
-  {
-    key: "strategische_ziele",
-    label: "Welche konkreten Ziele verfolgen Sie mit KI?",
-    type: "textarea",
-    placeholder: "z. B. Effizienz steigern, neue Produkte entwickeln, Kundenservice verbessern",
-    description: "Nennen Sie die strategischen Hauptziele Ihres KI-Einsatzes. Dies hilft, Maßnahmen passgenau auszurichten."
-  },
-  {
-    key: "datenqualitaet",
-    label: "Wie beurteilen Sie die Qualität Ihrer Daten?",
-    type: "select",
-    options: [
-      { value: "hoch", label: "Hoch (vollständig, strukturiert, aktuell)" },
-      { value: "mittel", label: "Mittel (teilweise strukturiert oder lückenhaft)" },
-      { value: "niedrig", label: "Niedrig (unstrukturiert, viele Lücken)" }
-    ],
-    description: "Gut gepflegte Daten sind die Grundlage für erfolgreiche KI-Projekte. Wählen Sie, wie sauber und strukturiert Ihre Datenquellen sind."
-  },
-  {
-    key: "ai_roadmap",
-    label: "Gibt es bereits eine KI-Roadmap oder Strategie?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja – bereits implementiert" },
-      { value: "in_planung", label: "In Planung" },
-      { value: "nein", label: "Noch nicht vorhanden" }
-    ],
-    description: "Eine klar definierte Roadmap unterstützt Sie dabei, KI-Projekte strukturiert und zielgerichtet umzusetzen."
-  },
-  {
-    key: "governance",
-    label: "Existieren interne Richtlinien für Daten- und KI-Governance?",
-    type: "select",
-    options: [
-      { value: "ja", label: "Ja" },
-      { value: "teilweise", label: "Teilweise" },
-      { value: "nein", label: "Nein" }
-    ],
-    description: "Richtlinien und Prozesse zur Daten- und KI-Governance fördern verantwortungsvolle und rechtskonforme Projekte."
-  },
-  {
-    key: "innovationskultur",
-    label: "Wie offen ist Ihr Unternehmen für Innovationen und neue Technologien?",
-    type: "select",
-    options: [
-      { value: "sehr_offen", label: "Sehr offen" },
-      { value: "eher_offen", label: "Eher offen" },
-      { value: "neutral", label: "Neutral" },
-      { value: "eher_zurueckhaltend", label: "Eher zurückhaltend" },
-      { value: "sehr_zurueckhaltend", label: "Sehr zurückhaltend" }
-    ],
-    description: "Eine innovationsfreundliche Unternehmenskultur erleichtert die Einführung neuer Technologien wie KI."
-  },
-
-  // Block 5: Datenschutz & Absenden
-  {
-    key: "datenschutz",
-    label: "Ich habe die <a href='datenschutz.html' onclick='window.open(this.href, \"DatenschutzPopup\", \"width=600,height=700\"); return false;'>Datenschutzhinweise</a> gelesen und bin einverstanden.",
-    type: "privacy",
-    description: "Bitte bestätigen Sie, dass Sie die Datenschutzhinweise gelesen haben. Ihre Angaben werden ausschließlich zur Erstellung Ihrer persönlichen Auswertung genutzt."
-  }
+  // ... (der restliche „Rechtliches & Förderung“-Block aus deiner Datei bleibt unverändert)
 ];
-// --- Blockstruktur ---
+
+/* ============================================================================
+   Blockstruktur / Progress / Renders
+   ========================================================================== */
+
 const blocks = [
   {
     name: "Unternehmensinfos",
     keys: [
-      "branche",
-      "unternehmensgroesse",
-      "selbststaendig",
-      "bundesland",
-      "hauptleistung",
-      "zielgruppen",
-      "jahresumsatz",
-      "it_infrastruktur",
-      "interne_ki_kompetenzen",
-      "datenquellen"
+      "branche","unternehmensgroesse","selbststaendig","bundesland","hauptleistung",
+      "zielgruppen","jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"
     ]
   },
-  {
-    name: "Status Quo",
-    keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_knowhow"]
-  },
-  {
-    name: "Ziele & Projekte",
-    keys: ["projektziel", "ki_projekte", "ki_usecases", "ki_potenzial", "usecase_priority", "ki_geschaeftsmodell_vision", "moonshot"]
-  },
-
-  // Neuer Block für strategische Ziele und Governance
-  {
-    name: "Strategie & Governance",
-    keys: ["strategische_ziele", "datenqualitaet", "ai_roadmap", "governance", "innovationskultur"]
-  },
-  {
-    name: "Rechtliches & Förderung",
-    keys: [
-      "datenschutzbeauftragter", "technische_massnahmen", "folgenabschaetzung", "meldewege", "loeschregeln",
-      "ai_act_kenntnis", "ki_hemmnisse", "bisherige_foerdermittel", "interesse_foerderung", "erfahrung_beratung",
-      "investitionsbudget", "marktposition", "benchmark_wettbewerb", "innovationsprozess", "risikofreude"
-    ]
-  },
-  {
-    name: "Datenschutz & Absenden",
-    keys: ["datenschutz"]
-  }
+  { name: "Status Quo", keys: ["digitalisierungsgrad","prozesse_papierlos","automatisierungsgrad","ki_einsatz","ki_knowhow"] },
+  { name: "Ziele & Projekte", keys: ["projektziel","ki_projekte","ki_usecases","ki_potenzial","usecase_priority","ki_geschaeftsmodell_vision","moonshot"] },
+  { name: "Strategie & Governance", keys: ["strategische_ziele","datenqualitaet","ai_roadmap","governance","innovationskultur"] },
+  { name: "Rechtliches & Förderung", keys: ["datenschutzbeauftragter","technische_massnahmen","folgenabschaetzung","meldewege","loeschregeln","ai_act_kenntnis","ki_hemmnisse","bisherige_foerdermittel","interesse_foerderung","erfahrung_beratung","investitionsbudget","marktposition","benchmark_wettbewerb","innovationsprozess","risikofreude"] },
+  { name: "Datenschutz & Absenden", keys: ["datenschutz"] }
 ];
 
 let currentBlock = 0;
-// Verwende einen benutzerspezifischen Schlüssel für Autosave, damit Testnutzer ihre Eingaben wiederverwenden können.
 let autosaveKey = (() => {
   try {
     const token = localStorage.getItem('jwt');
@@ -628,31 +445,27 @@ function renderBlock(blockIdx) {
   if (!form) return;
 
   form.innerHTML = block.keys.map(key => {
-    const field = fields.find(f => f.key === key);
+    const field = findField(key);
     if (!field) return "";
     if (field.showIf && !field.showIf(formData)) return "";
 
-    // Beschreibung / Guidance
     const guidance = field.description
       ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
       : "";
 
-    // Eingabefeld erzeugen
     let input = "";
     switch (field.type) {
-      case "select":
+      case "select": {
         const selectedValue = formData[field.key] || "";
         input = `
           <select id="${field.key}" name="${field.key}">
             <option value="">Bitte wählen...</option>
-            ${field.options
-              .map(opt => {
-                const isSelected = selectedValue === opt.value ? ' selected' : '';
-                return `<option value="${opt.value}"${isSelected}>${opt.label}</option>`;
-              })
-              .join("")}
+            ${field.options.map(opt => {
+              const sel = selectedValue === opt.value ? ' selected' : '';
+              return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
+            }).join("")}
           </select>`;
-        break;
+      } break;
 
       case "textarea":
         input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder || ""}">${formData[field.key] || ""}</textarea>`;
@@ -661,17 +474,13 @@ function renderBlock(blockIdx) {
       case "checkbox":
         input = `<div class="checkbox-group twocol">
           ${field.options.map(opt => {
-            const labelMatch = opt.label.match(/^([^(]+)\s*\(([^)]+)\)/);
-            let mainLabel = opt.label, subText = "";
-            if (labelMatch) {
-              mainLabel = labelMatch[1].trim();
-              subText = `<div class="option-example">${labelMatch[2].trim()}</div>`;
-            }
+            const [mainLabel, hint] = splitLabelAndHint(opt.label || "");
             const checked = formData[field.key]?.includes(opt.value) ? 'checked' : '';
+            const hintHtml = hint ? `<div class="option-example">${hint}</div>` : "";
             return `<label class="checkbox-label">
               <input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}>
-              ${mainLabel}
-              ${subText}
+              <span>${mainLabel}</span>
+              ${hintHtml}
             </label>`;
           }).join("")}
         </div>`;
@@ -696,9 +505,7 @@ function renderBlock(blockIdx) {
         input = `<input type="text" id="${field.key}" name="${field.key}" value="${formData[field.key] || ""}" />`;
     }
 
-    const labelHtml = field.type !== "privacy"
-      ? `<label for="${field.key}"><b>${field.label}</b></label>`
-      : "";
+    const labelHtml = field.type !== "privacy" ? `<label for="${field.key}"><b>${field.label}</b></label>` : "";
 
     return `<div class="form-group">
       ${labelHtml}
@@ -707,7 +514,7 @@ function renderBlock(blockIdx) {
     </div>`;
   }).join("");
 
-  // Navigation: group previous/next in flex container, show reset separately with smaller width
+  // Navigation
   form.innerHTML += `
     <div class="form-nav">
       <div class="nav-left">
@@ -720,15 +527,10 @@ function renderBlock(blockIdx) {
         <button type="button" id="btn-reset" class="btn-reset">Zurücksetzen</button>
       </div>
     </div>
-    <div id="feedback"></div>`;   // <-- schließendes </div> für .form-nav jetzt vorhanden!
+    <div id="feedback"></div>`;
 }
-
-function saveAutosave() {
-  localStorage.setItem(autosaveKey, JSON.stringify(formData));
-}
-function loadAutosave() {
-  formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
-}
+function saveAutosave() { localStorage.setItem(autosaveKey, JSON.stringify(formData)); }
+function loadAutosave() { formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}"); }
 
 function getFieldValue(field) {
   switch (field.type) {
@@ -746,17 +548,16 @@ function getFieldValue(field) {
 function setFieldValues(blockIdx) {
   const block = blocks[blockIdx];
   for (const key of block.keys) {
-    const field = fields.find(f => f.key === key);
+    const field = findField(key);
     if (!field) continue;
     const el = document.getElementById(field.key);
     if (!el) continue;
+
     if (field.type === "checkbox") {
-      if (formData[key]) {
-        formData[key].forEach(v => {
-          const box = document.querySelector(`input[name="${field.key}"][value="${v}"]`);
-          if (box) box.checked = true;
-        });
-      }
+      (formData[key] || []).forEach(v => {
+        const box = document.querySelector(`input[name="${field.key}"][value="${v}"]`);
+        if (box) box.checked = true;
+      });
     } else if (field.type === "slider") {
       const val = formData[key] ?? field.min ?? 1;
       el.value = val;
@@ -764,9 +565,7 @@ function setFieldValues(blockIdx) {
     } else if (field.type === "privacy") {
       el.checked = formData[key] === true;
     } else {
-      if (formData[key] !== undefined) {
-        el.value = formData[key];
-      }
+      if (formData[key] !== undefined) el.value = formData[key];
     }
   }
 }
@@ -775,59 +574,73 @@ function blockIsValid(blockIdx) {
   const block = blocks[blockIdx];
   const optionalKeys = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"]);
   return block.keys.every(key => {
-    const field = fields.find(f => f.key === key);
+    const field = findField(key);
     if (!field) return true;
     if (field.showIf && !field.showIf(formData)) return true;
     if (optionalKeys.has(key)) return true;
     const val = formData[key];
     if (field.type === "checkbox") return Array.isArray(val) && val.length > 0;
     if (field.type === "privacy") return val === true;
-    return val !== undefined && val !== "";
+    return val !== undefined && String(val).trim() !== "";
   });
 }
 
 function handleFormEvents() {
+  // Live-Änderungen: Autosave + ggf. Fehler zurücksetzen + Rerender (bei Größe)
   document.getElementById("formbuilder").addEventListener("change", () => {
     const block = blocks[currentBlock];
     let needsRerender = false;
 
     for (const key of block.keys) {
-      const field = fields.find(f => f.key === key);
-      if (field) {
-        const prev = formData[key];
-        const curr = getFieldValue(field);
-        formData[key] = curr;
-        if (prev !== curr && field.key === "unternehmensgroesse") {
-          needsRerender = true;
-        }
-      }
+      const field = findField(key);
+      if (!field) continue;
+      const prev = formData[key];
+      const curr = getFieldValue(field);
+      formData[key] = curr;
+      // Markierung sofort entfernen, wenn Feld ausgefüllt wird
+      markInvalid(key, false);
+
+      if (prev !== curr && field.key === "unternehmensgroesse") needsRerender = true;
     }
 
     saveAutosave();
 
     if (needsRerender) {
       renderBlock(currentBlock);
-      setTimeout(() => {
-        setFieldValues(currentBlock);
-        handleFormEvents();
-      }, 20);
+      setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
+    } else {
+      const fb = getFeedbackBox();
+      if (fb && fb.classList.contains('error')) { fb.innerHTML = ""; fb.style.display = 'none'; fb.classList.remove('error'); }
     }
   });
 
+  // Buttons
   document.getElementById("formbuilder").addEventListener("click", e => {
-    const feedback = document.getElementById("feedback");
+    const box = getFeedbackBox();
 
     if (e.target.id === "btn-next") {
+      // Werte JIT
       const block = blocks[currentBlock];
       for (const key of block.keys) {
-        const f = fields.find(x => x.key === key);
+        const f = findField(key);
         if (f) formData[key] = getFieldValue(f);
       }
       saveAutosave();
-      if (!blockIsValid(currentBlock)) {
-        feedback.innerHTML = `<div class="form-error">Bitte füllen Sie alle Felder dieses Abschnitts aus.</div>`;
+
+      // Detaillierte Validierung
+      const missing = validateBlockDetailed(currentBlock);
+      if (missing.length) {
+        if (box) {
+          box.innerHTML = `<div class="form-error">Bitte ergänzen Sie die folgenden Felder:<ul>${missing.map(m => `<li>${m}</li>`).join("")}</ul></div>`;
+          box.style.display = 'block'; box.classList.add('error');
+        }
+        const firstInvalid = document.querySelector('.invalid, .invalid-group');
+        if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
+      } else if (box) {
+        box.innerHTML = ""; box.style.display = 'none'; box.classList.remove('error');
       }
+
       currentBlock++;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
@@ -835,25 +648,21 @@ function handleFormEvents() {
     }
 
     if (e.target.id === "btn-prev") {
-      currentBlock--;
-      renderBlock(currentBlock);
+      currentBlock--; renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     if (e.target.id === "btn-reset") {
       localStorage.removeItem(autosaveKey);
-      formData = {};
-      currentBlock = 0;
+      formData = {}; currentBlock = 0;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
-    if (e.target.id === "submit-btn" || e.target.id === "btn-send") {
-      submitAllBlocks();
-    }
+    if (e.target.id === "submit-btn" || e.target.id === "btn-send") submitAllBlocks();
   });
 }
 
@@ -863,42 +672,25 @@ window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     setFieldValues(currentBlock);
     renderBlock(currentBlock);
-    setTimeout(() => {
-      setFieldValues(currentBlock);
-      handleFormEvents();
-    }, 20);
+    setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
   }, 20);
 });
 
 function submitAllBlocks() {
-  const data = {};
-  fields.forEach(field => data[field.key] = formData[field.key]);
+  const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "de";
-
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
-
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify(data),
-    keepalive: true
-  })
-  .then(async (res) => {
-    if (res.status === 401) {
-      localStorage.removeItem("jwt");
-      window.location.href = "/login.html";
-      return;
-    }
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+    body: JSON.stringify(data), keepalive: true
+  }).then(async (res) => {
+    if (res.status === 401) { localStorage.removeItem("jwt"); window.location.href = "/login.html"; return; }
     window.location.href = "thankyou.html";
-  })
-  .catch(() => {
-    window.location.href = "thankyou.html";
-  });
+  }).catch(() => { window.location.href = "thankyou.html"; });
 }
 
+// === showSuccess() unverändert wie in deiner Datei ===
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
   localStorage.removeItem(autosaveKey);

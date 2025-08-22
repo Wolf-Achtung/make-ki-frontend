@@ -1,4 +1,4 @@
-// JWT check: only logged‑in users may use this form
+// JWT check: only logged-in users may use this form
 const token = localStorage.getItem("jwt");
 if (!token) {
     window.location.href = "/login.html";
@@ -20,6 +20,59 @@ function isAdmin(token) {
     return false;
   }
 }
+
+/* ============================================================================
+   Helpers (validation & checkbox labels)
+   ========================================================================== */
+
+function splitLabelAndHint(raw) {
+  if (!raw) return ["", ""];
+  const s = String(raw).trim();
+  const m = s.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+  if (m) return [m[1].trim(), m[2].trim()];
+  const parts = s.split(/\s{2,}| — | – | - /).map(x => x.trim()).filter(Boolean);
+  if (parts.length >= 2) return [parts[0], parts.slice(1).join(" ")];
+  return [s, ""];
+}
+function findField(key){ return fields.find(f => f.key === key); }
+function getFieldLabel(key){ const f = findField(key); return f?.label || key; }
+function markInvalid(key, on=true){
+  const el = document.getElementById(key);
+  if (el){
+    on ? el.classList.add('invalid') : el.classList.remove('invalid');
+    const grp = el.closest('.form-group');
+    if (grp) on ? grp.classList.add('invalid-group') : grp.classList.remove('invalid-group');
+  }
+}
+function validateBlockDetailed(blockIdx){
+  const block = blocks[blockIdx];
+  const optional = new Set(["annual_revenue","it_infrastructure","internal_ai_skills","data_sources"]);
+  const missing = [];
+  block.keys.forEach(k => markInvalid(k,false));
+  for (const key of block.keys){
+    const f = findField(key); if (!f) continue;
+    if (f.showIf && !f.showIf(formData)) continue;
+    if (optional.has(key)) continue;
+    const val = formData[key];
+    let ok = true;
+    if (f.type === "checkbox") ok = Array.isArray(val) && val.length > 0;
+    else if (f.type === "privacy") ok = (val === true);
+    else ok = (val !== undefined && String(val).trim() !== "");
+    if (!ok){ missing.push(getFieldLabel(key)); markInvalid(key,true); }
+  }
+  return missing;
+}
+function getFeedbackBox(){
+  return document.querySelector('#formbuilder .form-nav + #feedback') || document.getElementById('feedback');
+}
+
+/* ============================================================================
+   Fields (english)
+   ========================================================================== */
+
+// 👉 Bitte hier deine bestehende Felddefinition einsetzen (unverändert).
+// Ich habe nur die Logik drumherum angepasst. Die Felder (fields = [ ... ]) und blocks = [ ... ]
+// bleiben gleich wie in deiner Originaldatei.
 
 // --- Felder wie gehabt (aus deiner bisherigen Datei), KEINE Kürzungen! ---
 const fields = [
@@ -598,8 +651,11 @@ const blocks = [
   }
 ];
 
+/* ============================================================================
+   State / Progress / Render
+   ========================================================================== */
+
 let currentBlock = 0;
-// Use a user-specific key for autosave to allow test users to reuse their answers.
 let autosaveKey = (() => {
   try {
     const token = localStorage.getItem('jwt');
@@ -630,32 +686,27 @@ function renderBlock(blockIdx) {
   if (!form) return;
 
   form.innerHTML = block.keys.map(key => {
-    const field = fields.find(f => f.key === key);
+    const field = findField(key);
     if (!field) return "";
     if (field.showIf && !field.showIf(formData)) return "";
 
-    // Beschreibung / Guidance
     const guidance = field.description
-      ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>`
+      ? `<div class="guidance${field.key === "privacy" ? " important" : ""}">${field.description}</div>`
       : "";
 
-    // Eingabefeld erzeugen
     let input = "";
     switch (field.type) {
-      case "select":
-        // Beim Rendern wird der gespeicherte Wert als selected markiert, damit Auswahl nicht zurückspringt
+      case "select": {
         const selectedValue = formData[field.key] || "";
         input = `
           <select id="${field.key}" name="${field.key}">
             <option value="">Please select...</option>
-            ${field.options
-              .map(opt => {
-                const isSelected = selectedValue === opt.value ? ' selected' : '';
-                return `<option value="${opt.value}"${isSelected}>${opt.label}</option>`;
-              })
-              .join("")}
+            ${field.options.map(opt => {
+              const sel = selectedValue === opt.value ? ' selected' : '';
+              return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
+            }).join("")}
           </select>`;
-        break;
+      } break;
 
       case "textarea":
         input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder || ""}">${formData[field.key] || ""}</textarea>`;
@@ -664,17 +715,13 @@ function renderBlock(blockIdx) {
       case "checkbox":
         input = `<div class="checkbox-group twocol">
           ${field.options.map(opt => {
-            const labelMatch = opt.label.match(/^([^(]+)\s*\(([^)]+)\)/);
-            let mainLabel = opt.label, subText = "";
-            if (labelMatch) {
-            mainLabel = labelMatch[1].trim();
-            subText = `<div class="option-example">${labelMatch[2].trim()}</div>`;
-}
+            const [mainLabel, hint] = splitLabelAndHint(opt.label || "");
             const checked = formData[field.key]?.includes(opt.value) ? 'checked' : '';
+            const hintHtml = hint ? `<div class="option-example">${hint}</div>` : "";
             return `<label class="checkbox-label">
               <input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}>
-              ${mainLabel}
-              ${subText}
+              <span>${mainLabel}</span>
+              ${hintHtml}
             </label>`;
           }).join("")}
         </div>`;
@@ -699,10 +746,7 @@ function renderBlock(blockIdx) {
         input = `<input type="text" id="${field.key}" name="${field.key}" value="${formData[field.key] || ""}" />`;
     }
 
-    // Layout: Label → Guidance → Input
-    const labelHtml = field.type !== "privacy"
-      ? `<label for="${field.key}"><b>${field.label}</b></label>`
-      : ""; // privacy hat eigenes Label
+    const labelHtml = field.type !== "privacy" ? `<label for="${field.key}"><b>${field.label}</b></label>` : "";
 
     return `<div class="form-group">
       ${labelHtml}
@@ -711,7 +755,6 @@ function renderBlock(blockIdx) {
     </div>`;
   }).join("");
 
-  // Navigation: group previous/next in flex container, show reset separately with smaller width
   form.innerHTML += `
     <div class="form-nav">
       <div class="nav-left">
@@ -725,15 +768,14 @@ function renderBlock(blockIdx) {
       </div>
     </div>
     <div id="feedback"></div>`;
-
 }
 
-function saveAutosave() {
-  localStorage.setItem(autosaveKey, JSON.stringify(formData));
-}
-function loadAutosave() {
-  formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
-}
+/* ============================================================================
+   Autosave / Events / Submit
+   ========================================================================== */
+
+function saveAutosave(){ localStorage.setItem(autosaveKey, JSON.stringify(formData)); }
+function loadAutosave(){ formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}"); }
 
 function getFieldValue(field) {
   switch (field.type) {
@@ -751,185 +793,131 @@ function getFieldValue(field) {
 function setFieldValues(blockIdx) {
   const block = blocks[blockIdx];
   for (const key of block.keys) {
-    const field = fields.find(f => f.key === key);
+    const field = findField(key);
     if (!field) continue;
     const el = document.getElementById(field.key);
     if (!el) continue;
+
     if (field.type === "checkbox") {
-      // Bei Checkboxen alle gespeicherten Werte wieder anhaken
-      if (formData[key]) {
-        formData[key].forEach(v => {
-          const box = document.querySelector(`input[name="${field.key}"][value="${v}"]`);
-          if (box) box.checked = true;
-        });
-      }
+      (formData[key] || []).forEach(v => {
+        const box = document.querySelector(`input[name="${field.key}"][value="${v}"]`);
+        if (box) box.checked = true;
+      });
     } else if (field.type === "slider") {
-      // Slider auf gespeicherten Wert setzen und Label aktualisieren
       const val = formData[key] ?? field.min ?? 1;
       el.value = val;
       if (el.nextElementSibling) el.nextElementSibling.innerText = val;
     } else if (field.type === "privacy") {
-      // Checkbox für Datenschutzhinweis setzen
       el.checked = formData[key] === true;
     } else {
-      // Für select, textarea und text inputs den gespeicherten Wert setzen
-      if (formData[key] !== undefined) {
-        el.value = formData[key];
-      }
+      if (formData[key] !== undefined) el.value = formData[key];
     }
   }
-}
-
-function blockIsValid(blockIdx) {
-  const block = blocks[blockIdx];
-  // Define optional keys: these fields are not mandatory and may be left blank
-  const optionalKeys = new Set([
-    "jahresumsatz",
-    "it_infrastruktur",
-    "interne_ki_kompetenzen",
-    "datenquellen"
-  ]);
-  return block.keys.every(key => {
-    const field = fields.find(f => f.key === key);
-    if (!field) return true;
-    // If the field is conditionally hidden, it's considered valid
-    if (field.showIf && !field.showIf(formData)) return true;
-    // Skip validation for optional fields
-    if (optionalKeys.has(key)) return true;
-    const val = formData[key];
-    // Checkbox fields (except optional ones) require at least one selection
-    if (field.type === "checkbox") return Array.isArray(val) && val.length > 0;
-    // Privacy checkbox must be checked on the last block
-    if (field.type === "privacy") return val === true;
-    // Other fields must have a non-empty value
-    return val !== undefined && val !== "";
-  });
 }
 
 function handleFormEvents() {
-document.getElementById("formbuilder").addEventListener("change", () => {
-  const block = blocks[currentBlock];
-  let needsRerender = false;
+  document.getElementById("formbuilder").addEventListener("change", () => {
+    const block = blocks[currentBlock];
+    let needsRerender = false;
 
-  for (const key of block.keys) {
-    const field = fields.find(f => f.key === key);
-    if (field) {
+    for (const key of block.keys) {
+      const field = findField(key);
+      if (!field) continue;
       const prev = formData[key];
       const curr = getFieldValue(field);
       formData[key] = curr;
-      if (prev !== curr && field.key === "unternehmensgroesse") {
-        needsRerender = true; // nur bei diesem Feld notwendig
-      }
+      // remove error marker when user fixes the field
+      markInvalid(key, false);
+
+      if (prev !== curr && field.key === "company_size") needsRerender = true;
     }
-  }
 
-  saveAutosave();
+    saveAutosave();
 
-  if (needsRerender) {
-    renderBlock(currentBlock);
-    setTimeout(() => {
-    setFieldValues(currentBlock);
-    handleFormEvents();
-    }, 20);
-  }
-}); // ⬅️ ✅ HIER die schließende Klammer für den EventListener
+    if (needsRerender) {
+      renderBlock(currentBlock);
+      setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
+    } else {
+      const fb = getFeedbackBox();
+      if (fb && fb.classList.contains('error')) { fb.innerHTML = ""; fb.style.display = 'none'; fb.classList.remove('error'); }
+    }
+  });
+
   document.getElementById("formbuilder").addEventListener("click", e => {
-    const feedback = document.getElementById("feedback");
+    const box = getFeedbackBox();
 
     if (e.target.id === "btn-next") {
-      // Update the values of the current block right before validation is performed.
       const block = blocks[currentBlock];
       for (const key of block.keys) {
-        const f = fields.find(x => x.key === key);
-        if (f) {
-          formData[key] = getFieldValue(f);
-        }
+        const f = findField(key);
+        if (f) formData[key] = getFieldValue(f);
       }
-      // Persist autosave of the current form data.
       saveAutosave();
-      // Validate all required fields for this block.
-      if (!blockIsValid(currentBlock)) {
-        feedback.innerHTML = `<div class="form-error">Please fill in all fields in this section.</div>`;
+
+      const missing = validateBlockDetailed(currentBlock);
+      if (missing.length) {
+        if (box) {
+          box.innerHTML = `<div class="form-error">Please fill in the following fields:<ul>${missing.map(m => `<li>${m}</li>`).join("")}</ul></div>`;
+          box.style.display = 'block'; box.classList.add('error');
+        }
+        const firstInvalid = document.querySelector('.invalid, .invalid-group');
+        if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
+      } else if (box) {
+        box.innerHTML = ""; box.style.display = 'none'; box.classList.remove('error');
       }
+
       currentBlock++;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrolls to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     if (e.target.id === "btn-prev") {
-      currentBlock--;
-      renderBlock(currentBlock);
+      currentBlock--; renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // ✅ scrollt nach oben
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Handle reset: clear saved data and restart the questionnaire from the beginning
     if (e.target.id === "btn-reset") {
-      // Remove autosaved data for the current user
       localStorage.removeItem(autosaveKey);
-      // Reset form data and start again from block 0
-      formData = {};
-      currentBlock = 0;
+      formData = {}; currentBlock = 0;
       renderBlock(currentBlock);
       setTimeout(() => setFieldValues(currentBlock), 20);
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
-    if (e.target.id === "submit-btn" || e.target.id === "btn-send") {
-      submitAllBlocks(); // ✅ wird jetzt auch korrekt ausgelöst
-    }
+    if (e.target.id === "submit-btn" || e.target.id === "btn-send") submitAllBlocks();
   });
 }
-
 
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
   renderBlock(currentBlock);
   setTimeout(() => {
     setFieldValues(currentBlock);
-    renderBlock(currentBlock); // ⬅️ neu!
-    setTimeout(() => {
-      setFieldValues(currentBlock);
-      handleFormEvents();
-    }, 20);
+    renderBlock(currentBlock);
+    setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
   }, 20);
 });
 
-
-
 function submitAllBlocks() {
-  const data = {};
-  fields.forEach(field => data[field.key] = formData[field.key]);
+  const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "en";
-
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
-
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify(data),
-    keepalive: true
-  })
-  .then(async (res) => {
-    if (res.status === 401) {
-      localStorage.removeItem("jwt");
-      window.location.href = "/login.html";
-      return;
-    }
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+    body: JSON.stringify(data), keepalive: true
+  }).then(async (res) => {
+    if (res.status === 401) { localStorage.removeItem("jwt"); window.location.href = "/login.html"; return; }
     window.location.href = "thankyou.html";
-  })
-  .catch(() => {
-    window.location.href = "thankyou.html";
-  });
+  }).catch(() => { window.location.href = "thankyou.html"; });
 }
 
-
+// showSuccess() unchanged
+// showSuccess() unverändert aus deiner Datei
 // === formbuilder.js: Erweiterung von showSuccess() ===
 function showSuccess(data) {
   // Remove autosave so the test user starts fresh next time
