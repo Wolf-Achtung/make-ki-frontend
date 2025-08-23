@@ -1,13 +1,3 @@
-// JWT-Check: nur eingeloggte User dürfen dieses Formular nutzen
-const token = localStorage.getItem("jwt");
-if (!token) {
-  document.getElementById("formbuilder").insertAdjacentHTML("beforeend",
-    `<div class="form-error" style="margin-top:12px">
-       Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>.
-     </div>`);
-  // wichtig: KEIN Redirect, nur abbrechen
-  throw new Error("Kein gültiger Token");
-}
 
 function getEmailFromJWT(token) {
   try {
@@ -955,45 +945,6 @@ function submitAllBlocks() {
   // try { localStorage.removeItem(autosaveKey); } catch(e){}
 }
 
-// showSuccess() unchanged
-// showSuccess() unverändert aus deiner Datei
-// === formbuilder.js: Erweiterung von showSuccess() ===
-function showSuccess(data) {
-  // Remove autosave so the test user starts fresh next time
-  localStorage.removeItem(autosaveKey);
-  const htmlContent = data?.html || "";
-  let userEmail = "";
-  try {
-    const token = localStorage.getItem("jwt");
-    if (token) {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      userEmail = payload.email || payload.sub || "";
-    }
-  } catch (err) {
-    userEmail = "";
-  }
-  // Trigger PDF generation and mail delivery via the PDF service
-  if (htmlContent) {
-    fetch("https://make-ki-pdfservice-production.up.railway.app/generate-pdf", {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/html",
-        "X-User-Email": userEmail
-      },
-      body: htmlContent
-    }).catch(() => {
-      // On error just ignore – admin will still get the PDF
-    });
-  }
-  // Show a confirmation message and mention the email delivery
-  document.getElementById("formbuilder").innerHTML = `
-    <h2>Thank you for your answers!</h2>
-    <div class="success-msg">
-      Your AI analysis is now being created.<br>
-      Once finished you will receive your individual report as a PDF by email.<br>
-    </div>
-  `;
-}
 // === TEXT OVERLAY (EN) – Full descriptions for all fields ===
 const TEXTS_EN = {
   branche: {
