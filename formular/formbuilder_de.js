@@ -633,16 +633,45 @@ window.addEventListener("DOMContentLoaded", () => {
 
 /* Submit */
 function submitAllBlocks() {
+  // Daten sammeln
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "de";
+
+  // UI sofort updaten: Danke-Info zeigen und Buttons deaktivieren
+  const form = document.getElementById("formbuilder");
+  if (form) {
+    // Buttons killen, um Doppelklicks zu vermeiden
+    form.querySelectorAll("button").forEach(b => { b.disabled = true; });
+
+    form.innerHTML = `
+      <h2>Vielen Dank für Ihre Angaben!</h2>
+      <div class="success-msg" style="margin-top:10px;">
+        Ihre KI-Analyse wird jetzt erstellt.<br>
+        Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail.<br>
+        Sie können dieses Fenster jetzt schließen.
+      </div>
+    `;
+  }
+
+  // Request im Hintergrund starten (keine Navigation mehr)
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
     body: JSON.stringify(data),
     keepalive: true
-  }).then(async (res) => {
-    if (res.status === 401) { localStorage.removeItem("jwt"); window.location.href = "/login.html"; return; }
-    window.location.href = "thankyou.html";
-  }).catch(() => { window.location.href = "thankyou.html"; });
+  }).then((res) => {
+    if (res.status === 401) {
+      // Token ungültig → auf Login schicken
+      localStorage.removeItem("jwt");
+      window.location.href = "/login.html";
+      return;
+    }
+    // Erfolgsfall: nichts weiter tun, UI zeigt bereits die Info
+  }).catch(() => {
+    // Fehlerfall: ebenfalls nichts weiter – die Admin-Mail/PDF wird separat gehandhabt
+  });
+
+  // Autosave entfernen, damit der nächste Start „frisch“ ist
+  //try { localStorage.removeItem(autosaveKey); } catch(e){}
 }

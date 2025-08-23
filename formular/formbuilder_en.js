@@ -905,16 +905,37 @@ window.addEventListener("DOMContentLoaded", () => {
 function submitAllBlocks() {
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "en";
+
+  const form = document.getElementById("formbuilder");
+  if (form) {
+    form.querySelectorAll("button").forEach(b => { b.disabled = true; });
+    form.innerHTML = `
+      <h2>Thank you for your answers!</h2>
+      <div class="success-msg" style="margin-top:10px;">
+        Your AI analysis is now being created.<br>
+        Once finished, you will receive your individual report as a PDF by e-mail.<br>
+        You can now close this window.
+      </div>
+    `;
+  }
+
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify(data), keepalive: true
-  }).then(async (res) => {
-    if (res.status === 401) { localStorage.removeItem("jwt"); window.location.href = "/login.html"; return; }
-    window.location.href = "thankyou.html";
-  }).catch(() => { window.location.href = "thankyou.html"; });
+    body: JSON.stringify(data),
+    keepalive: true
+  }).then((res) => {
+    if (res.status === 401) {
+      localStorage.removeItem("jwt");
+      window.location.href = "/login.html";
+      return;
+    }
+  }).catch(() => { /* ignore */ });
+
+  //try { localStorage.removeItem(autosaveKey); } catch(e){}
 }
+
 
 // showSuccess() unchanged
 // showSuccess() unverändert aus deiner Datei
