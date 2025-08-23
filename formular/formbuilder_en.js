@@ -1,7 +1,12 @@
-// JWT check: only logged-in users may use this form
+// JWT-Check: nur eingeloggte User dürfen dieses Formular nutzen
 const token = localStorage.getItem("jwt");
 if (!token) {
-    window.location.href = "/login.html";
+  document.getElementById("formbuilder").insertAdjacentHTML("beforeend",
+    `<div class="form-error" style="margin-top:12px">
+       Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>.
+     </div>`);
+  // wichtig: KEIN Redirect, nur abbrechen
+  throw new Error("Kein gültiger Token");
 }
 
 function getEmailFromJWT(token) {
@@ -928,7 +933,15 @@ function submitAllBlocks() {
   }).then((res) => {
     if (res.status === 401) {
       localStorage.removeItem("jwt");
-      window.location.href = "/login.html";
+      const formEl = document.getElementById("formbuilder");
+      if (formEl) {
+        formEl.insertAdjacentHTML("beforeend", `
+          <div class="form-error" style="margin-top:12px">
+            Your session has expired. 
+            <a href="/login.html">Please log in again</a> if you want to run another analysis.
+          </div>
+        `);
+      }
       return;
     }
   }).catch(() => { /* ignore */ });
@@ -976,3 +989,171 @@ function showSuccess(data) {
     </div>
   `;
 }
+// === TEXT OVERLAY (EN) – Full descriptions for all fields ===
+const TEXTS_EN = {
+  branche: {
+    label: "In which industry is your company active?",
+    description: "Your main industry influences benchmarks, tool recommendations and the analysis. Please select the core business for this report."
+  },
+  unternehmensgroesse: {
+    label: "How large is your company (number of employees)?",
+    description: "The size of your company influences recommendations, funding opportunities and benchmarks."
+  },
+  selbststaendig: {
+    label: "Legal form for a single person",
+    description: "Please choose the legal form that applies to you. This way you'll get evaluations tailored to your business situation."
+  },
+  bundesland: {
+    label: "State (regional funding opportunities)",
+    description: "Your location determines which funding, programmes and advisory services you can make use of."
+  },
+  hauptleistung: {
+    label: "What's your company's main product or core service?",
+    placeholder: "e.g. social media campaigns, CNC production of individual parts, tax consulting for start-ups",
+    description: "Describe your core offering as specifically as possible. Examples help us understand your positioning and tailor recommendations."
+  },
+  zielgruppen: {
+    label: "Which target groups or customer segments do you serve?",
+    description: "Which customer groups do you serve? Please select all target groups that apply (multiple selections possible)."
+  },
+  jahresumsatz: {
+    label: "Annual revenue (estimate)",
+    description: "Please estimate your annual revenue. This classification helps with benchmarks, funding programmes and recommendations."
+  },
+  it_infrastruktur: {
+    label: "How is your IT infrastructure currently organised?",
+    description: "Your answer helps us select suitable recommendations for security, integration and modern tools."
+  },
+  interne_ki_kompetenzen: {
+    label: "Do you have an internal AI/digitalisation team?",
+    description: "An internal competence team can accelerate processes. This information helps us recommend training and internal structures."
+  },
+  datenquellen: {
+    label: "Which types of data do you have available for AI projects and analyses?",
+    description: "Please select all data sources relevant to your company (multiple selections possible)."
+  },
+  digitalisierungsgrad: {
+    label: "How digital are your internal processes already? (1 = analogue, 10 = fully digital)",
+    description: "Rate the current state: 1 = mostly paper and manual processes, 10 = everything runs digitally and automatically."
+  },
+  prozesse_papierlos: {
+    label: "What proportion of your processes are paperless?",
+    description: "Roughly estimate: how much runs completely digital without paper files or printouts?"
+  },
+  automatisierungsgrad: {
+    label: "How high is the degree of automation in your workflows?",
+    description: "Are many work steps still manual, or does much run automatically (e.g. through AI, scripts or smart tools)?"
+  },
+  ki_einsatz: {
+    label: "Where is AI already being used in your company today?",
+    description: "Where do you already use artificial intelligence or automation? Select all areas that apply."
+  },
+  ki_knowhow: {
+    label: "How do you rate your team's internal AI know-how?",
+    description: "How proficient are you and your team on the topic of AI? Do you already use AI productively or do you have deeper expertise?"
+  },
+  projektziel: {
+    label: "What is the main objective of your next AI/digitalisation project?",
+    description: "What do you primarily want to achieve with your next project? Multiple selections possible."
+  },
+  ki_projekte: {
+    label: "Are there any ongoing or planned AI projects in your company?",
+    placeholder: "e.g. chatbot for customer enquiries, automated quote generation, text or image generators, analytics tools for sales",
+    description: "Describe current or planned projects as concretely as possible. Are there already ideas, experiments or pilot projects?"
+  },
+  ki_usecases: {
+    label: "Which AI use cases are you particularly interested in?",
+    description: "Which AI application areas interest you most? Multiple selections possible."
+  },
+  ki_potenzial: {
+    label: "Where do you see the greatest potential for AI in your company?",
+    placeholder: "e.g. faster reporting, personalised offers, cost reduction through automation, new services ...",
+    description: "Where do you see the greatest potential for AI in your company? Feel free to write freely – everything is welcome."
+  },
+  usecase_priority: {
+    label: "In which area should AI be introduced first?",
+    description: "Is there a department where AI is particularly urgently needed or offers the greatest potential?"
+  },
+  ki_geschaeftsmodell_vision: {
+    label: "How could AI fundamentally change your business model or industry?",
+    description: "What changes or new possibilities do you see in the long term through AI? This is about your bigger vision – whether concrete or visionary."
+  },
+  moonshot: {
+    label: "What would be a bold breakthrough – your AI vision in 3 years?",
+    description: "What would be your visionary AI future in 3 years? Think big."
+  },
+  datenschutzbeauftragter: {
+    label: "Do you have a data protection officer in your company?",
+    description: "A data protection officer is often mandatory – whether internal or external. What's your situation?"
+  },
+  technische_massnahmen: {
+    label: "Which technical data protection measures have you implemented?",
+    description: "Please indicate how comprehensively you protect your data technically (firewalls, backups, access restrictions etc.)."
+  },
+  folgenabschaetzung: {
+    label: "Has a data protection impact assessment (DPIA) been carried out for AI applications?",
+    description: "For many AI applications, a so-called 'DPIA' (data protection impact assessment) is required or recommended under the GDPR – e.g. when sensitive data, automated decisions or risks for data subjects are involved."
+  },
+  meldewege: {
+    label: "Are there defined reporting procedures for data protection incidents?",
+    description: "How do you ensure that data protection breaches are dealt with quickly and systematically?"
+  },
+  loeschregeln: {
+    label: "Are there clear rules for deleting or anonymising data?",
+    description: "Do you have defined procedures for legally compliant deletion or anonymisation of information such as employee data, customer enquiries, training data, etc.? This is important for AI compliance and the GDPR."
+  },
+  ai_act_kenntnis: {
+    label: "How well do you know the requirements of the EU AI Act?",
+    description: "The EU AI Act introduces many new obligations for AI applications. How well informed do you feel?"
+  },
+  ki_hemmnisse: {
+    label: "What is currently hindering your company's (further) use of AI?",
+    description: "Typical hurdles include uncertainty about data protection, lack of know-how or limited capacity. Select all points that apply to you."
+  },
+  bisherige_foerdermittel: {
+    label: "Have you already applied for and received funding for digitalisation or AI?",
+    description: "Whether national or regional funding for digitalisation, IT or AI: this information helps to suggest suitable follow-up programmes or new options."
+  },
+  interesse_foerderung: {
+    label: "Would targeted funding opportunities for your projects be of interest?",
+    description: "Would you like individual recommendations for funding programmes? If interested, we filter out suitable options – with no advertising or obligation."
+  },
+  erfahrung_beratung: {
+    label: "Have you already received advice on digitalisation/AI?",
+    description: "Have you already used external advice on AI, digitalisation or IT strategy – for example through funding projects, chambers, consultants or tech partners? This experience can strengthen your starting position."
+  },
+  investitionsbudget: {
+    label: "What budget do you plan for AI/digitalisation next year?",
+    description: "Even small budgets can deliver progress – funding programmes can additionally help. A rough estimate is enough."
+  },
+  marktposition: {
+    label: "How do you assess your position in the market?",
+    description: "This assessment helps to better classify your results in the report – for example in terms of speed of action, budget and potentials."
+  },
+  benchmark_wettbewerb: {
+    label: "Do you compare your digitalisation/AI readiness with competitors?",
+    description: "Such benchmarks help to classify your own position and identify opportunities."
+  },
+  innovationsprozess: {
+    label: "How do innovations arise in your company?",
+    description: "Whether new ideas, products or digital solutions: structured innovation paths – internal or external – make it easier to deploy AI in a targeted way and continue to develop it."
+  },
+  risikofreude: {
+    label: "How risk-taking is your company when it comes to innovation? (1 = not very, 5 = very)",
+    description: "Are you more safety-oriented or open to bold new paths when it comes to new ideas and innovation?"
+  },
+  datenschutz: {
+    description: "Please confirm that you have read the privacy notice. Your details will only be used to generate your personal evaluation."
+  }
+};
+
+function applyTexts_EN(fields) {
+  for (const f of fields) {
+    const t = TEXTS_EN[f.key];
+    if (!t) continue;
+    if (t.label) f.label = t.label;
+    if (t.description) f.description = t.description;
+    if (t.placeholder) f.placeholder = t.placeholder;
+  }
+}
+applyTexts_EN(fields);

@@ -1,7 +1,12 @@
 // JWT-Check: nur eingeloggte User dürfen dieses Formular nutzen
 const token = localStorage.getItem("jwt");
 if (!token) {
-  window.location.href = "/login.html";
+  document.getElementById("formbuilder").insertAdjacentHTML("beforeend",
+    `<div class="form-error" style="margin-top:12px">
+       Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>.
+     </div>`);
+  // wichtig: KEIN Redirect, nur abbrechen
+  throw new Error("Kein gültiger Token");
 }
 
 function getEmailFromJWT(token) {
@@ -662,9 +667,16 @@ function submitAllBlocks() {
     keepalive: true
   }).then((res) => {
     if (res.status === 401) {
-      // Token ungültig → auf Login schicken
       localStorage.removeItem("jwt");
-      window.location.href = "/login.html";
+      const formEl = document.getElementById("formbuilder");
+      if (formEl) {
+        formEl.insertAdjacentHTML("beforeend", `
+          <div class="form-error" style="margin-top:12px">
+            Ihre Sitzung ist abgelaufen. 
+            <a href="/login.html">Bitte melden Sie sich erneut an</a>, wenn Sie eine weitere Analyse durchführen möchten.
+          </div>
+        `);
+      }
       return;
     }
     // Erfolgsfall: nichts weiter tun, UI zeigt bereits die Info
@@ -675,3 +687,213 @@ function submitAllBlocks() {
   // Autosave entfernen, damit der nächste Start „frisch“ ist
   //try { localStorage.removeItem(autosaveKey); } catch(e){}
 }
+// === TEXT OVERLAY (DE) – nur Texte, keine Logik! ===
+const TEXTS_DE = {
+  branche: {
+    label: "In welcher Branche ist Ihr Unternehmen tätig?",
+    description: "Ihre Hauptbranche beeinflusst Benchmarks, Tool-Empfehlungen und die Auswertung. Wählen Sie bitte das Kerngeschäft, auf das Ihr Report zugeschnitten sein soll.",
+    options: {
+      marketing: "Marketing & Werbung",
+      beratung: "Beratung & Dienstleistungen",
+      it: "IT & Software",
+      finanzen: "Finanzen & Versicherungen",
+      handel: "Handel & E-Commerce",
+      bildung: "Bildung",
+      verwaltung: "Verwaltung",
+      gesundheit: "Gesundheit & Pflege",
+      bau: "Bauwesen & Architektur",
+      medien: "Medien & Kreativwirtschaft",
+      industrie: "Industrie & Produktion",
+      logistik: "Transport & Logistik"
+    }
+  },
+  unternehmensgroesse: {
+    label: "Wie groß ist Ihr Unternehmen (Mitarbeiter:innen)?",
+    description: "Die Unternehmensgröße beeinflusst Empfehlungen, Fördermöglichkeiten und Vergleichswerte.",
+    options: { solo: "1 (Solo-Selbstständig/Freiberuflich)", team: "2–10 (Kleines Team)", kmu: "11–100 (KMU)" }
+  },
+  selbststaendig: {
+    label: "Unternehmensform bei 1 Person",
+    description: "Bitte wählen Sie die zutreffende Rechtsform. So erhalten Sie Auswertungen, die genau auf Ihre Unternehmenssituation passen.",
+    options: {
+      freiberufler: "Freiberuflich/Selbstständig",
+      kapitalgesellschaft: "1-Personen-Kapitalgesellschaft (GmbH/UG)",
+      einzelunternehmer: "Einzelunternehmer (mit Gewerbe)",
+      sonstiges: "Sonstiges"
+    }
+  },
+  bundesland: {
+    label: "Bundesland (regionale Fördermöglichkeiten)",
+    description: "Ihr Standort entscheidet, welche Fördermittel, Programme und Beratungsangebote Sie optimal nutzen können."
+  },
+  hauptleistung: {
+    label: "Was ist das wichtigste Produkt oder die Hauptdienstleistung Ihres Unternehmens?",
+    placeholder: "z. B. Social Media Kampagnen, CNC-Fertigung von Einzelteilen, Steuerberatung für Startups",
+    description: "Beschreiben Sie Ihre zentrale Leistung möglichst konkret. Beispiele helfen uns, Ihre Positionierung und passende Empfehlungen besser zu verstehen."
+  },
+  zielgruppen: {
+    label: "Für welche Zielgruppen oder Kundensegmente bieten Sie Ihre Leistungen an?",
+    description: "Für welche Kundengruppen bieten Sie Leistungen an? Bitte wählen Sie alle Zielgruppen aus, die für Sie relevant sind (Mehrfachauswahl möglich).",
+    options: {
+      b2b: "B2B (Geschäftskunden)", b2c: "B2C (Endverbraucher)", kmu: "KMU (Kleine & mittlere Unternehmen)",
+      grossunternehmen: "Großunternehmen", selbststaendige: "Selbstständige/Freiberufler",
+      oeffentliche_hand: "Öffentliche Hand", privatpersonen: "Privatpersonen", startups: "Startups", andere: "Andere"
+    }
+  },
+  jahresumsatz: {
+    label: "Jahresumsatz (Schätzung)",
+    description: "Bitte schätzen Sie Ihren Jahresumsatz. Die Klassifizierung hilft bei Benchmarks, Förderprogrammen und Empfehlungen."
+  },
+  it_infrastruktur: {
+    label: "Wie ist Ihre IT-Infrastruktur aktuell organisiert?",
+    description: "Ihre Antwort hilft uns, passende Empfehlungen für Sicherheit, Integration und moderne Tools auszuwählen.",
+    options: {
+      cloud: "Cloud-basiert (z. B. Microsoft 365, Google Cloud …)",
+      on_premise: "Eigenes Rechenzentrum (On-Premises)",
+      hybrid: "Hybrid (Cloud + eigene Server)",
+      unklar: "Unklar / Noch offen"
+    }
+  },
+  interne_ki_kompetenzen: {
+    label: "Gibt es ein internes KI-/Digitalisierungsteam?",
+    description: "Ein internes Kompetenzteam kann Prozesse beschleunigen. Diese Angabe hilft bei der Empfehlung von Schulungen und internen Strukturen."
+  },
+  datenquellen: {
+    label: "Welche Datentypen stehen Ihnen für KI-Projekte und Analysen zur Verfügung?",
+    description: "Bitte wählen Sie alle Datenquellen aus, die für Ihr Unternehmen relevant sind (Mehrfachauswahl möglich)."
+  },
+  digitalisierungsgrad: {
+    label: "Wie digital sind Ihre internen Prozesse bereits? (1 = analog, 10 = voll digital)",
+    description: "Schätzen Sie den aktuellen Stand: 1 = vor allem Papier und manuelle Abläufe, 10 = alles läuft digital und automatisiert."
+  },
+  prozesse_papierlos: {
+    label: "Wie hoch ist der Anteil papierloser Prozesse in Ihrem Unternehmen?",
+    description: "Schätzen Sie grob: Wie viel läuft komplett digital ohne Papierakten oder Ausdrucke?"
+  },
+  automatisierungsgrad: {
+    label: "Wie hoch ist der Automatisierungsgrad Ihrer Arbeitsabläufe?",
+    description: "Sind viele Arbeitsschritte noch Handarbeit oder läuft vieles automatisch (z. B. durch KI, Scripte oder smarte Tools)?"
+  },
+  ki_einsatz: {
+    label: "Wo wird KI heute bereits in Ihrem Unternehmen eingesetzt?",
+    description: "Wo nutzen Sie bereits Künstliche Intelligenz oder Automatisierung? Wählen Sie alle Bereiche aus, die relevant sind."
+  },
+  ki_knowhow: {
+    label: "Wie schätzen Sie das interne KI-Know-how Ihres Teams ein?",
+    description: "Wie fit sind Sie und Ihr Team beim Thema KI? Nutzen Sie KI schon produktiv oder kennen Sie sich bereits tiefer aus?"
+  },
+  projektziel: {
+    label: "Welches Ziel steht bei Ihrem nächsten KI-/Digitalisierungsprojekt im Vordergrund?",
+    description: "Was möchten Sie mit Ihrem nächsten Vorhaben vorrangig erreichen? Mehrfachauswahl möglich."
+  },
+  ki_projekte: {
+    label: "Gibt es aktuell laufende oder geplante KI-Projekte in Ihrem Unternehmen?",
+    placeholder: "z. B. Chatbot, automatisierte Angebotserstellung, Generatoren, Analyse-Tools …",
+    description: "Beschreiben Sie laufende oder geplante Projekte möglichst konkret. Gibt es bereits Überlegungen, Experimente oder Pilotprojekte?"
+  },
+  ki_usecases: {
+    label: "Welche KI-Anwendungsfälle interessieren Sie besonders?",
+    description: "Welche KI-Anwendungsbereiche interessieren Sie besonders? Mehrfachauswahl möglich."
+  },
+  ki_potenzial: {
+    label: "Wo sehen Sie das größte Potenzial für KI in Ihrem Unternehmen?",
+    placeholder: "z. B. schnelleres Reporting, personalisierte Angebote, Kostenreduktion …",
+    description: "Wo sehen Sie für Ihr Unternehmen das größte Potenzial durch KI? Gerne frei formulieren – alles ist willkommen."
+  },
+  usecase_priority: {
+    label: "In welchem Bereich soll KI am ehesten zum Einsatz kommen?",
+    description: "Gibt es einen Bereich, in dem KI besonders dringend gebraucht wird oder das größte Potenzial bietet?"
+  },
+  ki_geschaeftsmodell_vision: {
+    label: "Wie könnte KI Ihr Geschäftsmodell oder Ihre Branche grundlegend verändern?",
+    description: "Welche Veränderungen oder neuen Möglichkeiten sehen Sie langfristig durch KI? Es geht um Ihre größere Vision."
+  },
+  moonshot: {
+    label: "Was wäre ein mutiger Durchbruch – Ihre KI-Vision in 3 Jahren?",
+    description: "Was wäre Ihre visionäre KI-Zukunft in 3 Jahren? Denken Sie groß."
+  },
+  datenschutzbeauftragter: {
+    label: "Gibt es eine:n Datenschutzbeauftragte:n in Ihrem Unternehmen?",
+    description: "Ein:e Datenschutzbeauftragte:r ist oft Pflicht – intern oder extern. Wie ist die Situation bei Ihnen?"
+  },
+  technische_massnahmen: {
+    label: "Welche technischen Schutzmaßnahmen für Daten sind bei Ihnen umgesetzt?",
+    description: "Bitte wählen Sie, wie umfassend Sie Ihre Daten technisch schützen (Firewalls, Backups, Zugriffsbeschränkungen etc.)."
+  }
+};
+Object.assign(TEXTS_DE, {
+  folgenabschaetzung: {
+    label: "Wurde für KI-Anwendungen eine DSGVO-Folgenabschätzung (DSFA) erstellt?",
+    description: "Bei vielen KI-Anwendungen ist eine „DSFA“ verpflichtend oder empfohlen – z. B. bei sensiblen Daten oder automatisierten Entscheidungen."
+  },
+  meldewege: {
+    label: "Gibt es definierte Meldewege bei Datenschutzvorfällen?",
+    description: "Wie stellen Sie sicher, dass bei Datenschutzverstößen schnell und systematisch gehandelt wird?"
+  },
+  loeschregeln: {
+    label: "Existieren klare Regeln zur Löschung oder Anonymisierung von Daten?",
+    description: "Haben Sie definierte Abläufe zur gesetzeskonformen Löschung/Anonymisierung (Mitarbeiter-, Kunden-, Trainingsdaten etc.)?"
+  },
+  ai_act_kenntnis: {
+    label: "Wie gut kennen Sie die Anforderungen des EU AI Act?",
+    description: "Der EU AI Act regelt viele neue Pflichten für KI-Anwendungen. Wie gut fühlen Sie sich informiert?"
+  },
+  ki_hemmnisse: {
+    label: "Was hindert Ihr Unternehmen aktuell am (weiteren) KI-Einsatz?",
+    description: "Typische Hürden: Datenschutz, Know-how, Zeit/Budget. Wählen Sie alle relevanten Punkte."
+  },
+  bisherige_foerdermittel: {
+    label: "Haben Sie bereits Fördermittel für Digitalisierung oder KI beantragt und erhalten?",
+    description: "Diese Angabe hilft, passende Anschlussprogramme oder neue Optionen vorzuschlagen."
+  },
+  interesse_foerderung: {
+    label: "Wären gezielte Fördermöglichkeiten für Ihre Projekte interessant?",
+    description: "Bei Interesse filtern wir passende Programme – ohne Werbung oder Verpflichtung."
+  },
+  erfahrung_beratung: {
+    label: "Gab es schon Beratung zu Digitalisierung/KI?",
+    description: "Externe Beratung (Förderprojekte, Kammern, Berater, Tech-Partner) kann die Ausgangslage stärken."
+  },
+  investitionsbudget: {
+    label: "Welches Budget planen Sie für KI/Digitalisierung im nächsten Jahr ein?",
+    description: "Schon kleine Budgets bringen Fortschritt. Förderprogramme können zusätzlich helfen."
+  },
+  marktposition: {
+    label: "Wie schätzen Sie Ihre Position im Markt?",
+    description: "Hilft, Tempo, Budget und Potenziale realistisch einzuordnen."
+  },
+  benchmark_wettbewerb: {
+    label: "Vergleichen Sie Ihre Digitalisierung/KI-Readiness mit Wettbewerbern?",
+    description: "Benchmarks helfen, die eigene Position einzuordnen und Chancen zu erkennen."
+  },
+  innovationsprozess: {
+    label: "Wie entstehen Innovationen in Ihrem Unternehmen?",
+    description: "Strukturierte Innovationswege – intern oder extern – erleichtern gezielten KI-Einsatz."
+  },
+  risikofreude: {
+    label: "Wie risikofreudig ist Ihr Unternehmen bei Innovationen? (1 = wenig, 5 = sehr)",
+    description: "Sind Sie eher sicherheitsorientiert oder offen für mutige, neue Wege?"
+  },
+  datenschutz: {
+    // label bleibt bewusst wie in der Datei (HTML-Link)
+    description: "Bitte bestätigen Sie die Datenschutzhinweise. Ihre Angaben werden ausschließlich zur Erstellung Ihrer persönlichen Auswertung genutzt."
+  }
+});
+
+// wendet die Texte feldweise an, ohne Logik zu verändern
+function applyTexts_DE(fields) {
+  for (const f of fields) {
+    const t = TEXTS_DE[f.key];
+    if (!t) continue;
+    if (t.label) f.label = t.label;
+    if (t.description) f.description = t.description;
+    if (t.placeholder) f.placeholder = t.placeholder;
+    if (t.options && Array.isArray(f.options)) {
+      f.options = f.options.map(opt => ({
+        ...opt,
+        label: t.options?.[opt.value] || opt.label
+      }));
+    }
+  }
+}
+applyTexts_DE(fields);
