@@ -1,13 +1,18 @@
-// JWT-Check: nur eingeloggte User dürfen dieses Formular nutzen
-const token = localStorage.getItem("jwt");
-if (!token) {
-  document.getElementById("formbuilder").insertAdjacentHTML("beforeend",
-    `<div class="form-error" style="margin-top:12px">
-       Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>.
-     </div>`);
-  // wichtig: KEIN Redirect, nur abbrechen
-  throw new Error("Kein gültiger Token");
+// JWT utils – Token immer dynamisch lesen
+function getToken() {
+  try { return localStorage.getItem("jwt") || null; } catch(e){ return null; }
 }
+
+function showSessionHint() {
+  const el = document.getElementById("formbuilder");
+  if (!el) return;
+  el.insertAdjacentHTML("beforeend",
+    `<div class="form-error" style="margin-top:12px">
+       Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>, 
+       wenn Sie eine weitere Analyse durchführen möchten.
+     </div>`);
+}
+
 
 function getEmailFromJWT(token) {
   try {
@@ -645,9 +650,7 @@ function submitAllBlocks() {
   // UI sofort updaten: Danke-Info zeigen und Buttons deaktivieren
   const form = document.getElementById("formbuilder");
   if (form) {
-    // Buttons killen, um Doppelklicks zu vermeiden
     form.querySelectorAll("button").forEach(b => { b.disabled = true; });
-
     form.innerHTML = `
       <h2>Vielen Dank für Ihre Angaben!</h2>
       <div class="success-msg" style="margin-top:10px;">
@@ -658,7 +661,19 @@ function submitAllBlocks() {
     `;
   }
 
-  // Request im Hintergrund starten (keine Navigation mehr)
+  // 🔐 Token JETZT frisch lesen (kein globales const token!)
+  const token = (function(){ try { return localStorage.getItem("jwt") || null; } catch(e){ return null; } })();
+  if (!token) {
+    // Danke-Screen bleibt stehen – nur Hinweis ergänzen
+    if (form) form.insertAdjacentHTML("beforeend",
+      `<div class="form-error" style="margin-top:12px">
+         Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>, 
+         wenn Sie eine weitere Analyse durchführen möchten.
+       </div>`);
+    return;
+  }
+
+  // Request im Hintergrund starten (kein Redirect)
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
@@ -667,25 +682,21 @@ function submitAllBlocks() {
     keepalive: true
   }).then((res) => {
     if (res.status === 401) {
-      localStorage.removeItem("jwt");
-      const formEl = document.getElementById("formbuilder");
-      if (formEl) {
-        formEl.insertAdjacentHTML("beforeend", `
-          <div class="form-error" style="margin-top:12px">
-            Ihre Sitzung ist abgelaufen. 
-            <a href="/login.html">Bitte melden Sie sich erneut an</a>, wenn Sie eine weitere Analyse durchführen möchten.
-          </div>
-        `);
-      }
+      try { localStorage.removeItem("jwt"); } catch(e){}
+      if (form) form.insertAdjacentHTML("beforeend",
+        `<div class="form-error" style="margin-top:12px">
+           Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>, 
+           wenn Sie eine weitere Analyse durchführen möchten.
+         </div>`);
       return;
     }
-    // Erfolgsfall: nichts weiter tun, UI zeigt bereits die Info
+    // Erfolgsfall: nichts weiter – UI zeigt bereits die Info
   }).catch(() => {
-    // Fehlerfall: ebenfalls nichts weiter – die Admin-Mail/PDF wird separat gehandhabt
+    // Fehlerfall ignorieren – Admin-Mail/PDF wird separat gehandhabt
   });
 
-  // Autosave entfernen, damit der nächste Start „frisch“ ist
-  //try { localStorage.removeItem(autosaveKey); } catch(e){}
+  // (Optional) Autosave NICHT löschen während der Testphase
+  // try { localStorage.removeItem(autosaveKey); } catch(e){}
 }
 // === TEXT OVERLAY (DE) – nur Texte, keine Logik! ===
 const TEXTS_DE = {

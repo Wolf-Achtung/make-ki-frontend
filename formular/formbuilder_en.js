@@ -924,6 +924,16 @@ function submitAllBlocks() {
     `;
   }
 
+  const token = (function(){ try { return localStorage.getItem("jwt") || null; } catch(e){ return null; } })();
+  if (!token) {
+    if (form) form.insertAdjacentHTML("beforeend",
+      `<div class="form-error" style="margin-top:12px">
+         Your session has expired. <a href="/login.html">Please log in again</a> 
+         if you want to run another analysis.
+       </div>`);
+    return;
+  }
+
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
@@ -932,23 +942,18 @@ function submitAllBlocks() {
     keepalive: true
   }).then((res) => {
     if (res.status === 401) {
-      localStorage.removeItem("jwt");
-      const formEl = document.getElementById("formbuilder");
-      if (formEl) {
-        formEl.insertAdjacentHTML("beforeend", `
-          <div class="form-error" style="margin-top:12px">
-            Your session has expired. 
-            <a href="/login.html">Please log in again</a> if you want to run another analysis.
-          </div>
-        `);
-      }
+      try { localStorage.removeItem("jwt"); } catch(e){}
+      if (form) form.insertAdjacentHTML("beforeend",
+        `<div class="form-error" style="margin-top:12px">
+           Your session has expired. <a href="/login.html">Please log in again</a> 
+           if you want to run another analysis.
+         </div>`);
       return;
     }
   }).catch(() => { /* ignore */ });
 
-  //try { localStorage.removeItem(autosaveKey); } catch(e){}
+  // try { localStorage.removeItem(autosaveKey); } catch(e){}
 }
-
 
 // showSuccess() unchanged
 // showSuccess() unverändert aus deiner Datei
