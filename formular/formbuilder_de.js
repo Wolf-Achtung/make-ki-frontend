@@ -13,54 +13,6 @@ function showSessionHint() {
      </div>`);
 }
 
-// ---------------------------------------------------------------------------
-// Branchen-Slug-Mapping
-// ---------------------------------------------------------------------------
-// branchSlugMap stores a mapping from industry names (German or English) to
-// internal slugs. The map is loaded asynchronously from branch_slug_map.json
-// via loadBranchSlugMap(). If the file cannot be loaded, branchSlugMap remains
-// empty and updateBranchSlug() will fall back to using the selected value.
-let branchSlugMap = {};
-
-/**
- * Load the branch-to-slug mapping from an external JSON file. If the file
- * cannot be fetched, the map remains empty. See branch_slug_map.json in the
- * frontend for expected keys and values.
- */
-async function loadBranchSlugMap() {
-  try {
-    const res = await fetch('branch_slug_map.json');
-    if (res.ok) {
-      branchSlugMap = await res.json();
-    }
-  } catch (e) {
-    branchSlugMap = {};
-  }
-}
-
-/**
- * Create or update a hidden <input> element that stores the slug corresponding
- * to the currently selected branch. This ensures the backend receives a
- * stable slug even if the visible label or option values change. If no
- * mapping exists for the current selection, the selection itself is used.
- */
-function updateBranchSlug() {
-  const currentBranch = formData?.branche;
-  const slug = (currentBranch && branchSlugMap[currentBranch]) || currentBranch || '';
-  let hidden = document.getElementById('branche_slug');
-  if (!hidden) {
-    hidden = document.createElement('input');
-    hidden.type = 'hidden';
-    hidden.id = 'branche_slug';
-    hidden.name = 'branche_slug';
-    const formEl = document.getElementById('formbuilder');
-    if (formEl) {
-      formEl.appendChild(hidden);
-    }
-  }
-  hidden.value = slug;
-}
-
 
 function getEmailFromJWT(token) {
   try {
@@ -615,9 +567,6 @@ function handleFormEvents() {
 
     saveAutosave();
 
-    // Keep branch_slug hidden field in sync with formData after any change.
-    updateBranchSlug();
-
     if (needsRerender) {
       renderBlock(currentBlock);
       setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
@@ -683,37 +632,19 @@ function handleFormEvents() {
 
 /* Init */
 window.addEventListener("DOMContentLoaded", () => {
-  // Restore previously entered data and load slug mappings.
   loadAutosave();
-  // Fetch the branch slug map and update hidden slug; ignore errors silently.
-  loadBranchSlugMap().then(() => {
-    updateBranchSlug();
-  });
   renderBlock(currentBlock);
   setTimeout(() => {
     setFieldValues(currentBlock);
-    // Update slug after initial values are set.
-    updateBranchSlug();
     renderBlock(currentBlock);
-    setTimeout(() => {
-      setFieldValues(currentBlock);
-      // Ensure slug is up-to-date before binding events.
-      updateBranchSlug();
-      handleFormEvents();
-    }, 20);
+    setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
   }, 20);
 });
 
 /* Submit */
 function submitAllBlocks() {
   // Daten sammeln
-  const data = {};
-  fields.forEach(field => data[field.key] = formData[field.key]);
-  // Include the derived branch slug so the backend knows which YAML to use.
-  const slugInput = document.getElementById('branche_slug');
-  if (slugInput && slugInput.value) {
-    data.branche_slug = slugInput.value;
-  }
+  const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "de";
 
   // UI sofort updaten: Danke-Info zeigen und Buttons deaktivieren

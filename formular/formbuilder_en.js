@@ -16,54 +16,6 @@ function isAdmin(token) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Industry Slug Mapping
-// ---------------------------------------------------------------------------
-// branchSlugMap stores a mapping from industry names (German or English) to
-// internal slugs. It is loaded asynchronously from branch_slug_map.json by
-// loadBranchSlugMap(). If loading fails, the map remains empty and
-// updateBranchSlug() will fall back to using the selected value.
-let branchSlugMap = {};
-
-/**
- * Load the industry-to-slug mapping from branch_slug_map.json. The file
- * should reside alongside this script in the frontend. In case of any
- * network error, the map remains empty.
- */
-async function loadBranchSlugMap() {
-  try {
-    const res = await fetch('branch_slug_map.json');
-    if (res.ok) {
-      branchSlugMap = await res.json();
-    }
-  } catch (e) {
-    branchSlugMap = {};
-  }
-}
-
-/**
- * Create or update a hidden <input> that stores the slug for the currently
- * selected industry. This helps ensure a consistent slug is sent to the
- * backend regardless of the label shown. If no mapping exists, the raw
- * selection value is used.
- */
-function updateBranchSlug() {
-  const currentBranch = formData?.branche;
-  const slug = (currentBranch && branchSlugMap[currentBranch]) || currentBranch || '';
-  let hidden = document.getElementById('branche_slug');
-  if (!hidden) {
-    hidden = document.createElement('input');
-    hidden.type = 'hidden';
-    hidden.id = 'branche_slug';
-    hidden.name = 'branche_slug';
-    const formEl = document.getElementById('formbuilder');
-    if (formEl) {
-      formEl.appendChild(hidden);
-    }
-  }
-  hidden.value = slug;
-}
-
 /* ============================================================================
    Helpers (validation & checkbox labels)
    ========================================================================== */
@@ -877,9 +829,6 @@ function handleFormEvents() {
 
     saveAutosave();
 
-    // Keep branch_slug hidden field in sync with formData after any change.
-    updateBranchSlug();
-
     if (needsRerender) {
       renderBlock(currentBlock);
       setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
@@ -939,35 +888,17 @@ function handleFormEvents() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  // Restore previously entered data and load slug mappings.
   loadAutosave();
-  // Fetch the branch slug map and update hidden slug; ignore errors silently.
-  loadBranchSlugMap().then(() => {
-    updateBranchSlug();
-  });
   renderBlock(currentBlock);
   setTimeout(() => {
     setFieldValues(currentBlock);
-    // Update slug after initial values are set.
-    updateBranchSlug();
     renderBlock(currentBlock);
-    setTimeout(() => {
-      setFieldValues(currentBlock);
-      // Ensure slug is up-to-date before binding events.
-      updateBranchSlug();
-      handleFormEvents();
-    }, 20);
+    setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
   }, 20);
 });
 
 function submitAllBlocks() {
-  const data = {};
-  fields.forEach(field => data[field.key] = formData[field.key]);
-  // Include the derived branch slug so the backend knows which YAML to use.
-  const slugInput = document.getElementById('branche_slug');
-  if (slugInput && slugInput.value) {
-    data.branche_slug = slugInput.value;
-  }
+  const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "en";
 
   const form = document.getElementById("formbuilder");
