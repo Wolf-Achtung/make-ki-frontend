@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>KI‑Readiness‑Check</title>
+  <title>KI-Status Check</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
     .form-container { background: #f5faff; border-radius: 22px; box-shadow: 0 2px 24px #00427512; padding: 30px 0 16px 0; max-width: 660px; margin: 40px auto 0 auto; }
@@ -17,36 +17,48 @@
 <body>
 <div id="progress"></div>
 <div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
-  <label for="lang-select" style="font-weight:600; font-size:1.01em;">Sprache:</label>
+  <label for="lang-select" style="font-weight:600; font-size:1.01em; ">Sprache: </label>
   <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em; width:auto; min-width:110px; max-width:190px;">
     <option value="de" selected>Deutsch</option>
     <option value="en">English</option>
   </select>
 </div>
 
-<div class="form-container">
-  <div class="form-header" style="text-align:center;">
-    <img src="ki-sicherheit-logo.png" alt="KI‑Sicherheit Logo" style="margin-bottom:10px;" />
-    <h1>KI‑Readiness‑Check</h1>
+  <div class="form-container">
+    <div class="form-header" style="text-align:center;">
+      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="margin-bottom:10px;" />
+      <h1>KI-Checkup-Report</h1>
+    </div>
+    <div id="formbuilder" style="max-width:600px;margin:0 auto;">
+      <!-- Formularfelder und Datenschutz werden von formbuilder.js erzeugt -->
+    </div>
+    <div id="feedback"></div>
   </div>
-  <div id="formbuilder" style="max-width:600px;margin:0 auto;"></div>
-  <div id="feedback"></div>
-</div>
+  <footer class="footer">
+    © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
+    Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br>
+    Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.<br>
+    Logos & Design sind urheberrechtlich geschützt. Nutzung & Bearbeitung der bereitgestellten Listen, Templates und Prompts ausschließlich für Kunden & Partner von KI-Sicherheit.jetzt.
+  </footer>
 
-<footer class="footer">
-  © KI‑Sicherheit.jetzt | TÜV‑zertifiziertes KI‑Management: Wolf Hohl 2025<br>
-  Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI‑Readiness‑ und Datenschutzberatung.<br>
-  Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.<br>
-  Logos & Design sind urheberrechtlich geschützt. Nutzung & Bearbeitung der bereitgestellten Listen, Templates und Prompts ausschließlich für Kunden & Partner von KI‑Sicherheit.jetzt.
-</footer>
-
+  <!-- Guidance-Helper, damit du description einfach nutzen kannst -->
+  <script>
+    window.renderGuidance = function(description) {
+      if (!description) return '';
+      return `<div class="guidance">${description}</div>`;
+    }
+  </script>
+  <script src="formbuilder_de.js"></script>
 <script>
   document.getElementById("lang-select").addEventListener("change", function(e) {
     const lang = e.target.value;
-    if (lang === "en") window.location.href = "index_en.html";
+    if (lang === "en") {
+      window.location.href = "index_en.html";
+    } else {
+      window.location.href = "index.html";
+    }
   });
 </script>
-<!-- Wichtig: deutsche Formbuilder‑Datei laden -->
-<script src="formbuilder_de.js"></script>
+
 </body>
 </html>
