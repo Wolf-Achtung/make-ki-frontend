@@ -61,7 +61,9 @@ function markInvalid(key, on = true) {
 // Detaillierte Validierung des aktuellen Blocks
 function validateBlockDetailed(blockIdx) {
   const block = blocks[blockIdx];
-  const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"]);
+  const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen",
+                             // Felder des neuen Ressourcen-Blocks sind optional und dürfen leer bleiben
+                             "zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"]);
   const missing = [];
   block.keys.forEach(k => markInvalid(k, false)); // alte Marker entfernen
 
@@ -364,6 +366,80 @@ const fields = [
   { key:"risikofreude", label:"Risikofreude (1–5)", type:"slider", min:1, max:5, step:1,
     description:"1 = wenig, 5 = sehr risikofreudig." },
 
+  // -------------------------------------------------------------------------
+  // Block 5b: Ressourcen & Präferenzen
+  // Neue Felder zur Erfassung von Zeitbudget, bestehenden Tools, regulierten Branchen,
+  // Trainingsinteressen und der Priorisierung der Vision.  Diese Informationen
+  // ermöglichen eine noch individuellere Auswertung und werden nur intern
+  // genutzt. Alle Felder sind optional.
+  {
+    key: "zeitbudget",
+    label: "Zeitbudget für KI-Projekte (Stunden/Woche)",
+    type: "select",
+    options: [
+      { value: "unter_2", label: "Unter 2 Stunden" },
+      { value: "2_5", label: "2–5 Stunden" },
+      { value: "5_10", label: "5–10 Stunden" },
+      { value: "ueber_10", label: "Über 10 Stunden" }
+    ],
+    description: "Wie viel Zeit steht Ihnen pro Woche für KI-Projekte zur Verfügung?"
+  },
+  {
+    key: "vorhandene_tools",
+    label: "Welche Tools nutzen Sie bereits im Unternehmen?",
+    type: "checkbox",
+    options: [
+      { value: "crm", label: "CRM-Systeme (z. B. HubSpot, Salesforce)" },
+      { value: "erp", label: "ERP-Systeme (z. B. SAP, Odoo)" },
+      { value: "projektmanagement", label: "Projektmanagement (z. B. Asana, Trello)" },
+      { value: "marketing_automation", label: "Marketing Automation (z. B. Mailchimp, HubSpot)" },
+      { value: "buchhaltung", label: "Buchhaltung (z. B. Lexware, Xero)" },
+      { value: "keine", label: "Keine / andere" }
+    ],
+    description: "Mehrfachauswahl möglich – hilft uns bei Integrations- und Tool-Empfehlungen."
+  },
+  {
+    key: "regulierte_branche",
+    label: "Gehört Ihr Unternehmen zu einer regulierten Branche?",
+    type: "checkbox",
+    options: [
+      { value: "gesundheit", label: "Gesundheit & Medizin" },
+      { value: "finanzen", label: "Finanzen & Versicherungen" },
+      { value: "oeffentlich", label: "Öffentlicher Sektor" },
+      { value: "recht", label: "Rechtliche Dienstleistungen" },
+      { value: "keine", label: "Keine dieser Branchen" }
+    ],
+    description: "Regulierte Branchen erfordern besondere Compliance-Maßnahmen (Mehrfachauswahl möglich)."
+  },
+  {
+    key: "trainings_interessen",
+    label: "Für welche KI-Trainings oder Themen interessieren Sie sich?",
+    type: "checkbox",
+    options: [
+      { value: "prompt_engineering", label: "Prompt Engineering" },
+      { value: "llm_basics", label: "LLM-Grundlagen" },
+      { value: "datenqualitaet_governance", label: "Datenqualität & Governance" },
+      { value: "automatisierung", label: "Automatisierung & Skripte" },
+      { value: "ethik_recht", label: "Ethische & rechtliche Grundlagen" },
+      { value: "keine", label: "Keine / noch unklar" }
+    ],
+    description: "Mehrfachauswahl möglich – dient der Auswahl passender Schulungen."
+  },
+  {
+    key: "vision_prioritaet",
+    label: "Welcher Aspekt Ihrer Vision ist Ihnen am wichtigsten?",
+    type: "select",
+    options: [
+      { value: "gpt_services", label: "GPT-basierte Services für KMU" },
+      { value: "kundenservice", label: "Kundenservice verbessern" },
+      { value: "datenprodukte", label: "Neue datenbasierte Produkte" },
+      { value: "prozessautomation", label: "Prozessautomatisierung" },
+      { value: "marktfuehrerschaft", label: "Marktführerschaft erreichen" },
+      { value: "keine_angabe", label: "Keine Angabe / weiß nicht" }
+    ],
+    description: "Hilft, Empfehlungen passend zu priorisieren."
+  },
+
   // Block 6: Datenschutz & Absenden (→ häufig fehlend)
   { key:"datenschutz", label:"Ich habe die <a href='datenschutz.html' onclick='window.open(this.href,\"DatenschutzPopup\",\"width=600,height=700\"); return false;'>Datenschutzhinweise</a> gelesen und bin einverstanden.", type:"privacy",
     description:"Ihre Angaben werden ausschließlich zur Erstellung Ihrer persönlichen Auswertung genutzt." }
@@ -377,6 +453,9 @@ const blocks = [
   { name:"Status Quo", keys:["digitalisierungsgrad","prozesse_papierlos","automatisierungsgrad","ki_einsatz","ki_knowhow"] },
   { name:"Ziele & Projekte", keys:["projektziel","ki_projekte","ki_usecases","ki_potenzial","usecase_priority","ki_geschaeftsmodell_vision","moonshot"] },
   { name:"Strategie & Governance", keys:["strategische_ziele","datenqualitaet","ai_roadmap","governance","innovationskultur"] },
+  // Neuer Block für Ressourcen & Präferenzen – enthält Zeitbudget, Tools, regulierte Branche,
+  // Trainingsinteressen und Vision-Priorität.  Alle Felder sind optional.
+  { name:"Ressourcen & Präferenzen", keys:["zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"] },
   { name:"Rechtliches & Förderung", keys:["datenschutzbeauftragter","technische_massnahmen","folgenabschaetzung","meldewege","loeschregeln","ai_act_kenntnis","ki_hemmnisse","bisherige_foerdermittel","interesse_foerderung","erfahrung_beratung","investitionsbudget","marktposition","benchmark_wettbewerb","innovationsprozess","risikofreude"] },
   { name:"Datenschutz & Absenden", keys:["datenschutz"] }
 ];

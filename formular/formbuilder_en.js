@@ -41,7 +41,9 @@ function markInvalid(key, on=true){
 }
 function validateBlockDetailed(blockIdx){
   const block = blocks[blockIdx];
-  const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"]);
+  const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen",
+                             // Fields in the new resources block are optional
+                             "time_capacity","existing_tools","regulated_industry","training_interests","vision_priority"]);
   const missing = [];
   block.keys.forEach(k => markInvalid(k,false));
   for (const key of block.keys){
@@ -538,6 +540,79 @@ const fields = [
     description: "Are you more safety‑oriented or open to bold new paths when it comes to new ideas and innovation?"
   },
 
+  // -------------------------------------------------------------------------
+  // New block: Resources & preferences
+  // Additional optional questions for time capacity, existing tools, regulated
+  // industries, training interests and vision priority. These help tailor
+  // recommendations even more precisely.
+  {
+    key: "time_capacity",
+    label: "How much time per week can you dedicate to AI projects?",
+    type: "select",
+    options: [
+      { value: "under_2", label: "Under 2 hours" },
+      { value: "2_5", label: "2–5 hours" },
+      { value: "5_10", label: "5–10 hours" },
+      { value: "over_10", label: "More than 10 hours" }
+    ],
+    description: "This helps tailor recommendations to your available time."
+  },
+  {
+    key: "existing_tools",
+    label: "Which systems or tools do you already use in your company?",
+    type: "checkbox",
+    options: [
+      { value: "crm", label: "CRM systems (e.g. HubSpot, Salesforce)" },
+      { value: "erp", label: "ERP systems (e.g. SAP, Odoo)" },
+      { value: "project_management", label: "Project management (e.g. Asana, Trello)" },
+      { value: "marketing_automation", label: "Marketing automation (e.g. Mailchimp, HubSpot)" },
+      { value: "accounting", label: "Accounting (e.g. Xero, Lexware)" },
+      { value: "none", label: "None / other" }
+    ],
+    description: "Multiple selections allowed – guides integration and tool suggestions."
+  },
+  {
+    key: "regulated_industry",
+    label: "Is your company part of a regulated industry?",
+    type: "checkbox",
+    options: [
+      { value: "healthcare", label: "Health & medicine" },
+      { value: "finance", label: "Finance & insurance" },
+      { value: "public", label: "Public sector" },
+      { value: "legal", label: "Legal services" },
+      { value: "none", label: "None of these industries" }
+    ],
+    description: "Regulated industries require special compliance measures (multiple selections possible)."
+  },
+  {
+    key: "training_interests",
+    label: "Which AI training topics interest you?",
+    type: "checkbox",
+    options: [
+      { value: "prompt_engineering", label: "Prompt engineering" },
+      { value: "llm_basics", label: "LLM basics" },
+      { value: "data_quality_governance", label: "Data quality & governance" },
+      { value: "automation_scripts", label: "Automation & scripts" },
+      { value: "ethics_regulation", label: "Ethical & legal foundations" },
+      { value: "none", label: "None / not sure" }
+    ],
+    description: "Multiple selections possible – helps recommend suitable training."
+  },
+  {
+    key: "vision_priority",
+    label: "Which aspect of your vision is most important to you?",
+    type: "select",
+    options: [
+      { value: "gpt_services", label: "GPT‑based services for SMEs" },
+      { value: "customer_service", label: "Improve customer service" },
+      { value: "data_products", label: "Create new data‑driven products" },
+      { value: "process_automation", label: "Automate processes" },
+      { value: "market_leadership", label: "Achieve market leadership" },
+      { value: "unspecified", label: "No preference / unsure" }
+    ],
+    description: "Helps prioritise recommendations."
+  },
+
   // --- New fields for Gold‑Standard: Strategy & Governance ---
   {
     key: "strategic_goals",
@@ -631,6 +706,13 @@ const blocks = [
   {
     name: "Strategy & Governance",
     keys: ["strategic_goals", "data_quality", "ai_roadmap", "governance", "innovation_culture"]
+  },
+  // New block for resources & preferences – collects optional information
+  // on time capacity, existing tools, regulated industries, training interests
+  // and vision priority to refine the report.
+  {
+    name: "Resources & preferences",
+    keys: ["time_capacity","existing_tools","regulated_industry","training_interests","vision_priority"]
   },
   {
     name: "Legal & funding",
