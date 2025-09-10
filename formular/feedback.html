@@ -60,48 +60,39 @@ const API_BASE = "https://make-ki-backend-neu-production.up.railway.app";
 
     <!-- 1. Gesamt-Nutzen -->
     <label for="hilfe" class="req" data-i18n="q_help_label">Wie hilfreich war der KI-Checkup insgesamt?</label>
-    <select name="hilfe" id="hilfe" required>
-      <!-- Werte bleiben DE-konsistent; Labels werden übersetzt -->
-      <option value="" data-i18n="opt_choose">Bitte wählen</option>
-      <option value="gar nicht hilfreich" data-i18n="opt_help_1">Gar nicht hilfreich</option>
-      <option value="eher wenig hilfreich" data-i18n="opt_help_2">Eher wenig hilfreich</option>
-      <option value="teils/teils" data-i18n="opt_help_3">Teils/teils</option>
-      <option value="ziemlich hilfreich" data-i18n="opt_help_4">Ziemlich hilfreich</option>
-      <option value="sehr hilfreich" data-i18n="opt_help_5">Sehr hilfreich</option>
-    </select>
+    <select name="hilfe" id="hilfe" required><option value="" data-i18n="opt_choose">Bitte wählen</option>
+<option value="gar nicht hilfreich" data-i18n="opt_help_1">Gar nicht hilfreich</option>
+<option value="eher wenig hilfreich" data-i18n="opt_help_2">Eher wenig hilfreich</option>
+<option value="teils/teils" data-i18n="opt_help_3">Teils/teils</option>
+<option value="ziemlich hilfreich" data-i18n="opt_help_4">Ziemlich hilfreich</option>
+<option value="sehr hilfreich" data-i18n="opt_help_5">Sehr hilfreich</option></select>
 
     <!-- 2. Verständlichkeit -->
     <label for="verstaendlich1" class="req" data-i18n="q_understand_analysis">Wie verständlich sind Analyse &amp; Auswertung?</label>
-    <select name="verstaendlich_analyse" id="verstaendlich1" required>
-      <option value="" data-i18n="opt_choose">Bitte wählen</option>
-      <option value="überhaupt nicht verständlich" data-i18n="opt_under_1">Überhaupt nicht verständlich</option>
-      <option value="eher schwer verständlich" data-i18n="opt_under_2">Eher schwer verständlich</option>
-      <option value="teils verständlich, teils nicht" data-i18n="opt_under_3">Teils verständlich, teils nicht</option>
-      <option value="größtenteils verständlich" data-i18n="opt_under_4">Größtenteils verständlich</option>
-      <option value="sehr verständlich" data-i18n="opt_under_5">Sehr verständlich</option>
-    </select>
+    <select name="verstaendlich_analyse" id="verstaendlich1" required><option value="" data-i18n="opt_choose">Bitte wählen</option>
+<option value="überhaupt nicht verständlich" data-i18n="opt_under_1">Überhaupt nicht verständlich</option>
+<option value="eher schwer verständlich" data-i18n="opt_under_2">Eher schwer verständlich</option>
+<option value="teils verständlich, teils nicht" data-i18n="opt_under_3">Teils verständlich, teils nicht</option>
+<option value="größtenteils verständlich" data-i18n="opt_under_4">Größtenteils verständlich</option>
+<option value="sehr verständlich" data-i18n="opt_under_5">Sehr verständlich</option></select>
 
     <!-- 3. Klarheit der Empfehlungen -->
     <label for="verstaendlich2" class="req" data-i18n="q_understand_recs">Sind die Handlungsempfehlungen klar formuliert?</label>
-    <select name="verstaendlich_empfehlung" id="verstaendlich2" required>
-      <option value="" data-i18n="opt_choose">Bitte wählen</option>
-      <option value="überhaupt nicht klar" data-i18n="opt_recs_1">Überhaupt nicht klar</option>
-      <option value="teilweise unklar" data-i18n="opt_recs_2">Teilweise unklar</option>
-      <option value="teils klar, teils unklar" data-i18n="opt_recs_3">Teils klar, teils unklar</option>
-      <option value="größtenteils klar" data-i18n="opt_recs_4">Größtenteils klar</option>
-      <option value="sehr klar und verständlich" data-i18n="opt_recs_5">Sehr klar und verständlich</option>
-    </select>
+    <select name="verstaendlich_empfehlung" id="verstaendlich2" required><option value="" data-i18n="opt_choose">Bitte wählen</option>
+<option value="überhaupt nicht klar" data-i18n="opt_recs_1">Überhaupt nicht klar</option>
+<option value="teilweise unklar" data-i18n="opt_recs_2">Teilweise unklar</option>
+<option value="teils klar, teils unklar" data-i18n="opt_recs_3">Teils klar, teils unklar</option>
+<option value="größtenteils klar" data-i18n="opt_recs_4">Größtenteils klar</option>
+<option value="sehr klar und verständlich" data-i18n="opt_recs_5">Sehr klar und verständlich</option></select>
 
     <!-- 4. Vertrauen/Seriosität -->
     <label for="vertrauen" class="req" data-i18n="q_trust">Wie seriös und vertrauenswürdig wirkt der Report?</label>
-    <select name="vertrauen" id="vertrauen" required>
-      <option value="" data-i18n="opt_choose">Bitte wählen</option>
-      <option value="überhaupt nicht seriös" data-i18n="opt_trust_1">Überhaupt nicht seriös</option>
-      <option value="eher wenig seriös" data-i18n="opt_trust_2">Eher wenig seriös</option>
-      <option value="mittelmäßig seriös" data-i18n="opt_trust_3">Mittelmäßig seriös</option>
-      <option value="ziemlich seriös" data-i18n="opt_trust_4">Ziemlich seriös</option>
-      <option value="sehr seriös und vertrauenswürdig" data-i18n="opt_trust_5">Sehr seriös und vertrauenswürdig</option>
-    </select>
+    <select name="vertrauen" id="vertrauen" required><option value="" data-i18n="opt_choose">Bitte wählen</option>
+<option value="überhaupt nicht seriös" data-i18n="opt_trust_1">Überhaupt nicht seriös</option>
+<option value="eher wenig seriös" data-i18n="opt_trust_2">Eher wenig seriös</option>
+<option value="mittelmäßig seriös" data-i18n="opt_trust_3">Mittelmäßig seriös</option>
+<option value="ziemlich seriös" data-i18n="opt_trust_4">Ziemlich seriös</option>
+<option value="sehr seriös und vertrauenswürdig" data-i18n="opt_trust_5">Sehr seriös und vertrauenswürdig</option></select>
 
     <!-- 5. Dauer -->
     <label for="dauer" class="req" data-i18n="q_length">Wie fandest du den Umfang?</label>
