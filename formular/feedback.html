@@ -33,6 +33,9 @@
     .ok{color:#0a7c3b;font-weight:700}
     .error{color:#b3002d;font-weight:700}
   </style>
+<script>
+const API_BASE = "https://make-ki-backend-neu-production.up.railway.app";
+</script>
 </head>
 <body>
   <header>
@@ -330,7 +333,7 @@
     // fallback timestamp
     if(!data.timestamp) data.timestamp = new Date().toISOString();
     try{
-      const res = await fetch("/feedback", {
+      const res = await fetch(`${API_BASE}/feedback`, {
         method:"POST",
         headers:{
           "Content-Type":"application/json",
