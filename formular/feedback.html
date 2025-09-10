@@ -1,208 +1,358 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Feedback · KI‑Status‑Report</title>
-  <link rel="stylesheet" href="./feedback-page.css" />
+  <title>Feedback – KI-Checkup</title>
+  <style>
+    :root{ --brand:#1c3763; --bg:#f7fbff; --bd:#dfe9f4; --muted:#5a6b83; }
+    body{max-width:820px;margin:2rem auto;padding:1rem;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    header{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.5rem}
+    h1{color:var(--brand);margin:0}
+    .lang{display:flex;gap:.4rem;align-items:center}
+    .lang button{border:1px solid var(--bd);background:#fff;border-radius:8px;padding:.35rem .6rem;cursor:pointer}
+    .lang button.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+    p.lead{color:var(--muted);margin:.35rem 0 1.25rem}
+    .card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:1.25rem;margin:1rem 0}
+    label{display:block;font-weight:600;margin:.75rem 0 .35rem}
+    select,textarea,input[type="text"],input[type="email"]{
+      width:100%;padding:.65rem .7rem;border:2px solid var(--bd);border-radius:8px;background:#fff
+    }
+    textarea{min-height:110px;resize:vertical}
+    .muted{color:var(--muted);font-size:.9rem}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .row > div{min-width:0}
+    .counter{font-size:.8rem;color:var(--muted);text-align:right;margin-top:.25rem}
+    button[type=submit]{
+      margin-top:1.2rem;padding:.85rem 1.25rem;font-size:1rem;background:var(--brand);
+      color:#fff;border:none;border-radius:8px;cursor:pointer;
+    }
+    button[type=submit]:hover{filter:brightness(1.05)}
+    .req::after{content:" *";color:#c00;font-weight:700}
+    .note{font-size:.85rem;color:var(--muted);margin-top:.25rem}
+    .ok{color:#0a7c3b;font-weight:700}
+    .error{color:#b3002d;font-weight:700}
+  </style>
 </head>
 <body>
-  <header class="brand-header">
-    <div class="brand-inner">
-      <img class="brand-logo" src="/assets/ki-sicherheit-logo.webp" alt="KI‑Sicherheit.jetzt" onerror="this.style.display='none'">
-      <div class="brand-texts">
-        <h1>Feedback zum KI‑Status‑Report</h1>
-        <p class="subtitle">2 Minuten · hilft uns, den Report noch wertvoller zu machen</p>
-      </div>
-      <div class="brand-badges" aria-hidden="true">
-        <img src="/assets/tuev-logo-transparent.webp" alt="" onerror="this.style.display='none'">
-        <img src="/assets/eu-ai.svg" alt="" onerror="this.style.display='none'">
-        <img src="/assets/dsgvo.svg" alt="" onerror="this.style.display='none'">
-      </div>
+  <header>
+    <h1 data-i18n="title">Feedback zum KI-Checkup-Report</h1>
+    <div class="lang">
+      <span class="muted" data-i18n="language">Sprache</span>
+      <button type="button" id="btn-de" class="active">DE</button>
+      <button type="button" id="btn-en">EN</button>
     </div>
   </header>
+  <p class="lead" data-i18n="lead">2 Minuten. Hilft uns, Sprache, Lesefluss und Handlungsempfehlungen weiter zu verbessern.</p>
 
-  <main class="form-shell">
-    <section class="form-container card">
-      <p class="intro">
-        Danke, dass du den KI‑Status‑Report getestet hast. Mit deinem kurzen Feedback
-        hilfst du uns, Sprache, Lesefluss und Handlungsempfehlungen weiter zu verbessern.
-      </p>
+  <form id="feedback-form" class="card" novalidate>
+    <!-- Hidden (vom JWT befüllt) -->
+    <input type="hidden" name="email" id="feedback-email"/>
+    <!-- Optional aus URL-Parametern -->
+    <input type="hidden" name="variant" id="variant"/>
+    <input type="hidden" name="report_version" id="report_version"/>
+    <!-- UI-Sprache für Auswertung -->
+    <input type="hidden" name="lang_ui" id="lang_ui" value="de"/>
+    <input type="hidden" name="timestamp" id="timestamp"/>
 
-      <form id="feedback-form" novalidate>
-        <input type="hidden" name="email" id="feedback-email" />
+    <!-- 1. Gesamt-Nutzen -->
+    <label for="hilfe" class="req" data-i18n="q_help_label">Wie hilfreich war der KI-Checkup insgesamt?</label>
+    <select name="hilfe" id="hilfe" required>
+      <!-- Werte bleiben DE-konsistent; Labels werden übersetzt -->
+      <option value="" data-i18n="opt_choose">Bitte wählen</option>
+      <option value="gar nicht hilfreich" data-i18n="opt_help_1">Gar nicht hilfreich</option>
+      <option value="eher wenig hilfreich" data-i18n="opt_help_2">Eher wenig hilfreich</option>
+      <option value="teils/teils" data-i18n="opt_help_3">Teils/teils</option>
+      <option value="ziemlich hilfreich" data-i18n="opt_help_4">Ziemlich hilfreich</option>
+      <option value="sehr hilfreich" data-i18n="opt_help_5">Sehr hilfreich</option>
+    </select>
 
-        <div class="form-group">
-          <label for="hilfe">Wie hilfreich war der KI‑Status‑Report insgesamt?</label>
-          <select name="hilfe" id="hilfe" required>
-            <option value="">Bitte wählen</option>
-            <option value="gar nicht hilfreich">Gar nicht hilfreich</option>
-            <option value="eher wenig hilfreich">Eher wenig hilfreich</option>
-            <option value="teils/teils">Teils/teils</option>
-            <option value="ziemlich hilfreich">Ziemlich hilfreich</option>
-            <option value="sehr hilfreich">Sehr hilfreich</option>
-          </select>
-          <small class="hint">Kurzer Gesamteindruck – aus dem Bauch heraus ist völlig ok.</small>
+    <!-- 2. Verständlichkeit -->
+    <label for="verstaendlich1" class="req" data-i18n="q_understand_analysis">Wie verständlich sind Analyse &amp; Auswertung?</label>
+    <select name="verstaendlich_analyse" id="verstaendlich1" required>
+      <option value="" data-i18n="opt_choose">Bitte wählen</option>
+      <option value="überhaupt nicht verständlich" data-i18n="opt_under_1">Überhaupt nicht verständlich</option>
+      <option value="eher schwer verständlich" data-i18n="opt_under_2">Eher schwer verständlich</option>
+      <option value="teils verständlich, teils nicht" data-i18n="opt_under_3">Teils verständlich, teils nicht</option>
+      <option value="größtenteils verständlich" data-i18n="opt_under_4">Größtenteils verständlich</option>
+      <option value="sehr verständlich" data-i18n="opt_under_5">Sehr verständlich</option>
+    </select>
+
+    <!-- 3. Klarheit der Empfehlungen -->
+    <label for="verstaendlich2" class="req" data-i18n="q_understand_recs">Sind die Handlungsempfehlungen klar formuliert?</label>
+    <select name="verstaendlich_empfehlung" id="verstaendlich2" required>
+      <option value="" data-i18n="opt_choose">Bitte wählen</option>
+      <option value="überhaupt nicht klar" data-i18n="opt_recs_1">Überhaupt nicht klar</option>
+      <option value="teilweise unklar" data-i18n="opt_recs_2">Teilweise unklar</option>
+      <option value="teils klar, teils unklar" data-i18n="opt_recs_3">Teils klar, teils unklar</option>
+      <option value="größtenteils klar" data-i18n="opt_recs_4">Größtenteils klar</option>
+      <option value="sehr klar und verständlich" data-i18n="opt_recs_5">Sehr klar und verständlich</option>
+    </select>
+
+    <!-- 4. Vertrauen/Seriosität -->
+    <label for="vertrauen" class="req" data-i18n="q_trust">Wie seriös und vertrauenswürdig wirkt der Report?</label>
+    <select name="vertrauen" id="vertrauen" required>
+      <option value="" data-i18n="opt_choose">Bitte wählen</option>
+      <option value="überhaupt nicht seriös" data-i18n="opt_trust_1">Überhaupt nicht seriös</option>
+      <option value="eher wenig seriös" data-i18n="opt_trust_2">Eher wenig seriös</option>
+      <option value="mittelmäßig seriös" data-i18n="opt_trust_3">Mittelmäßig seriös</option>
+      <option value="ziemlich seriös" data-i18n="opt_trust_4">Ziemlich seriös</option>
+      <option value="sehr seriös und vertrauenswürdig" data-i18n="opt_trust_5">Sehr seriös und vertrauenswürdig</option>
+    </select>
+
+    <!-- 5. Dauer -->
+    <label for="dauer" class="req" data-i18n="q_length">Wie fandest du den Umfang?</label>
+    <select name="dauer" id="dauer" required>
+      <option value="" data-i18n="opt_choose">Bitte wählen</option>
+      <option value="Okay so" data-i18n="opt_len_ok">Okay so</option>
+      <option value="Etwas lang, aber noch akzeptabel" data-i18n="opt_len_longish">Etwas lang, aber noch akzeptabel</option>
+      <option value="Viel zu lang" data-i18n="opt_len_too_long">Viel zu lang</option>
+    </select>
+
+    <!-- Freitexte -->
+    <div class="card" style="margin-top:1rem">
+      <label for="serio" data-i18n="q_trust_more">Was würde dein Vertrauen zusätzlich stärken?</label>
+      <textarea name="serio" id="serio" maxlength="1500" data-ph="ph_trust_more"></textarea>
+      <div class="counter" data-for="serio"></div>
+
+      <label for="textstellen" data-i18n="q_hard_parts">Gab es Textstellen, die zu kompliziert, zu lang oder unklar waren?</label>
+      <textarea name="textstellen" id="textstellen" maxlength="1500" data-ph="ph_hard_parts"></textarea>
+      <div class="counter" data-for="textstellen"></div>
+
+      <label for="unsicher" data-i18n="q_more_explain">Wo wünschst du dir zusätzliche Erklärungen oder Zwischenfragen?</label>
+      <textarea name="unsicher" id="unsicher" maxlength="1500" data-ph="ph_more_explain"></textarea>
+      <div class="counter" data-for="unsicher"></div>
+
+      <label for="features" data-i18n="q_features">Welche zusätzlichen Inhalte wären hilfreich (Tabellen, Diagramme, Beispiele …)?</label>
+      <textarea name="features" id="features" maxlength="1500" data-ph="ph_features"></textarea>
+      <div class="counter" data-for="features"></div>
+
+      <label for="freitext" data-i18n="q_free">Sonst noch Feedback, Ideen oder Vorschläge?</label>
+      <textarea name="freitext" id="freitext" maxlength="1500" data-ph="ph_free"></textarea>
+      <div class="counter" data-for="freitext"></div>
+      <p class="note" data-i18n="note_limit">Hinweis: max. 1 500 Zeichen pro Feld.</p>
+    </div>
+
+    <!-- Empfehlung (optional) -->
+    <div class="card">
+      <p class="muted" style="margin-top:0" data-i18n="ref_intro">Optional: Fällt dir jemand ein, der jetzt schon vom Checkup profitieren sollte?</p>
+      <div class="row">
+        <div>
+          <label for="tipp_name" data-i18n="ref_name">Name</label>
+          <input type="text" name="tipp_name" id="tipp_name" maxlength="120" placeholder="Vor- und Nachname"/>
         </div>
-
-        <div class="form-group">
-          <label for="verstaendlich1">Wie verständlich sind Analyse & Auswertung?</label>
-          <select name="verstaendlich_analyse" id="verstaendlich1" required>
-            <option value="">Bitte wählen</option>
-            <option value="überhaupt nicht verständlich">Überhaupt nicht verständlich</option>
-            <option value="eher schwer verständlich">Eher schwer verständlich</option>
-            <option value="teils verständlich, teils nicht">Teils verständlich, teils nicht</option>
-            <option value="größtenteils verständlich">Größtenteils verständlich</option>
-            <option value="sehr verständlich">Sehr verständlich</option>
-          </select>
+        <div>
+          <label for="tipp_firma" data-i18n="ref_company">Unternehmen</label>
+          <input type="text" name="tipp_firma" id="tipp_firma" maxlength="120" placeholder="Unternehmen"/>
         </div>
+      </div>
+      <label for="tipp_email" data-i18n="ref_email">E-Mail</label>
+      <input type="email" name="tipp_email" id="tipp_email" maxlength="160" placeholder="E-Mail-Adresse"/>
+    </div>
 
-        <div class="form-group">
-          <label for="verstaendlich2">Sind die konkreten Handlungsempfehlungen klar?</label>
-          <select name="verstaendlich_empfehlung" id="verstaendlich2" required>
-            <option value="">Bitte wählen</option>
-            <option value="überhaupt nicht klar">Überhaupt nicht klar</option>
-            <option value="teilweise unklar">Teilweise unklar</option>
-            <option value="teils klar, teils unklar">Teils klar, teils unklar</option>
-            <option value="größtenteils klar">Größtenteils klar</option>
-            <option value="sehr klar und verständlich">Sehr klar und verständlich</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="vertrauen">Wie seriös und vertrauenswürdig wirkt der Report?</label>
-          <select name="vertrauen" id="vertrauen" required>
-            <option value="">Bitte wählen</option>
-            <option value="überhaupt nicht seriös">Überhaupt nicht seriös</option>
-            <option value="eher wenig seriös">Eher wenig seriös</option>
-            <option value="mittelmäßig seriös">Mittelmäßig seriös</option>
-            <option value="ziemlich seriös">Ziemlich seriös</option>
-            <option value="sehr seriös und vertrauenswürdig">Sehr seriös und vertrauenswürdig</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="serio">Falls „unseriös“: Was würde Vertrauen stärken?</label>
-          <textarea name="serio" id="serio" placeholder="Dein Vorschlag (optional)"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="textstellen">Gab es Textstellen, die zu kompliziert oder zu lang sind?</label>
-          <textarea name="textstellen" id="textstellen" placeholder="Kurzer Hinweis (optional)"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="dauer">Wie fandest du den Umfang des Fragebogens?</label>
-          <select name="dauer" id="dauer" required>
-            <option value="">Bitte wählen</option>
-            <option>Okay so</option>
-            <option>Etwas lang, aber noch akzeptabel</option>
-            <option>Viel zu lang</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="unsicher">Gab es Stellen, zu denen du gern Rückfragen gestellt hättest?</label>
-          <textarea name="unsicher" id="unsicher" placeholder="Dein Feedback (optional)"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="features">Welche zusätzlichen Inhalte/Features wünschst du dir?</label>
-          <textarea name="features" id="features" placeholder="z. B. Benchmarks, ROI-Schätzung, Praxisbeispiel … (optional)"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="freitext">Sonst noch Feedback, Ideen oder Vorschläge?</label>
-          <textarea name="freitext" id="freitext" placeholder="Alles, was dir einfällt (optional)"></textarea>
-        </div>
-
-        <div class="form-group referral">
-          <p class="label-like">Wem sollten wir vom KI‑Status‑Report erzählen?</p>
-          <div class="grid-2">
-            <div>
-              <label for="tipp_name">Name</label>
-              <input type="text" name="tipp_name" id="tipp_name" placeholder="Vor- und Nachname" />
-            </div>
-            <div>
-              <label for="tipp_firma">Unternehmen</label>
-              <input type="text" name="tipp_firma" id="tipp_firma" placeholder="Unternehmen" />
-            </div>
-          </div>
-          <label for="tipp_email">E‑Mail</label>
-          <input type="email" name="tipp_email" id="tipp_email" placeholder="E‑Mail-Adresse" />
-        </div>
-
-        <div class="privacy-section">
-          <label>
-            <input type="checkbox" id="privacy-ok" required />
-            Ich bin einverstanden, dass mein Feedback intern ausgewertet wird (DSGVO-konform, keine Weitergabe an Dritte).
-          </label>
-        </div>
-
-        <button type="submit" class="btn-primary">Feedback absenden</button>
-        <p id="form-msg" class="feedback" role="alert" aria-live="polite" style="display:none;"></p>
-      </form>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="lizenz">© 2025 KI‑Sicherheit.jetzt · DSGVO & EU‑AI‑Act‑ready</div>
-  </footer>
+    <button type="submit" data-i18n="btn_submit">Feedback absenden</button>
+    <p id="status" class="muted" aria-live="polite" style="margin-top:.6rem"></p>
+  </form>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const token = localStorage.getItem("jwt");
-      if (!token) {
-        window.location.href = "/login.html";
-        return;
-      }
-      function getEmailFromJWT(token) {
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          return payload.email || payload.sub || null;
-        } catch (e) { return null; }
-      }
-      const email = getEmailFromJWT(token);
-      const emailInput = document.getElementById("feedback-email");
-      if (emailInput && email) emailInput.value = email;
+  // i18n dictionary (labels only; option values remain German for canonical DB categories)
+  const I18N = {
+    de: {
+      title: "Feedback zum KI-Checkup-Report",
+      language: "Sprache",
+      lead: "2 Minuten. Hilft uns, Sprache, Lesefluss und Handlungsempfehlungen weiter zu verbessern.",
+      q_help_label: "Wie hilfreich war der KI-Checkup insgesamt?",
+      q_understand_analysis: "Wie verständlich sind Analyse & Auswertung?",
+      q_understand_recs: "Sind die Handlungsempfehlungen klar formuliert?",
+      q_trust: "Wie seriös und vertrauenswürdig wirkt der Report?",
+      q_length: "Wie fandest du den Umfang?",
+      q_trust_more: "Was würde dein Vertrauen zusätzlich stärken?",
+      q_hard_parts: "Gab es Textstellen, die zu kompliziert, zu lang oder unklar waren?",
+      q_more_explain: "Wo wünschst du dir zusätzliche Erklärungen oder Zwischenfragen?",
+      q_features: "Welche zusätzlichen Inhalte wären hilfreich (Tabellen, Diagramme, Beispiele …)?",
+      q_free: "Sonst noch Feedback, Ideen oder Vorschläge?",
+      ref_intro: "Optional: Fällt dir jemand ein, der jetzt schon vom Checkup profitieren sollte?",
+      ref_name: "Name",
+      ref_company: "Unternehmen",
+      ref_email: "E-Mail",
+      note_limit: "Hinweis: max. 1 500 Zeichen pro Feld.",
+      btn_submit: "Feedback absenden",
+      opt_choose: "Bitte wählen",
+      opt_help_1: "Gar nicht hilfreich",
+      opt_help_2: "Eher wenig hilfreich",
+      opt_help_3: "Teils/teils",
+      opt_help_4: "Ziemlich hilfreich",
+      opt_help_5: "Sehr hilfreich",
+      opt_under_1: "Überhaupt nicht verständlich",
+      opt_under_2: "Eher schwer verständlich",
+      opt_under_3: "Teils verständlich, teils nicht",
+      opt_under_4: "Größtenteils verständlich",
+      opt_under_5: "Sehr verständlich",
+      opt_recs_1: "Überhaupt nicht klar",
+      opt_recs_2: "Teilweise unklar",
+      opt_recs_3: "Teils klar, teils unklar",
+      opt_recs_4: "Größtenteils klar",
+      opt_recs_5: "Sehr klar und verständlich",
+      opt_trust_1: "Überhaupt nicht seriös",
+      opt_trust_2: "Eher wenig seriös",
+      opt_trust_3: "Mittelmäßig seriös",
+      opt_trust_4: "Ziemlich seriös",
+      opt_trust_5: "Sehr seriös und vertrauenswürdig",
+      opt_len_ok: "Okay so",
+      opt_len_longish: "Etwas lang, aber noch akzeptabel",
+      opt_len_too_long: "Viel zu lang",
+      ph_trust_more: "z. B. mehr Quellenangaben, Benchmarks, Beispiele …",
+      ph_hard_parts: "Bitte kurz zitieren oder beschreiben, was genau unklar war …",
+      ph_more_explain: "z. B. bei der Förderlogik, Roadmap, Tools …",
+      ph_features: "Deine Ideen – gerne konkret (wo, was, wozu)",
+      ph_free: "Alles, was dir noch wichtig ist …",
+      sent_ok: "✅ Danke! Feedback gesendet.",
+      sent_err: "Fehler beim Absenden. Bitte später erneut versuchen.",
+      net_err: "Netzwerkfehler. Bitte später erneut versuchen."
+    },
+    en: {
+      title: "Feedback on the AI Checkup Report",
+      language: "Language",
+      lead: "2 minutes. Helps us improve wording, flow, and actionable guidance.",
+      q_help_label: "How helpful was the AI Checkup overall?",
+      q_understand_analysis: "How clear are the analysis & results?",
+      q_understand_recs: "Are the action recommendations clearly written?",
+      q_trust: "How credible and trustworthy does the report feel?",
+      q_length: "How was the overall length?",
+      q_trust_more: "What would further increase your trust?",
+      q_hard_parts: "Any parts that were too complex, too long, or unclear?",
+      q_more_explain: "Where would you like extra explanations or prompts?",
+      q_features: "Which additional elements would help (tables, charts, examples…)?",
+      q_free: "Anything else we should know?",
+      ref_intro: "Optional: Anyone who should try the checkup now?",
+      ref_name: "Name",
+      ref_company: "Company",
+      ref_email: "Email",
+      note_limit: "Note: max 1,500 characters per field.",
+      btn_submit: "Submit feedback",
+      opt_choose: "Please choose",
+      opt_help_1: "Not helpful at all",
+      opt_help_2: "Rather unhelpful",
+      opt_help_3: "So-so",
+      opt_help_4: "Quite helpful",
+      opt_help_5: "Very helpful",
+      opt_under_1: "Not understandable at all",
+      opt_under_2: "Rather hard to understand",
+      opt_under_3: "Partly understandable",
+      opt_under_4: "Mostly understandable",
+      opt_under_5: "Very understandable",
+      opt_recs_1: "Not clear at all",
+      opt_recs_2: "Partly unclear",
+      opt_recs_3: "Partly clear, partly unclear",
+      opt_recs_4: "Mostly clear",
+      opt_recs_5: "Very clear and understandable",
+      opt_trust_1: "Not credible at all",
+      opt_trust_2: "Rather not credible",
+      opt_trust_3: "Moderately credible",
+      opt_trust_4: "Quite credible",
+      opt_trust_5: "Very credible & trustworthy",
+      opt_len_ok: "Fine as is",
+      opt_len_longish: "A bit long but still OK",
+      opt_len_too_long: "Far too long",
+      ph_trust_more: "e.g., more sources, benchmarks, examples…",
+      ph_hard_parts: "Please quote or describe what was unclear…",
+      ph_more_explain: "e.g., funding logic, roadmap, tools…",
+      ph_features: "Your ideas—be specific (where, what, why)",
+      ph_free: "Anything else that matters to you…",
+      sent_ok: "✅ Thanks! Feedback submitted.",
+      sent_err: "Submit failed. Please try again later.",
+      net_err: "Network error. Please try again later."
+    }
+  };
 
-      const form = document.getElementById("feedback-form");
-      const msg  = document.getElementById("form-msg");
-
-      form.addEventListener("submit", async function(e) {
-        e.preventDefault();
-        if (!document.getElementById("privacy-ok").checked) {
-          msg.textContent = "Bitte Datenschutzhinweis bestätigen.";
-          msg.classList.add("error");
-          msg.style.display = "block";
-          return;
-        }
-        const formData = new FormData(form);
-        const data = {}; formData.forEach((v, k) => data[k] = v);
-
-        try {
-          const res = await fetch('https://make-ki-backend-neu-production.up.railway.app/feedback', {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { "Authorization": "Bearer " + token } : {})
-            },
-            body: JSON.stringify(data)
-          });
-          if (res.ok) {
-            window.location.href = "danke.html";
-          } else {
-            msg.textContent = "Fehler beim Absenden. Bitte später erneut versuchen.";
-            msg.classList.add("error");
-            msg.style.display = "block";
-          }
-        } catch(err) {
-          msg.textContent = "Netzwerkproblem. Bitte später erneut versuchen.";
-          msg.classList.add("error");
-          msg.style.display = "block";
-        }
-      });
+  function setLang(lang){
+    const root = document.documentElement;
+    root.setAttribute("lang", lang);
+    root.dataset.lang = lang;
+    document.getElementById("lang_ui").value = lang;
+    document.getElementById("btn-de").classList.toggle("active", lang==="de");
+    document.getElementById("btn-en").classList.toggle("active", lang==="en");
+    const dict = I18N[lang] || I18N.de;
+    // translate text nodes
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const k = el.getAttribute("data-i18n");
+      if(dict[k]) el.textContent = dict[k];
     });
+    // placeholders for textareas
+    document.querySelectorAll("textarea[data-ph]").forEach(el=>{
+      const phKey = el.getAttribute("data-ph");
+      if(dict[phKey]) el.placeholder = dict[phKey];
+    });
+  }
+
+  function getParam(name){ return new URLSearchParams(location.search).get(name) }
+  // Prefill variant / report_version
+  (function initMeta(){
+    const variant = getParam("variant");
+    if(variant) document.getElementById("variant").value = variant;
+    const rv = getParam("report_version") || getParam("rv");
+    if(rv) document.getElementById("report_version").value = rv;
+    document.getElementById("timestamp").value = new Date().toISOString();
+  })();
+
+  // JWT → email
+  function getEmailFromJWT(token){
+    try{ const p = JSON.parse(atob(token.split(".")[1])); return p.email || p.sub || null }catch(e){ return null }
+  }
+  const token = localStorage.getItem("jwt");
+  const email = token ? getEmailFromJWT(token) : null;
+  if(email) document.getElementById("feedback-email").value = email;
+
+  // counters
+  document.querySelectorAll(".counter").forEach(c=>{
+    const id=c.getAttribute("data-for"); const el=document.getElementById(id);
+    const max=Number(el.getAttribute("maxlength")||1500);
+    const upd=()=>c.textContent=`${el.value.length}/${max}`;
+    el.addEventListener("input",upd); upd();
+  });
+
+  // language: from ?lang= , localStorage, or browser
+  (function initLang(){
+    const q = (getParam("lang")||"").toLowerCase();
+    const saved = localStorage.getItem("ui_lang");
+    const guess = (navigator.language||"de").toLowerCase().startsWith("en") ? "en" : "de";
+    const lang = q==="en"||q==="de" ? q : (saved||guess);
+    setLang(lang);
+  })();
+  document.getElementById("btn-de").addEventListener("click", ()=>{ setLang("de"); localStorage.setItem("ui_lang","de"); });
+  document.getElementById("btn-en").addEventListener("click", ()=>{ setLang("en"); localStorage.setItem("ui_lang","en"); });
+
+  // submit
+  document.getElementById("feedback-form").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const status = document.getElementById("status");
+    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
+    // fallback timestamp
+    if(!data.timestamp) data.timestamp = new Date().toISOString();
+    try{
+      const res = await fetch("/feedback", {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          ...(token ? { "Authorization":"Bearer "+token } : {})
+        },
+        body: JSON.stringify(data)
+      });
+      const lang = document.documentElement.dataset.lang || "de";
+      const dict = I18N[lang] || I18N.de;
+      if(res.ok){
+        status.innerHTML = '<span class="ok">'+dict.sent_ok+'</span>';
+      }else{
+        status.innerHTML = '<span class="error">'+dict.sent_err+'</span>';
+        console.error("Feedback error:", res.status, await res.text());
+      }
+    }catch(err){
+      const lang = document.documentElement.dataset.lang || "de";
+      const dict = I18N[lang] || I18N.de;
+      status.innerHTML = '<span class="error">'+dict.net_err+'</span>';
+      console.error(err);
+    }
+  });
   </script>
 </body>
 </html>
