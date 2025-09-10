@@ -148,205 +148,57 @@ const API_BASE = "https://make-ki-backend-neu-production.up.railway.app";
     <p id="status" class="muted" aria-live="polite" style="margin-top:.6rem"></p>
   </form>
 
-  <script>
-  // i18n dictionary (labels only; option values remain German for canonical DB categories)
-  const I18N = {
+ <script>
+(function () {
+  // gewünschte Reihenfolge (best → worst)
+  const ORDER = {
     de: {
-      title: "Feedback zum KI-Checkup-Report",
-      language: "Sprache",
-      lead: "2 Minuten. Hilft uns, Sprache, Lesefluss und Handlungsempfehlungen weiter zu verbessern.",
-      q_help_label: "Wie hilfreich war der KI-Checkup insgesamt?",
-      q_understand_analysis: "Wie verständlich sind Analyse & Auswertung?",
-      q_understand_recs: "Sind die Handlungsempfehlungen klar formuliert?",
-      q_trust: "Wie seriös und vertrauenswürdig wirkt der Report?",
-      q_length: "Wie fandest du den Umfang?",
-      q_trust_more: "Was würde dein Vertrauen zusätzlich stärken?",
-      q_hard_parts: "Gab es Textstellen, die zu kompliziert, zu lang oder unklar waren?",
-      q_more_explain: "Wo wünschst du dir zusätzliche Erklärungen oder Zwischenfragen?",
-      q_features: "Welche zusätzlichen Inhalte wären hilfreich (Tabellen, Diagramme, Beispiele …)?",
-      q_free: "Sonst noch Feedback, Ideen oder Vorschläge?",
-      ref_intro: "Optional: Fällt dir jemand ein, der jetzt schon vom Checkup profitieren sollte?",
-      ref_name: "Name",
-      ref_company: "Unternehmen",
-      ref_email: "E-Mail",
-      note_limit: "Hinweis: max. 1 500 Zeichen pro Feld.",
-      btn_submit: "Feedback absenden",
-      opt_choose: "Bitte wählen",
-      opt_help_1: "Gar nicht hilfreich",
-      opt_help_2: "Eher wenig hilfreich",
-      opt_help_3: "Teils/teils",
-      opt_help_4: "Ziemlich hilfreich",
-      opt_help_5: "Sehr hilfreich",
-      opt_under_1: "Überhaupt nicht verständlich",
-      opt_under_2: "Eher schwer verständlich",
-      opt_under_3: "Teils verständlich, teils nicht",
-      opt_under_4: "Größtenteils verständlich",
-      opt_under_5: "Sehr verständlich",
-      opt_recs_1: "Überhaupt nicht klar",
-      opt_recs_2: "Teilweise unklar",
-      opt_recs_3: "Teils klar, teils unklar",
-      opt_recs_4: "Größtenteils klar",
-      opt_recs_5: "Sehr klar und verständlich",
-      opt_trust_1: "Überhaupt nicht seriös",
-      opt_trust_2: "Eher wenig seriös",
-      opt_trust_3: "Mittelmäßig seriös",
-      opt_trust_4: "Ziemlich seriös",
-      opt_trust_5: "Sehr seriös und vertrauenswürdig",
-      opt_len_ok: "Okay so",
-      opt_len_longish: "Etwas lang, aber noch akzeptabel",
-      opt_len_too_long: "Viel zu lang",
-      ph_trust_more: "z. B. mehr Quellenangaben, Benchmarks, Beispiele …",
-      ph_hard_parts: "Bitte kurz zitieren oder beschreiben, was genau unklar war …",
-      ph_more_explain: "z. B. bei der Förderlogik, Roadmap, Tools …",
-      ph_features: "Deine Ideen – gerne konkret (wo, was, wozu)",
-      ph_free: "Alles, was dir noch wichtig ist …",
-      sent_ok: "✅ Danke! Feedback gesendet.",
-      sent_err: "Fehler beim Absenden. Bitte später erneut versuchen.",
-      net_err: "Netzwerkfehler. Bitte später erneut versuchen."
+      hilfe: ["Sehr hilfreich","Ziemlich hilfreich","Teils/teils","Eher wenig hilfreich","Gar nicht hilfreich"],
+      verstaendlich1: ["Sehr verständlich","Größtenteils verständlich","Teils verständlich, teils nicht","Eher schwer verständlich","Überhaupt nicht verständlich"],
+      verstaendlich2: ["Sehr klar und verständlich","Größtenteils klar","Teils klar, teils unklar","Teilweise unklar","Überhaupt nicht klar"],
+      vertrauen: ["Sehr seriös und vertrauenswürdig","Ziemlich seriös","Mittelmäßig seriös","Eher wenig seriös","Überhaupt nicht seriös"],
+      dauer: ["Okay so","Etwas lang, aber noch akzeptabel","Viel zu lang"]
     },
     en: {
-      title: "Feedback on the AI Checkup Report",
-      language: "Language",
-      lead: "2 minutes. Helps us improve wording, flow, and actionable guidance.",
-      q_help_label: "How helpful was the AI Checkup overall?",
-      q_understand_analysis: "How clear are the analysis & results?",
-      q_understand_recs: "Are the action recommendations clearly written?",
-      q_trust: "How credible and trustworthy does the report feel?",
-      q_length: "How was the overall length?",
-      q_trust_more: "What would further increase your trust?",
-      q_hard_parts: "Any parts that were too complex, too long, or unclear?",
-      q_more_explain: "Where would you like extra explanations or prompts?",
-      q_features: "Which additional elements would help (tables, charts, examples…)?",
-      q_free: "Anything else we should know?",
-      ref_intro: "Optional: Anyone who should try the checkup now?",
-      ref_name: "Name",
-      ref_company: "Company",
-      ref_email: "Email",
-      note_limit: "Note: max 1,500 characters per field.",
-      btn_submit: "Submit feedback",
-      opt_choose: "Please choose",
-      opt_help_1: "Not helpful at all",
-      opt_help_2: "Rather unhelpful",
-      opt_help_3: "So-so",
-      opt_help_4: "Quite helpful",
-      opt_help_5: "Very helpful",
-      opt_under_1: "Not understandable at all",
-      opt_under_2: "Rather hard to understand",
-      opt_under_3: "Partly understandable",
-      opt_under_4: "Mostly understandable",
-      opt_under_5: "Very understandable",
-      opt_recs_1: "Not clear at all",
-      opt_recs_2: "Partly unclear",
-      opt_recs_3: "Partly clear, partly unclear",
-      opt_recs_4: "Mostly clear",
-      opt_recs_5: "Very clear and understandable",
-      opt_trust_1: "Not credible at all",
-      opt_trust_2: "Rather not credible",
-      opt_trust_3: "Moderately credible",
-      opt_trust_4: "Quite credible",
-      opt_trust_5: "Very credible & trustworthy",
-      opt_len_ok: "Fine as is",
-      opt_len_longish: "A bit long but still OK",
-      opt_len_too_long: "Far too long",
-      ph_trust_more: "e.g., more sources, benchmarks, examples…",
-      ph_hard_parts: "Please quote or describe what was unclear…",
-      ph_more_explain: "e.g., funding logic, roadmap, tools…",
-      ph_features: "Your ideas—be specific (where, what, why)",
-      ph_free: "Anything else that matters to you…",
-      sent_ok: "✅ Thanks! Feedback submitted.",
-      sent_err: "Submit failed. Please try again later.",
-      net_err: "Network error. Please try again later."
+      hilfe: ["Very helpful","Quite helpful","So-so","Rather unhelpful","Not helpful at all"],
+      verstaendlich1: ["Very understandable","Mostly understandable","Partly understandable","Rather hard to understand","Not understandable at all"],
+      verstaendlich2: ["Very clear and understandable","Mostly clear","Partly clear, partly unclear","Partly unclear","Not clear at all"],
+      vertrauen: ["Very credible & trustworthy","Quite credible","Moderately credible","Rather not credible","Not credible at all"],
+      dauer: ["Fine as is","A bit long but still OK","Far too long"]
     }
   };
 
-  function setLang(lang){
-    const root = document.documentElement;
-    root.setAttribute("lang", lang);
-    root.dataset.lang = lang;
-    document.getElementById("lang_ui").value = lang;
-    document.getElementById("btn-de").classList.toggle("active", lang==="de");
-    document.getElementById("btn-en").classList.toggle("active", lang==="en");
-    const dict = I18N[lang] || I18N.de;
-    // translate text nodes
-    document.querySelectorAll("[data-i18n]").forEach(el=>{
-      const k = el.getAttribute("data-i18n");
-      if(dict[k]) el.textContent = dict[k];
-    });
-    // placeholders for textareas
-    document.querySelectorAll("textarea[data-ph]").forEach(el=>{
-      const phKey = el.getAttribute("data-ph");
-      if(dict[phKey]) el.placeholder = dict[phKey];
-    });
+  function reorderSelect(selectId, orderedLabels) {
+    const sel = document.getElementById(selectId);
+    if (!sel || !orderedLabels) return;
+
+    const opts = Array.from(sel.options);
+    const isPlaceholder = o => o.value === "" || /Bitte wählen|Please choose/i.test(o.text);
+    const placeholder = opts.find(isPlaceholder);
+    const rest = opts.filter(o => o !== placeholder);
+
+    const byText = Object.fromEntries(rest.map(o => [o.text.trim(), o]));
+    sel.innerHTML = "";
+
+    if (placeholder) sel.appendChild(placeholder);
+    orderedLabels.forEach(lbl => { if (byText[lbl]) sel.appendChild(byText[lbl]); });
+    rest.forEach(o => { if (!orderedLabels.includes(o.text.trim())) sel.appendChild(o); });
   }
 
-  function getParam(name){ return new URLSearchParams(location.search).get(name) }
-  // Prefill variant / report_version
-  (function initMeta(){
-    const variant = getParam("variant");
-    if(variant) document.getElementById("variant").value = variant;
-    const rv = getParam("report_version") || getParam("rv");
-    if(rv) document.getElementById("report_version").value = rv;
-    document.getElementById("timestamp").value = new Date().toISOString();
-  })();
-
-  // JWT → email
-  function getEmailFromJWT(token){
-    try{ const p = JSON.parse(atob(token.split(".")[1])); return p.email || p.sub || null }catch(e){ return null }
+  function applyOrdering() {
+    const uiLang =
+      (document.documentElement.dataset.lang || document.documentElement.lang || "de")
+      .toLowerCase().startsWith("en") ? "en" : "de";
+    const L = ORDER[uiLang] || ORDER.de;
+    ["hilfe","verstaendlich1","verstaendlich2","vertrauen","dauer"].forEach(id => reorderSelect(id, L[id]));
   }
-  const token = localStorage.getItem("jwt");
-  const email = token ? getEmailFromJWT(token) : null;
-  if(email) document.getElementById("feedback-email").value = email;
 
-  // counters
-  document.querySelectorAll(".counter").forEach(c=>{
-    const id=c.getAttribute("data-for"); const el=document.getElementById(id);
-    const max=Number(el.getAttribute("maxlength")||1500);
-    const upd=()=>c.textContent=`${el.value.length}/${max}`;
-    el.addEventListener("input",upd); upd();
-  });
+  // initial + nach Sprachwechsel neu anwenden
+  document.addEventListener("DOMContentLoaded", applyOrdering);
+  document.getElementById("btn-de")?.addEventListener("click", () => setTimeout(applyOrdering, 0));
+  document.getElementById("btn-en")?.addEventListener("click", () => setTimeout(applyOrdering, 0));
+})();
+</script>
 
-  // language: from ?lang= , localStorage, or browser
-  (function initLang(){
-    const q = (getParam("lang")||"").toLowerCase();
-    const saved = localStorage.getItem("ui_lang");
-    const guess = (navigator.language||"de").toLowerCase().startsWith("en") ? "en" : "de";
-    const lang = q==="en"||q==="de" ? q : (saved||guess);
-    setLang(lang);
-  })();
-  document.getElementById("btn-de").addEventListener("click", ()=>{ setLang("de"); localStorage.setItem("ui_lang","de"); });
-  document.getElementById("btn-en").addEventListener("click", ()=>{ setLang("en"); localStorage.setItem("ui_lang","en"); });
-
-  // submit
-  document.getElementById("feedback-form").addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    const status = document.getElementById("status");
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
-    // fallback timestamp
-    if(!data.timestamp) data.timestamp = new Date().toISOString();
-    try{
-      const res = await fetch(`${API_BASE}/feedback`, {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          ...(token ? { "Authorization":"Bearer "+token } : {})
-        },
-        body: JSON.stringify(data)
-      });
-      const lang = document.documentElement.dataset.lang || "de";
-      const dict = I18N[lang] || I18N.de;
-      if(res.ok){
-        status.innerHTML = '<span class="ok">'+dict.sent_ok+'</span>';
-      }else{
-        status.innerHTML = '<span class="error">'+dict.sent_err+'</span>';
-        console.error("Feedback error:", res.status, await res.text());
-      }
-    }catch(err){
-      const lang = document.documentElement.dataset.lang || "de";
-      const dict = I18N[lang] || I18N.de;
-      status.innerHTML = '<span class="error">'+dict.net_err+'</span>';
-      console.error(err);
-    }
-  });
-  </script>
 </body>
 </html>
