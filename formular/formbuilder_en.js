@@ -671,7 +671,7 @@ const fields = [
   // Block 5: Datenschutz & Absenden
   {
     key: "datenschutz",
-    label: "I have read the <a href='datenschutz.html' onclick='window.open(this.href, \"DatenschutzPopup\", \"width=600,height=700\"); return false;'>privacy notice</a> and agree.",
+    label: "I have read the <a href='privacy.html' onclick='window.open(this.href, \"DatenschutzPopup\", \"width=600,height=700\"); return false;'>privacy notice</a> and agree.",
     type: "privacy",
     description: "Please confirm that you have read the privacy notice. Your details will only be used to generate your personal evaluation."
   }
