@@ -49,18 +49,19 @@ const API_BASE = "https://make-ki-backend-neu-production.up.railway.app";
   <p class="lead" data-i18n="lead">2 Minuten. Hilft uns, Sprache, Lesefluss und Handlungsempfehlungen weiter zu verbessern.</p>
 
   <form id="feedback-form" class="card" novalidate>
-    <!-- Hidden (vom JWT befüllt) -->
+    <!-- Hidden (wird intern befüllt) -->
     <input type="hidden" name="email" id="feedback-email"/>
-    <!-- Optional aus URL-Parametern -->
+    <!-- Optionale Parameter aus der URL -->
     <input type="hidden" name="variant" id="variant"/>
     <input type="hidden" name="report_version" id="report_version"/>
     <!-- UI-Sprache für Auswertung -->
     <input type="hidden" name="lang_ui" id="lang_ui" value="de"/>
+    <!-- Zeitstempel wird vor dem Absenden gesetzt -->
     <input type="hidden" name="timestamp" id="timestamp"/>
 
-    <!-- Nutzer‑E‑Mail erfassen -->
-    <label for="user_email" class="req" data-i18n="q_email">Deine E‑Mail‑Adresse (für Rückfragen)</label>
-    <input type="email" name="user_email" id="user_email" required placeholder="E‑Mail‑Adresse" data-ph="ph_email"/>
+    <!-- E-Mail des/der Feedbackgebenden (wird zur Zuordnung benötigt) -->
+    <label for="user_email" class="req" data-i18n="q_user_email">Ihre E‑Mail‑Adresse</label>
+    <input type="email" name="user_email" id="user_email" required maxlength="160" placeholder="E‑Mail‑Adresse" data-ph="ph_user_email"/>
 
     <!-- 1. Gesamt-Nutzen -->
     <label for="hilfe" class="req" data-i18n="q_help_label">Wie hilfreich war der KI-Checkup insgesamt?</label>
@@ -133,19 +134,19 @@ const API_BASE = "https://make-ki-backend-neu-production.up.railway.app";
 
     <!-- Empfehlung (optional) -->
     <div class="card">
-      <p class="muted" style="margin-top:0" data-i18n="ref_intro">Optional: Fällt dir jemand ein, der jetzt schon vom Checkup profitieren sollte?</p>
+      <p class="muted" style="margin-top:0" data-i18n="ref_intro">Optional: Fällt dir jemand ein, der von dem Projekt bereits jetzt in der Testphase wissen sollte?</p>
       <div class="row">
         <div>
           <label for="tipp_name" data-i18n="ref_name">Name</label>
-          <input type="text" name="tipp_name" id="tipp_name" maxlength="120" placeholder="Vor- und Nachname" data-ph="ph_ref_name"/>
+          <input type="text" name="tipp_name" id="tipp_name" maxlength="120" placeholder="Vor- und Nachname"/>
         </div>
         <div>
           <label for="tipp_firma" data-i18n="ref_company">Unternehmen</label>
-          <input type="text" name="tipp_firma" id="tipp_firma" maxlength="120" placeholder="Unternehmen" data-ph="ph_ref_company"/>
+          <input type="text" name="tipp_firma" id="tipp_firma" maxlength="120" placeholder="Unternehmen"/>
         </div>
       </div>
       <label for="tipp_email" data-i18n="ref_email">E-Mail</label>
-      <input type="email" name="tipp_email" id="tipp_email" maxlength="160" placeholder="E-Mail-Adresse" data-ph="ph_ref_email"/>
+      <input type="email" name="tipp_email" id="tipp_email" maxlength="160" placeholder="E-Mail-Adresse"/>
     </div>
 
     <button type="submit" data-i18n="btn_submit">Feedback absenden</button>
@@ -153,214 +154,324 @@ const API_BASE = "https://make-ki-backend-neu-production.up.railway.app";
   </form>
 
  <script>
-(function () {
-  // Übersetzungen für alle Texte und Platzhalter. Diese Objekt ordnet jedem
-  // Schlüssel (data-i18n oder data-ph) eine Fassung in Deutsch und Englisch zu.
-  const TRANSLATIONS = {
+(() => {
+  // Gewünschte Reihenfolge der Antwortoptionen (bestes Ergebnis zuerst)
+  const ORDER = {
     de: {
-      title: "Feedback zum KI-Checkup-Report",
+      hilfe: [
+        "Sehr hilfreich",
+        "Ziemlich hilfreich",
+        "Teils/teils",
+        "Eher wenig hilfreich",
+        "Gar nicht hilfreich"
+      ],
+      verstaendlich1: [
+        "Sehr verständlich",
+        "Größtenteils verständlich",
+        "Teils verständlich, teils nicht",
+        "Eher schwer verständlich",
+        "Überhaupt nicht verständlich"
+      ],
+      verstaendlich2: [
+        "Sehr klar und verständlich",
+        "Größtenteils klar",
+        "Teils klar, teils unklar",
+        "Teilweise unklar",
+        "Überhaupt nicht klar"
+      ],
+      vertrauen: [
+        "Sehr seriös und vertrauenswürdig",
+        "Ziemlich seriös",
+        "Mittelmäßig seriös",
+        "Eher wenig seriös",
+        "Überhaupt nicht seriös"
+      ],
+      dauer: [
+        "Okay so",
+        "Etwas lang, aber noch akzeptabel",
+        "Viel zu lang"
+      ]
+    },
+    en: {
+      hilfe: [
+        "Very helpful",
+        "Quite helpful",
+        "So-so",
+        "Rather unhelpful",
+        "Not helpful at all"
+      ],
+      verstaendlich1: [
+        "Very understandable",
+        "Mostly understandable",
+        "Partly understandable",
+        "Rather hard to understand",
+        "Not understandable at all"
+      ],
+      verstaendlich2: [
+        "Very clear and understandable",
+        "Mostly clear",
+        "Partly clear, partly unclear",
+        "Partly unclear",
+        "Not clear at all"
+      ],
+      vertrauen: [
+        "Very credible & trustworthy",
+        "Quite credible",
+        "Moderately credible",
+        "Rather not credible",
+        "Not credible at all"
+      ],
+      dauer: [
+        "Fine as is",
+        "A bit long but still OK",
+        "Far too long"
+      ]
+    }
+  };
+
+  // Übersetzungen für statische Texte und Platzhalter
+  const I18N = {
+    de: {
+      title: "Feedback zum KI‑Checkup‑Report",
       language: "Sprache",
-      lead: "2 Minuten. Hilft uns, Sprache, Lesefluss und Handlungsempfehlungen weiter zu verbessern.",
-      q_help_label: "Wie hilfreich war der KI-Checkup insgesamt?",
+      lead: "2 Minuten. Hilft uns, Sprache, Lesefluss und Handlungsempfehlungen weiter zu verbessern.",
+      q_help_label: "Wie hilfreich war der KI‑Checkup insgesamt?",
+      q_understand_analysis: "Wie verständlich sind Analyse &amp; Auswertung?",
+      q_understand_recs: "Sind die Handlungsempfehlungen klar formuliert?",
+      q_trust: "Wie seriös und vertrauenswürdig wirkt der Report?",
+      q_length: "Wie fanden Sie den Umfang?",
+      q_trust_more: "Was würde Ihr Vertrauen zusätzlich stärken?",
+      q_hard_parts: "Gab es Textstellen, die zu kompliziert, zu lang oder unklar waren?",
+      q_more_explain: "Wo wünschen Sie sich zusätzliche Erklärungen oder Zwischenfragen?",
+      q_features: "Welche zusätzlichen Inhalte wären hilfreich (Tabellen, Diagramme, Beispiele …)?",
+      q_free: "Sonst noch Feedback, Ideen oder Vorschläge?",
+      note_limit: "Hinweis: max. 1 500 Zeichen pro Feld.",
+      ref_intro: "Optional: Fällt dir jemand ein, der von dem Projekt bereits jetzt in der Testphase wissen sollte?",
+      ref_name: "Name",
+      ref_company: "Unternehmen",
+      ref_email: "E‑Mail",
+      btn_submit: "Feedback absenden",
       opt_choose: "Bitte wählen",
       opt_help_1: "Gar nicht hilfreich",
       opt_help_2: "Eher wenig hilfreich",
       opt_help_3: "Teils/teils",
       opt_help_4: "Ziemlich hilfreich",
       opt_help_5: "Sehr hilfreich",
-      q_understand_analysis: "Wie verständlich sind Analyse & Auswertung?",
       opt_under_1: "Überhaupt nicht verständlich",
       opt_under_2: "Eher schwer verständlich",
       opt_under_3: "Teils verständlich, teils nicht",
       opt_under_4: "Größtenteils verständlich",
       opt_under_5: "Sehr verständlich",
-      q_understand_recs: "Sind die Handlungsempfehlungen klar formuliert?",
       opt_recs_1: "Überhaupt nicht klar",
       opt_recs_2: "Teilweise unklar",
       opt_recs_3: "Teils klar, teils unklar",
       opt_recs_4: "Größtenteils klar",
       opt_recs_5: "Sehr klar und verständlich",
-      q_trust: "Wie seriös und vertrauenswürdig wirkt der Report?",
       opt_trust_1: "Überhaupt nicht seriös",
       opt_trust_2: "Eher wenig seriös",
       opt_trust_3: "Mittelmäßig seriös",
       opt_trust_4: "Ziemlich seriös",
       opt_trust_5: "Sehr seriös und vertrauenswürdig",
-      q_length: "Wie fandest du den Umfang?",
       opt_len_ok: "Okay so",
       opt_len_longish: "Etwas lang, aber noch akzeptabel",
       opt_len_too_long: "Viel zu lang",
-      q_trust_more: "Was würde dein Vertrauen zusätzlich stärken?",
-      q_hard_parts: "Gab es Textstellen, die zu kompliziert, zu lang oder unklar waren?",
-      q_more_explain: "Wo wünschst du dir zusätzliche Erklärungen oder Zwischenfragen?",
-      q_features: "Welche zusätzlichen Inhalte wären hilfreich (Tabellen, Diagramme, Beispiele …)?",
-      q_free: "Sonst noch Feedback, Ideen oder Vorschläge?",
-      note_limit: "Hinweis: max. 1 500 Zeichen pro Feld.",
-      ref_intro: "Optional: Fällt dir jemand ein, der jetzt schon vom Checkup profitieren sollte?",
-      ref_name: "Name",
-      ref_company: "Unternehmen",
-      ref_email: "E‑Mail",
-      btn_submit: "Feedback absenden",
-      q_email: "Deine E‑Mail‑Adresse (für Rückfragen)",
-      ph_email: "E‑Mail‑Adresse",
-      ph_trust_more: "z. B. unabhängige Zertifizierung, Benchmarks …",
-      ph_hard_parts: "Passagen, die unklar oder zu lang waren",
-      ph_more_explain: "Bereiche, in denen du mehr Unterstützung brauchst",
-      ph_features: "z. B. Tabellen, Diagramme, Praxisbeispiele",
-      ph_free: "Dein Feedback",
-      ph_ref_name: "Vor- und Nachname",
-      ph_ref_company: "Unternehmen",
-      ph_ref_email: "E‑Mail‑Adresse"
+      q_user_email: "Ihre E‑Mail‑Adresse",
+      ph_trust_more: "Was stärkt Ihr Vertrauen?",
+      ph_hard_parts: "Bitte Textstellen kurz beschreiben …",
+      ph_more_explain: "Fragen, Unklarheiten oder fehlende Erläuterungen …",
+      ph_features: "Zum Beispiel: mehr Tabellen, Beispiele, Diagramme …",
+      ph_free: "Weitere Gedanken oder Anregungen …",
+      ph_user_email: "E‑Mail‑Adresse",
+      status_sending: "Sende Feedback …",
+      status_error: "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+      status_success: "Vielen Dank für Ihr Feedback!"
     },
     en: {
-      title: "Feedback on the AI Readiness Report",
+      title: "Feedback on the AI Checkup Report",
       language: "Language",
-      lead: "2 minutes. Helps us further improve language, readability and recommendations.",
+      lead: "2 minutes. Helps us improve language, flow and recommendations.",
       q_help_label: "How helpful was the AI Checkup overall?",
+      q_understand_analysis: "How understandable are the analysis & evaluation?",
+      q_understand_recs: "Are the recommendations clearly formulated?",
+      q_trust: "How credible and trustworthy does the report appear?",
+      q_length: "How did you find the length?",
+      q_trust_more: "What would further increase your trust?",
+      q_hard_parts: "Were there any passages that were too complex, long or unclear?",
+      q_more_explain: "Where would you like additional explanations or clarifications?",
+      q_features: "Which additional content would be helpful (tables, charts, examples …)?",
+      q_free: "Any other feedback, ideas or suggestions?",
+      note_limit: "Note: max. 1 500 characters per field.",
+      ref_intro: "Optional: Can you think of anyone who should know about the project during the testing phase?",
+      ref_name: "Name",
+      ref_company: "Company",
+      ref_email: "Email",
+      btn_submit: "Submit feedback",
       opt_choose: "Please choose",
       opt_help_1: "Not helpful at all",
       opt_help_2: "Rather unhelpful",
       opt_help_3: "So-so",
       opt_help_4: "Quite helpful",
       opt_help_5: "Very helpful",
-      q_understand_analysis: "How understandable are the analysis & evaluation?",
       opt_under_1: "Not understandable at all",
       opt_under_2: "Rather hard to understand",
-      opt_under_3: "Partly understandable, partly not",
+      opt_under_3: "Partly understandable",
       opt_under_4: "Mostly understandable",
       opt_under_5: "Very understandable",
-      q_understand_recs: "Are the recommendations clearly formulated?",
       opt_recs_1: "Not clear at all",
       opt_recs_2: "Partly unclear",
       opt_recs_3: "Partly clear, partly unclear",
       opt_recs_4: "Mostly clear",
       opt_recs_5: "Very clear and understandable",
-      q_trust: "How credible and trustworthy does the report appear?",
       opt_trust_1: "Not credible at all",
       opt_trust_2: "Rather not credible",
       opt_trust_3: "Moderately credible",
       opt_trust_4: "Quite credible",
-      opt_trust_5: "Very credible and trustworthy",
-      q_length: "What did you think about the length?",
+      opt_trust_5: "Very credible & trustworthy",
       opt_len_ok: "Fine as is",
       opt_len_longish: "A bit long but still OK",
       opt_len_too_long: "Far too long",
-      q_trust_more: "What would further build your trust?",
-      q_hard_parts: "Were there sections that were too complex, too long or unclear?",
-      q_more_explain: "Where would you like additional explanations or interim questions?",
-      q_features: "Which additional content would be helpful (tables, charts, examples …)?",
-      q_free: "Any other feedback, ideas or suggestions?",
-      note_limit: "Note: max. 1,500 characters per field.",
-      ref_intro: "Optional: Do you know someone who would already benefit from the checkup?",
-      ref_name: "Name",
-      ref_company: "Company",
-      ref_email: "Email",
-      btn_submit: "Submit feedback",
-      q_email: "Your email address (for follow‑up)",
-      ph_email: "Email address",
-      ph_trust_more: "e.g. independent certification, benchmarks …",
-      ph_hard_parts: "Sections that were unclear or too long",
-      ph_more_explain: "Areas where you'd like more support",
-      ph_features: "e.g. tables, charts, practical examples",
-      ph_free: "Your feedback",
-      ph_ref_name: "Full name",
-      ph_ref_company: "Company",
-      ph_ref_email: "Email address"
+      q_user_email: "Your email address",
+      ph_trust_more: "What would increase your trust?",
+      ph_hard_parts: "Briefly describe problematic passages …",
+      ph_more_explain: "Questions, uncertainties or missing explanations …",
+      ph_features: "For example: more tables, examples, charts …",
+      ph_free: "Further thoughts or suggestions …",
+      ph_user_email: "Email address",
+      status_sending: "Sending feedback …",
+      status_error: "An error occurred. Please try again later.",
+      status_success: "Thank you for your feedback!"
     }
   };
 
-  // Wende die Übersetzungen auf alle Elemente mit data-i18n bzw. data-ph an.
-  function translatePage(lang) {
-    const tr = TRANSLATIONS[lang] || TRANSLATIONS.de;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if (tr[key]) {
-        el.textContent = tr[key];
-      }
-    });
-    document.querySelectorAll('[data-ph]').forEach(el => {
-      const key = el.getAttribute('data-ph');
-      if (tr[key]) {
-        el.placeholder = tr[key];
-      }
-    });
-  }
-
-  // Sprache setzen: HTML-Attribut, verborgenes Feld, aktive Buttonklasse
-  function setLang(lang) {
-    document.documentElement.dataset.lang = lang;
-    document.getElementById('lang_ui').value = lang;
-    document.getElementById('btn-de')?.classList.toggle('active', lang === 'de');
-    document.getElementById('btn-en')?.classList.toggle('active', lang === 'en');
-    translatePage(lang);
-    applyOrdering();
-  }
-  // gewünschte Reihenfolge (best → worst)
-  const ORDER = {
-    de: {
-      hilfe: ["Sehr hilfreich","Ziemlich hilfreich","Teils/teils","Eher wenig hilfreich","Gar nicht hilfreich"],
-      verstaendlich1: ["Sehr verständlich","Größtenteils verständlich","Teils verständlich, teils nicht","Eher schwer verständlich","Überhaupt nicht verständlich"],
-      verstaendlich2: ["Sehr klar und verständlich","Größtenteils klar","Teils klar, teils unklar","Teilweise unklar","Überhaupt nicht klar"],
-      vertrauen: ["Sehr seriös und vertrauenswürdig","Ziemlich seriös","Mittelmäßig seriös","Eher wenig seriös","Überhaupt nicht seriös"],
-      dauer: ["Okay so","Etwas lang, aber noch akzeptabel","Viel zu lang"]
-    },
-    en: {
-      hilfe: ["Very helpful","Quite helpful","So-so","Rather unhelpful","Not helpful at all"],
-      verstaendlich1: ["Very understandable","Mostly understandable","Partly understandable","Rather hard to understand","Not understandable at all"],
-      verstaendlich2: ["Very clear and understandable","Mostly clear","Partly clear, partly unclear","Partly unclear","Not clear at all"],
-      vertrauen: ["Very credible & trustworthy","Quite credible","Moderately credible","Rather not credible","Not credible at all"],
-      dauer: ["Fine as is","A bit long but still OK","Far too long"]
-    }
-  };
-
+  // Hilfsfunktion: Reihenfolge der Dropdown-Optionen anpassen
   function reorderSelect(selectId, orderedLabels) {
     const sel = document.getElementById(selectId);
     if (!sel || !orderedLabels) return;
-
     const opts = Array.from(sel.options);
-    const isPlaceholder = o => o.value === "" || /Bitte wählen|Please choose/i.test(o.text);
+    const isPlaceholder = (o) => o.value === "" || /Bitte wählen|Please choose/i.test(o.text);
     const placeholder = opts.find(isPlaceholder);
-    const rest = opts.filter(o => o !== placeholder);
-
-    const byText = Object.fromEntries(rest.map(o => [o.text.trim(), o]));
+    const rest = opts.filter((o) => o !== placeholder);
+    const byText = Object.fromEntries(rest.map((o) => [o.text.trim(), o]));
     sel.innerHTML = "";
-
     if (placeholder) sel.appendChild(placeholder);
-    orderedLabels.forEach(lbl => { if (byText[lbl]) sel.appendChild(byText[lbl]); });
-    rest.forEach(o => { if (!orderedLabels.includes(o.text.trim())) sel.appendChild(o); });
+    orderedLabels.forEach((lbl) => {
+      if (byText[lbl]) sel.appendChild(byText[lbl]);
+    });
+    rest.forEach((o) => {
+      if (!orderedLabels.includes(o.text.trim())) sel.appendChild(o);
+    });
   }
 
+  // Wende die definierte Reihenfolge auf alle relevanten Select-Elemente an
   function applyOrdering() {
-    const uiLang =
-      (document.documentElement.dataset.lang || document.documentElement.lang || "de")
-      .toLowerCase().startsWith("en") ? "en" : "de";
+    const uiLang = (document.documentElement.dataset.lang || document.documentElement.lang || "de")
+      .toLowerCase()
+      .startsWith("en")
+      ? "en"
+      : "de";
     const L = ORDER[uiLang] || ORDER.de;
-    ["hilfe","verstaendlich1","verstaendlich2","vertrauen","dauer"].forEach(id => reorderSelect(id, L[id]));
+    ["hilfe", "verstaendlich1", "verstaendlich2", "vertrauen", "dauer"].forEach((id) => {
+      reorderSelect(id, L[id]);
+    });
   }
 
-  // initial + nach Sprachwechsel neu anwenden
-  document.addEventListener("DOMContentLoaded", applyOrdering);
-  document.getElementById("btn-de")?.addEventListener("click", () => setLang('de'));
-  document.getElementById("btn-en")?.addEventListener("click", () => setLang('en'));
+  // Aktualisiere alle Texte und Platzhalter entsprechend der gewählten Sprache
+  function updateLanguage(lang) {
+    const normalized = lang && lang.toLowerCase().startsWith("en") ? "en" : "de";
+    document.documentElement.dataset.lang = normalized;
+    document.documentElement.lang = normalized;
+    document.getElementById("lang_ui").value = normalized;
 
-  // Bei Seitenaufbau aktuelle Sprache anwenden
-  document.addEventListener("DOMContentLoaded", () => {
-    const initialLang = (document.documentElement.dataset.lang || 'de').toLowerCase().startsWith('en') ? 'en' : 'de';
-    setLang(initialLang);
-    // Timestamp vorbelegen
-    const tsInput = document.getElementById('timestamp');
-    if (tsInput) tsInput.value = new Date().toISOString();
-  });
-
-  // Vor dem Absenden die E‑Mail kopieren und Zeitstempel setzen
-  document.getElementById('feedback-form')?.addEventListener('submit', (ev) => {
-    const emailField = document.getElementById('user_email');
-    const hiddenEmail = document.getElementById('feedback-email');
-    if (emailField && hiddenEmail) {
-      hiddenEmail.value = emailField.value;
+    // Schalterzustand aktualisieren
+    const btnDe = document.getElementById("btn-de");
+    const btnEn = document.getElementById("btn-en");
+    if (normalized === "de") {
+      btnDe.classList.add("active");
+      btnEn.classList.remove("active");
+    } else {
+      btnEn.classList.add("active");
+      btnDe.classList.remove("active");
     }
-    const tsInput = document.getElementById('timestamp');
-    if (tsInput) tsInput.value = new Date().toISOString();
+
+    // Überschriften und Labels
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      const t = I18N[normalized][key];
+      if (t !== undefined) el.innerHTML = t;
+    });
+    // Platzhalter
+    document.querySelectorAll("[data-ph]").forEach((el) => {
+      const key = el.getAttribute("data-ph");
+      const t = I18N[normalized][key];
+      if (t !== undefined) el.setAttribute("placeholder", t);
+    });
+    applyOrdering();
+  }
+
+  // Zeichenzähler für alle Textareas anzeigen
+  function initCounters() {
+    document.querySelectorAll("textarea[maxlength]").forEach((ta) => {
+      const targetId = ta.id;
+      const counter = document.querySelector(`.counter[data-for="${targetId}"]`);
+      const maxLen = parseInt(ta.getAttribute("maxlength"), 10) || 0;
+      const updateCount = () => {
+        if (counter) counter.textContent = `${ta.value.length} / ${maxLen}`;
+      };
+      ta.addEventListener("input", updateCount);
+      updateCount();
+    });
+  }
+
+  // Formular absenden und API-Aufruf durchführen
+  async function submitFeedback(event) {
+    event.preventDefault();
+    const form = event.target;
+    const statusEl = document.getElementById("status");
+    const lang = document.documentElement.dataset.lang || "de";
+    statusEl.textContent = I18N[lang].status_sending;
+    // Kopiere sichtbare E-Mail in verborgenes Feld
+    const userEmail = document.getElementById("user_email").value || "";
+    document.getElementById("feedback-email").value = userEmail;
+    // Zeitstempel setzen
+    document.getElementById("timestamp").value = new Date().toISOString();
+    const fd = new FormData(form);
+    const payload = {};
+    fd.forEach((value, key) => {
+      payload[key] = value;
+    });
+    try {
+      const resp = await fetch(`${API_BASE}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      statusEl.classList.remove("error");
+      statusEl.classList.add("ok");
+      statusEl.textContent = I18N[lang].status_success;
+      form.reset();
+      // Zeichenzähler zurücksetzen
+      initCounters();
+    } catch (err) {
+      console.error(err);
+      statusEl.classList.remove("ok");
+      statusEl.classList.add("error");
+      statusEl.textContent = I18N[lang].status_error;
+    }
+  }
+
+  // Event‑Listener setzen
+  document.addEventListener("DOMContentLoaded", () => {
+    // Sprachbuttons
+    document.getElementById("btn-de")?.addEventListener("click", () => updateLanguage("de"));
+    document.getElementById("btn-en")?.addEventListener("click", () => updateLanguage("en"));
+    // Standard-Sprache initialisieren
+    updateLanguage(document.documentElement.dataset.lang || document.documentElement.lang || "de");
+    // Zeichenzähler initialisieren
+    initCounters();
+    // Formular-Submit
+    const form = document.getElementById("feedback-form");
+    form?.addEventListener("submit", submitFeedback);
   });
 })();
 </script>
