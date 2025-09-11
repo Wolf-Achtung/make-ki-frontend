@@ -12,46 +12,51 @@
     .footer { margin-top: 40px; color: #666; }
     .guidance { color: #204769; font-size: 1em; margin-bottom: 8px; margin-top: -4px; }
     @media (max-width: 650px) { .form-container { padding: 10px; } }
+    /* Sofort-Fix: Seite zunächst verstecken, bis Gate „grün“ sagt */
+    html.gated-hide body { opacity: 0; }
   </style>
 
-  <!-- ======= GATEKEEPER: Zugriff nur mit Login-Kontext (JWT oder ?access=) ======= -->
+  <!-- GATEKEEPER START (DE) -->
   <script>
-    (function () {
-      // Zielseite (Login/Start) bei fehlendem Kontext
-      var LOGIN_URL = "/";
+    (function() {
+      // Seite verbergen, bis geprüft
+      document.documentElement.classList.add('gated-hide');
+
+      var LOGIN_URL = "/"; // Ziel bei fehlendem Login
 
       function getParam(name){
         var m = new RegExp("[?&]"+name+"=([^&#]*)").exec(location.search);
         return m ? decodeURIComponent(m[1].replace(/\+/g,"%20")) : null;
       }
 
-      var jwt    = null;
+      // Token-Quelle: JWT im localStorage oder Kurzzeit-Token ?access=...
+      var jwt = null;
       try { jwt = localStorage.getItem("jwt"); } catch(e) {}
-
       var access = getParam("access");
 
-      // Wenn weder JWT noch Kurzzeit-Token vorhanden → zurück zum Login (mit Rücksprung)
+      // Ohne Token → zurück zum Login mit next
       if (!jwt && !access) {
         var next = encodeURIComponent(location.pathname + location.search);
         location.replace(LOGIN_URL + "?next=" + next);
-        return;
+        return; // Seite bleibt verborgen
       }
 
-      // Für nachgeladene Skripte bereitstellen (z. B. Fetch-Header)
-      window.__AUTH_HEADER = "Bearer " + (jwt || access);
-
-      // Optional: ?access aus der URL entfernen (saubere Adresse nach erfolgreichem Gate)
+      // Optional: ?access aus der URL entfernen
       if (access) {
-        var clean = location.pathname + location.search.replace(/([?&])access=[^&#]*(&|$)/, function(_, p1, p2){
-          if (p1 === '?' && !p2) return '';
-          if (p1 === '?' && p2)  return '?';
-          return p2 ? p1 : '';
-        }).replace(/[?&]$/, '');
+        var clean = location.pathname + location.search
+          .replace(/([?&])access=[^&#]*(&|$)/, function(_, p1, p2){ return (p1==='?'? (p2? '?':'') : (p2? p1:'') ); })
+          .replace(/[?&]$/, '');
         history.replaceState(null, "", clean);
       }
+
+      // Für nachgeladene Skripte (z. B. fetch Authorization)
+      window.__AUTH_HEADER = "Bearer " + (jwt || access);
+
+      // Gate bestanden → Seite anzeigen
+      document.documentElement.classList.remove('gated-hide');
     })();
   </script>
-  <!-- ======= /GATEKEEPER ======= -->
+  <!-- GATEKEEPER END -->
 </head>
 <body>
 <div id="progress"></div>

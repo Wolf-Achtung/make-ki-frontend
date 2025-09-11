@@ -12,80 +12,88 @@
     .footer { margin-top: 40px; color: #666; }
     .guidance { color: #204769; font-size: 1em; margin-bottom: 8px; margin-top: -4px; }
     @media (max-width: 650px) { .form-container { padding: 10px; } }
+    /* Hide until validated */
+    html.gated-hide body { opacity: 0; }
   </style>
 
-  <!-- ======= GATEKEEPER: Zugriff nur mit Login-Kontext (JWT oder ?access=) ======= -->
+  <!-- GATEKEEPER START (EN) -->
   <script>
-    (function () {
-      // Zielseite (Login/Start) bei fehlendem Kontext
-      var LOGIN_URL = "/";
+    (function() {
+      document.documentElement.classList.add('gated-hide');
+
+      var LOGIN_URL = "/"; // target when unauthenticated
 
       function getParam(name){
         var m = new RegExp("[?&]"+name+"=([^&#]*)").exec(location.search);
         return m ? decodeURIComponent(m[1].replace(/\+/g,"%20")) : null;
       }
 
-      var jwt    = null;
+      var jwt = null;
       try { jwt = localStorage.getItem("jwt"); } catch(e) {}
-
       var access = getParam("access");
 
-      // Wenn weder JWT noch Kurzzeit-Token vorhanden → zurück zum Login (mit Rücksprung)
       if (!jwt && !access) {
         var next = encodeURIComponent(location.pathname + location.search);
         location.replace(LOGIN_URL + "?next=" + next);
         return;
       }
 
-      // Für nachgeladene Skripte bereitstellen (z. B. Fetch-Header)
-      window.__AUTH_HEADER = "Bearer " + (jwt || access);
-
-      // Optional: ?access aus der URL entfernen (saubere Adresse nach erfolgreichem Gate)
       if (access) {
-        var clean = location.pathname + location.search.replace(/([?&])access=[^&#]*(&|$)/, function(_, p1, p2){
-          if (p1 === '?' && !p2) return '';
-          if (p1 === '?' && p2)  return '?';
-          return p2 ? p1 : '';
-        }).replace(/[?&]$/, '');
+        var clean = location.pathname + location.search
+          .replace(/([?&])access=[^&#]*(&|$)/, function(_, p1, p2){ return (p1==='?'? (p2? '?':'') : (p2? p1:'') ); })
+          .replace(/[?&]$/, '');
         history.replaceState(null, "", clean);
       }
+
+      window.__AUTH_HEADER = "Bearer " + (jwt || access);
+      document.documentElement.classList.remove('gated-hide');
     })();
   </script>
-  <!-- ======= /GATEKEEPER ======= -->
+  <!-- GATEKEEPER END -->
 </head>
 <body>
 <div id="progress"></div>
 <div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
-  <label for="lang-select" style="font-weight:600; font-size:1.01em;">Language:</label>
+  <label for="lang-select" style="font-weight:600; font-size:1.01em; ">Language: </label>
   <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em; width:auto; min-width:110px; max-width:190px;">
     <option value="de">Deutsch</option>
     <option value="en" selected>English</option>
   </select>
 </div>
 
-<div class="form-container">
-  <div class="form-header" style="text-align:center;">
-    <img src="ki-sicherheit-logo.png" alt="KI‑Sicherheit Logo" style="margin-bottom:10px;" />
-    <h1>AI Readiness Check</h1>
+  <div class="form-container">
+    <div class="form-header" style="text-align:center;">
+      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="margin-bottom:10px;" />
+      <h1>AI Readiness Check</h1>
+    </div>
+    <div id="formbuilder" style="max-width:600px;margin:0 auto;">
+      <!-- Form will be injected by formbuilder_en.js -->
+    </div>
+    <div id="feedback"></div>
   </div>
-  <div id="formbuilder" style="max-width:600px;margin:0 auto;"></div>
-  <div id="feedback"></div>
-</div>
+  <footer class="footer">
+    © KI-Sicherheit.jetzt | TÜV-certified AI Management: Wolf Hohl 2025<br>
+    Content is provided for AI readiness & privacy advisory purposes. Reuse or publication requires written consent.
+  </footer>
 
-<footer class="footer">
-  © KI‑Sicherheit.jetzt | TÜV‑certified AI Management: Wolf Hohl 2025<br>
-  All content is provided solely for use within AI readiness and data‑protection consulting.<br>
-  Redistribution or publication requires prior written permission.<br>
-  Logos & design are copyright‑protected. Use of lists, templates and prompts is restricted to clients & partners of KI‑Sicherheit.jetzt.
-</footer>
+  <script>
+    window.renderGuidance = function(description) {
+      if (!description) return '';
+      return `<div class="guidance">${description}</div>`;
+    }
+  </script>
 
-<script>
-  document.getElementById("lang-select").addEventListener("change", function(e) {
-    const lang = e.target.value;
-    if (lang === "de") window.location.href = "index.html";
-  });
-</script>
-<!-- Important: English formbuilder file -->
-<script src="formbuilder_en.js"></script>
+  <script src="formbuilder_en.js"></script>
+  <script>
+    document.getElementById("lang-select").addEventListener("change", function(e) {
+      const lang = e.target.value;
+      if (lang === "de") {
+        window.location.href = "index.html";
+      } else {
+        window.location.href = "index_en.html";
+      }
+    });
+  </script>
+
 </body>
 </html>
