@@ -19,39 +19,13 @@ function isAdmin(token) {
 /* ============================================================================
    Helpers (validation & checkbox labels)
    ========================================================================== */
-function tokenIsExpired(token){
-  try { 
-    const { exp } = JSON.parse(atob(token.split('.')[1])); 
-    return exp ? (Date.now()/1000) > exp : false; 
-  } catch(e){ 
-    return false; 
-  }
-}
-
-
-function showSessionHint() {
-  const el = document.getElementById("formbuilder");
-  if (!el) return;
-  el.insertAdjacentHTML("beforeend",
-    `<div class="form-error" style="margin-top:12px">
-       Your session has expired. <a href="/login.html">Please log in again</a> 
-       if you want to run another analysis.
-     </div>`);
-}
-
-
-function getToken() {
-  try { return localStorage.getItem("jwt") || null; } catch(e){ return null; }
-}
-
-
 
 function splitLabelAndHint(raw) {
   if (!raw) return ["", ""];
   const s = String(raw).trim();
   const m = s.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
   if (m) return [m[1].trim(), m[2].trim()];
-  const parts = s.split(/\s{2,}| — | – | - /).map(x => x.trim()).filter(Boolean);
+  const parts = s.split(/\s{2,}| \u2014 | \u2013 | - /).map(x => x.trim()).filter(Boolean);
   if (parts.length >= 2) return [parts[0], parts.slice(1).join(" ")];
   return [s, ""];
 }
@@ -93,11 +67,11 @@ function getFeedbackBox(){
    Fields (english)
    ========================================================================== */
 
-// 👉 Bitte hier deine bestehende Felddefinition einsetzen (unverändert).
+// \u1f449 Bitte hier deine bestehende Felddefinition einsetzen (unver\u00e4ndert).
 // Ich habe nur die Logik drumherum angepasst. Die Felder (fields = [ ... ]) und blocks = [ ... ]
 // bleiben gleich wie in deiner Originaldatei.
 
-// --- Felder wie gehabt (aus deiner bisherigen Datei), KEINE Kürzungen! ---
+// --- Felder wie gehabt (aus deiner bisherigen Datei), KEINE K\u00fcrzungen! ---
 const fields = [
   // Block 1: Company information
   {
@@ -109,7 +83,7 @@ const fields = [
       { value: "beratung", label: "Consulting & services" },
       { value: "it", label: "IT & software" },
       { value: "finanzen", label: "Finance & insurance" },
-      { value: "handel", label: "Retail & e‑commerce" },
+      { value: "handel", label: "Retail & e\u2011commerce" },
       { value: "bildung", label: "Education" },
       { value: "verwaltung", label: "Administration" },
       { value: "gesundheit", label: "Health & care" },
@@ -126,8 +100,8 @@ const fields = [
     type: "select",
     options: [
       { value: "solo", label: "1 (sole proprietor / freelancer)" },
-      { value: "team", label: "2–10 (small team)" },
-      { value: "kmu", label: "11–100 (SME)" }
+      { value: "team", label: "2\u201310 (small team)" },
+      { value: "kmu", label: "11\u2013100 (SME)" }
     ],
     description: "The size of your company influences recommendations, funding opportunities and benchmarks."
   },
@@ -136,15 +110,15 @@ const fields = [
     label: "Legal form for a single person",
     type: "select",
     options: [
-      { value: "freiberufler", label: "Freelancer / self‑employed" },
-      { value: "kapitalgesellschaft", label: "Single‑member corporation (GmbH/UG)" },
+      { value: "freiberufler", label: "Freelancer / self\u2011employed" },
+      { value: "kapitalgesellschaft", label: "Single\u2011member corporation (GmbH/UG)" },
       { value: "einzelunternehmer", label: "Sole proprietorship (with trade licence)" },
       { value: "sonstiges", label: "Other" }
     ],
     description: "Please choose the legal form that applies to you. This way you'll get evaluations tailored to your business situation.",
-    // Die Rechtsform-Auswahl soll nur angezeigt werden, wenn die Unternehmensgröße auf Solo gestellt ist.
-    // Ursprünglich wurde hier auf den Wert "1" geprüft, aber die Optionswerte sind
-    // "solo", "team" und "kmu". Daher prüfen wir explizit auf "solo".
+    // Die Rechtsform-Auswahl soll nur angezeigt werden, wenn die Unternehmensgr\u00f6\u00dfe auf Solo gestellt ist.
+    // Urspr\u00fcnglich wurde hier auf den Wert "1" gepr\u00fcft, aber die Optionswerte sind
+    // "solo", "team" und "kmu". Daher pr\u00fcfen wir explizit auf "solo".
     showIf: (data) => data.unternehmensgroesse === "solo"
   },
   {
@@ -152,14 +126,14 @@ const fields = [
     label: "State (regional funding opportunities)",
     type: "select",
     options: [
-      { value: "bw", label: "Baden-Württemberg" }, { value: "by", label: "Bayern" },
+      { value: "bw", label: "Baden-W\u00fcrttemberg" }, { value: "by", label: "Bayern" },
       { value: "be", label: "Berlin" }, { value: "bb", label: "Brandenburg" },
       { value: "hb", label: "Bremen" }, { value: "hh", label: "Hamburg" },
       { value: "he", label: "Hessen" }, { value: "mv", label: "Mecklenburg-Vorpommern" },
       { value: "ni", label: "Niedersachsen" }, { value: "nw", label: "Nordrhein-Westfalen" },
       { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
       { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" },
-      { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
+      { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Th\u00fcringen" }
     ],
     description: "Your location determines which funding, programmes and advisory services you can make use of."
   },
@@ -167,7 +141,7 @@ const fields = [
     key: "hauptleistung",
     label: "What's your company's main product or core service?",
     type: "textarea",
-    placeholder: "e.g. social media campaigns, CNC production of individual parts, tax consulting for start‑ups",
+    placeholder: "e.g. social media campaigns, CNC production of individual parts, tax consulting for start\u2011ups",
     description: "Describe your core offering as specifically as possible. Examples help us understand your positioning and tailor recommendations."
   },
   {
@@ -179,26 +153,26 @@ const fields = [
       { value: "b2c", label: "B2C (consumers)" },
       { value: "kmu", label: "SMEs (small & medium enterprises)" },
       { value: "grossunternehmen", label: "Large enterprises" },
-      { value: "selbststaendige", label: "Self‑employed / freelancers" },
+      { value: "selbststaendige", label: "Self\u2011employed / freelancers" },
       { value: "oeffentliche_hand", label: "Public sector" },
       { value: "privatpersonen", label: "Private individuals" },
-      { value: "startups", label: "Start‑ups" },
+      { value: "startups", label: "Start\u2011ups" },
       { value: "andere", label: "Other" }
     ],
     description: "Which customer groups do you serve? Please select all target groups that apply (multiple selections possible)."
   },
 
-  // Erweiterte Unternehmensangaben (Gold‑Standard)
+  // Erweiterte Unternehmensangaben (Gold\u2011Standard)
   {
     key: "jahresumsatz",
     label: "Annual revenue (estimate)",
     type: "select",
     options: [
-      { value: "unter_100k", label: "Up to €100,000" },
-      { value: "100k_500k", label: "€100,000–500,000" },
-      { value: "500k_2m", label: "€500,000–2 million" },
-      { value: "2m_10m", label: "€2–10 million" },
-      { value: "ueber_10m", label: "Over €10 million" },
+      { value: "unter_100k", label: "Up to \u20ac100,000" },
+      { value: "100k_500k", label: "\u20ac100,000\u2013500,000" },
+      { value: "500k_2m", label: "\u20ac500,000\u20132\u00a0million" },
+      { value: "2m_10m", label: "\u20ac2\u201310\u00a0million" },
+      { value: "ueber_10m", label: "Over \u20ac10\u00a0million" },
       { value: "keine_angabe", label: "Prefer not to say" }
     ],
     description: "Please estimate your annual revenue. This classification helps with benchmarks, funding programmes and recommendations."
@@ -208,8 +182,8 @@ const fields = [
   label: "How is your IT infrastructure currently organised?",
   type: "select",
   options: [
-    { value: "cloud", label: "Cloud‑based (external services, e.g. Microsoft 365, Google Cloud…)" },
-    { value: "on_premise", label: "Own data centre (on‑premises)" },
+    { value: "cloud", label: "Cloud\u2011based (external services, e.g. Microsoft\u00a0365, Google\u00a0Cloud\u2026)" },
+    { value: "on_premise", label: "Own data centre (on\u2011premises)" },
     { value: "hybrid", label: "Hybrid (cloud + own servers)" },
     { value: "unklar", label: "Unclear / not decided yet" }
   ],
@@ -256,10 +230,10 @@ const fields = [
     label: "What proportion of your processes are paperless?",
     type: "select",
     options: [
-      { value: "0-20", label: "0–20 %" },
-      { value: "21-50", label: "21–50 %" },
-      { value: "51-80", label: "51–80 %" },
-      { value: "81-100", label: "81–100 %" }
+      { value: "0-20", label: "0\u201320\u202f%" },
+      { value: "21-50", label: "21\u201350\u202f%" },
+      { value: "51-80", label: "51\u201380\u202f%" },
+      { value: "81-100", label: "81\u2013100\u202f%" }
     ],
     description: "Roughly estimate: how much runs completely digital without paper files or printouts?"
   },
@@ -296,7 +270,7 @@ const fields = [
 },
   {
     key: "ki_knowhow",
-    label: "How do you rate your team's internal AI know‑how?",
+    label: "How do you rate your team's internal AI know\u2011how?",
     type: "select",
     options: [
       { value: "keine", label: "No experience" },
@@ -354,7 +328,7 @@ const fields = [
     label: "Where do you see the greatest potential for AI in your company?",
     type: "textarea",
     placeholder: "e.g. faster reporting, personalised offers, cost reduction through automation, new services ...",
-    description: "Where do you see the greatest potential for AI in your company? Feel free to write freely – everything is welcome."
+    description: "Where do you see the greatest potential for AI in your company? Feel free to write freely \u2013 everything is welcome."
   },
   {
     key: "usecase_priority",
@@ -377,18 +351,18 @@ const fields = [
     key: "ki_geschaeftsmodell_vision",
     label: "How could AI fundamentally change your business model or industry?",
     type: "textarea",
-    placeholder: "e.g. automated online consultations, data‑based platform services, completely new products, …",
-    description: "What changes or new possibilities do you see in the long term through AI? This is about your bigger vision – whether concrete or visionary."
+    placeholder: "e.g. automated online consultations, data\u2011based platform services, completely new products, \u2026",
+    description: "What changes or new possibilities do you see in the long term through AI? This is about your bigger vision \u2013 whether concrete or visionary."
   },
   {
     key: "moonshot",
-    label: "What would be a bold breakthrough – your AI vision in 3 years?",
+    label: "What would be a bold breakthrough \u2013 your AI vision in 3 years?",
     type: "textarea",
-    placeholder: "e.g. 80% of my routine tasks are taken over by AI; my turnover doubles thanks to smart automation …",
+    placeholder: "e.g. 80% of my routine tasks are taken over by AI; my turnover doubles thanks to smart automation \u2026",
     description: "What would be your visionary AI future in 3 years? Think big."
   },
 
-  // Block 4: Rechtliches & Förderung
+  // Block 4: Rechtliches & F\u00f6rderung
   {
     key: "datenschutzbeauftragter",
     label: "Do you have a data protection officer in your company?",
@@ -398,14 +372,14 @@ const fields = [
       { value: "nein", label: "No" },
       { value: "teilweise", label: "Partially (external consultant / in planning)" }
     ],
-    description: "A data protection officer is often mandatory – whether internal or external. What's your situation?"
+    description: "A data protection officer is often mandatory \u2013 whether internal or external. What's your situation?"
   },
   {
     key: "technische_massnahmen",
     label: "Which technical data protection measures have you implemented?",
     type: "select",
     options: [
-      { value: "alle", label: "All relevant measures in place (firewall, access control …)" },
+      { value: "alle", label: "All relevant measures in place (firewall, access control \u2026)" },
       { value: "teilweise", label: "Partially in place" },
       { value: "keine", label: "None implemented yet" }
     ],
@@ -420,7 +394,7 @@ const fields = [
       { value: "nein", label: "No" },
       { value: "teilweise", label: "Partially (in planning)" }
     ],
-    description: "For many AI applications, a so‑called 'DPIA' (data protection impact assessment) is required or recommended under the GDPR – e.g. when sensitive data, automated decisions or risks for data subjects are involved."
+    description: "For many AI applications, a so\u2011called 'DPIA' (data protection impact assessment) is required or recommended under the GDPR \u2013 e.g. when sensitive data, automated decisions or risks for data subjects are involved."
   },
   {
     key: "meldewege",
@@ -451,7 +425,7 @@ const fields = [
     options: [
       { value: "sehr_gut", label: "Very well" },
       { value: "gut", label: "Well" },
-      { value: "gehört", label: "Have heard of it" },
+      { value: "geh\u00f6rt", label: "Have heard of it" },
       { value: "unbekannt", label: "Not yet looked into it" }
     ],
     description: "The EU AI Act introduces many new obligations for AI applications. How well informed do you feel?"
@@ -463,7 +437,7 @@ const fields = [
     options: [
       { value: "rechtsunsicherheit", label: "Uncertainty about the legal situation" },
       { value: "datenschutz", label: "Data protection" },
-      { value: "knowhow", label: "Lack of know‑how" },
+      { value: "knowhow", label: "Lack of know\u2011how" },
       { value: "budget", label: "Limited budget" },
       { value: "teamakzeptanz", label: "Team acceptance" },
       { value: "zeitmangel", label: "Lack of time" },
@@ -471,7 +445,7 @@ const fields = [
       { value: "keine", label: "No obstacles" },
       { value: "andere", label: "Other" }
     ],
-    description: "Typical hurdles include uncertainty about data protection, lack of know‑how or limited capacity. Select all points that apply to you."
+    description: "Typical hurdles include uncertainty about data protection, lack of know\u2011how or limited capacity. Select all points that apply to you."
   },
   {
     key: "bisherige_foerdermittel",
@@ -481,7 +455,7 @@ const fields = [
       { value: "ja", label: "Yes" },
       { value: "nein", label: "No" }
     ],
-    description: "Whether national or regional funding for digitalisation, IT or AI: this information helps to suggest suitable follow‑up programmes or new options."
+    description: "Whether national or regional funding for digitalisation, IT or AI: this information helps to suggest suitable follow\u2011up programmes or new options."
   },
   {
     key: "interesse_foerderung",
@@ -492,7 +466,7 @@ const fields = [
       { value: "nein", label: "No, no need" },
       { value: "unklar", label: "Unsure, please advise" }
     ],
-    description: "Would you like individual recommendations for funding programmes? If interested, we filter out suitable options – with no advertising or obligation."
+    description: "Would you like individual recommendations for funding programmes? If interested, we filter out suitable options \u2013 with no advertising or obligation."
   },
   {
     key: "erfahrung_beratung",
@@ -503,20 +477,20 @@ const fields = [
       { value: "nein", label: "No" },
       { value: "unklar", label: "Unclear" }
     ],
-    description: "Have you already used external advice on AI, digitalisation or IT strategy – for example through funding projects, chambers, consultants or tech partners? This experience can strengthen your starting position."
+    description: "Have you already used external advice on AI, digitalisation or IT strategy \u2013 for example through funding projects, chambers, consultants or tech partners? This experience can strengthen your starting position."
   },
   {
     key: "investitionsbudget",
     label: "What budget do you plan for AI/digitalisation next year?",
     type: "select",
     options: [
-      { value: "unter_2000", label: "Under €2,000" },
-      { value: "2000_10000", label: "€2,000–10,000" },
-      { value: "10000_50000", label: "€10,000–50,000" },
-      { value: "ueber_50000", label: "More than €50,000" },
+      { value: "unter_2000", label: "Under \u20ac2,000" },
+      { value: "2000_10000", label: "\u20ac2,000\u201310,000" },
+      { value: "10000_50000", label: "\u20ac10,000\u201350,000" },
+      { value: "ueber_50000", label: "More than \u20ac50,000" },
       { value: "unklar", label: "Still unclear" }
     ],
-    description: "Even small budgets can deliver progress – funding programmes can additionally help. A rough estimate is enough."
+    description: "Even small budgets can deliver progress \u2013 funding programmes can additionally help. A rough estimate is enough."
   },
   {
     key: "marktposition",
@@ -529,7 +503,7 @@ const fields = [
       { value: "nachzuegler", label: "Laggard / catching up" },
       { value: "unsicher", label: "Hard to assess" }
     ],
-    description: "This assessment helps to better classify your results in the report – for example in terms of speed of action, budget and potentials."
+    description: "This assessment helps to better classify your results in the report \u2013 for example in terms of speed of action, budget and potentials."
   },
   {
     key: "benchmark_wettbewerb",
@@ -554,16 +528,16 @@ const fields = [
       { value: "zufall", label: "More by chance/unscheduled" },
       { value: "unbekannt", label: "No clear strategy" }
     ],
-    description: "Whether new ideas, products or digital solutions: structured innovation paths – internal or external – make it easier to deploy AI in a targeted way and continue to develop it."
+    description: "Whether new ideas, products or digital solutions: structured innovation paths \u2013 internal or external \u2013 make it easier to deploy AI in a targeted way and continue to develop it."
   },
   {
     key: "risikofreude",
-    label: "How risk‑taking is your company when it comes to innovation? (1 = not very, 5 = very)",
+    label: "How risk\u2011taking is your company when it comes to innovation? (1 = not very, 5 = very)",
     type: "slider",
     min: 1,
     max: 5,
     step: 1,
-    description: "Are you more safety‑oriented or open to bold new paths when it comes to new ideas and innovation?"
+    description: "Are you more safety\u2011oriented or open to bold new paths when it comes to new ideas and innovation?"
   },
 
   // -------------------------------------------------------------------------
@@ -577,8 +551,8 @@ const fields = [
     type: "select",
     options: [
       { value: "under_2", label: "Under 2 hours" },
-      { value: "2_5", label: "2–5 hours" },
-      { value: "5_10", label: "5–10 hours" },
+      { value: "2_5", label: "2\u20135 hours" },
+      { value: "5_10", label: "5\u201310 hours" },
       { value: "over_10", label: "More than 10 hours" }
     ],
     description: "This helps tailor recommendations to your available time."
@@ -595,7 +569,7 @@ const fields = [
       { value: "accounting", label: "Accounting (e.g. Xero, Lexware)" },
       { value: "none", label: "None / other" }
     ],
-    description: "Multiple selections allowed – guides integration and tool suggestions."
+    description: "Multiple selections allowed \u2013 guides integration and tool suggestions."
   },
   {
     key: "regulated_industry",
@@ -622,16 +596,16 @@ const fields = [
       { value: "ethics_regulation", label: "Ethical & legal foundations" },
       { value: "none", label: "None / not sure" }
     ],
-    description: "Multiple selections possible – helps recommend suitable training."
+    description: "Multiple selections possible \u2013 helps recommend suitable training."
   },
   {
     key: "vision_priority",
     label: "Which aspect of your vision is most important to you?",
     type: "select",
     options: [
-      { value: "gpt_services", label: "GPT‑based services for SMEs" },
+      { value: "gpt_services", label: "GPT\u2011based services for SMEs" },
       { value: "customer_service", label: "Improve customer service" },
-      { value: "data_products", label: "Create new data‑driven products" },
+      { value: "data_products", label: "Create new data\u2011driven products" },
       { value: "process_automation", label: "Automate processes" },
       { value: "market_leadership", label: "Achieve market leadership" },
       { value: "unspecified", label: "No preference / unsure" }
@@ -639,7 +613,7 @@ const fields = [
     description: "Helps prioritise recommendations."
   },
 
-  // --- New fields for Gold‑Standard: Strategy & Governance ---
+  // --- New fields for Gold\u2011Standard: Strategy & Governance ---
   {
     key: "strategic_goals",
     label: "What specific goals do you pursue with AI?",
@@ -656,14 +630,14 @@ const fields = [
       { value: "medium", label: "Medium (partly structured or incomplete)" },
       { value: "low", label: "Low (unstructured, many gaps)" }
     ],
-    description: "Well‑maintained data are the basis for successful AI projects. Choose how clean and structured your data sources are."
+    description: "Well\u2011maintained data are the basis for successful AI projects. Choose how clean and structured your data sources are."
   },
   {
     key: "ai_roadmap",
     label: "Do you already have an AI roadmap or strategy?",
     type: "select",
     options: [
-      { value: "yes", label: "Yes – already implemented" },
+      { value: "yes", label: "Yes \u2013 already implemented" },
       { value: "planning", label: "In planning" },
       { value: "no", label: "Not yet available" }
     ],
@@ -691,7 +665,7 @@ const fields = [
       { value: "rather_reluctant", label: "Rather reluctant" },
       { value: "very_reluctant", label: "Very reluctant" }
     ],
-    description: "An innovation‑friendly company culture makes it easier to introduce new technologies like AI."
+    description: "An innovation\u2011friendly company culture makes it easier to introduce new technologies like AI."
   },
 
   // Block 5: Datenschutz & Absenden
@@ -733,7 +707,7 @@ const blocks = [
     name: "Strategy & Governance",
     keys: ["strategic_goals", "data_quality", "ai_roadmap", "governance", "innovation_culture"]
   },
-  // New block for resources & preferences – collects optional information
+  // New block for resources & preferences \u2013 collects optional information
   // on time capacity, existing tools, regulated industries, training interests
   // and vision priority to refine the report.
   {
@@ -778,7 +752,7 @@ function showProgress(blockIdx) {
   el.innerHTML = `<div class="progress-bar">
     <div class="progress-bar-inner" style="width:${Math.round((blockIdx+1)/blocks.length*100)}%"></div>
   </div>
-  <div class="progress-label">Step ${blockIdx+1} / ${blocks.length} – <b>${blocks[blockIdx].name}</b></div>`;
+  <div class="progress-label">Step ${blockIdx+1} / ${blocks.length} \u2013 <b>${blocks[blockIdx].name}</b></div>`;
 }
 
 function renderBlock(blockIdx) {
@@ -1006,35 +980,30 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function submitAllBlocks() {
-  const token = (function(){ try { return localStorage.getItem("jwt") || null; } catch(e){ return null; } })();
-  const form = document.getElementById("formbuilder");
-
-  if (!token || tokenIsExpired(token)) {
-    if (form) {
-      form.insertAdjacentHTML("beforeend",
-        `<div class="form-error" style="margin-top:12px">
-           Your session has expired. <a href="/login.html">Please log in again</a>
-           before submitting the analysis.
-         </div>`);
-    }
-    try { localStorage.removeItem("jwt"); } catch(e){}
-    return;
-  }
-
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "en";
 
+  const form = document.getElementById("formbuilder");
   if (form) {
-    const buttons = form.querySelectorAll("button");
-    buttons.forEach(b => { b.disabled = true; });
+    form.querySelectorAll("button").forEach(b => { b.disabled = true; });
     form.innerHTML = `
       <h2>Thank you for your answers!</h2>
       <div class="success-msg" style="margin-top:10px;">
         Your AI analysis is now being created.<br>
-        Once finished, you will receive your individual report as a PDF by e‑mail.<br>
+        Once finished, you will receive your individual report as a PDF by e-mail.<br>
         You can now close this window.
       </div>
     `;
+  }
+
+  const token = (function(){ try { return localStorage.getItem("jwt") || null; } catch(e){ return null; } })();
+  if (!token) {
+    if (form) form.insertAdjacentHTML("beforeend",
+      `<div class="form-error" style="margin-top:12px">
+         Your session has expired. <a href="/login.html">Please log in again</a> 
+         if you want to run another analysis.
+       </div>`);
+    return;
   }
 
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
@@ -1048,24 +1017,17 @@ function submitAllBlocks() {
       try { localStorage.removeItem("jwt"); } catch(e){}
       if (form) form.insertAdjacentHTML("beforeend",
         `<div class="form-error" style="margin-top:12px">
-           Your session has expired. <a href="/login.html">Please log in again</a>
+           Your session has expired. <a href="/login.html">Please log in again</a> 
            if you want to run another analysis.
          </div>`);
       return;
     }
-    if (!res.ok) {
-      if (form) form.insertAdjacentHTML("beforeend",
-        `<div class="form-error" style="margin-top:12px">
-           Unexpected error (${res.status}). Please try again later or contact support.
-         </div>`);
-    }
-  }).catch((err) => {
-    if (form) form.insertAdjacentHTML("beforeend",
-      `<div class="form-error" style="margin-top:12px">
-         Network error. Please check your connection and try again.
-       </div>`);
-  });
-} (EN) – Full descriptions for all fields ===
+  }).catch(() => { /* ignore */ });
+
+  // try { localStorage.removeItem(autosaveKey); } catch(e){}
+}
+
+// === TEXT OVERLAY (EN) \u2013 Full descriptions for all fields ===
 const TEXTS_EN = {
   branche: {
     label: "In which industry is your company active?",
@@ -1144,7 +1106,7 @@ const TEXTS_EN = {
   ki_potenzial: {
     label: "Where do you see the greatest potential for AI in your company?",
     placeholder: "e.g. faster reporting, personalised offers, cost reduction through automation, new services ...",
-    description: "Where do you see the greatest potential for AI in your company? Feel free to write freely – everything is welcome."
+    description: "Where do you see the greatest potential for AI in your company? Feel free to write freely \u2013 everything is welcome."
   },
   usecase_priority: {
     label: "In which area should AI be introduced first?",
@@ -1152,15 +1114,15 @@ const TEXTS_EN = {
   },
   ki_geschaeftsmodell_vision: {
     label: "How could AI fundamentally change your business model or industry?",
-    description: "What changes or new possibilities do you see in the long term through AI? This is about your bigger vision – whether concrete or visionary."
+    description: "What changes or new possibilities do you see in the long term through AI? This is about your bigger vision \u2013 whether concrete or visionary."
   },
   moonshot: {
-    label: "What would be a bold breakthrough – your AI vision in 3 years?",
+    label: "What would be a bold breakthrough \u2013 your AI vision in 3 years?",
     description: "What would be your visionary AI future in 3 years? Think big."
   },
   datenschutzbeauftragter: {
     label: "Do you have a data protection officer in your company?",
-    description: "A data protection officer is often mandatory – whether internal or external. What's your situation?"
+    description: "A data protection officer is often mandatory \u2013 whether internal or external. What's your situation?"
   },
   technische_massnahmen: {
     label: "Which technical data protection measures have you implemented?",
@@ -1168,7 +1130,7 @@ const TEXTS_EN = {
   },
   folgenabschaetzung: {
     label: "Has a data protection impact assessment (DPIA) been carried out for AI applications?",
-    description: "For many AI applications, a so-called 'DPIA' (data protection impact assessment) is required or recommended under the GDPR – e.g. when sensitive data, automated decisions or risks for data subjects are involved."
+    description: "For many AI applications, a so-called 'DPIA' (data protection impact assessment) is required or recommended under the GDPR \u2013 e.g. when sensitive data, automated decisions or risks for data subjects are involved."
   },
   meldewege: {
     label: "Are there defined reporting procedures for data protection incidents?",
@@ -1192,19 +1154,19 @@ const TEXTS_EN = {
   },
   interesse_foerderung: {
     label: "Would targeted funding opportunities for your projects be of interest?",
-    description: "Would you like individual recommendations for funding programmes? If interested, we filter out suitable options – with no advertising or obligation."
+    description: "Would you like individual recommendations for funding programmes? If interested, we filter out suitable options \u2013 with no advertising or obligation."
   },
   erfahrung_beratung: {
     label: "Have you already received advice on digitalisation/AI?",
-    description: "Have you already used external advice on AI, digitalisation or IT strategy – for example through funding projects, chambers, consultants or tech partners? This experience can strengthen your starting position."
+    description: "Have you already used external advice on AI, digitalisation or IT strategy \u2013 for example through funding projects, chambers, consultants or tech partners? This experience can strengthen your starting position."
   },
   investitionsbudget: {
     label: "What budget do you plan for AI/digitalisation next year?",
-    description: "Even small budgets can deliver progress – funding programmes can additionally help. A rough estimate is enough."
+    description: "Even small budgets can deliver progress \u2013 funding programmes can additionally help. A rough estimate is enough."
   },
   marktposition: {
     label: "How do you assess your position in the market?",
-    description: "This assessment helps to better classify your results in the report – for example in terms of speed of action, budget and potentials."
+    description: "This assessment helps to better classify your results in the report \u2013 for example in terms of speed of action, budget and potentials."
   },
   benchmark_wettbewerb: {
     label: "Do you compare your digitalisation/AI readiness with competitors?",
@@ -1212,7 +1174,7 @@ const TEXTS_EN = {
   },
   innovationsprozess: {
     label: "How do innovations arise in your company?",
-    description: "Whether new ideas, products or digital solutions: structured innovation paths – internal or external – make it easier to deploy AI in a targeted way and continue to develop it."
+    description: "Whether new ideas, products or digital solutions: structured innovation paths \u2013 internal or external \u2013 make it easier to deploy AI in a targeted way and continue to develop it."
   },
   risikofreude: {
     label: "How risk-taking is your company when it comes to innovation? (1 = not very, 5 = very)",
