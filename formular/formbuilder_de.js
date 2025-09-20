@@ -34,6 +34,16 @@ function isAdmin(token) {
 /* ============================================================================
    Helpers (Validierung & Checkbox-Labels)
    ========================================================================== */
+function tokenIsExpired(token){
+  try { 
+    const { exp } = JSON.parse(atob(token.split('.')[1])); 
+    return exp ? (Date.now()/1000) > exp : false; 
+  } catch(e){ 
+    return false; 
+  }
+}
+
+
 
 // Robuste Aufteilung von Checkbox-Labels in Hauptlabel + Kurzbeschreibung.
 // 1) "(...)" wird bevorzugt geparst; 2) Fallback: 2+ Spaces oder Trennstrich
@@ -722,14 +732,27 @@ window.addEventListener("DOMContentLoaded", () => {
 
 /* Submit */
 function submitAllBlocks() {
-  // Daten sammeln
+  const token = (function(){ try { return localStorage.getItem("jwt") || null; } catch(e){ return null; } })();
+  const form = document.getElementById("formbuilder");
+
+  if (!token || tokenIsExpired(token)) {
+    if (form) {
+      form.insertAdjacentHTML("beforeend",
+        `<div class="form-error" style="margin-top:12px">
+           Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>,
+           bevor Sie die Analyse absenden.
+         </div>`);
+    }
+    try { localStorage.removeItem("jwt"); } catch(e){}
+    return;
+  }
+
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "de";
 
-  // UI sofort updaten: Danke-Info zeigen und Buttons deaktivieren
-  const form = document.getElementById("formbuilder");
   if (form) {
-    form.querySelectorAll("button").forEach(b => { b.disabled = true; });
+    const buttons = form.querySelectorAll("button");
+    buttons.forEach(b => { b.disabled = true; });
     form.innerHTML = `
       <h2>Vielen Dank für Ihre Angaben!</h2>
       <div class="success-msg" style="margin-top:10px;">
@@ -740,19 +763,6 @@ function submitAllBlocks() {
     `;
   }
 
-  // 🔐 Token JETZT frisch lesen (kein globales const token!)
-  const token = (function(){ try { return localStorage.getItem("jwt") || null; } catch(e){ return null; } })();
-  if (!token) {
-    // Danke-Screen bleibt stehen – nur Hinweis ergänzen
-    if (form) form.insertAdjacentHTML("beforeend",
-      `<div class="form-error" style="margin-top:12px">
-         Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>, 
-         wenn Sie eine weitere Analyse durchführen möchten.
-       </div>`);
-    return;
-  }
-
-  // Request im Hintergrund starten (kein Redirect)
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
@@ -764,20 +774,24 @@ function submitAllBlocks() {
       try { localStorage.removeItem("jwt"); } catch(e){}
       if (form) form.insertAdjacentHTML("beforeend",
         `<div class="form-error" style="margin-top:12px">
-           Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>, 
+           Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>,
            wenn Sie eine weitere Analyse durchführen möchten.
          </div>`);
       return;
     }
-    // Erfolgsfall: nichts weiter – UI zeigt bereits die Info
-  }).catch(() => {
-    // Fehlerfall ignorieren – Admin-Mail/PDF wird separat gehandhabt
+    if (!res.ok) {
+      if (form) form.insertAdjacentHTML("beforeend",
+        `<div class="form-error" style="margin-top:12px">
+           Unerwarteter Fehler (${res.status}). Bitte später erneut versuchen oder den Support informieren.
+         </div>`);
+    }
+  }).catch((err) => {
+    if (form) form.insertAdjacentHTML("beforeend",
+      `<div class="form-error" style="margin-top:12px">
+         Netzwerkfehler. Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut.
+       </div>`);
   });
-
-  // (Optional) Autosave NICHT löschen während der Testphase
-  // try { localStorage.removeItem(autosaveKey); } catch(e){}
-}
-// === TEXT OVERLAY (DE) – nur Texte, keine Logik! ===
+} (DE) – nur Texte, keine Logik! ===
 const TEXTS_DE = {
   branche: {
     label: "In welcher Branche ist Ihr Unternehmen tätig?",

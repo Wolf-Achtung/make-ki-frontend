@@ -19,6 +19,32 @@ function isAdmin(token) {
 /* ============================================================================
    Helpers (validation & checkbox labels)
    ========================================================================== */
+function tokenIsExpired(token){
+  try { 
+    const { exp } = JSON.parse(atob(token.split('.')[1])); 
+    return exp ? (Date.now()/1000) > exp : false; 
+  } catch(e){ 
+    return false; 
+  }
+}
+
+
+function showSessionHint() {
+  const el = document.getElementById("formbuilder");
+  if (!el) return;
+  el.insertAdjacentHTML("beforeend",
+    `<div class="form-error" style="margin-top:12px">
+       Your session has expired. <a href="/login.html">Please log in again</a> 
+       if you want to run another analysis.
+     </div>`);
+}
+
+
+function getToken() {
+  try { return localStorage.getItem("jwt") || null; } catch(e){ return null; }
+}
+
+
 
 function splitLabelAndHint(raw) {
   if (!raw) return ["", ""];
@@ -980,30 +1006,35 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function submitAllBlocks() {
+  const token = (function(){ try { return localStorage.getItem("jwt") || null; } catch(e){ return null; } })();
+  const form = document.getElementById("formbuilder");
+
+  if (!token || tokenIsExpired(token)) {
+    if (form) {
+      form.insertAdjacentHTML("beforeend",
+        `<div class="form-error" style="margin-top:12px">
+           Your session has expired. <a href="/login.html">Please log in again</a>
+           before submitting the analysis.
+         </div>`);
+    }
+    try { localStorage.removeItem("jwt"); } catch(e){}
+    return;
+  }
+
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "en";
 
-  const form = document.getElementById("formbuilder");
   if (form) {
-    form.querySelectorAll("button").forEach(b => { b.disabled = true; });
+    const buttons = form.querySelectorAll("button");
+    buttons.forEach(b => { b.disabled = true; });
     form.innerHTML = `
       <h2>Thank you for your answers!</h2>
       <div class="success-msg" style="margin-top:10px;">
         Your AI analysis is now being created.<br>
-        Once finished, you will receive your individual report as a PDF by e-mail.<br>
+        Once finished, you will receive your individual report as a PDF by e‑mail.<br>
         You can now close this window.
       </div>
     `;
-  }
-
-  const token = (function(){ try { return localStorage.getItem("jwt") || null; } catch(e){ return null; } })();
-  if (!token) {
-    if (form) form.insertAdjacentHTML("beforeend",
-      `<div class="form-error" style="margin-top:12px">
-         Your session has expired. <a href="/login.html">Please log in again</a> 
-         if you want to run another analysis.
-       </div>`);
-    return;
   }
 
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
@@ -1017,17 +1048,24 @@ function submitAllBlocks() {
       try { localStorage.removeItem("jwt"); } catch(e){}
       if (form) form.insertAdjacentHTML("beforeend",
         `<div class="form-error" style="margin-top:12px">
-           Your session has expired. <a href="/login.html">Please log in again</a> 
+           Your session has expired. <a href="/login.html">Please log in again</a>
            if you want to run another analysis.
          </div>`);
       return;
     }
-  }).catch(() => { /* ignore */ });
-
-  // try { localStorage.removeItem(autosaveKey); } catch(e){}
-}
-
-// === TEXT OVERLAY (EN) – Full descriptions for all fields ===
+    if (!res.ok) {
+      if (form) form.insertAdjacentHTML("beforeend",
+        `<div class="form-error" style="margin-top:12px">
+           Unexpected error (${res.status}). Please try again later or contact support.
+         </div>`);
+    }
+  }).catch((err) => {
+    if (form) form.insertAdjacentHTML("beforeend",
+      `<div class="form-error" style="margin-top:12px">
+         Network error. Please check your connection and try again.
+       </div>`);
+  });
+} (EN) – Full descriptions for all fields ===
 const TEXTS_EN = {
   branche: {
     label: "In which industry is your company active?",
