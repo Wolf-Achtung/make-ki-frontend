@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>KI-Status Check</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .form-container { background: #f5faff; border-radius: 22px; box-shadow: 0 2px 24px #00427512; padding: 30px 0 16px 0; max-width: 660px; margin: 40px auto 0 auto; }
+    .form-header img { max-width: 160px; }
+    .form-header h1 { color: #062452; font-size: 2.2em; margin-bottom: 10px;}
+    .footer { margin-top: 40px; color: #666; }
+    .guidance { color: #204769; font-size: 1em; margin-bottom: 8px; margin-top: -4px; }
+    @media (max-width: 650px) { .form-container { padding: 10px; } }
+    /* Sofort-Fix: Seite zunächst verstecken, bis Gate „grün“ sagt */
+    html.gated-hide body { opacity: 0; }
+  </style>
+
+  <!-- GATEKEEPER START (DE) -->
+  <script>
+    (function() {
+      // Seite verbergen, bis geprüft
+      document.documentElement.classList.add('gated-hide');
+
+      var LOGIN_URL = "/"; // Ziel bei fehlendem Login
+
+      function getParam(name){
+        var m = new RegExp("[?&]"+name+"=([^&#]*)").exec(location.search);
+        return m ? decodeURIComponent(m[1].replace(/\+/g,"%20")) : null;
+      }
+
+      // Token-Quelle: JWT im localStorage oder Kurzzeit-Token ?access=...
+      var jwt = null;
+      try { jwt = localStorage.getItem("jwt"); } catch(e) {}
+      var access = getParam("access");
+
+      // Ohne Token → zurück zum Login mit next
+      if (!jwt && !access) {
+        var next = encodeURIComponent(location.pathname + location.search);
+        location.replace(LOGIN_URL + "?next=" + next);
+        return; // Seite bleibt verborgen
+      }
+
+      // Optional: ?access aus der URL entfernen
+      if (access) {
+        var clean = location.pathname + location.search
+          .replace(/([?&])access=[^&#]*(&|$)/, function(_, p1, p2){ return (p1==='?'? (p2? '?':'') : (p2? p1:'') ); })
+          .replace(/[?&]$/, '');
+        history.replaceState(null, "", clean);
+      }
+
+      // Für nachgeladene Skripte (z. B. fetch Authorization)
+      window.__AUTH_HEADER = "Bearer " + (jwt || access);
+
+      // Gate bestanden → Seite anzeigen
+      document.documentElement.classList.remove('gated-hide');
+    })();
+  </script>
+  <!-- GATEKEEPER END -->
+</head>
+<body>
+<div id="progress"></div>
+<div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
+  <label for="lang-select" style="font-weight:600; font-size:1.01em; ">Sprache: </label>
+  <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em; width:auto; min-width:110px; max-width:190px;">
+    <option value="de" selected>Deutsch</option>
+    <option value="en">English</option>
+  </select>
+</div>
+
+  <div class="form-container">
+    <div class="form-header" style="text-align:center;">
+      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="margin-bottom:10px;" />
+      <h1>KI-Checkup-Report</h1>
+    </div>
+    <div id="formbuilder" style="max-width:600px;margin:0 auto;">
+      <!-- Formularfelder und Datenschutz werden von formbuilder.js erzeugt -->
+    </div>
+    <div id="feedback"></div>
+  </div>
+  <footer class="footer">
+    © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
+    Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br>
+    Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.<br>
+    Logos & Design sind urheberrechtlich geschützt. Nutzung & Bearbeitung der bereitgestellten Listen, Templates und Prompts ausschließlich für Kunden & Partner von KI-Sicherheit.jetzt.
+  </footer>
+
+  <!-- Guidance-Helper, damit du description einfach nutzen kannst -->
+  <script>
+    window.renderGuidance = function(description) {
+      if (!description) return '';
+      return `<div class="guidance">${description}</div>`;
+    }
+  </script>
+
+  <script src="formbuilder_de.js"></script>
+  <script>
+    document.getElementById("lang-select").addEventListener("change", function(e) {
+      const lang = e.target.value;
+      if (lang === "en") {
+        window.location.href = "index_en.html";
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+
+</body>
+</html>
