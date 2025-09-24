@@ -52,30 +52,32 @@
   <!-- GATEKEEPER END -->
 </head>
 <body>
-<div id="progress"></div>
-<div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
-  <label for="lang-select" style="font-weight:600; font-size:1.01em; ">Language: </label>
-  <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em; width:auto; min-width:110px; max-width:190px;">
-    <option value="de">Deutsch</option>
-    <option value="en" selected>English</option>
-  </select>
-</div>
+  <div id="progress"></div>
+
+  <div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
+    <label for="lang-select" style="font-weight:600; font-size:1.01em;">Language: </label>
+    <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em; width:auto; min-width:110px; max-width:190px;">
+      <option value="de">Deutsch</option>
+      <option value="en" selected>English</option>
+    </select>
+  </div>
 
   <div class="form-container">
     <div class="form-header" style="text-align:center;">
       <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="margin-bottom:10px;" />
       <h1>AI Readiness Check</h1>
     </div>
-    <div id="formbuilder" style="max-width:600px;margin:0 auto;">
-      <!-- Form will be injected by formbuilder_en.js -->
-    </div>
+
+    <!-- IMPORTANT: correct container ID for the EN formbuilder -->
+    <div id="ai-form-en" style="max-width:600px;margin:0 auto;"><!-- Form is injected by formbuilder_en.js --></div>
+
     <div id="feedback"></div>
   </div>
+
   <footer class="footer">
     © KI-Sicherheit.jetzt | TÜV-certified AI Management: Wolf Hohl 2025<br>
     Content is provided for AI readiness & privacy advisory purposes. Reuse or publication requires written consent.
-    <br>
-    <a href="privacy.html">Privacy Policy</a>
+    <br><a href="privacy.html">Privacy Policy</a>
   </footer>
 
   <script>
@@ -85,17 +87,13 @@
     }
   </script>
 
-  <script src="formbuilder_en.js"></script>
-  <script>
+  <!-- Important: defer, so the container exists when the script runs -->
+  <script src="formbuilder_en.js" defer></script>
+
+  <script defer>
     document.getElementById("lang-select").addEventListener("change", function(e) {
-      const lang = e.target.value;
-      if (lang === "de") {
-        window.location.href = "index.html";
-      } else {
-        window.location.href = "index_en.html";
-      }
+      window.location.href = (e.target.value === "de") ? "index.html" : "index_en.html";
     });
   </script>
-
 </body>
 </html>

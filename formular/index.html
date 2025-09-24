@@ -12,14 +12,13 @@
     .footer { margin-top: 40px; color: #666; }
     .guidance { color: #204769; font-size: 1em; margin-bottom: 8px; margin-top: -4px; }
     @media (max-width: 650px) { .form-container { padding: 10px; } }
-    /* Sofort-Fix: Seite zunächst verstecken, bis Gate „grün“ sagt */
+    /* Seite bis Auth-Check verbergen */
     html.gated-hide body { opacity: 0; }
   </style>
 
   <!-- GATEKEEPER START (DE) -->
   <script>
     (function() {
-      // Seite verbergen, bis geprüft
       document.documentElement.classList.add('gated-hide');
 
       var LOGIN_URL = "/"; // Ziel bei fehlendem Login
@@ -34,7 +33,6 @@
       try { jwt = localStorage.getItem("jwt"); } catch(e) {}
       var access = getParam("access");
 
-      // Ohne Token → zurück zum Login mit next
       if (!jwt && !access) {
         var next = encodeURIComponent(location.pathname + location.search);
         location.replace(LOGIN_URL + "?next=" + next);
@@ -59,25 +57,28 @@
   <!-- GATEKEEPER END -->
 </head>
 <body>
-<div id="progress"></div>
-<div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
-  <label for="lang-select" style="font-weight:600; font-size:1.01em; ">Sprache: </label>
-  <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em; width:auto; min-width:110px; max-width:190px;">
-    <option value="de" selected>Deutsch</option>
-    <option value="en">English</option>
-  </select>
-</div>
+  <div id="progress"></div>
+
+  <div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
+    <label for="lang-select" style="font-weight:600; font-size:1.01em;">Sprache: </label>
+    <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em; width:auto; min-width:110px; max-width:190px;">
+      <option value="de" selected>Deutsch</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 
   <div class="form-container">
     <div class="form-header" style="text-align:center;">
       <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="margin-bottom:10px;" />
       <h1>KI-Checkup-Report</h1>
     </div>
-    <div id="formbuilder" style="max-width:600px;margin:0 auto;">
-      <!-- Formularfelder und Datenschutz werden von formbuilder.js erzeugt -->
-    </div>
+
+    <!-- WICHTIG: richtige Container-ID für den DE-Formbuilder -->
+    <div id="ki-form-de" style="max-width:600px;margin:0 auto;"><!-- Form wird von formbuilder_de.js gerendert --></div>
+
     <div id="feedback"></div>
   </div>
+
   <footer class="footer">
     © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
     Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br>
@@ -85,7 +86,7 @@
     Logos & Design sind urheberrechtlich geschützt. Nutzung & Bearbeitung der bereitgestellten Listen, Templates und Prompts ausschließlich für Kunden & Partner von KI-Sicherheit.jetzt.
   </footer>
 
-  <!-- Guidance-Helper, damit du description einfach nutzen kannst -->
+  <!-- Guidance-Helper -->
   <script>
     window.renderGuidance = function(description) {
       if (!description) return '';
@@ -93,17 +94,13 @@
     }
   </script>
 
-  <script src="formbuilder_de.js"></script>
-  <script>
+  <!-- Wichtig: defer, damit der Container bereits im DOM ist -->
+  <script src="formbuilder_de.js" defer></script>
+
+  <script defer>
     document.getElementById("lang-select").addEventListener("change", function(e) {
-      const lang = e.target.value;
-      if (lang === "en") {
-        window.location.href = "index_en.html";
-      } else {
-        window.location.href = "index.html";
-      }
+      window.location.href = (e.target.value === "en") ? "index_en.html" : "index.html";
     });
   </script>
-
 </body>
 </html>
