@@ -63,7 +63,7 @@ function validateBlockDetailed(blockIdx) {
   const block = blocks[blockIdx];
   const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen",
                              // Felder des neuen Ressourcen-Blocks sind optional und dürfen leer bleiben
-                             "zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet","zeitbudget_slider","tool_affinitaet"]);
+                             "zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"]);
   const missing = [];
   block.keys.forEach(k => markInvalid(k, false)); // alte Marker entfernen
 
@@ -89,21 +89,11 @@ function getFeedbackBox(){
 /* ============================================================================
    FELDER (vollständig)
    ========================================================================== */
-const BLOCK_INTRO = [
-  "Hier erfassen wir Basisdaten (E‑Mail, Branche, Größe, Standort). Sie steuern die Personalisierung des Reports und die passenden Förder‑ & Compliance‑Hinweise.",
-  "Status‑Quo zu Prozessen, Daten und bisherigen KI‑Erfahrungen. Damit kalibrieren wir Quick Wins und die Start‑Roadmap.",
-  "Ziele & wichtigste Anwendungsfälle: Was soll KI konkret leisten? Das fokussiert Empfehlungen und priorisiert Maßnahmen.",
-  "Ressourcen & Präferenzen (Zeit, Tool‑Affinität, vorhandene Lösungen). So passen wir Empfehlungen an Machbarkeit & Tempo an.",
-  "Recht & Datenschutz (Opt‑in): Notwendig für den sicheren Versand und für DSGVO/EU‑AI‑Act‑konforme Auswertung.",
-  "Projektpriorisierung & Roadmap‑Hinweise: Gewichten Sie, was zuerst kommen soll – das fließt direkt in die Roadmap ein.",
-  "Abschließen & Absenden: Kurzer Check, Einwilligung bestätigen und den personalisierten Report starten."
-];
+const BLOCK_INTRO = ["Hier erfassen wir Basisdaten (E‑Mail, Branche, Größe, Standort). Sie steuern die Personalisierung des Reports und die passenden Förder‑ & Compliance‑Hinweise.", "Status‑Quo zu Prozessen, Daten und bisherigen KI‑Erfahrungen. Damit kalibrieren wir Quick Wins und die Start‑Roadmap.", "Ziele & wichtigste Anwendungsfälle: Was soll KI konkret leisten? Das fokussiert Empfehlungen und priorisiert Maßnahmen.", "Ressourcen & Präferenzen (Zeit, Tool‑Affinität, vorhandene Lösungen). So passen wir Empfehlungen an Machbarkeit & Tempo an.", "Recht & Datenschutz (Opt‑in): Notwendig für den sicheren Versand und für DSGVO/EU‑AI‑Act‑konforme Auswertung.", "Projektpriorisierung & Roadmap‑Hinweise: Gewichten Sie, was zuerst kommen soll – das fließt direkt in die Roadmap ein.", "Abschließen & Absenden: Kurzer Check, Einwilligung bestätigen und den personalisierten Report starten."];
 
-// Intro box style (light blue)
 (function(){
   const css = `.section-intro{background:#E9F0FB;border:1px solid #D4DDED;border-radius:10px;padding:10px 12px;margin:8px 0 12px;color:#123B70}`;
-  const s = document.createElement('style'); s.type='text/css';
-  s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
+  const s = document.createElement('style'); s.type='text/css'; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
 })();
 const fields = [
   // Block 1: Unternehmensinfos
@@ -456,13 +446,7 @@ const fields = [
     description: "Hilft, Empfehlungen passend zu priorisieren."
   },
 
-  
-  // --- NEU: Schieberegler (Präferenzen) ---
-  { key: "zeitbudget_slider", label: "Zeitbudget (Std/Woche, 0–10)", type: "slider", min: 0, max: 10, step: 1,
-    description: "Wie viel Zeit steht pro Woche für KI-Projekte zur Verfügung? (0–10 Stunden)" },
-  { key: "tool_affinitaet", label: "Tool-Affinität (1–5)", type: "slider", min: 1, max: 5, step: 1,
-    description: "Wie gerne arbeiten Sie mit neuen Tools? 1 = ungern, 5 = sehr gerne." },
-// Block 6: Datenschutz & Absenden (→ häufig fehlend)
+  // Block 6: Datenschutz & Absenden (→ häufig fehlend)
   { key:"datenschutz", label:"Ich habe die <a href='datenschutz.html' onclick='window.open(this.href,\"DatenschutzPopup\",\"width=600,height=700\"); return false;'>Datenschutzhinweise</a> gelesen und bin einverstanden.", type:"privacy",
     description:"Ihre Angaben werden ausschließlich zur Erstellung Ihrer persönlichen Auswertung genutzt." }
 ];
@@ -477,7 +461,7 @@ const blocks = [
   { name:"Strategie & Governance", keys:["strategische_ziele","datenqualitaet","ai_roadmap","governance","innovationskultur"] },
   // Neuer Block für Ressourcen & Präferenzen – enthält Zeitbudget, Tools, regulierte Branche,
   // Trainingsinteressen und Vision-Priorität.  Alle Felder sind optional.
-  { name:"Ressourcen & Präferenzen", keys:["zeitbudget_slider","tool_affinitaet","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"] },
+  { name:"Ressourcen & Präferenzen", keys:["zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"] },
   { name:"Rechtliches & Förderung", keys:["datenschutzbeauftragter","technische_massnahmen","folgenabschaetzung","meldewege","loeschregeln","ai_act_kenntnis","ki_hemmnisse","bisherige_foerdermittel","interesse_foerderung","erfahrung_beratung","investitionsbudget","marktposition","benchmark_wettbewerb","innovationsprozess","risikofreude"] },
   { name:"Datenschutz & Absenden", keys:["datenschutz"] }
 ];
@@ -646,11 +630,10 @@ function handleFormEvents(){
   });
   root.addEventListener("click", (e) => {
     if (e.target.id === "btn-reset"){
-      localStorage.removeItem(autosaveKey);
-      formData = {}; renderAllBlocks(); setTimeout(handleFormEvents,20);
-      window.scrollTo({top:0,behavior:"smooth"}); return;
+      localStorage.removeItem(autosaveKey); formData = {}; renderAllBlocks(); setTimeout(handleFormEvents,20);
+      window.scrollTo({top:0,behavior:"smooth"});
     }
-    if (e.target.id === "btn-send"){ submitAllBlocks(); return; }
+    if (e.target.id === "btn-send"){ submitAllBlocks(); }
   });
 }
 
@@ -658,26 +641,7 @@ function handleFormEvents(){
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
   renderAllBlocks();
-  setTimeout(() => {
-    for (const f of fields){
-      const el = document.getElementById(f.key);
-      if (!el) continue;
-      if (f.type==="checkbox"){
-        (formData[f.key]||[]).forEach(v => {
-          const box = document.querySelector(`input[name="${f.key}"][value="${v}"]`);
-          if (box) box.checked = true;
-        });
-      } else if (f.type==="slider"){
-        const val = formData[f.key] ?? f.min ?? 1;
-        el.value = val; if (el.nextElementSibling) el.nextElementSibling.innerText = val;
-      } else if (f.type==="privacy"){
-        el.checked = formData[f.key] === true;
-      } else {
-        if (formData[f.key] !== undefined) el.value = formData[f.key];
-      }
-    }
-    handleFormEvents();
-  }, 20);
+  setTimeout(handleFormEvents, 20);
 });
   renderBlock(currentBlock);
   setTimeout(() => {
@@ -689,11 +653,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
 /* Submit */
 function submitAllBlocks() {
-  // collect all fields (single-page)
   for (const f of fields){
     let v;
     if (f.type==="checkbox"){
-      v = Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).map(e => e.value);
+      v = Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).map(e=>e.value);
     } else if (f.type==="slider"){
       const el = document.getElementById(f.key); v = el ? el.value : f.min || 1;
     } else if (f.type==="privacy"){
@@ -704,40 +667,9 @@ function submitAllBlocks() {
     formData[f.key] = v;
   }
   saveAutosave();
-
-  // validate all blocks and collect missing labels
-  const allMissing = [];
-  for (let i=0;i<blocks.length;i++){
-    const miss = validateBlockDetailed(i);
-    if (miss.length) allMissing.push(...miss);
-  }
-  const fb = getFeedbackBox();
-  if (allMissing.length){
-    if (fb){
-      fb.innerHTML = `<div class="form-error">Bitte ergänzen Sie die folgenden Felder:<ul>${allMissing.map(m => `<li>${m}</li>`).join("")}</ul></div>`;
-      fb.style.display = 'block'; fb.classList.add('error');
-    }
-    const firstInvalid = document.querySelector('.invalid, .invalid-group');
-    if (firstInvalid) firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
-    return;
-  } else if (fb){ fb.innerHTML = ""; fb.style.display='none'; fb.classList.remove('error'); }
-
   // Daten sammeln
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "de";
-  // Mapping Slider → Select-Buckets
-  if (data.zeitbudget_slider !== undefined && (data.zeitbudget === undefined || data.zeitbudget === "")) {
-    const z = Number(data.zeitbudget_slider);
-    if (Number.isFinite(z)) {
-      if (z < 2) data.zeitbudget = "unter_2";
-      else if (z <= 5) data.zeitbudget = "2_5";
-      else if (z <= 10) data.zeitbudget = "5_10";
-      else data.zeitbudget = "ueber_10";
-    }
-  }
-  if (data.tool_affinitaet !== undefined && data.tool_affinitaet !== "") {
-    data.tool_affinitaet = Number(data.tool_affinitaet);
-  }
 
   // UI sofort updaten: Danke-Info zeigen und Buttons deaktivieren
   const form = document.getElementById("formbuilder");
@@ -1009,33 +941,34 @@ function renderAllBlocks(){
   for (let i=0;i<blocks.length;i++){ 
     const block = blocks[i];
     html += `<section class="fb-section"><div class="fb-section-head"><span class="fb-step">Schritt ${i+1}/${blocks.length}</span> – <b>${block.name}</b></div>`;
-    const intro = BLOCK_INTRO[i] || "";
-    if (intro) html += `<div class="section-intro">${intro}</div>`;
+    const __intro = BLOCK_INTRO[i] || "";
+    if (__intro) html += `<div class="section-intro">${__intro}</div>`;
     html += block.keys.map(key => {
       const field = findField(key); if (!field) return "";
       if (field.showIf && !field.showIf(formData)) return "";
-      const guidance = field.description ? `<div class="guidance${field.type==="privacy" ? " important" : ""}">${field.description}</div>` : "";
+      const guidance = field.description ? `<div class="guidance${field.type === "privacy" ? " important" : ""}">${field.description}</div>` : "";
       let input = "";
       switch(field.type){
-        case "select": {
+        case "select": { 
           const selectedValue = formData[field.key] || "";
-          input = `<select id="${field.key}" name="${field.key}"><option value="">Bitte wählen...</option>$\{(field.options||[]).map(opt => {
-            const sel = selectedValue === opt.value ? ' selected' : '';
-            return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
-          }).join("")}`;
+          input = `<select id="${field.key}" name="${field.key}"><option value="">Bitte wählen...</option>` + 
+            (field.options||[]).map(opt => { 
+              const sel = selectedValue === opt.value ? ' selected' : '';
+              return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
+            }).join("") + `</select>`;
         } break;
         case "textarea":
           input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder||""}">${formData[field.key]||""}</textarea>`;
           break;
         case "checkbox":
-          input = `<div class="checkbox-group twocol">$` + 
-            `{(field.options||[]).map(opt => {
+          input = `<div class="checkbox-group twocol">` + 
+            (field.options||[]).map(opt => {
               const label = opt.label || ""; const m = label.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
               const mainLabel = m ? m[1].trim() : label; const hint = m ? m[2].trim() : "";
               const checked = (formData[field.key]||[]).includes(opt.value) ? 'checked' : '';
               const hintHtml = hint ? `<div class="option-example">${hint}</div>` : "";
               return `<label class="checkbox-label"><input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}><span>${mainLabel}</span>${hintHtml}</label>`;
-            }).join("")}` + `</div>`;
+            }).join("") + `</div>`;
           break;
         case "slider":
           const v = formData[field.key] ?? field.min ?? 1;

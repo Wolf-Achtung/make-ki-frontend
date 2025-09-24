@@ -43,7 +43,7 @@ function validateBlockDetailed(blockIdx){
   const block = blocks[blockIdx];
   const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen",
                              // Fields in the new resources block are optional
-                             "time_capacity","existing_tools","regulated_industry","training_interests","vision_priority","time_capacity_slider","tool_affinity"]);
+                             "time_capacity","existing_tools","regulated_industry","training_interests","vision_priority"]);
   const missing = [];
   block.keys.forEach(k => markInvalid(k,false));
   for (const key of block.keys){
@@ -72,21 +72,11 @@ function getFeedbackBox(){
 // bleiben gleich wie in deiner Originaldatei.
 
 // --- Felder wie gehabt (aus deiner bisherigen Datei), KEINE Kürzungen! ---
-const BLOCK_INTRO = [
-  "We collect basic data (email, industry, size, state). This drives report personalisation and relevant funding/compliance notes.",
-  "Current state of processes, data and prior AI usage. This calibrates quick wins and the starter roadmap.",
-  "Goals & key use cases: what should AI achieve? This focuses recommendations and prioritises actions.",
-  "Resources & preferences (time, tool affinity, existing tools). We adapt suggestions to feasibility and pace.",
-  "Legal & privacy (opt‑in): Required for safe delivery and GDPR/EU‑AI‑Act‑aligned processing.",
-  "Project priorities & roadmap hints: indicate what should come first — it directly shapes the roadmap.",
-  "Finish & submit: quick final check, confirm consent, and launch your personalised report."
-];
+const BLOCK_INTRO = ["We collect basic data (email, industry, size, state). This drives report personalisation and relevant funding/compliance notes.", "Current state of processes, data and prior AI usage. This calibrates quick wins and the starter roadmap.", "Goals & key use cases: what should AI achieve? This focuses recommendations and prioritises actions.", "Resources & preferences (time, tool affinity, existing tools). We adapt suggestions to feasibility and pace.", "Legal & privacy (opt‑in): Required for safe delivery and GDPR/EU‑AI‑Act‑aligned processing.", "Project priorities & roadmap hints: indicate what should come first — it directly shapes the roadmap.", "Finish & submit: quick final check, confirm consent, and launch your personalised report."];
 
-// Intro box style (light blue)
 (function(){
   const css = `.section-intro{background:#E9F0FB;border:1px solid #D4DDED;border-radius:10px;padding:10px 12px;margin:8px 0 12px;color:#123B70}`;
-  const s = document.createElement('style'); s.type='text/css';
-  s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
+  const s = document.createElement('style'); s.type='text/css'; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
 })();
 const fields = [
   // Block 1: Company information
@@ -684,13 +674,7 @@ const fields = [
     description: "An innovation‑friendly company culture makes it easier to introduce new technologies like AI."
   },
 
-  
-  // --- NEW: Preference sliders ---
-  { key: "time_capacity_slider", label: "Time budget (hours/week, 0–10)", type: "slider", min: 0, max: 10, step: 1,
-    description: "How much time per week can you dedicate to AI projects? (0–10 hours)" },
-  { key: "tool_affinity", label: "Tool affinity (1–5)", type: "slider", min: 1, max: 5, step: 1,
-    description: "How much do you enjoy working with new tools? 1 = not much, 5 = very much." },
-// Block 5: Datenschutz & Absenden
+  // Block 5: Datenschutz & Absenden
   {
     key: "datenschutz",
     label: "I have read the <a href='privacy.html' onclick='window.open(this.href, \"DatenschutzPopup\", \"width=600,height=700\"); return false;'>privacy notice</a> and agree.",
@@ -734,7 +718,7 @@ const blocks = [
   // and vision priority to refine the report.
   {
     name: "Resources & preferences",
-    keys: ["time_capacity_slider","tool_affinity","existing_tools","regulated_industry","training_interests","vision_priority"]
+    keys: ["time_capacity","existing_tools","regulated_industry","training_interests","vision_priority"]
   },
   {
     name: "Legal & funding",
@@ -968,26 +952,7 @@ function handleFormEvents() {
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
   renderAllBlocks();
-  setTimeout(() => {
-    for (const f of fields){
-      const el = document.getElementById(f.key);
-      if (!el) continue;
-      if (f.type==="checkbox"){
-        (formData[f.key]||[]).forEach(v => {
-          const box = document.querySelector(`input[name="${f.key}"][value="${v}"]`);
-          if (box) box.checked = true;
-        });
-      } else if (f.type==="slider"){
-        const val = formData[f.key] ?? f.min ?? 1;
-        el.value = val; if (el.nextElementSibling) el.nextElementSibling.innerText = val;
-      } else if (f.type==="privacy"){
-        el.checked = formData[f.key] === true;
-      } else {
-        if (formData[f.key] !== undefined) el.value = formData[f.key];
-      }
-    }
-    handleFormEvents();
-  }, 20);
+  setTimeout(handleFormEvents, 20);
 });
   renderBlock(currentBlock);
   setTimeout(() => {
@@ -998,11 +963,10 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function submitAllBlocks() {
-  // collect all fields (single-page)
   for (const f of fields){
     let v;
     if (f.type==="checkbox"){
-      v = Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).map(e => e.value);
+      v = Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).map(e=>e.value);
     } else if (f.type==="slider"){
       const el = document.getElementById(f.key); v = el ? el.value : f.min || 1;
     } else if (f.type==="privacy"){
@@ -1013,39 +977,8 @@ function submitAllBlocks() {
     formData[f.key] = v;
   }
   saveAutosave();
-
-  // validate all blocks and collect missing labels
-  const allMissing = [];
-  for (let i=0;i<blocks.length;i++){
-    const miss = validateBlockDetailed(i);
-    if (miss.length) allMissing.push(...miss);
-  }
-  const fb = getFeedbackBox();
-  if (allMissing.length){
-    if (fb){
-      fb.innerHTML = `<div class="form-error">Please fill in the following fields:<ul>${allMissing.map(m => `<li>${m}</li>`).join("")}</ul></div>`;
-      fb.style.display = 'block'; fb.classList.add('error');
-    }
-    const firstInvalid = document.querySelector('.invalid, .invalid-group');
-    if (firstInvalid) firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
-    return;
-  } else if (fb){ fb.innerHTML = ""; fb.style.display='none'; fb.classList.remove('error'); }
-
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "en";
-  // Mapping slider → legacy buckets
-  if (data.time_capacity_slider !== undefined && (data.time_capacity === undefined || data.time_capacity === "")) {
-    const z = Number(data.time_capacity_slider);
-    if (Number.isFinite(z)) {
-      if (z < 2) data.time_capacity = "under_2";
-      else if (z <= 5) data.time_capacity = "2_5";
-      else if (z <= 10) data.time_capacity = "5_10";
-      else data.time_capacity = "over_10";
-    }
-  }
-  if (data.tool_affinity !== undefined && data.tool_affinity !== "") {
-    data.tool_affinity = Number(data.tool_affinity);
-  }
 
   const form = document.getElementById("formbuilder");
   if (form) {
@@ -1268,33 +1201,34 @@ function renderAllBlocks(){
   for (let i=0;i<blocks.length;i++){ 
     const block = blocks[i];
     html += `<section class="fb-section"><div class="fb-section-head"><span class="fb-step">Step ${i+1}/${blocks.length}</span> – <b>${block.name}</b></div>`;
-    const intro = BLOCK_INTRO[i] || "";
-    if (intro) html += `<div class="section-intro">${intro}</div>`;
+    const __intro = BLOCK_INTRO[i] || "";
+    if (__intro) html += `<div class="section-intro">${__intro}</div>`;
     html += block.keys.map(key => {
       const field = findField(key); if (!field) return "";
       if (field.showIf && !field.showIf(formData)) return "";
-      const guidance = field.description ? `<div class="guidance${field.type==="privacy" ? " important" : ""}">${field.description}</div>` : "";
+      const guidance = field.description ? `<div class="guidance${field.type === "privacy" ? " important" : ""}">${field.description}</div>` : "";
       let input = "";
       switch(field.type){
-        case "select": {
+        case "select": { 
           const selectedValue = formData[field.key] || "";
-          input = `<select id="${field.key}" name="${field.key}"><option value="">Please select...</option>$\{(field.options||[]).map(opt => {
-            const sel = selectedValue === opt.value ? ' selected' : '';
-            return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
-          }).join("")}`;
+          input = `<select id="${field.key}" name="${field.key}"><option value="">Please select...</option>` + 
+            (field.options||[]).map(opt => { 
+              const sel = selectedValue === opt.value ? ' selected' : '';
+              return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
+            }).join("") + `</select>`;
         } break;
         case "textarea":
           input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder||""}">${formData[field.key]||""}</textarea>`;
           break;
         case "checkbox":
-          input = `<div class="checkbox-group twocol">$` + 
-            `{(field.options||[]).map(opt => {
+          input = `<div class="checkbox-group twocol">` + 
+            (field.options||[]).map(opt => {
               const label = opt.label || ""; const m = label.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
               const mainLabel = m ? m[1].trim() : label; const hint = m ? m[2].trim() : "";
               const checked = (formData[field.key]||[]).includes(opt.value) ? 'checked' : '';
               const hintHtml = hint ? `<div class="option-example">${hint}</div>` : "";
               return `<label class="checkbox-label"><input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}><span>${mainLabel}</span>${hintHtml}</label>`;
-            }).join("")}` + `</div>`;
+            }).join("") + `</div>`;
           break;
         case "slider":
           const v = formData[field.key] ?? field.min ?? 1;
