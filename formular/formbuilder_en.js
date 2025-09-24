@@ -43,7 +43,7 @@ function validateBlockDetailed(blockIdx){
   const block = blocks[blockIdx];
   const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen",
                              // Fields in the new resources block are optional
-                             "time_capacity","existing_tools","regulated_industry","training_interests","vision_priority"]);
+                             "time_capacity","existing_tools","regulated_industry","training_interests","vision_priority","time_capacity_slider","tool_affinity"]);
   const missing = [];
   block.keys.forEach(k => markInvalid(k,false));
   for (const key of block.keys){
@@ -540,26 +540,6 @@ const fields = [
     description: "Are you more safety‑oriented or open to bold new paths when it comes to new ideas and innovation?"
   },
 
-
-  // --- NEW: Preference sliders (compatible with existing logic) ---
-  {
-    key: "time_capacity_slider",
-    label: "Time budget (hours/week, 0–10)",
-    type: "slider",
-    min: 0,
-    max: 10,
-    step: 1,
-    description: "How much time per week can you dedicate to AI projects? (0–10 hours)"
-  },
-  {
-    key: "tool_affinity",
-    label: "Tool affinity (1–5)",
-    type: "slider",
-    min: 1,
-    max: 5,
-    step: 1,
-    description: "How much do you enjoy working with new tools? 1 = not much, 5 = very much."
-  },
   // -------------------------------------------------------------------------
   // New block: Resources & preferences
   // Additional optional questions for time capacity, existing tools, regulated
@@ -688,7 +668,13 @@ const fields = [
     description: "An innovation‑friendly company culture makes it easier to introduce new technologies like AI."
   },
 
-  // Block 5: Datenschutz & Absenden
+  
+  // --- NEW: Preference sliders ---
+  { key: "time_capacity_slider", label: "Time budget (hours/week, 0–10)", type: "slider", min: 0, max: 10, step: 1,
+    description: "How much time per week can you dedicate to AI projects? (0–10 hours)" },
+  { key: "tool_affinity", label: "Tool affinity (1–5)", type: "slider", min: 1, max: 5, step: 1,
+    description: "How much do you enjoy working with new tools? 1 = not much, 5 = very much." },
+// Block 5: Datenschutz & Absenden
   {
     key: "datenschutz",
     label: "I have read the <a href='privacy.html' onclick='window.open(this.href, \"DatenschutzPopup\", \"width=600,height=700\"); return false;'>privacy notice</a> and agree.",
@@ -732,7 +718,7 @@ const blocks = [
   // and vision priority to refine the report.
   {
     name: "Resources & preferences",
-    keys: ["time_capacity_slider","tool_affinity","time_capacity","existing_tools","regulated_industry","training_interests","vision_priority"]
+    keys: ["time_capacity_slider","tool_affinity","existing_tools","regulated_industry","training_interests","vision_priority"]
   },
   {
     name: "Legal & funding",
@@ -776,6 +762,7 @@ function showProgress(blockIdx) {
 }
 
 function renderBlock(blockIdx) {
+  try {
   formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
   showProgress(blockIdx);
   const block = blocks[blockIdx];
@@ -1002,8 +989,7 @@ window.addEventListener("DOMContentLoaded", () => {
 function submitAllBlocks() {
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "en";
-
-  // Mapping: Slider -> existing "time_capacity" buckets (under_2, 2_5, 5_10, over_10)
+  // Mapping slider → legacy buckets
   if (data.time_capacity_slider !== undefined && (data.time_capacity === undefined || data.time_capacity === "")) {
     const z = Number(data.time_capacity_slider);
     if (Number.isFinite(z)) {
@@ -1013,11 +999,9 @@ function submitAllBlocks() {
       else data.time_capacity = "over_10";
     }
   }
-  // Normalize tool affinity
   if (data.tool_affinity !== undefined && data.tool_affinity !== "") {
     data.tool_affinity = Number(data.tool_affinity);
   }
-
 
   const form = document.getElementById("formbuilder");
   if (form) {

@@ -63,7 +63,7 @@ function validateBlockDetailed(blockIdx) {
   const block = blocks[blockIdx];
   const optional = new Set(["jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen",
                              // Felder des neuen Ressourcen-Blocks sind optional und dürfen leer bleiben
-                             "zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"]);
+                             "zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet","zeitbudget_slider","tool_affinitaet"]);
   const missing = [];
   block.keys.forEach(k => markInvalid(k, false)); // alte Marker entfernen
 
@@ -366,26 +366,6 @@ const fields = [
   { key:"risikofreude", label:"Risikofreude (1–5)", type:"slider", min:1, max:5, step:1,
     description:"1 = wenig, 5 = sehr risikofreudig." },
 
-
-  // --- NEU: Präferenz-Slider (kompatibel mit bestehender Logik) ---
-  {
-    key: "zeitbudget_slider",
-    label: "Zeitbudget (Std/Woche, 0–10)",
-    type: "slider",
-    min: 0,
-    max: 10,
-    step: 1,
-    description: "Wie viel Zeit steht pro Woche für KI-Projekte zur Verfügung? (0–10 Stunden)"
-  },
-  {
-    key: "tool_affinitaet",
-    label: "Tool-Affinität (1–5)",
-    type: "slider",
-    min: 1,
-    max: 5,
-    step: 1,
-    description: "Wie gerne arbeiten Sie mit neuen Tools? 1 = ungern, 5 = sehr gerne."
-  },
   // -------------------------------------------------------------------------
   // Block 5b: Ressourcen & Präferenzen
   // Neue Felder zur Erfassung von Zeitbudget, bestehenden Tools, regulierten Branchen,
@@ -460,7 +440,13 @@ const fields = [
     description: "Hilft, Empfehlungen passend zu priorisieren."
   },
 
-  // Block 6: Datenschutz & Absenden (→ häufig fehlend)
+  
+  // --- NEU: Schieberegler (Präferenzen) ---
+  { key: "zeitbudget_slider", label: "Zeitbudget (Std/Woche, 0–10)", type: "slider", min: 0, max: 10, step: 1,
+    description: "Wie viel Zeit steht pro Woche für KI-Projekte zur Verfügung? (0–10 Stunden)" },
+  { key: "tool_affinitaet", label: "Tool-Affinität (1–5)", type: "slider", min: 1, max: 5, step: 1,
+    description: "Wie gerne arbeiten Sie mit neuen Tools? 1 = ungern, 5 = sehr gerne." },
+// Block 6: Datenschutz & Absenden (→ häufig fehlend)
   { key:"datenschutz", label:"Ich habe die <a href='datenschutz.html' onclick='window.open(this.href,\"DatenschutzPopup\",\"width=600,height=700\"); return false;'>Datenschutzhinweise</a> gelesen und bin einverstanden.", type:"privacy",
     description:"Ihre Angaben werden ausschließlich zur Erstellung Ihrer persönlichen Auswertung genutzt." }
 ];
@@ -475,7 +461,7 @@ const blocks = [
   { name:"Strategie & Governance", keys:["strategische_ziele","datenqualitaet","ai_roadmap","governance","innovationskultur"] },
   // Neuer Block für Ressourcen & Präferenzen – enthält Zeitbudget, Tools, regulierte Branche,
   // Trainingsinteressen und Vision-Priorität.  Alle Felder sind optional.
-  { name:"Ressourcen & Präferenzen", keys:["zeitbudget_slider","tool_affinitaet","zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"] },
+  { name:"Ressourcen & Präferenzen", keys:["zeitbudget_slider","tool_affinitaet","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"] },
   { name:"Rechtliches & Förderung", keys:["datenschutzbeauftragter","technische_massnahmen","folgenabschaetzung","meldewege","loeschregeln","ai_act_kenntnis","ki_hemmnisse","bisherige_foerdermittel","interesse_foerderung","erfahrung_beratung","investitionsbudget","marktposition","benchmark_wettbewerb","innovationsprozess","risikofreude"] },
   { name:"Datenschutz & Absenden", keys:["datenschutz"] }
 ];
@@ -504,6 +490,7 @@ function showProgress(blockIdx) {
 }
 
 function renderBlock(blockIdx) {
+  try {
   formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
   showProgress(blockIdx);
   const block = blocks[blockIdx];
@@ -745,8 +732,7 @@ function submitAllBlocks() {
   // Daten sammeln
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "de";
-
-  // Mapping: Slider -> vorhandene "zeitbudget" Buckets (unter_2, 2_5, 5_10, ueber_10)
+  // Mapping Slider → Select-Buckets
   if (data.zeitbudget_slider !== undefined && (data.zeitbudget === undefined || data.zeitbudget === "")) {
     const z = Number(data.zeitbudget_slider);
     if (Number.isFinite(z)) {
@@ -756,11 +742,9 @@ function submitAllBlocks() {
       else data.zeitbudget = "ueber_10";
     }
   }
-  // Tool-Affinität numerisch normalisieren
   if (data.tool_affinitaet !== undefined && data.tool_affinitaet !== "") {
     data.tool_affinitaet = Number(data.tool_affinitaet);
   }
-
 
   // UI sofort updaten: Danke-Info zeigen und Buttons deaktivieren
   const form = document.getElementById("formbuilder");
