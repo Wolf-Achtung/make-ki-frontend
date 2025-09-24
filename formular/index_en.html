@@ -1,98 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>AI Readiness Check</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Readiness Check – Questionnaire (EN)</title>
+  <meta name="color-scheme" content="light only" />
   <style>
-    .form-container { background: #f5faff; border-radius: 22px; box-shadow: 0 2px 24px #00427512; padding: 30px 0 16px 0; max-width: 660px; margin: 40px auto 0 auto; }
-    .form-header img { max-width: 160px; }
-    .form-header h1 { color: #062452; font-size: 2.2em; margin-bottom: 10px;}
-    .footer { margin-top: 40px; color: #666; }
-    .guidance { color: #204769; font-size: 1em; margin-bottom: 8px; margin-top: -4px; }
-    @media (max-width: 650px) { .form-container { padding: 10px; } }
-    /* Hide until validated */
-    html.gated-hide body { opacity: 0; }
+    :root{ --ink:#0B1F3B; --ink2:#123B70; --rule:#E3E9F3; --bg:#F7FAFF; }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .shell{max-width:980px;margin:24px auto;padding:16px}
+    .card{background:#fff;border:1px solid var(--rule);border-radius:16px;
+      box-shadow:0 6px 24px rgba(10,35,75,.06);padding:24px}
+    .header{ text-align:center; margin-bottom:16px}
+    .title{ font-size:2.2rem; color:#062452; margin:.25rem 0 .5rem}
+    .langbar{display:flex;gap:8px;align-items:center;margin-bottom:14px}
+    .langbar label{font-weight:600}
+    .langbar select{padding:6px 12px;border:1px solid #bcd3ef;border-radius:10px}
+    footer{max-width:980px;margin:18px auto 28px auto;color:#6B7A8C;text-align:center;font-size:.92rem}
+    #progress{margin:8px 0 12px;color:var(--ink2)}
+    noscript{display:block;background:#FFF3CD;border:1px solid #FFEC99;color:#7A5E00;
+      padding:10px 12px;border-radius:10px;margin:12px 0}
   </style>
-
-  <!-- GATEKEEPER START (EN) -->
-  <script>
-    (function() {
-      document.documentElement.classList.add('gated-hide');
-
-      var LOGIN_URL = "/"; // target when unauthenticated
-
-      function getParam(name){
-        var m = new RegExp("[?&]"+name+"=([^&#]*)").exec(location.search);
-        return m ? decodeURIComponent(m[1].replace(/\+/g,"%20")) : null;
-      }
-
-      var jwt = null;
-      try { jwt = localStorage.getItem("jwt"); } catch(e) {}
-      var access = getParam("access");
-
-      if (!jwt && !access) {
-        var next = encodeURIComponent(location.pathname + location.search);
-        location.replace(LOGIN_URL + "?next=" + next);
-        return;
-      }
-
-      if (access) {
-        var clean = location.pathname + location.search
-          .replace(/([?&])access=[^&#]*(&|$)/, function(_, p1, p2){ return (p1==='?'? (p2? '?':'') : (p2? p1:'') ); })
-          .replace(/[?&]$/, '');
-        history.replaceState(null, "", clean);
-      }
-
-      window.__AUTH_HEADER = "Bearer " + (jwt || access);
-      document.documentElement.classList.remove('gated-hide');
-    })();
-  </script>
-  <!-- GATEKEEPER END -->
 </head>
 <body>
-  <div id="progress"></div>
-
-  <div class="lang-switcher" style="margin-bottom:14px; text-align:left;">
-    <label for="lang-select" style="font-weight:600; font-size:1.01em;">Language: </label>
-    <select id="lang-select" style="padding:4px 13px; border-radius:9px; border:1.2px solid #b5d6f6; font-size:1em; width:auto; min-width:110px; max-width:190px;">
-      <option value="de">Deutsch</option>
-      <option value="en" selected>English</option>
-    </select>
-  </div>
-
-  <div class="form-container">
-    <div class="form-header" style="text-align:center;">
-      <img src="ki-sicherheit-logo.png" alt="KI-Sicherheit Logo" style="margin-bottom:10px;" />
-      <h1>AI Readiness Check</h1>
+  <div class="shell">
+    <div class="langbar">
+      <label for="lang">Language:</label>
+      <select id="lang" aria-label="Select language">
+        <option value="de">Deutsch</option>
+        <option value="en" selected>English</option>
+      </select>
     </div>
 
-    <!-- IMPORTANT: correct container ID for the EN formbuilder -->
-    <div id="ai-form-en" style="max-width:600px;margin:0 auto;"><!-- Form is injected by formbuilder_en.js --></div>
+    <div class="card header">
+      <h1 class="title">AI Readiness Check</h1>
+    </div>
 
-    <div id="feedback"></div>
+    <noscript>JavaScript is disabled. Please enable JavaScript to display the form.</noscript>
+
+    <div id="progress"></div>
+    <div id="formbuilder" class="card"></div>
   </div>
 
-  <footer class="footer">
+  <footer>
     © KI-Sicherheit.jetzt | TÜV-certified AI Management: Wolf Hohl 2025<br>
-    Content is provided for AI readiness & privacy advisory purposes. Reuse or publication requires written consent.
-    <br><a href="privacy.html">Privacy Policy</a>
+    Content provided for AI readiness & privacy advisory only.
   </footer>
 
-  <script>
-    window.renderGuidance = function(description) {
-      if (!description) return '';
-      return `<div class="guidance">${description}</div>`;
-    }
-  </script>
-
-  <!-- Important: defer, so the container exists when the script runs -->
-  <script src="formbuilder_en.js" defer></script>
+  <!-- Single-Page, verified, error-free version -->
+  <script src="/formular/formbuilder_en_SINGLE_FIXED.js?v=20250924-6" defer></script>
 
   <script defer>
-    document.getElementById("lang-select").addEventListener("change", function(e) {
-      window.location.href = (e.target.value === "de") ? "index.html" : "index_en.html";
+    document.getElementById('lang').addEventListener('change', e => {
+      location.href = e.target.value === 'de' ? 'index.html' : 'index_en.html';
     });
   </script>
 </body>
