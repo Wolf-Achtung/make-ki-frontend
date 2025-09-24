@@ -89,6 +89,22 @@ function getFeedbackBox(){
 /* ============================================================================
    FELDER (vollständig)
    ========================================================================== */
+const BLOCK_INTRO = [
+  "Hier erfassen wir Basisdaten (E‑Mail, Branche, Größe, Standort). Sie steuern die Personalisierung des Reports und die passenden Förder‑ & Compliance‑Hinweise.",
+  "Status‑Quo zu Prozessen, Daten und bisherigen KI‑Erfahrungen. Damit kalibrieren wir Quick Wins und die Start‑Roadmap.",
+  "Ziele & wichtigste Anwendungsfälle: Was soll KI konkret leisten? Das fokussiert Empfehlungen und priorisiert Maßnahmen.",
+  "Ressourcen & Präferenzen (Zeit, Tool‑Affinität, vorhandene Lösungen). So passen wir Empfehlungen an Machbarkeit & Tempo an.",
+  "Recht & Datenschutz (Opt‑in): Notwendig für den sicheren Versand und für DSGVO/EU‑AI‑Act‑konforme Auswertung.",
+  "Projektpriorisierung & Roadmap‑Hinweise: Gewichten Sie, was zuerst kommen soll – das fließt direkt in die Roadmap ein.",
+  "Abschließen & Absenden: Kurzer Check, Einwilligung bestätigen und den personalisierten Report starten."
+];
+
+// Intro box style (light blue)
+(function(){
+  const css = `.section-intro{background:#E9F0FB;border:1px solid #D4DDED;border-radius:10px;padding:10px 12px;margin:8px 0 12px;color:#123B70}`;
+  const s = document.createElement('style'); s.type='text/css';
+  s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
+})();
 const fields = [
   // Block 1: Unternehmensinfos
   {
@@ -489,32 +505,7 @@ function showProgress(blockIdx) {
   <div class="progress-label">Schritt ${blockIdx+1} / ${blocks.length} – <b>${blocks[blockIdx].name}</b></div>`;
 }
 
-function renderBlock(blockIdx) {
-  try {
-  formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
-  showProgress(blockIdx);
-  const block = blocks[blockIdx];
-  const form = document.getElementById("formbuilder");
-  if (!form) return;
-
-  form.innerHTML = block.keys.map(key => {
-    const field = findField(key);
-    if (!field) return ""; // Schutz: unbekannter Key → kein Render
-    if (field.showIf && !field.showIf(formData)) return "";
-
-    const guidance = field.description ? `<div class="guidance${field.key === "datenschutz" ? " important" : ""}">${field.description}</div>` : "";
-
-    let input = "";
-    switch (field.type) {
-      case "select": {
-        const selectedValue = formData[field.key] || "";
-        input = `
-          <select id="${field.key}" name="${field.key}">
-            <option value="">Bitte wählen...</option>
-            ${field.options.map(opt => {
-              const sel = selectedValue === opt.value ? ' selected' : '';
-              return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
-            }).join("")}
+function renderBlock(){ renderAllBlocks(); }
           </select>`;
       } break;
 
@@ -634,91 +625,60 @@ function blockIsValid(blockIdx) {
 }
 
 /* Events */
-function handleFormEvents() {
-  document.getElementById("formbuilder").addEventListener("change", () => {
-    const block = blocks[currentBlock];
-    let needsRerender = false;
-
-    for (const key of block.keys) {
-      const field = findField(key); if (!field) continue;
-      const prev = formData[key];
-      const curr = getFieldValue(field);
-      formData[key] = curr;
-
-      // Fehler-Markierung nach Benutzeraktion entfernen
-      markInvalid(key, false);
-
-      if (prev !== curr && field.key === "unternehmensgroesse") needsRerender = true;
+function handleFormEvents(){
+  const root = document.getElementById("formbuilder"); if (!root) return;
+  root.addEventListener("change", () => {
+    for (const f of fields){
+      let curr;
+      if (f.type==="checkbox"){
+        curr = Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).map(e=>e.value);
+      } else if (f.type==="slider"){
+        const el = document.getElementById(f.key); curr = el ? el.value : f.min || 1;
+      } else if (f.type==="privacy"){
+        const el = document.getElementById(f.key); curr = !!(el && el.checked);
+      } else {
+        const el = document.getElementById(f.key); curr = el ? el.value : "";
+      }
+      formData[f.key] = curr;
+      markInvalid(f.key, false);
     }
-
     saveAutosave();
-
-    if (needsRerender) {
-      renderBlock(currentBlock);
-      setTimeout(() => { setFieldValues(currentBlock); handleFormEvents(); }, 20);
-    } else {
-      const fb = getFeedbackBox();
-      if (fb && fb.classList.contains('error')) { fb.innerHTML = ""; fb.style.display = 'none'; fb.classList.remove('error'); }
-    }
   });
-
-  document.getElementById("formbuilder").addEventListener("click", e => {
-    const fb = getFeedbackBox();
-
-    if (e.target.id === "btn-next") {
-      // Werte JIT übernehmen
-      const block = blocks[currentBlock];
-      for (const key of block.keys) {
-        const f = findField(key); if (f) formData[key] = getFieldValue(f);
-      }
-      saveAutosave();
-
-      // Detaillierte Validierung + Benutzerfeedback
-      const missing = validateBlockDetailed(currentBlock);
-      if (missing.length) {
-        if (fb) {
-          fb.innerHTML = `<div class="form-error">Bitte ergänzen Sie die folgenden Felder:<ul>${missing.map(m => `<li>${m}</li>`).join("")}</ul></div>`;
-          fb.style.display = 'block'; fb.classList.add('error');
-        }
-        const firstInvalid = document.querySelector('.invalid, .invalid-group');
-        if (firstInvalid) firstInvalid.scrollIntoView({ behavior:'smooth', block:'center' });
-        return;
-      } else if (fb) {
-        fb.innerHTML = ""; fb.style.display = 'none'; fb.classList.remove('error');
-      }
-
-      currentBlock++;
-      renderBlock(currentBlock);
-      setTimeout(() => setFieldValues(currentBlock), 20);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    if (e.target.id === "btn-prev") {
-      currentBlock--;
-      renderBlock(currentBlock);
-      setTimeout(() => setFieldValues(currentBlock), 20);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    if (e.target.id === "btn-reset") {
+  root.addEventListener("click", (e) => {
+    if (e.target.id === "btn-reset"){
       localStorage.removeItem(autosaveKey);
-      formData = {};
-      currentBlock = 0;
-      renderBlock(currentBlock);
-      setTimeout(() => setFieldValues(currentBlock), 20);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
+      formData = {}; renderAllBlocks(); setTimeout(handleFormEvents,20);
+      window.scrollTo({top:0,behavior:"smooth"}); return;
     }
-
-    if (e.target.id === "submit-btn" || e.target.id === "btn-send") {
-      submitAllBlocks();
-    }
+    if (e.target.id === "btn-send"){ submitAllBlocks(); return; }
   });
 }
 
 /* Init */
 window.addEventListener("DOMContentLoaded", () => {
   loadAutosave();
+  renderAllBlocks();
+  setTimeout(() => {
+    for (const f of fields){
+      const el = document.getElementById(f.key);
+      if (!el) continue;
+      if (f.type==="checkbox"){
+        (formData[f.key]||[]).forEach(v => {
+          const box = document.querySelector(`input[name="${f.key}"][value="${v}"]`);
+          if (box) box.checked = true;
+        });
+      } else if (f.type==="slider"){
+        const val = formData[f.key] ?? f.min ?? 1;
+        el.value = val; if (el.nextElementSibling) el.nextElementSibling.innerText = val;
+      } else if (f.type==="privacy"){
+        el.checked = formData[f.key] === true;
+      } else {
+        if (formData[f.key] !== undefined) el.value = formData[f.key];
+      }
+    }
+    handleFormEvents();
+  }, 20);
+});
   renderBlock(currentBlock);
   setTimeout(() => {
     setFieldValues(currentBlock);
@@ -729,6 +689,39 @@ window.addEventListener("DOMContentLoaded", () => {
 
 /* Submit */
 function submitAllBlocks() {
+  // collect all fields (single-page)
+  for (const f of fields){
+    let v;
+    if (f.type==="checkbox"){
+      v = Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).map(e => e.value);
+    } else if (f.type==="slider"){
+      const el = document.getElementById(f.key); v = el ? el.value : f.min || 1;
+    } else if (f.type==="privacy"){
+      const el = document.getElementById(f.key); v = !!(el && el.checked);
+    } else {
+      const el = document.getElementById(f.key); v = el ? el.value : "";
+    }
+    formData[f.key] = v;
+  }
+  saveAutosave();
+
+  // validate all blocks and collect missing labels
+  const allMissing = [];
+  for (let i=0;i<blocks.length;i++){
+    const miss = validateBlockDetailed(i);
+    if (miss.length) allMissing.push(...miss);
+  }
+  const fb = getFeedbackBox();
+  if (allMissing.length){
+    if (fb){
+      fb.innerHTML = `<div class="form-error">Bitte ergänzen Sie die folgenden Felder:<ul>${allMissing.map(m => `<li>${m}</li>`).join("")}</ul></div>`;
+      fb.style.display = 'block'; fb.classList.add('error');
+    }
+    const firstInvalid = document.querySelector('.invalid, .invalid-group');
+    if (firstInvalid) firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  } else if (fb){ fb.innerHTML = ""; fb.style.display='none'; fb.classList.remove('error'); }
+
   // Daten sammeln
   const data = {}; fields.forEach(field => data[field.key] = formData[field.key]);
   data.lang = "de";
@@ -1007,3 +1000,62 @@ function applyTexts_DE(fields) {
   }
 }
 applyTexts_DE(fields);
+
+
+function renderAllBlocks(){
+  formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
+  const root = document.getElementById("formbuilder"); if (!root) return;
+  let html = "";
+  for (let i=0;i<blocks.length;i++){ 
+    const block = blocks[i];
+    html += `<section class="fb-section"><div class="fb-section-head"><span class="fb-step">Schritt ${i+1}/${blocks.length}</span> – <b>${block.name}</b></div>`;
+    const intro = BLOCK_INTRO[i] || "";
+    if (intro) html += `<div class="section-intro">${intro}</div>`;
+    html += block.keys.map(key => {
+      const field = findField(key); if (!field) return "";
+      if (field.showIf && !field.showIf(formData)) return "";
+      const guidance = field.description ? `<div class="guidance${field.type==="privacy" ? " important" : ""}">${field.description}</div>` : "";
+      let input = "";
+      switch(field.type){
+        case "select": {
+          const selectedValue = formData[field.key] || "";
+          input = `<select id="${field.key}" name="${field.key}"><option value="">Bitte wählen...</option>$\{(field.options||[]).map(opt => {
+            const sel = selectedValue === opt.value ? ' selected' : '';
+            return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
+          }).join("")}`;
+        } break;
+        case "textarea":
+          input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder||""}">${formData[field.key]||""}</textarea>`;
+          break;
+        case "checkbox":
+          input = `<div class="checkbox-group twocol">$` + 
+            `{(field.options||[]).map(opt => {
+              const label = opt.label || ""; const m = label.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+              const mainLabel = m ? m[1].trim() : label; const hint = m ? m[2].trim() : "";
+              const checked = (formData[field.key]||[]).includes(opt.value) ? 'checked' : '';
+              const hintHtml = hint ? `<div class="option-example">${hint}</div>` : "";
+              return `<label class="checkbox-label"><input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}><span>${mainLabel}</span>${hintHtml}</label>`;
+            }).join("")}` + `</div>`;
+          break;
+        case "slider":
+          const v = formData[field.key] ?? field.min ?? 1;
+          input = `<input type="range" id="${field.key}" name="${field.key}" min="${field.min||1}" max="${field.max||10}" step="${field.step||1}" value="${v}" oninput="this.nextElementSibling.innerText=this.value"/> <span class="slider-value-label">${v}</span>`;
+          break;
+        case "privacy":
+          input = `<div class="privacy-section"><label><input type="checkbox" id="${field.key}" name="${field.key}" ${formData[field.key]?'checked':''} required/> ${field.label}</label></div>`;
+          break;
+        default:
+          input = `<input type="text" id="${field.key}" name="${field.key}" value="${formData[field.key]||""}" />`;
+      }
+      const labelHtml = field.type!=="privacy" ? `<label for="${field.key}"><b>${field.label}</b></label>` : "";
+      return `<div class="form-group">${labelHtml}${guidance}${input}</div>`;
+    }).join("");
+    html += `</section>`;
+  }
+  html += `<div class="form-nav"><div class="nav-left"></div><div class="nav-right">
+      <button type="button" id="btn-send" class="btn-next">Absenden</button>
+      <button type="button" id="btn-reset" class="btn-reset">Zurücksetzen</button>
+    </div></div><div id="feedback"></div>`;
+  root.innerHTML = html;
+}
+
