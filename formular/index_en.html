@@ -4,42 +4,230 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AI Checkup Report – Questionnaire (EN)</title>
-  <link rel="stylesheet" href="./formular.css" />
+  <style>
+    :root{
+      --fs: 17px;
+      --lh: 1.6;
+      --space: 14px;
+      --accent-h: 215;
+      --accent-s: 88%;
+      --accent-l: 42%;
+      --copy: #0e2a51;
+      --bg:   #f4f7fc;
+      --panel:#ffffff;
+      --line: #dbe5f3;
+      --muted:#5b6d89;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      font-size: var(--fs);
+      line-height: var(--lh);
+      color: var(--copy);
+      background: var(--bg);
+    }
+    .wrap{max-width: 980px; margin: 28px auto; padding: 0 16px;}
+    header.card{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 2px rgba(10,30,60,.03);
+      position: relative;
+    }
+    h1{
+      margin: 8px 0 4px 0;
+      font-size: clamp(22px, 2.4vw, 30px);
+      line-height: 1.25;
+      letter-spacing: .2px;
+    }
+    .brand{display:flex; align-items:center; gap:12px}
+    .logo{width:38px; height:38px; border-radius:9px; background: hsl(var(--accent-h) var(--accent-s) var(--accent-l)); display:inline-block}
+    .subtitle{color: var(--muted); font-weight: 600; font-size: 14px; margin-top: 2px}
+    .lang{position:absolute; left:20px; top:16px}
+    .ui{position:absolute; right:20px; top:16px}
+    .ui details{display:inline-block}
+    .ui summary{
+      list-style:none;
+      cursor:pointer;
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      font-weight:600;
+    }
+    .ui-panel{
+      margin-top:10px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      width:min(320px, 82vw);
+      box-shadow: 0 2px 10px rgba(10,30,60,.06);
+    }
+    .ui-panel .row{display:flex; align-items:center; gap:10px; margin:10px 0}
+    .ui-panel label{width:48%; font-weight:600; font-size: 14px}
+    .ui-panel input[type=range]{width:52%}
+    .progress{ height:10px; background:#eef3fb; border-radius:8px; overflow:hidden; margin-top:14px; }
+    .progress .bar{ height:100%; width:100%; background: linear-gradient(90deg, hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 6%)), hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 1%))); }
+    section.fb-section{
+      background: var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding: calc(var(--space) * 1.15) var(--space);
+      margin-top: calc(var(--space) * 1.4);
+      box-shadow: 0 1px 2px rgba(10,30,60,.03);
+    }
+    .fb-section-head{
+      font-weight:700;
+      font-size: clamp(18px, 1.6vw, 22px);
+      margin-bottom: 8px;
+      color: hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) - 6%));
+    }
+    .fb-step{
+      display:inline-block;
+      background: hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 24%)/.16);
+      color: hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) - 10%));
+      border:1px solid hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 10%)/.42);
+      border-radius:999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      margin-right: 6px;
+    }
+    .section-intro{
+      background:#E9F0FB;
+      border:1px solid #D4DDED;
+      border-radius:10px;
+      padding:10px 12px;
+      margin:10px 0 16px;
+      color:#123B70;
+    }
+    .form-group{ margin: calc(var(--space) * 0.9) 0 }
+    label{ display:block; font-weight:700; margin-bottom: 6px }
+    .guidance{ font-size: .95em; color:#2d3c55; background:#f2f6ff; border-left:4px solid hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 8%)); padding:8px 10px; border-radius:8px; margin:6px 0 10px }
+    .guidance.important{ background:#fff6f6; border-left-color:#e77; color:#7a2b2b }
+    input[type=text], textarea, select{
+      width:100%;
+      border:1px solid #c8d6ee;
+      border-radius: 10px;
+      padding: 12px 12px;
+      background:#f9fbff;
+      outline: none;
+      font-size: 1em;
+    }
+    textarea{ min-height: 96px; resize: vertical }
+    .checkbox-group{ display:grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap:8px }
+    @media (min-width: 820px){ .checkbox-group.twocol{ grid-template-columns: repeat(2, minmax(0,1fr)) } }
+    .checkbox-label{ display:flex; align-items:flex-start; gap:10px; border:1px solid #e6eefb; background:#fbfdff; padding:10px 12px; border-radius:10px }
+    .checkbox-label input{ margin-top: 3px }
+    .option-example{ font-size:.9em; color:#4a5a77 }
+    .slider-value-label{ display:inline-block; min-width: 22px; text-align:center; margin-left:8px; font-weight:700; color:hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) - 8%))}
+    .invalid{ border-color:#cc3b3b !important; background:#fff5f5 }
+    .invalid-group{ outline: 2px solid #ffd2d2; border-radius: 12px }
+    .form-error{ background:#fff6f6; border:1px solid #f0cece; padding:12px; border-radius:10px; color:#7a2b2b }
+    .success-msg{ background:#f1faf3; border:1px solid #cde9d6; padding:12px; border-radius:10px; color:#235c2f }
+    .form-nav{ position: sticky; bottom:0; background:linear-gradient(0deg, #ffffff, #ffffff); border:1px solid var(--line); border-radius:14px; margin: 16px 0; padding: 12px; display:flex; justify-content:space-between; align-items:center }
+    .btn-next{ background:hsl(var(--accent-h) var(--accent-s) var(--accent-l)); color:#fff; border:0; padding:12px 18px; border-radius:10px; font-weight:700; cursor:pointer }
+    .btn-reset{ background:#fff; color:#123; border:1px solid var(--line); padding:12px 16px; border-radius:10px; font-weight:600; cursor:pointer }
+    footer{ color:#6b7c97; font-size: 13px; text-align:center; margin: 16px 0 26px }
+    select.langsel{ padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background:#fff }
+  </style>
 </head>
 <body>
-  <div class="page">
-    <div class="lang">
-      <label for="lang">Language:</label>
-      <select id="lang">
-        <option value="de">Deutsch</option>
-        <option value="en" selected>English</option>
-      </select>
-    </div>
-
-    <header class="hero">
-      <img src="../assets/logo.svg" alt="KI‑Sicherheit.jetzt" style="height:36px" onerror="this.style.display='none'">
-      <h1>AI Checkup Report</h1>
+  <div class="wrap">
+    <header class="card">
+      <div class="lang">
+        <label for="lang" class="sr-only" style="position:absolute;left:-9999px">Language</label>
+        <select id="lang" class="langsel">
+          <option value="de">Deutsch</option>
+          <option value="en" selected>English</option>
+        </select>
+      </div>
+      <div class="ui">
+        <details id="uiPanel">
+          <summary>🎛️ Appearance</summary>
+          <div class="ui-panel">
+            <div class="row">
+              <label>Font size</label>
+              <input id="ux-fs" type="range" min="15" max="20" step="1" />
+            </div>
+            <div class="row">
+              <label>Line height</label>
+              <input id="ux-lh" type="range" min="13" max="19" step="1" />
+            </div>
+            <div class="row">
+              <label>Spacing</label>
+              <input id="ux-space" type="range" min="10" max="22" step="1" />
+            </div>
+            <div class="row">
+              <label>Accent blue</label>
+              <input id="ux-accent" type="range" min="30" max="55" step="1" />
+            </div>
+            <div style="text-align:right; margin-top:6px">
+              <button id="ux-reset" type="button" class="btn-reset">Reset</button>
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="brand">
+        <span class="logo" aria-hidden="true"></span>
+        <div>
+          <div class="subtitle">KI‑Sicherheit.jetzt</div>
+          <h1>AI Checkup Report</h1>
+        </div>
+      </div>
+      <div class="progress"><div class="bar"></div></div>
     </header>
 
-    <div id="progress"></div>
-    <main id="formbuilder" aria-live="polite"></main>
+    <main id="formbuilder" class="card" style="border:none; box-shadow:none; background:transparent; padding:0"></main>
 
     <footer>
-      © KI‑Sicherheit.jetzt | TÜV‑certified AI management: Wolf Hohl 2025<br/>
-      Content for use exclusively within AI‑readiness and data‑protection consulting.<br/>
-      Redistribution/publication only with written permission.<br/>
-      Logos &amp; design are protected. Use of lists, templates and prompts exclusively for customers &amp; partners of KI‑Sicherheit.jetzt.
+      © KI‑Sicherheit.jetzt | TÜV‑certified AI Management: Wolf Hohl 2025<br>
+      Content for client projects only. No redistribution without written permission.
     </footer>
   </div>
 
-  <!-- Single‑Page Formbuilder (EN) -->
-  <script defer src="./formbuilder_en_FIXED_FULL.js"></script>
-
-  <!-- Language switch -->
   <script>
-    document.getElementById('lang').addEventListener('change', e => {
-      location.href = e.target.value === 'de' ? './index.html' : './index_en.html';
+    // ==== UI knobs (persist in localStorage) ====
+    const UX_KEY = "form_ux_v1";
+    const elCss = document.documentElement;
+    function applyUX(ux){
+      elCss.style.setProperty('--fs', (ux.fs || 17) + 'px');
+      elCss.style.setProperty('--lh', ((ux.lh||16)/10).toString());
+      elCss.style.setProperty('--space', (ux.space || 14) + 'px');
+      elCss.style.setProperty('--accent-l', (ux.accent || 42) + '%');
+      try{ localStorage.setItem(UX_KEY, JSON.stringify(ux)); }catch(_){}
+    }
+    function loadUX(){
+      try{
+        const raw = localStorage.getItem(UX_KEY);
+        if (!raw) return { fs:17, lh:16, space:14, accent:42 };
+        const o = JSON.parse(raw);
+        return { fs:o.fs||17, lh:o.lh||16, space:o.space||14, accent:o.accent||42 };
+      }catch(_){ return { fs:17, lh:16, space:14, accent:42 }; }
+    }
+    const ux = loadUX(); applyUX(ux);
+    const $ = id => document.getElementById(id);
+    $('ux-fs').value = ux.fs;
+    $('ux-lh').value = ux.lh;
+    $('ux-space').value = ux.space;
+    $('ux-accent').value = ux.accent;
+    $('ux-fs').addEventListener('input', e => { ux.fs = +e.target.value; applyUX(ux); });
+    $('ux-lh').addEventListener('input', e => { ux.lh = +e.target.value; applyUX(ux); });
+    $('ux-space').addEventListener('input', e => { ux.space = +e.target.value; applyUX(ux); });
+    $('ux-accent').addEventListener('input', e => { ux.accent = +e.target.value; applyUX(ux); });
+    $('ux-reset').addEventListener('click', () => {
+      applyUX({ fs:17, lh:16, space:14, accent:42 });
+      $('ux-fs').value = 17; $('ux-lh').value = 16; $('ux-space').value = 14; $('ux-accent').value = 42;
+    });
+    // language switch
+    document.getElementById('lang').addEventListener('change', (e)=>{
+      location.href = (e.target.value === 'en') ? 'index_en.html' : 'index.html';
     });
   </script>
+  <!-- Single‑page formbuilder (EN) – full file in the same folder -->
+  <script src="/formular/formbuilder_en.js?ts=__BUST__" defer></script>
 </body>
 </html>
