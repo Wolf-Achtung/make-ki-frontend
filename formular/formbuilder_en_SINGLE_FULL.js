@@ -1193,8 +1193,8 @@ function renderAllBlocks(){
             (field.options||[]).map(opt => {
               const sel = selectedValue === opt.value ? ' selected' : '';
               return `<option value="${opt.value}"${sel}>${opt.label}</option>`;
-            }).join("") + `
-        } break;
+            }).join("") + `</select>`;
+          break;
         case "textarea":
           input = `<textarea id="${field.key}" name="${field.key}" placeholder="${field.placeholder||""}">${formData[field.key]||""}</textarea>`;
           break;
