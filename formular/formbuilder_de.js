@@ -89,12 +89,14 @@ function getFeedbackBox(){
 /* ============================================================================
    FELDER (vollständig)
    ========================================================================== */
+/* Section introductions */
 const BLOCK_INTRO = ["Hier erfassen wir Basisdaten (E‑Mail, Branche, Größe, Standort). Sie steuern die Personalisierung des Reports und die passenden Förder‑ & Compliance‑Hinweise.", "Status‑Quo zu Prozessen, Daten und bisherigen KI‑Erfahrungen. Damit kalibrieren wir Quick Wins und die Start‑Roadmap.", "Ziele & wichtigste Anwendungsfälle: Was soll KI konkret leisten? Das fokussiert Empfehlungen und priorisiert Maßnahmen.", "Ressourcen & Präferenzen (Zeit, Tool‑Affinität, vorhandene Lösungen). So passen wir Empfehlungen an Machbarkeit & Tempo an.", "Recht & Datenschutz (Opt‑in): Notwendig für den sicheren Versand und für DSGVO/EU‑AI‑Act‑konforme Auswertung.", "Projektpriorisierung & Roadmap‑Hinweise: Gewichten Sie, was zuerst kommen soll – das fließt direkt in die Roadmap ein.", "Abschließen & Absenden: Kurzer Check, Einwilligung bestätigen und den personalisierten Report starten."];
-
-(function(){
+/* Intro style */
+(function(){ try{
   const css = `.section-intro{background:#E9F0FB;border:1px solid #D4DDED;border-radius:10px;padding:10px 12px;margin:8px 0 12px;color:#123B70}`;
-  const s = document.createElement('style'); s.type='text/css'; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
-})();
+  const s = document.createElement('style'); s.type='text/css';
+  s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
+}catch(_){}})();
 const fields = [
   // Block 1: Unternehmensinfos
   {
@@ -643,7 +645,7 @@ window.addEventListener("DOMContentLoaded", () => {
   renderAllBlocks();
   setTimeout(handleFormEvents, 20);
 });
-  renderBlock(currentBlock);
+renderBlock(currentBlock);
   setTimeout(() => {
     setFieldValues(currentBlock);
     renderBlock(currentBlock);
@@ -934,22 +936,27 @@ function applyTexts_DE(fields) {
 applyTexts_DE(fields);
 
 
+/* Single-page renderer */
 function renderAllBlocks(){
-  formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
+  try {
+    formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}");
+  } catch(_){
+    formData = {};
+  }
   const root = document.getElementById("formbuilder"); if (!root) return;
   let html = "";
   for (let i=0;i<blocks.length;i++){ 
     const block = blocks[i];
     html += `<section class="fb-section"><div class="fb-section-head"><span class="fb-step">Schritt ${i+1}/${blocks.length}</span> – <b>${block.name}</b></div>`;
-    const __intro = BLOCK_INTRO[i] || "";
-    if (__intro) html += `<div class="section-intro">${__intro}</div>`;
+    const intro = BLOCK_INTRO[i] || "";
+    if (intro) html += `<div class="section-intro">${intro}</div>`;
     html += block.keys.map(key => {
       const field = findField(key); if (!field) return "";
       if (field.showIf && !field.showIf(formData)) return "";
       const guidance = field.description ? `<div class="guidance${field.type === "privacy" ? " important" : ""}">${field.description}</div>` : "";
       let input = "";
       switch(field.type){
-        case "select": { 
+        case "select": {
           const selectedValue = formData[field.key] || "";
           input = `<select id="${field.key}" name="${field.key}"><option value="">Bitte wählen...</option>` + 
             (field.options||[]).map(opt => { 
@@ -963,8 +970,10 @@ function renderAllBlocks(){
         case "checkbox":
           input = `<div class="checkbox-group twocol">` + 
             (field.options||[]).map(opt => {
-              const label = opt.label || ""; const m = label.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
-              const mainLabel = m ? m[1].trim() : label; const hint = m ? m[2].trim() : "";
+              const label = opt.label || ""; 
+              const m = label.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+              const mainLabel = m ? m[1].trim() : label; 
+              const hint = m ? m[2].trim() : "";
               const checked = (formData[field.key]||[]).includes(opt.value) ? 'checked' : '';
               const hintHtml = hint ? `<div class="option-example">${hint}</div>` : "";
               return `<label class="checkbox-label"><input type="checkbox" name="${field.key}" value="${opt.value}" ${checked}><span>${mainLabel}</span>${hintHtml}</label>`;
