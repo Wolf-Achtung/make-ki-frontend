@@ -2,60 +2,43 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>KI-Checkup-Report – Fragebogen (DE)</title>
-  <meta name="color-scheme" content="light only" />
-  <style>
-    :root{ --ink:#0B1F3B; --ink2:#123B70; --rule:#E3E9F3; --bg:#F7FAFF; }
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
-      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    .shell{max-width:980px;margin:24px auto;padding:16px}
-    .card{background:#fff;border:1px solid var(--rule);border-radius:16px;
-      box-shadow:0 6px 24px rgba(10,35,75,.06);padding:24px}
-    .header{ text-align:center; margin-bottom:16px}
-    .title{ font-size:2.2rem; color:#062452; margin:.25rem 0 .5rem}
-    .langbar{display:flex;gap:8px;align-items:center;margin-bottom:14px}
-    .langbar label{font-weight:600}
-    .langbar select{padding:6px 12px;border:1px solid #bcd3ef;border-radius:10px}
-    footer{max-width:980px;margin:18px auto 28px auto;color:#6B7A8C;text-align:center;font-size:.92rem}
-    #progress{margin:8px 0 12px;color:var(--ink2)}
-    noscript{display:block;background:#FFF3CD;border:1px solid #FFEC99;color:#7A5E00;
-      padding:10px 12px;border-radius:10px;margin:12px 0}
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KI‑Checkup‑Report – Fragebogen (DE)</title>
+  <link rel="stylesheet" href="./formular.css" />
 </head>
 <body>
-  <div class="shell">
-    <div class="langbar">
+  <div class="page">
+    <div class="lang">
       <label for="lang">Sprache:</label>
-      <select id="lang" aria-label="Sprache wählen">
+      <select id="lang">
         <option value="de" selected>Deutsch</option>
         <option value="en">English</option>
       </select>
     </div>
 
-    <div class="card header">
-      <!-- Wenn Du ein Logo einbinden willst, füge hier <img src="/assets/logo.svg" alt="KI-Sicherheit" height="48"> ein -->
-      <h1 class="title">KI-Checkup-Report</h1>
-    </div>
-
-    <noscript>JavaScript ist deaktiviert. Bitte aktiviere JavaScript, um den Fragebogen anzuzeigen.</noscript>
+    <header class="hero">
+      <img src="../assets/logo.svg" alt="KI‑Sicherheit.jetzt" style="height:36px" onerror="this.style.display='none'">
+      <h1>KI‑Checkup‑Report</h1>
+    </header>
 
     <div id="progress"></div>
-    <div id="formbuilder" class="card"></div>
+    <main id="formbuilder" aria-live="polite"></main>
+
+    <footer>
+      © KI‑Sicherheit.jetzt | TÜV‑zertifiziertes KI‑Management: Wolf Hohl 2025<br/>
+      Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI‑Readiness‑ und Datenschutzberatung.<br/>
+      Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.<br/>
+      Logos &amp; Design sind urheberrechtlich geschützt. Nutzung &amp; Bearbeitung der bereitgestellten Listen, Templates und Prompts ausschließlich für Kunden &amp; Partner von KI‑Sicherheit.jetzt.
+    </footer>
   </div>
 
-  <footer>
-    © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
-    Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.
-  </footer>
-
-  <!-- Single-Page, geprüfte, fehlerfreie Version einbinden -->
-  <script defer src="/formular/formbuilder_de_FIXED_FULL.js"></script>
+  <!-- Single‑Page Formbuilder (DE) -->
+  <script defer src="./formbuilder_de_FIXED_FULL.js"></script>
 
   <!-- Sprachwechsel -->
-  <script defer>
+  <script>
     document.getElementById('lang').addEventListener('change', e => {
-      location.href = e.target.value === 'en' ? 'index_en.html' : 'index.html';
+      location.href = e.target.value === 'en' ? './index_en.html' : './index.html';
     });
   </script>
 </body>
