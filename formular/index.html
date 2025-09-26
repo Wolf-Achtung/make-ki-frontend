@@ -3,235 +3,459 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KI‑Checkup‑Report – Fragebogen (DE)</title>
+  <title>KI-Checkup-Report – Fragebogen</title>
   <style>
-    :root{
-      --fs: 17px;              /* Stellschraube #1: Grund-Schriftgröße */
-      --lh: 1.6;               /* Stellschraube #2: Zeilenhöhe */
-      --space: 14px;           /* Stellschraube #3: vertikale Abstände */
-      --accent-h: 215;         /* Blau-Hue */
-      --accent-s: 88%;         /* Sättigung */
-      --accent-l: 42%;         /* Stellschraube #4: Helligkeit Akzentblau (30–55 gut) */
-      --copy: #0e2a51;         /* dunkles Blau für Fließtext */
-      --bg:   #f4f7fc;
-      --panel:#ffffff;
-      --line: #dbe5f3;
-      --muted:#5b6d89;
+    :root {
+      /* Color palette with multiple blue tones */
+      --primary-blue: #1e3a5f;
+      --accent-blue: #2563eb;
+      --light-blue: #dbeafe;
+      --sky-blue: #e0f2fe;
+      --pale-blue: #f0f9ff;
+      
+      /* Typography and spacing */
+      --fs: 18px;
+      --lh: 1.7;
+      --space-xs: 8px;
+      --space-sm: 16px;
+      --space-md: 24px;
+      --space-lg: 32px;
+      --space-xl: 48px;
+      
+      /* Colors */
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       font-size: var(--fs);
       line-height: var(--lh);
-      color: var(--copy);
-      background: var(--bg);
+      color: var(--text-primary);
+      background: linear-gradient(135deg, var(--pale-blue) 0%, var(--bg-main) 100%);
+      min-height: 100vh;
     }
-    .wrap{max-width: 980px; margin: 28px auto; padding: 0 16px;}
-    header.card{
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 18px 20px;
-      box-shadow: 0 1px 2px rgba(10,30,60,.03);
-      position: relative;
+    
+    .container {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-md);
     }
-    h1{
-      margin: 8px 0 4px 0;
-      font-size: clamp(22px, 2.4vw, 30px);
-      line-height: 1.25;
-      letter-spacing: .2px;
+    
+    /* Header with improved layout */
+    .header-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: var(--space-lg);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+      margin-bottom: var(--space-lg);
     }
-    .brand{display:flex; align-items:center; gap:12px}
-    .logo{width:38px; height:38px; border-radius:9px; background: hsl(var(--accent-h) var(--accent-s) var(--accent-l)); display:inline-block}
-    .subtitle{color: var(--muted); font-weight: 600; font-size: 14px; margin-top: 2px}
-    .lang{position:absolute; left:20px; top:16px}
-    .ui{position:absolute; right:20px; top:16px}
-    .ui details{display:inline-block}
-    .ui summary{
-      list-style:none;
-      cursor:pointer;
-      padding:8px 10px;
-      border:1px solid var(--line);
-      border-radius:10px;
-      background:#fff;
-      font-weight:600;
+    
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-md);
     }
-    .ui-panel{
-      margin-top:10px;
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:10px 12px;
-      width:min(320px, 82vw);
-      box-shadow: 0 2px 10px rgba(10,30,60,.06);
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
     }
-    .ui-panel .row{display:flex; align-items:center; gap:10px; margin:10px 0}
-    .ui-panel label{width:48%; font-weight:600; font-size: 14px}
-    .ui-panel input[type=range]{width:52%}
-    .progress{ height:10px; background:#eef3fb; border-radius:8px; overflow:hidden; margin-top:14px; }
-    .progress .bar{ height:100%; width:100%; background: linear-gradient(90deg, hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 6%)), hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 1%))); }
-    /* Sections */
-    section.fb-section{
-      background: var(--panel);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding: calc(var(--space) * 1.15) var(--space);
-      margin-top: calc(var(--space) * 1.4);
-      box-shadow: 0 1px 2px rgba(10,30,60,.03);
+    
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
     }
-    .fb-section-head{
-      font-weight:700;
-      font-size: clamp(18px, 1.6vw, 22px);
-      margin-bottom: 8px;
-      color: hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) - 6%));
+    
+    .brand-text h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 4px;
     }
-    .fb-step{
-      display:inline-block;
-      background: hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 24%)/.16);
-      color: hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) - 10%));
-      border:1px solid hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 10%)/.42);
-      border-radius:999px;
-      padding: 4px 10px;
-      font-size: 12px;
-      margin-right: 6px;
+    
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
     }
-    .section-intro{
-      background:#E9F0FB;
-      border:1px solid #D4DDED;
-      border-radius:10px;
-      padding:10px 12px;
-      margin:10px 0 16px;
-      color:#123B70;
+    
+    .lang-selector {
+      padding: 10px 16px;
+      border: 2px solid var(--border-light);
+      border-radius: 12px;
+      background: var(--bg-card);
+      font-size: 16px;
+      color: var(--text-primary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
-    .form-group{ margin: calc(var(--space) * 0.9) 0 }
-    label{ display:block; font-weight:700; margin-bottom: 6px }
-    .guidance{ font-size: .95em; color:#2d3c55; background:#f2f6ff; border-left:4px solid hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 8%)); padding:8px 10px; border-radius:8px; margin:6px 0 10px }
-    .guidance.important{ background:#fff6f6; border-left-color:#e77; color:#7a2b2b }
-    input[type=text], textarea, select{
-      width:100%;
-      border:1px solid #c8d6ee;
-      border-radius: 10px;
-      padding: 12px 12px;
-      background:#f9fbff;
+    
+    .lang-selector:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+    }
+    
+    .lang-selector:focus {
       outline: none;
-      font-size: 1em;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
-    textarea{ min-height: 96px; resize: vertical }
-    .checkbox-group{ display:grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap:8px }
-    @media (min-width: 820px){ .checkbox-group.twocol{ grid-template-columns: repeat(2, minmax(0,1fr)) } }
-    .checkbox-label{ display:flex; align-items:flex-start; gap:10px; border:1px solid #e6eefb; background:#fbfdff; padding:10px 12px; border-radius:10px }
-    .checkbox-label input{ margin-top: 3px }
-    .option-example{ font-size:.9em; color:#4a5a77 }
-    .slider-value-label{ display:inline-block; min-width: 22px; text-align:center; margin-left:8px; font-weight:700; color:hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) - 8%))}
-    .invalid{ border-color:#cc3b3b !important; background:#fff5f5 }
-    .invalid-group{ outline: 2px solid #ffd2d2; border-radius: 12px }
-    .form-error{ background:#fff6f6; border:1px solid #f0cece; padding:12px; border-radius:10px; color:#7a2b2b }
-    .success-msg{ background:#f1faf3; border:1px solid #cde9d6; padding:12px; border-radius:10px; color:#235c2f }
-    .form-nav{ position: sticky; bottom:0; background:linear-gradient(0deg, #ffffff, #ffffff); border:1px solid var(--line); border-radius:14px; margin: 16px 0; padding: 12px; display:flex; justify-content:space-between; align-items:center }
-    .btn-next{ background:hsl(var(--accent-h) var(--accent-s) var(--accent-l)); color:#fff; border:0; padding:12px 18px; border-radius:10px; font-weight:700; cursor:pointer }
-    .btn-reset{ background:#fff; color:#123; border:1px solid var(--line); padding:12px 16px; border-radius:10px; font-weight:600; cursor:pointer }
-    footer{ color:#6b7c97; font-size: 13px; text-align:center; margin: 16px 0 26px }
-    select.langsel{ padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background:#fff }
+    
+    /* Progress bar */
+    .progress-container {
+      margin-top: var(--space-md);
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: var(--light-blue);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), #3b82f6);
+      width: 14%;
+      transition: width 0.3s ease;
+    }
+    
+    /* Form sections with improved spacing */
+    .form-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: var(--space-lg);
+      margin-bottom: var(--space-md);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+    
+    .section-header {
+      margin-bottom: var(--space-md);
+    }
+    
+    .step-badge {
+      display: inline-block;
+      background: var(--light-blue);
+      color: var(--primary-blue);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+    }
+    
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: var(--space-xs);
+    }
+    
+    .section-intro {
+      background: linear-gradient(135deg, var(--sky-blue), var(--light-blue));
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 12px;
+      padding: var(--space-sm) var(--space-md);
+      margin-bottom: var(--space-lg);
+      color: var(--primary-blue);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    /* Form elements with better spacing */
+    .form-group {
+      margin-bottom: var(--space-lg);
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--primary-blue);
+      margin-bottom: var(--space-xs);
+      font-size: 17px;
+    }
+    
+    .form-description {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-sm);
+      line-height: 1.5;
+      background: var(--pale-blue);
+      padding: var(--space-sm);
+      border-radius: 10px;
+      border-left: 3px solid var(--light-blue);
+    }
+    
+    .form-description.important {
+      background: #fef3c7;
+      border-left-color: #f59e0b;
+      color: #92400e;
+    }
+    
+    /* Input styles */
+    select, textarea, input[type="text"], input[type="range"] {
+      width: 100%;
+      border: 2px solid var(--border-light);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 16px;
+      background: var(--bg-card);
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+    
+    select:hover, textarea:hover, input[type="text"]:hover {
+      border-color: var(--border-medium);
+    }
+    
+    select:focus, textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    /* Checkbox groups */
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-xs);
+      padding: var(--space-sm);
+      background: var(--pale-blue);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .checkbox-item:hover {
+      background: var(--sky-blue);
+      border-color: var(--light-blue);
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .checkbox-label {
+      flex: 1;
+      cursor: pointer;
+    }
+    
+    .checkbox-label-main {
+      font-weight: 500;
+      color: var(--text-primary);
+      display: block;
+    }
+    
+    .checkbox-label-hint {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    
+    /* Slider */
+    input[type="range"] {
+      padding: 0;
+      height: 40px;
+    }
+    
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .slider-value {
+      min-width: 48px;
+      padding: 8px 12px;
+      background: var(--light-blue);
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--primary-blue);
+      text-align: center;
+    }
+    
+    /* Navigation */
+    .form-nav {
+      position: sticky;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: var(--space-md);
+      margin-top: var(--space-lg);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn {
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), #3b82f6);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 2px solid var(--border-medium);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--pale-blue);
+      border-color: var(--accent-blue);
+    }
+    
+    /* Messages */
+    .success-message {
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      border-left: 4px solid #10b981;
+      color: #065f46;
+      padding: var(--space-md);
+      border-radius: 12px;
+      margin: var(--space-md) 0;
+    }
+    
+    .error-message {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      border-left: 4px solid #ef4444;
+      color: #991b1b;
+      padding: var(--space-md);
+      border-radius: 12px;
+      margin: var(--space-md) 0;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: var(--space-xl);
+      padding: var(--space-md);
+      line-height: 1.6;
+    }
+    
+    /* Invalid states */
+    .invalid {
+      border-color: #ef4444 !important;
+      background: #fef2f2 !important;
+    }
+    
+    .invalid-group {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+      border-radius: 12px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: var(--space-md) var(--space-sm);
+      }
+      
+      .form-section {
+        padding: var(--space-md);
+      }
+      
+      .checkbox-group {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="card">
-      <div class="lang">
-        <label for="lang" class="sr-only" style="position:absolute;left:-9999px">Sprache</label>
-        <select id="lang" class="langsel">
-          <option value="de" selected>Deutsch</option>
-          <option value="en">English</option>
+  <div class="container">
+    <header class="header-card">
+      <div class="header-top">
+        <div class="brand">
+          <div class="logo">KI</div>
+          <div class="brand-text">
+            <div class="subtitle">KI-Sicherheit.jetzt</div>
+            <h1>KI-Checkup-Report</h1>
+          </div>
+        </div>
+        <select class="lang-selector" id="lang-selector">
+          <option value="de" selected>🇩🇪 Deutsch</option>
+          <option value="en">🇬🇧 English</option>
         </select>
       </div>
-      <div class="ui">
-        <details id="uiPanel">
-          <summary>🎛️ Darstellung</summary>
-          <div class="ui-panel">
-            <div class="row">
-              <label>Schriftgröße</label>
-              <input id="ux-fs" type="range" min="15" max="20" step="1" />
-            </div>
-            <div class="row">
-              <label>Zeilenhöhe</label>
-              <input id="ux-lh" type="range" min="13" max="19" step="1" />
-            </div>
-            <div class="row">
-              <label>Abstände</label>
-              <input id="ux-space" type="range" min="10" max="22" step="1" />
-            </div>
-            <div class="row">
-              <label>Akzent‑Blau</label>
-              <input id="ux-accent" type="range" min="30" max="55" step="1" />
-            </div>
-            <div style="text-align:right; margin-top:6px">
-              <button id="ux-reset" type="button" class="btn-reset">Zurücksetzen</button>
-            </div>
-          </div>
-        </details>
-      </div>
-      <div class="brand">
-        <span class="logo" aria-hidden="true"></span>
-        <div>
-          <div class="subtitle">KI‑Sicherheit.jetzt</div>
-          <h1>KI‑Checkup‑Report</h1>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
         </div>
       </div>
-      <div class="progress"><div class="bar"></div></div>
     </header>
 
-    <main id="formbuilder" class="card" style="border:none; box-shadow:none; background:transparent; padding:0"></main>
+    <main id="formbuilder"></main>
 
     <footer>
-      © KI‑Sicherheit.jetzt | TÜV‑zertifiziertes KI‑Management: Wolf Hohl 2025<br>
-      Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI‑Readiness‑ und Datenschutzberatung.<br>
+      © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br>
+      Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br>
       Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.
     </footer>
   </div>
 
   <script>
-    // ==== UI Stellschrauben (persistiert in localStorage) ====
-    const UX_KEY = "form_ux_v1";
-    const elCss = document.documentElement;
-    function applyUX(ux){
-      elCss.style.setProperty('--fs', (ux.fs || 17) + 'px');
-      elCss.style.setProperty('--lh', ((ux.lh||16)/10).toString());
-      elCss.style.setProperty('--space', (ux.space || 14) + 'px');
-      elCss.style.setProperty('--accent-l', (ux.accent || 42) + '%');
-      try{ localStorage.setItem(UX_KEY, JSON.stringify(ux)); }catch(_){}
-    }
-    function loadUX(){
-      try{
-        const raw = localStorage.getItem(UX_KEY);
-        if (!raw) return { fs:17, lh:16, space:14, accent:42 };
-        const o = JSON.parse(raw);
-        return { fs:o.fs||17, lh:o.lh||16, space:o.space||14, accent:o.accent||42 };
-      }catch(_){ return { fs:17, lh:16, space:14, accent:42 }; }
-    }
-    const ux = loadUX(); applyUX(ux);
-    // bind controls
-    const $ = id => document.getElementById(id);
-    $('ux-fs').value = ux.fs;
-    $('ux-lh').value = ux.lh;
-    $('ux-space').value = ux.space;
-    $('ux-accent').value = ux.accent;
-    $('ux-fs').addEventListener('input', e => { ux.fs = +e.target.value; applyUX(ux); });
-    $('ux-lh').addEventListener('input', e => { ux.lh = +e.target.value; applyUX(ux); });
-    $('ux-space').addEventListener('input', e => { ux.space = +e.target.value; applyUX(ux); });
-    $('ux-accent').addEventListener('input', e => { ux.accent = +e.target.value; applyUX(ux); });
-    $('ux-reset').addEventListener('click', () => {
-      applyUX({ fs:17, lh:16, space:14, accent:42 });
-      $('ux-fs').value = 17; $('ux-lh').value = 16; $('ux-space').value = 14; $('ux-accent').value = 42;
-    });
-
-    // Sprache wechseln
-    document.getElementById('lang').addEventListener('change', (e)=>{
-      location.href = (e.target.value === 'en') ? 'index_en.html' : 'index.html';
+    document.getElementById('lang-selector').addEventListener('change', (e) => {
+      if (e.target.value === 'en') {
+        location.href = 'index_en.html';
+      }
     });
   </script>
-  <!-- Der Single‑Page‑Formbuilder (DE) – vollständige Datei im gleichen Ordner -->
   <script defer src="./formbuilder_de_SINGLE_FULL.js"></script>
 </body>
 </html>
