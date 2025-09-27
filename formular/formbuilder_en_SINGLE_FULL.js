@@ -1210,6 +1210,13 @@ function submitForm() {
     return;
   }
   
+  // ✅ HIER EINFÜGEN (NACH der Token-Prüfung, VOR dem BASE_URL):
+  const email = getEmailFromJWT(token);
+  if (email) {
+    data.email = email;
+    data.to = email;
+    }
+
   const BASE_URL = "https://make-ki-backend-neu-production.up.railway.app";
   fetch(`${BASE_URL}/briefing_async`, {
     method: "POST",
