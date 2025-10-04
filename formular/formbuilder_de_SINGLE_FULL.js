@@ -1,12 +1,12 @@
 /* File: formular/formbuilder_de_SINGLE_FULL.js */
-/* Basierend auf deiner vorherigen DE-Datei, jetzt als mehrstufiger Wizard mit Submit nur im letzten Schritt.  */
-/* Quelle/Stand der ursprünglichen Struktur: siehe hochgeladene Datei. :contentReference[oaicite:2]{index=2} */
+/* Multi-Step Wizard mit Scroll-to-Top & persistentem Autosave (inkl. Schrittfortsetzung). */
+/* Basierend auf deinen bisherigen Dateien. :contentReference[oaicite:1]{index=1} */
 (function () {
   "use strict";
 
   // --------------------------- Konfiguration ---------------------------
   var LANG = "de";
-  var SCHEMA_VERSION = "1.3.0";
+  var SCHEMA_VERSION = "1.4.0";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -17,31 +17,23 @@
       return String(v || "").replace(/\/+$/, "");
     } catch (e) { return ""; }
   }
-
   function getToken() {
     var keys = ["jwt", "access_token", "id_token", "AUTH_TOKEN", "token"];
-    for (var i = 0; i < keys.length; i++) {
-      try { var t = localStorage.getItem(keys[i]); if (t) return t; } catch (e) {}
-    }
+    for (var i = 0; i < keys.length; i++) { try { var t = localStorage.getItem(keys[i]); if (t) return t; } catch (e) {} }
     return null;
   }
-
   function getEmailFromJWT(token) {
-    try {
-      if (!token || token.split(".").length !== 3) return null;
+    try { if (!token || token.split(".").length !== 3) return null;
       var payload = JSON.parse(atob(token.split(".")[1]));
       return payload.email || payload.preferred_username || payload.sub || null;
     } catch (e) { return null; }
   }
-
   function dispatchProgress(step, total) {
-    try {
-      document.dispatchEvent(new CustomEvent("fb:progress", { detail: { step: step, total: total } }));
-    } catch (_) {}
+    try { document.dispatchEvent(new CustomEvent("fb:progress", { detail: { step: step, total: total } })); } catch (_) {}
   }
 
   // --------------------------- Styles (inject) ---------------------------
-  (function injectCSS() { try {
+  (function injectCSS(){ try{
     var css = ""
       + ".fb-section{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:32px;margin:24px 0;box-shadow:0 4px 20px rgba(0,0,0,.03)}"
       + ".fb-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}"
@@ -62,18 +54,19 @@
       + ".checkbox-label input{margin-top:4px;width:18px;height:18px;cursor:pointer}"
       + ".invalid{border-color:#ef4444!important;background:#fef2f2!important}"
       + ".invalid-group{box-shadow:0 0 0 3px rgba(239,68,68,.2);border-radius:12px}"
-      + ".form-nav{position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-top:24px;display:flex;justify-content:flex-end;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.05)}"
+      + ".form-nav{position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-top:24px;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.05)}"
       + ".btn{border:0;border-radius:12px;padding:12px 22px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s ease}"
       + ".btn-primary{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff}"
       + ".btn-secondary{background:#fff;color:#1e293b;border:2px solid #cbd5e1}"
       + ".btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,.3)}"
       + ".btn-secondary:hover{background:#f0f9ff;border-color:#2563eb}"
+      + ".mr-auto{margin-right:auto}"
       + ".slider-container{display:flex;align-items:center;gap:12px}"
       + ".slider-value-label{min-width:48px;padding:8px 12px;background:#dbeafe;border-radius:8px;font-weight:600;color:#1e3a5f;text-align:center}";
-    var s = document.createElement("style"); s.type = "text/css"; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
-  } catch (_) {} })();
+    var s=document.createElement("style"); s.type="text/css"; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
+  }catch(_){}})();
 
-  // --------------------------- Inhalte (aus Original übernommen) ---------------------------
+  // --------------------------- Inhalte ---------------------------
   var BLOCK_INTRO = [
     "Hier erfassen wir Basisdaten (Branche, Größe, Standort). Sie steuern die Personalisierung des Reports und die passenden Förder- & Compliance-Hinweise.",
     "Status-Quo zu Prozessen, Daten und bisherigen KI-Erfahrungen. Damit kalibrieren wir Quick Wins und die Start-Roadmap.",
@@ -84,40 +77,29 @@
     "Datenschutz & Absenden: Einwilligung bestätigen und den personalisierten Report starten."
   ];
 
-  // --- Felder (1:1 aus deiner Datei, minimal geglättet für Wizard) ---
+  // Felder (aus deiner Struktur, leicht geglättet)
   var fields = [
-    // Block 1: Unternehmensinfos
     { key: "branche", label: "In welcher Branche ist Ihr Unternehmen tätig?", type: "select",
       options: [
-        { value: "marketing", label: "Marketing & Werbung" },
-        { value: "beratung", label: "Beratung & Dienstleistungen" },
-        { value: "it", label: "IT & Software" },
-        { value: "finanzen", label: "Finanzen & Versicherungen" },
-        { value: "handel", label: "Handel & E-Commerce" },
-        { value: "bildung", label: "Bildung" },
-        { value: "verwaltung", label: "Verwaltung" },
-        { value: "gesundheit", label: "Gesundheit & Pflege" },
-        { value: "bau", label: "Bauwesen & Architektur" },
-        { value: "medien", label: "Medien & Kreativwirtschaft" },
-        { value: "industrie", label: "Industrie & Produktion" },
-        { value: "logistik", label: "Transport & Logistik" }
+        { value: "marketing", label: "Marketing & Werbung" }, { value: "beratung", label: "Beratung & Dienstleistungen" },
+        { value: "it", label: "IT & Software" }, { value: "finanzen", label: "Finanzen & Versicherungen" },
+        { value: "handel", label: "Handel & E-Commerce" }, { value: "bildung", label: "Bildung" },
+        { value: "verwaltung", label: "Verwaltung" }, { value: "gesundheit", label: "Gesundheit & Pflege" },
+        { value: "bau", label: "Bauwesen & Architektur" }, { value: "medien", label: "Medien & Kreativwirtschaft" },
+        { value: "industrie", label: "Industrie & Produktion" }, { value: "logistik", label: "Transport & Logistik" }
       ],
       description: "Ihre Hauptbranche beeinflusst Benchmarks, Tool-Empfehlungen und die Auswertung."
     },
     { key: "unternehmensgroesse", label: "Wie groß ist Ihr Unternehmen?", type: "select",
       options: [
-        { value: "solo", label: "1 (Solo-Selbstständig/Freiberuflich)" },
-        { value: "team", label: "2–10 (Kleines Team)" },
-        { value: "kmu", label: "11–100 (KMU)" }
+        { value: "solo", label: "1 (Solo-Selbstständig/Freiberuflich)" }, { value: "team", label: "2–10 (Kleines Team)" }, { value: "kmu", label: "11–100 (KMU)" }
       ],
       description: "Die Unternehmensgröße beeinflusst Empfehlungen und Fördermöglichkeiten."
     },
     { key: "selbststaendig", label: "Unternehmensform bei 1 Person", type: "select",
       options: [
-        { value: "freiberufler", label: "Freiberuflich/Selbstständig" },
-        { value: "kapitalgesellschaft", label: "1-Personen-Kapitalgesellschaft (GmbH/UG)" },
-        { value: "einzelunternehmer", label: "Einzelunternehmer (mit Gewerbe)" },
-        { value: "sonstiges", label: "Sonstiges" }
+        { value: "freiberufler", label: "Freiberuflich/Selbstständig" }, { value: "kapitalgesellschaft", label: "1-Personen-Kapitalgesellschaft (GmbH/UG)" },
+        { value: "einzelunternehmer", label: "Einzelunternehmer (mit Gewerbe)" }, { value: "sonstiges", label: "Sonstiges" }
       ],
       description: "Bitte wählen Sie die zutreffende Rechtsform.",
       showIf: function (data) { return data.unternehmensgroesse === "solo"; }
@@ -361,23 +343,49 @@
   var currentBlock = 0;
   var formData = {};
   var autosaveKey = (function () {
-    try {
-      var t = getToken(); var e = getEmailFromJWT(t);
-      return (e ? (STORAGE_PREFIX + e) : (STORAGE_PREFIX + "test")) + ":" + LANG;
-    } catch (e) { return STORAGE_PREFIX + "test:" + LANG; }
+    try { var t = getToken(); var e = getEmailFromJWT(t); return (e ? (STORAGE_PREFIX + e) : (STORAGE_PREFIX + "test")) + ":" + LANG; }
+    catch (e) { return STORAGE_PREFIX + "test:" + LANG; }
   })();
+  var stepKey = autosaveKey + ":step";
 
-  function loadAutosave() {
-    try { formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}"); } catch (e) { formData = {}; }
+  function loadAutosave(){ try{ formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}"); }catch(e){ formData = {}; } }
+  function saveAutosave(){ try{ localStorage.setItem(autosaveKey, JSON.stringify(formData)); }catch(e){} }
+  function loadStep(){
+    try {
+      var raw = localStorage.getItem(stepKey);
+      var n = raw==null ? 0 : parseInt(raw,10);
+      if (isNaN(n)) n = 0;
+      currentBlock = Math.max(0, Math.min(blocks.length-1, n));
+    } catch(_) { currentBlock = 0; }
   }
-  function saveAutosave() {
-    try { localStorage.setItem(autosaveKey, JSON.stringify(formData)); } catch (e) {}
+  function saveStep(){ try { localStorage.setItem(stepKey, String(currentBlock)); } catch(_){} }
+
+  // --------------------------- Utilities ---------------------------
+  function findField(key){ for (var i=0;i<fields.length;i++) if (fields[i].key===key) return fields[i]; return null; }
+  function labelOf(key){ var f=findField(key); return (f && f.label) || key; }
+  function collectValue(f){
+    if (f.type === "checkbox" && f.options) {
+      var nodes = document.querySelectorAll('input[name="'+f.key+'"]:checked');
+      var arr = []; for (var i=0;i<nodes.length;i++) arr.push(nodes[i].value);
+      return arr;
+    } else if (f.type === "slider") {
+      var el = document.getElementById(f.key); return el ? el.value : (f.min || 1);
+    } else if (f.type === "privacy") {
+      var ch = document.getElementById(f.key); return ch ? !!ch.checked : false;
+    } else {
+      var inp = document.getElementById(f.key); return inp ? inp.value : "";
+    }
+  }
+  function scrollToStepTop(instant){
+    try {
+      var root = document.getElementById('formbuilder');
+      if (!root) { window.scrollTo({ top: 0, behavior: (instant?'auto':'smooth') }); return; }
+      var y = root.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - 16;
+      window.scrollTo({ top: y, behavior: (instant?'auto':'smooth') });
+    } catch(e){ try{ window.scrollTo(0,0); }catch(_){} }
   }
 
   // --------------------------- Rendering ---------------------------
-  function findField(key) { for (var i=0;i<fields.length;i++) if (fields[i].key===key) return fields[i]; return null; }
-  function labelOf(key) { var f=findField(key); return (f && f.label) || key; }
-
   function renderField(f) {
     var v = formData[f.key];
     var guidance = f.description ? '<div class="guidance'+(f.type==="privacy"?" important":"")+'">'+f.description+'</div>' : "";
@@ -435,6 +443,7 @@
     }
 
     html += '</section><div class="form-nav">'
+         +  '<button type="button" class="btn btn-secondary mr-auto" id="btn-reset">Zurücksetzen</button>'
          +  '<button type="button" class="btn btn-secondary" id="btn-back" '+(currentBlock===0?'disabled':'')+'>Zurück</button>'
          +  (currentBlock < blocks.length-1
               ? '<button type="button" class="btn btn-primary" id="btn-next">Weiter</button>'
@@ -444,10 +453,11 @@
 
     root.innerHTML = html;
 
-    // Events der Step-Ansicht
+    // Event‑Wiring
     root.addEventListener("change", handleChange);
     root.addEventListener("input", handleChange);
 
+    // Enter-Taste: kein „verfrühtes Absenden“ (außer Textareas)
     root.addEventListener("keydown", function (ev) {
       var isEnter = (ev.key === "Enter" || ev.keyCode === 13);
       var tag = (ev.target && ev.target.tagName) ? ev.target.tagName.toUpperCase() : "";
@@ -455,17 +465,28 @@
     });
 
     var back = document.getElementById("btn-back");
-    if (back) back.addEventListener("click", function () { if (currentBlock>0) { currentBlock--; renderStep(); updateProgress(); } });
+    if (back) back.addEventListener("click", function () {
+      if (currentBlock>0) { currentBlock--; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); }
+    });
 
     var next = document.getElementById("btn-next");
     if (next) {
       next.addEventListener("click", function () {
         var missing = validateCurrentBlock(true);
-        if (missing.length === 0 && currentBlock < blocks.length-1) { currentBlock++; renderStep(); updateProgress(); }
+        if (missing.length === 0 && currentBlock < blocks.length-1) { currentBlock++; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); }
       });
       // Direkt initial validieren, um Button ggf. zu deaktivieren
       next.disabled = validateCurrentBlock(false).length > 0;
     }
+
+    var reset = document.getElementById("btn-reset");
+    if (reset) reset.addEventListener("click", function () {
+      if (confirm("Möchten Sie das Formular wirklich zurücksetzen?")) {
+        try { localStorage.removeItem(autosaveKey); localStorage.removeItem(stepKey); } catch(_) {}
+        formData = {}; currentBlock = 0; saveStep();
+        renderStep(); updateProgress(); scrollToStepTop(true);
+      }
+    });
 
     var submit = document.getElementById("btn-submit");
     if (submit) submit.addEventListener("click", submitForm);
@@ -474,22 +495,8 @@
   }
 
   // --------------------------- Data & Validation ---------------------------
-  function collectValue(f) {
-    if (f.type === "checkbox" && f.options) {
-      var nodes = document.querySelectorAll('input[name="'+f.key+'"]:checked');
-      var arr = []; for (var i=0;i<nodes.length;i++) arr.push(nodes[i].value);
-      return arr;
-    } else if (f.type === "slider") {
-      var el = document.getElementById(f.key); return el ? el.value : (f.min || 1);
-    } else if (f.type === "privacy") {
-      var ch = document.getElementById(f.key); return ch ? !!ch.checked : false;
-    } else {
-      var inp = document.getElementById(f.key); return inp ? inp.value : "";
-    }
-  }
-
   function handleChange(e) {
-    // Schreibe alle sichtbaren Felder des aktuellen Blocks in formData
+    // schreibe alle sichtbaren Felder des aktuellen Blocks in formData
     var block = blocks[currentBlock];
     for (var i=0;i<block.keys.length;i++){
       var k = block.keys[i]; var f = findField(k); if (!f) continue;
@@ -498,13 +505,12 @@
     }
     saveAutosave();
 
-    // Sonderfall: selbststaendig eingeblendet/ausgeblendet
+    // Conditionals: re-render, damit showIf greift
     if (e && e.target && e.target.id === "unternehmensgroesse") {
-      renderStep(); // re-render für showIf
+      renderStep(); scrollToStepTop(false); // sanft nach oben in den Block
       return;
     }
 
-    // „Weiter“ Button aktivieren/deaktivieren
     var next = document.getElementById("btn-next");
     if (next) next.disabled = validateCurrentBlock(false).length > 0;
   }
@@ -517,18 +523,16 @@
     if (input) { if (on) input.classList.add("invalid"); else input.classList.remove("invalid"); }
   }
 
-  // Validierung nur für den aktuellen Block (Pflichtfelder heuristisch)
   function validateCurrentBlock(focusFirst) {
     var optional = {
-      // optional analog zu deiner ursprünglichen Datei
       "jahresumsatz":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
-      "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0 // kann leer sein, ist aber hilfreich
+      "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0
     };
     var missing = [];
     var block = blocks[currentBlock];
 
-    // Zurücksetzen
+    // reset
     for (var j=0;j<block.keys.length;j++) markInvalid(block.keys[j], false);
 
     for (var i=0;i<block.keys.length;i++){
@@ -538,7 +542,7 @@
 
       var val = formData[k];
       var ok = true;
-      if (optional[k]) { /* optional: keine Pflicht */ }
+      if (optional[k]) { /* optional */ }
       else if (f.type === "checkbox" && f.options) { ok = Array.isArray(val) && val.length>0; }
       else if (f.type === "privacy") { ok = (val === true); }
       else if (f.type === "select") { ok = !!val && String(val) !== ""; }
@@ -561,7 +565,7 @@
 
   // --------------------------- Submit ---------------------------
   function submitForm() {
-    // Final alle Felder einsammeln
+    // alle Felder einsammeln
     for (var bi=0; bi<blocks.length; bi++) {
       var b = blocks[bi];
       for (var ki=0; ki<b.keys.length; ki++) {
@@ -572,14 +576,12 @@
     }
     saveAutosave();
 
-    // Pflicht-Checkbox Datenschutz
     if (formData.datenschutz !== true) {
       var msg = document.getElementById("fb-msg");
       if (msg) { msg.textContent = "Bitte bestätigen Sie die Datenschutzhinweise."; msg.setAttribute("role","alert"); }
       return;
     }
 
-    // Erfolgsbildschirm sofort anzeigen (UX)
     var root = document.getElementById("formbuilder");
     if (root) {
       root.innerHTML = '<section class="fb-section"><h2>Vielen Dank für Ihre Angaben!</h2>'
@@ -587,23 +589,18 @@
         + 'Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E‑Mail.</div></section>';
     }
 
-    // Call Backend
     var token = getToken();
     if (!token) {
-      if (root) {
-        root.insertAdjacentHTML("beforeend",
-          '<div class="guidance important" role="alert">Ihre Sitzung ist abgelaufen. '
-          + '<a href="/login.html">Bitte neu anmelden</a>, wenn Sie eine weitere Analyse durchführen möchten.</div>');
-      }
+      if (root) root.insertAdjacentHTML("beforeend",
+        '<div class="guidance important" role="alert">Ihre Sitzung ist abgelaufen. '
+        + '<a href="/login.html">Bitte neu anmelden</a>, wenn Sie eine weitere Analyse durchführen möchten.</div>');
       return;
     }
 
-    var data = {};
-    for (var i=0;i<fields.length;i++){ data[fields[i].key] = formData[fields[i].key]; }
+    var data = {}; for (var i=0;i<fields.length;i++){ data[fields[i].key] = formData[fields[i].key]; }
     data.lang = LANG;
 
-    var email = getEmailFromJWT(token);
-    if (email) { data.email = email; data.to = email; }
+    var email = getEmailFromJWT(token); if (email) { data.email = email; data.to = email; }
 
     var url = getBaseUrl() + SUBMIT_PATH;
     fetch(url, {
@@ -614,19 +611,15 @@
       keepalive: true
     }).then(function (res) {
       if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
-      // nach Erfolg lokale Daten entfernen
-      try { localStorage.removeItem(autosaveKey); } catch (e) {}
-    }).catch(function () {
-      // Fehler still – Backend sendet E-Mail asynchron
-    });
+      // ⚠️ Autosave absichtlich NICHT löschen – damit späteres Editieren ohne Neuanfang möglich ist.
+    }).catch(function(){});
   }
 
-  // --------------------------- Init ---------------------------
-  window.addEventListener("DOMContentLoaded", function () {
-    loadAutosave();
-    // initial: sichtbare Felder (Block 0) für Validierung in formData ablegen
-    var b0 = blocks[0];
-    for (var i=0;i<b0.keys.length;i++){ var f = findField(b0.keys[i]); if (f) formData[f.key] = formData[f.key] || ""; }
-    renderStep();
+  // Init
+  window.addEventListener("DOMContentLoaded", function(){
+    loadAutosave(); loadStep();
+    // Sicherstellen, dass Block 0 keys existieren (Initialvalidierung)
+    var b0 = blocks[0]; for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f && formData[f.key]===undefined) formData[f.key] = ""; }
+    renderStep(); scrollToStepTop(true);
   });
 })();

@@ -1,12 +1,12 @@
 /* File: formular/formbuilder_en_SINGLE_FULL.js */
-/* Based on your original EN file, now a multi-step wizard with submit only on the final step.  */
-/* Source reference of original structure: see uploaded file. :contentReference[oaicite:3]{index=3} */
+/* Multi-step wizard with scroll-to-top & persistent autosave (incl. step resume). */
+/* Based on your current files. :contentReference[oaicite:2]{index=2} */
 (function () {
   "use strict";
 
   // --------------------------- Config ---------------------------
   var LANG = "en";
-  var SCHEMA_VERSION = "1.3.0";
+  var SCHEMA_VERSION = "1.4.0";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -54,18 +54,19 @@
       + ".checkbox-label input{margin-top:4px;width:18px;height:18px;cursor:pointer}"
       + ".invalid{border-color:#ef4444!important;background:#fef2f2!important}"
       + ".invalid-group{box-shadow:0 0 0 3px rgba(239,68,68,.2);border-radius:12px}"
-      + ".form-nav{position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-top:24px;display:flex;justify-content:flex-end;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.05)}"
+      + ".form-nav{position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-top:24px;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.05)}"
       + ".btn{border:0;border-radius:12px;padding:12px 22px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s ease}"
       + ".btn-primary{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff}"
       + ".btn-secondary{background:#fff;color:#1e293b;border:2px solid #cbd5e1}"
       + ".btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,.3)}"
       + ".btn-secondary:hover{background:#f0f9ff;border-color:#2563eb}"
+      + ".mr-auto{margin-right:auto}"
       + ".slider-container{display:flex;align-items:center;gap:12px}"
       + ".slider-value-label{min-width:48px;padding:8px 12px;background:#dbeafe;border-radius:8px;font-weight:600;color:#1e3a5f;text-align:center}";
     var s=document.createElement("style"); s.type="text/css"; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
   }catch(_){}})();
 
-  // --------------------------- Content (from your original) ---------------------------
+  // --------------------------- Content ---------------------------
   var BLOCK_INTRO = [
     "We collect basic data (industry, size, location). This drives report personalisation and relevant funding/compliance notes.",
     "Current state of processes, data and prior AI usage. This calibrates quick wins and the starter roadmap.",
@@ -77,7 +78,7 @@
   ];
 
   var fields = [
-    // Block 1: Company information
+    // Block 1
     { key: "branche", label: "In which industry is your company active?", type: "select",
       options: [
         { value: "marketing", label: "Marketing & advertising" }, { value: "beratung", label: "Consulting & services" },
@@ -87,13 +88,13 @@
         { value: "bau", label: "Construction & architecture" }, { value: "medien", label: "Media & creative industries" },
         { value: "industrie", label: "Industry & production" }, { value: "logistik", label: "Transport & logistics" }
       ],
-      description: "Your main industry influences benchmarks, tool recommendations and the analysis. Please select the core business you want your report to focus on."
+      description: "Your main industry influences benchmarks, tool recommendations and the analysis."
     },
     { key: "unternehmensgroesse", label: "How large is your company (number of employees)?", type: "select",
       options: [
         { value: "solo", label: "1 (sole proprietor / freelancer)" }, { value: "team", label: "2–10 (small team)" }, { value: "kmu", label: "11–100 (SME)" }
       ],
-      description: "The size of your company influences recommendations, funding opportunities and benchmarks."
+      description: "The size of your company influences recommendations and funding."
     },
     { key: "selbststaendig", label: "Legal form for a single person", type: "select",
       options: [
@@ -111,20 +112,20 @@
         { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
         { value: "sn", label: "Saxony" }, { value: "st", label: "Saxony-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thuringia" }
       ],
-      description: "Your location determines which funding, programmes and advisory services you can use."
+      description: "Your location determines which funding programs you can use."
     },
     { key: "hauptleistung", label: "What's your company's main product or core service?", type: "textarea",
       placeholder: "e.g. social media campaigns, CNC production, tax consulting for startups",
       description: "Describe your core offering as specifically as possible."
     },
-    { key: "zielgruppen", label: "Which target groups or customer segments do you serve?", type: "checkbox",
+    { key: "zielgruppen", label: "Which target groups do you serve?", type: "checkbox",
       options: [
-        { value: "b2b", label: "B2B (business customers)" }, { value: "b2c", label: "B2C (consumers)" }, { value: "kmu", label: "SMEs (small & medium enterprises)" },
-        { value: "grossunternehmen", label: "Large enterprises" }, { value: "selbststaendige", label: "Self-employed / freelancers" },
-        { value: "oeffentliche_hand", label: "Public sector" }, { value: "privatpersonen", label: "Private individuals" },
-        { value: "startups", label: "Startups" }, { value: "andere", label: "Other" }
+        { value: "b2b", label: "B2B (business customers)" }, { value: "b2c", label: "B2C (consumers)" },
+        { value: "kmu", label: "SMEs" }, { value: "grossunternehmen", label: "Large enterprises" },
+        { value: "selbststaendige", label: "Self-employed / freelancers" }, { value: "oeffentliche_hand", label: "Public sector" },
+        { value: "privatpersonen", label: "Private individuals" }, { value: "startups", label: "Startups" }, { value: "andere", label: "Other" }
       ],
-      description: "Please select all target groups that apply (multiple selections possible)."
+      description: "Multiple selections possible."
     },
     { key: "jahresumsatz", label: "Annual revenue (estimate)", type: "select",
       options: [
@@ -132,45 +133,46 @@
         { value: "500k_2m", label: "€500,000–2 million" }, { value: "2m_10m", label: "€2–10 million" },
         { value: "ueber_10m", label: "Over €10 million" }, { value: "keine_angabe", label: "Prefer not to say" }
       ],
-      description: "This helps with benchmarks and funding recommendations."
+      description: "For benchmarks and funding recommendations."
     },
     { key: "it_infrastruktur", label: "How is your IT infrastructure organized?", type: "select",
       options: [
-        { value: "cloud", label: "Cloud-based (e.g. Microsoft 365, Google Cloud)" }, { value: "on_premise", label: "Own data centre (on-premises)" },
+        { value: "cloud", label: "Cloud-based (e.g. Microsoft 365, Google Cloud)" },
+        { value: "on_premise", label: "Own data centre (on-premises)" },
         { value: "hybrid", label: "Hybrid (cloud + own servers)" }, { value: "unklar", label: "Unclear / not decided yet" }
       ],
       description: "Helps us select suitable security and integration recommendations."
     },
     { key: "interne_ki_kompetenzen", label: "Do you have an internal AI/digitalisation team?", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "in_planung", label: "In planning" } ],
-      description: "Helps us recommend appropriate training and structures."
+      description: "Helps recommend appropriate training and structures."
     },
     { key: "datenquellen", label: "Which types of data are available for AI projects?", type: "checkbox",
       options: [
-        { value: "kundendaten", label: "Customer data (CRM, service, history)" }, { value: "verkaufsdaten", label: "Sales and order data" },
-        { value: "produktionsdaten", label: "Production or operational data" }, { value: "personaldaten", label: "Personnel or HR data" },
-        { value: "marketingdaten", label: "Marketing and campaign data" }, { value: "sonstige", label: "Other data sources" }
+        { value: "kundendaten", label: "Customer data (CRM, service)" }, { value: "verkaufsdaten", label: "Sales/order data" },
+        { value: "produktionsdaten", label: "Production/operations data" }, { value: "personaldaten", label: "Personnel/HR data" },
+        { value: "marketingdaten", label: "Marketing/campaign data" }, { value: "sonstige", label: "Other data sources" }
       ],
-      description: "Select all relevant data sources (multiple selections possible)."
+      description: "Select all relevant data sources."
     },
 
-    // Block 2: Status Quo
-    { key: "digitalisierungsgrad", label: "How digital are your internal processes? (1-10)", type: "slider", min: 1, max: 10, step: 1,
+    // Block 2
+    { key: "digitalisierungsgrad", label: "How digital are your internal processes? (1–10)", type: "slider", min: 1, max: 10, step: 1,
       description: "1 = mostly paper/manual, 10 = fully digital/automated" },
     { key: "prozesse_papierlos", label: "What proportion of processes are paperless?", type: "select",
       options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
-      description: "Estimate how much runs completely digital." },
-    { key: "automatisierungsgrad", label: "Degree of automation in workflows", type: "select",
+      description: "Estimated is fine." },
+    { key: "automatisierungsgrad", label: "Degree of automation", type: "select",
       options: [
-        { value: "sehr_niedrig", label: "Very low" }, { value: "eher_niedrig", label: "Rather low" }, { value: "mittel", label: "Medium" },
-        { value: "eher_hoch", label: "Rather high" }, { value: "sehr_hoch", label: "Very high" }
+        { value: "sehr_niedrig", label: "Very low" }, { value: "eher_niedrig", label: "Rather low" },
+        { value: "mittel", label: "Medium" }, { value: "eher_hoch", label: "Rather high" }, { value: "sehr_hoch", label: "Very high" }
       ],
       description: "How much runs automatically vs manually?" },
     { key: "ki_einsatz", label: "Where is AI already being used?", type: "checkbox",
       options: [
         { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Sales" }, { value: "buchhaltung", label: "Accounting" },
         { value: "produktion", label: "Production" }, { value: "kundenservice", label: "Customer service" }, { value: "it", label: "IT" },
-        { value: "forschung", label: "Research & development" }, { value: "personal", label: "Human resources" }, { value: "keine", label: "No usage yet" },
+        { value: "forschung", label: "R&D" }, { value: "personal", label: "HR" }, { value: "keine", label: "No usage yet" },
         { value: "sonstiges", label: "Other" }
       ],
       description: "Select all areas that apply." },
@@ -179,9 +181,9 @@
         { value: "keine", label: "No experience" }, { value: "grundkenntnisse", label: "Basic knowledge" }, { value: "mittel", label: "Medium" },
         { value: "fortgeschritten", label: "Advanced" }, { value: "expertenwissen", label: "Expert knowledge" }
       ],
-      description: "How proficient is your team with AI?" },
+      description: "Self-assessment is fine." },
 
-    // Block 3: Goals & Projects
+    // Block 3
     { key: "projektziel", label: "Main objective of next AI project", type: "checkbox",
       options: [
         { value: "prozessautomatisierung", label: "Process automation" }, { value: "kostensenkung", label: "Cost reduction" },
@@ -190,8 +192,7 @@
         { value: "personalentlastung", label: "Relieve staff" }, { value: "foerdermittel", label: "Apply for funding" }, { value: "andere", label: "Other" }
       ],
       description: "Multiple selections possible." },
-    { key: "ki_projekte", label: "Ongoing or planned AI projects", type: "textarea",
-      placeholder: "e.g. chatbot, automated quotes, text generators...", description: "Describe current or planned projects concretely." },
+    { key: "ki_projekte", label: "Ongoing or planned AI projects", type: "textarea", placeholder: "e.g. chatbot, automated quotes, text generators...", description: "Describe current or planned projects concretely." },
     { key: "ki_usecases", label: "AI use cases of interest", type: "checkbox",
       options: [
         { value: "texterstellung", label: "Text generation" }, { value: "bildgenerierung", label: "Image generation" }, { value: "spracherkennung", label: "Speech recognition" },
@@ -206,7 +207,7 @@
       options: [
         { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Sales" }, { value: "buchhaltung", label: "Accounting" },
         { value: "produktion", label: "Production" }, { value: "kundenservice", label: "Customer service" }, { value: "it", label: "IT" },
-        { value: "forschung", label: "Research & development" }, { value: "personal", label: "Human resources" }, { value: "unbekannt", label: "Still unclear" }
+        { value: "forschung", label: "R&D" }, { value: "personal", label: "HR" }, { value: "unbekannt", label: "Still unclear" }
       ],
       description: "Which department has the most urgent need?" },
     { key: "ki_geschaeftsmodell_vision", label: "How could AI change your business model?", type: "textarea",
@@ -214,9 +215,8 @@
     { key: "moonshot", label: "Your bold AI vision in 3 years", type: "textarea",
       placeholder: "e.g. 80% automation, doubled revenue...", description: "Think big - what would be a breakthrough?" },
 
-    // Block 4: Strategy & Governance
-    { key: "strategic_goals", label: "Specific goals with AI", type: "textarea",
-      placeholder: "e.g. increase efficiency, new products, better service", description: "List your main strategic AI goals." },
+    // Block 4
+    { key: "strategic_goals", label: "Specific goals with AI", type: "textarea", placeholder: "e.g. increase efficiency, new products, better service", description: "List your main strategic AI goals." },
     { key: "data_quality", label: "Quality of your data", type: "select",
       options: [ { value: "high", label: "High (complete, structured, current)" }, { value: "medium", label: "Medium (partly structured)" }, { value: "low", label: "Low (unstructured, gaps)" } ],
       description: "Well-maintained data is crucial for AI success." },
@@ -233,17 +233,17 @@
       ],
       description: "Innovation-friendly culture facilitates AI adoption." },
 
-    // Block 5: Resources & Preferences
+    // Block 5
     { key: "time_capacity", label: "Time per week for AI projects", type: "select",
       options: [ { value: "under_2", label: "Under 2 hours" }, { value: "2_5", label: "2–5 hours" }, { value: "5_10", label: "5–10 hours" }, { value: "over_10", label: "More than 10 hours" } ],
-      description: "Helps tailor recommendations to available time." },
+      description: "Tailors recommendations to available time." },
     { key: "existing_tools", label: "Systems already in use", type: "checkbox",
       options: [
         { value: "crm", label: "CRM systems (HubSpot, Salesforce)" }, { value: "erp", label: "ERP systems (SAP, Odoo)" },
         { value: "project_management", label: "Project management (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing automation" },
         { value: "accounting", label: "Accounting software" }, { value: "none", label: "None / other" }
       ],
-      description: "Multiple selections - guides integration suggestions." },
+      description: "Multiple selections – guides integration suggestions." },
     { key: "regulated_industry", label: "Regulated industry", type: "checkbox",
       options: [
         { value: "healthcare", label: "Health & medicine" }, { value: "finance", label: "Finance & insurance" },
@@ -265,7 +265,7 @@
       ],
       description: "Helps prioritize recommendations." },
 
-    // Block 6: Legal & Funding
+    // Block 6
     { key: "datenschutzbeauftragter", label: "Data protection officer", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "teilweise", label: "Partially (external/planning)" } ],
       description: "Often mandatory - internal or external." },
@@ -318,10 +318,10 @@
         { value: "zufall", label: "By chance" }, { value: "unbekannt", label: "No clear strategy" }
       ],
       description: "Structured paths facilitate AI deployment." },
-    { key: "risikofreude", label: "Risk-taking with innovation (1-5)", type: "slider", min: 1, max: 5, step: 1,
+    { key: "risikofreude", label: "Risk-taking with innovation (1–5)", type: "slider", min: 1, max: 5, step: 1,
       description: "1 = safety-oriented, 5 = very bold" },
 
-    // Block 7: Privacy & Submit
+    // Block 7
     { key: "datenschutz",
       label: "I have read the <a href='privacy.html' onclick='window.open(this.href, \"PrivacyPopup\", \"width=600,height=700\"); return false;'>privacy notice</a> and agree.",
       type: "privacy",
@@ -346,14 +346,46 @@
     try { var t = getToken(); var e = getEmailFromJWT(t); return (e ? (STORAGE_PREFIX + e) : (STORAGE_PREFIX + "test")) + ":" + LANG; }
     catch (e) { return STORAGE_PREFIX + "test:" + LANG; }
   })();
+  var stepKey = autosaveKey + ":step";
 
   function loadAutosave(){ try{ formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}"); }catch(e){ formData = {}; } }
   function saveAutosave(){ try{ localStorage.setItem(autosaveKey, JSON.stringify(formData)); }catch(e){} }
+  function loadStep(){
+    try {
+      var raw = localStorage.getItem(stepKey);
+      var n = raw==null ? 0 : parseInt(raw,10);
+      if (isNaN(n)) n = 0;
+      currentBlock = Math.max(0, Math.min(blocks.length-1, n));
+    } catch(_) { currentBlock = 0; }
+  }
+  function saveStep(){ try { localStorage.setItem(stepKey, String(currentBlock)); } catch(_){} }
 
-  // --------------------------- Rendering ---------------------------
+  // --------------------------- Utilities ---------------------------
   function findField(key){ for (var i=0;i<fields.length;i++) if (fields[i].key===key) return fields[i]; return null; }
   function labelOf(key){ var f=findField(key); return (f && f.label) || key; }
+  function collectValue(f){
+    if (f.type === "checkbox" && f.options) {
+      var nodes = document.querySelectorAll('input[name="'+f.key+'"]:checked');
+      var arr = []; for (var i=0;i<nodes.length;i++) arr.push(nodes[i].value);
+      return arr;
+    } else if (f.type === "slider") {
+      var el = document.getElementById(f.key); return el ? el.value : (f.min || 1);
+    } else if (f.type === "privacy") {
+      var ch = document.getElementById(f.key); return ch ? !!ch.checked : false;
+    } else {
+      var inp = document.getElementById(f.key); return inp ? inp.value : "";
+    }
+  }
+  function scrollToStepTop(instant){
+    try {
+      var root = document.getElementById('formbuilder');
+      if (!root) { window.scrollTo({ top: 0, behavior: (instant?'auto':'smooth') }); return; }
+      var y = root.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - 16;
+      window.scrollTo({ top: y, behavior: (instant?'auto':'smooth') });
+    } catch(e){ try{ window.scrollTo(0,0); }catch(_){} }
+  }
 
+  // --------------------------- Rendering ---------------------------
   function renderField(f){
     var v = formData[f.key];
     var guidance = f.description ? '<div class="guidance'+(f.type==="privacy"?" important":"")+'">'+f.description+'</div>' : "";
@@ -405,6 +437,7 @@
       html += renderField(f);
     }
     html += '</section><div class="form-nav">'
+         +  '<button type="button" class="btn btn-secondary mr-auto" id="btn-reset">Reset</button>'
          +  '<button type="button" class="btn btn-secondary" id="btn-back" '+(currentBlock===0?'disabled':'')+'>Back</button>'
          +  (currentBlock < blocks.length-1
             ? '<button type="button" class="btn btn-primary" id="btn-next">Next</button>'
@@ -422,16 +455,25 @@
     });
 
     var back = document.getElementById("btn-back");
-    if (back) back.addEventListener("click", function(){ if (currentBlock>0){ currentBlock--; renderStep(); updateProgress(); } });
+    if (back) back.addEventListener("click", function(){ if (currentBlock>0){ currentBlock--; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); } });
 
     var next = document.getElementById("btn-next");
     if (next) {
       next.addEventListener("click", function () {
         var missing = validateCurrentBlock(true);
-        if (missing.length === 0 && currentBlock < blocks.length-1) { currentBlock++; renderStep(); updateProgress(); }
+        if (missing.length === 0 && currentBlock < blocks.length-1) { currentBlock++; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); }
       });
       next.disabled = validateCurrentBlock(false).length > 0;
     }
+
+    var reset = document.getElementById("btn-reset");
+    if (reset) reset.addEventListener("click", function () {
+      if (confirm("Are you sure you want to reset the form?")) {
+        try { localStorage.removeItem(autosaveKey); localStorage.removeItem(stepKey); } catch(_) {}
+        formData = {}; currentBlock = 0; saveStep();
+        renderStep(); updateProgress(); scrollToStepTop(true);
+      }
+    });
 
     var submit = document.getElementById("btn-submit");
     if (submit) submit.addEventListener("click", submitForm);
@@ -439,20 +481,7 @@
     updateProgress();
   }
 
-  function collectValue(f){
-    if (f.type === "checkbox" && f.options) {
-      var nodes = document.querySelectorAll('input[name="'+f.key+'"]:checked');
-      var arr = []; for (var i=0;i<nodes.length;i++) arr.push(nodes[i].value);
-      return arr;
-    } else if (f.type === "slider") {
-      var el = document.getElementById(f.key); return el ? el.value : (f.min || 1);
-    } else if (f.type === "privacy") {
-      var ch = document.getElementById(f.key); return ch ? !!ch.checked : false;
-    } else {
-      var inp = document.getElementById(f.key); return inp ? inp.value : "";
-    }
-  }
-
+  // --------------------------- Data & Validation ---------------------------
   function handleChange(e){
     var block = blocks[currentBlock];
     for (var i=0;i<block.keys.length;i++){
@@ -463,7 +492,8 @@
     saveAutosave();
 
     if (e && e.target && e.target.id === "unternehmensgroesse") {
-      renderStep(); return;
+      renderStep(); scrollToStepTop(false);
+      return;
     }
     var next = document.getElementById("btn-next");
     if (next) next.disabled = validateCurrentBlock(false).length > 0;
@@ -550,8 +580,7 @@
     var data = {}; for (var i=0;i<fields.length;i++){ data[fields[i].key] = formData[fields[i].key]; }
     data.lang = LANG;
 
-    var email = getEmailFromJWT(token);
-    if (email) { data.email = email; data.to = email; }
+    var email = getEmailFromJWT(token); if (email) { data.email = email; data.to = email; }
 
     var url = getBaseUrl() + SUBMIT_PATH;
     fetch(url, {
@@ -562,14 +591,14 @@
       keepalive: true
     }).then(function (res) {
       if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
-      try { localStorage.removeItem(autosaveKey); } catch (e) {}
+      // Keep autosave so users can edit later.
     }).catch(function(){});
   }
 
   // Init
   window.addEventListener("DOMContentLoaded", function(){
-    loadAutosave();
-    var b0 = blocks[0]; for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f) formData[f.key]=formData[f.key]||""; }
-    renderStep();
+    loadAutosave(); loadStep();
+    var b0 = blocks[0]; for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f && formData[f.key]===undefined) formData[f.key] = ""; }
+    renderStep(); scrollToStepTop(true);
   });
 })();
