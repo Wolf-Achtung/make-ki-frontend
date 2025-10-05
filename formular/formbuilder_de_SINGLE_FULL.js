@@ -1,12 +1,10 @@
 /* File: formular/formbuilder_de_SINGLE_FULL.js */
-/* Multi-Step Wizard mit Scroll-to-Top & persistentem Autosave (inkl. Schrittfortsetzung). */
-/* Basierend auf deinen bisherigen Dateien. :contentReference[oaicite:1]{index=1} */
 (function () {
   "use strict";
 
   // --------------------------- Konfiguration ---------------------------
   var LANG = "de";
-  var SCHEMA_VERSION = "1.4.0";
+  var SCHEMA_VERSION = "1.5.1";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -77,7 +75,7 @@
     "Datenschutz & Absenden: Einwilligung bestätigen und den personalisierten Report starten."
   ];
 
-  // Felder (aus deiner Struktur, leicht geglättet)
+  // Felder (leicht geglättet; Werte kompatibel mit Backend-Mappings)
   var fields = [
     { key: "branche", label: "In welcher Branche ist Ihr Unternehmen tätig?", type: "select",
       options: [
@@ -86,7 +84,8 @@
         { value: "handel", label: "Handel & E-Commerce" }, { value: "bildung", label: "Bildung" },
         { value: "verwaltung", label: "Verwaltung" }, { value: "gesundheit", label: "Gesundheit & Pflege" },
         { value: "bau", label: "Bauwesen & Architektur" }, { value: "medien", label: "Medien & Kreativwirtschaft" },
-        { value: "industrie", label: "Industrie & Produktion" }, { value: "logistik", label: "Transport & Logistik" }
+        { value: "industrie", label: "Industrie & Produktion" }, { value: "logistik", label: "Transport & Logistik" },
+        { value: "allgemein", label: "KMU (Allgemein)" }
       ],
       description: "Ihre Hauptbranche beeinflusst Benchmarks, Tool-Empfehlungen und die Auswertung."
     },
@@ -161,12 +160,12 @@
     { key: "digitalisierungsgrad", label: "Wie digital sind Ihre internen Prozesse? (1–10)", type: "slider", min: 1, max: 10, step: 1,
       description: "1 = hauptsächlich Papier/manuell, 10 = vollständig digital/automatisiert" },
     { key: "prozesse_papierlos", label: "Anteil papierloser Prozesse", type: "select",
-      options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
+      options: [ { value: "0-20", label: "0–20%" }, { value: "21-40", label: "21–40%" }, { value: "41-60", label: "41–60%" }, { value: "61-80", label: "61–80%" }, { value: "81-100", label: "81–100%" } ],
       description: "Grobe Schätzung genügt." },
     { key: "automatisierungsgrad", label: "Automatisierungsgrad", type: "select",
       options: [
         { value: "sehr_niedrig", label: "Sehr niedrig" }, { value: "eher_niedrig", label: "Eher niedrig" },
-        { value: "mittel", label: "Mittel" }, { value: "eher_hoch", label: "Eher hoch" }, { value: "sehr_hoch", label: "Sehr hoch" }
+        { value: "mittel", label: "Mittel" }, { value: "eher_hoch", label: "Eher hoch" }, { value: "hoch", label: "Hoch" }, { value: "sehr_hoch", label: "Sehr hoch" }
       ],
       description: "Wie viel läuft automatisiert vs. manuell?" },
     { key: "ki_einsatz", label: "Wo wird KI bereits eingesetzt?", type: "checkbox",
@@ -397,7 +396,7 @@
         opts += '<option value="'+o.value+'"'+sel+'>'+o.label+'</option>';
       }
       html = '<label for="'+f.key+'"><b>'+f.label+'</b></label>'+guidance+
-             '<select id="'+f.key+'" name="'+f.key+'">'+opts+'</select>';
+             '<select id="'+f.key+'" name="'+f.key+'" aria-invalid="false">'+opts+'</select>';
     } else if (f.type === "textarea") {
       html = '<label for="'+f.key+'"><b>'+f.label+'</b></label>'+guidance+
              '<textarea id="'+f.key+'" name="'+f.key+'" placeholder="'+(f.placeholder||"")+'">'+(v||"")+'</textarea>';
@@ -412,7 +411,7 @@
     } else if (f.type === "slider") {
       var val = (v!=null?v:(f.min||1));
       html = '<label for="'+f.key+'"><b>'+f.label+'</b></label>'+guidance+
-             '<div class="slider-container"><input type="range" id="'+f.key+'" name="'+f.key+'" min="'+(f.min||1)+'" max="'+(f.max||10)+'" step="'+(f.step||1)+'" value="'+val+'" oninput="this.parentElement.querySelector(\'.slider-value-label\').innerText=this.value"><span class="slider-value-label">'+val+'</span></div>';
+             '<div class="slider-container"><input type="range" id="'+f.key+'" name="'+f.key+'" min="'+(f.min||1)+'" max="'+(f.max||10)+'" step="'+(f.step||1)+'" value="'+val+'" oninput="this.parentElement.querySelector(\'.slider-value-label\').innerText=this.value" aria-valuemin="'+(f.min||1)+'" aria-valuemax="'+(f.max||10)+'" aria-valuenow="'+val+'"><span class="slider-value-label">'+val+'</span></div>';
     } else if (f.type === "privacy") {
       var chk = (v===true)?' checked':'';
       html = '<div class="guidance important">'+(f.description||"")+'</div>'+
@@ -475,7 +474,6 @@
         var missing = validateCurrentBlock(true);
         if (missing.length === 0 && currentBlock < blocks.length-1) { currentBlock++; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); }
       });
-      // Direkt initial validieren, um Button ggf. zu deaktivieren
       next.disabled = validateCurrentBlock(false).length > 0;
     }
 
@@ -496,7 +494,6 @@
 
   // --------------------------- Data & Validation ---------------------------
   function handleChange(e) {
-    // schreibe alle sichtbaren Felder des aktuellen Blocks in formData
     var block = blocks[currentBlock];
     for (var i=0;i<block.keys.length;i++){
       var k = block.keys[i]; var f = findField(k); if (!f) continue;
@@ -505,9 +502,8 @@
     }
     saveAutosave();
 
-    // Conditionals: re-render, damit showIf greift
     if (e && e.target && e.target.id === "unternehmensgroesse") {
-      renderStep(); scrollToStepTop(false); // sanft nach oben in den Block
+      renderStep(); scrollToStepTop(false);
       return;
     }
 
@@ -529,10 +525,10 @@
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
       "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0
     };
-    var missing = [];
+    // harte Pflichtfelder: Branche, Bundesland, Unternehmensgröße, Hauptleistung, Investitionsbudget
     var block = blocks[currentBlock];
+    var missing = [];
 
-    // reset
     for (var j=0;j<block.keys.length;j++) markInvalid(block.keys[j], false);
 
     for (var i=0;i<block.keys.length;i++){
@@ -599,6 +595,8 @@
 
     var data = {}; for (var i=0;i<fields.length;i++){ data[fields[i].key] = formData[fields[i].key]; }
     data.lang = LANG;
+    data.schema_version = SCHEMA_VERSION;
+    data.ts_submit = Date.now();
 
     var email = getEmailFromJWT(token); if (email) { data.email = email; data.to = email; }
 
@@ -611,14 +609,12 @@
       keepalive: true
     }).then(function (res) {
       if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
-      // ⚠️ Autosave absichtlich NICHT löschen – damit späteres Editieren ohne Neuanfang möglich ist.
     }).catch(function(){});
   }
 
   // Init
   window.addEventListener("DOMContentLoaded", function(){
     loadAutosave(); loadStep();
-    // Sicherstellen, dass Block 0 keys existieren (Initialvalidierung)
     var b0 = blocks[0]; for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f && formData[f.key]===undefined) formData[f.key] = ""; }
     renderStep(); scrollToStepTop(true);
   });
