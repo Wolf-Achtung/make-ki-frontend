@@ -1,12 +1,11 @@
-/* File: formular/formbuilder_en_SINGLE_FULL.js */
-/* Multi-step wizard with scroll-to-top & persistent autosave (incl. step resume). */
-/* Based on your current files. :contentReference[oaicite:2]{index=2} */
+/* Multi-Step Wizard (EN) – Scroll-to-Top, persistent autosave & step resume */
+/* Schema 1.5.0 – Microcopy tuned for small businesses; Submit only on final step. */
 (function () {
   "use strict";
 
   // --------------------------- Config ---------------------------
   var LANG = "en";
-  var SCHEMA_VERSION = "1.4.0";
+  var SCHEMA_VERSION = "1.5.0";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -68,13 +67,13 @@
 
   // --------------------------- Content ---------------------------
   var BLOCK_INTRO = [
-    "We collect basic data (industry, size, location). This drives report personalisation and relevant funding/compliance notes.",
-    "Current state of processes, data and prior AI usage. This calibrates quick wins and the starter roadmap.",
-    "Goals & key use cases: what should AI achieve? This focuses recommendations and prioritises actions.",
-    "Strategy & governance for sustainable AI deployment and responsible implementation.",
-    "Resources & preferences (time, tool affinity, existing tools). We adapt suggestions to feasibility and pace.",
-    "Legal & funding aspects: GDPR, EU AI Act, funding opportunities and compliance for safe AI deployment.",
-    "Privacy & submit: confirm consent and launch your personalised report."
+    "We collect some basics (industry, size, location). No prep needed—rough inputs are fine. This lets us tailor your report and check relevant funding/compliance notes.",
+    "Current state of processes, data and any AI usage. Goal: quick, realistic wins and a pragmatic starter roadmap—even for small teams.",
+    "Goals & key use cases: what should AI achieve in practice? We focus on steps with visible value.",
+    "Strategy & governance: simple, sustainable guardrails for responsible AI without bureaucracy.",
+    "Resources & preferences (time, tool landscape). We align recommendations with feasibility, budget and pace.",
+    "Legal & funding: GDPR, EU AI Act and grants—plain language with actionable to‑dos.",
+    "Privacy & submit: confirm consent and start your personalised report."
   ];
 
   var fields = [
@@ -88,20 +87,20 @@
         { value: "bau", label: "Construction & architecture" }, { value: "medien", label: "Media & creative industries" },
         { value: "industrie", label: "Industry & production" }, { value: "logistik", label: "Transport & logistics" }
       ],
-      description: "Your main industry influences benchmarks, tool recommendations and the analysis."
+      description: "Pick the closest match. We use this to tailor examples, tools, and funding/compliance guidance to your sector."
     },
     { key: "unternehmensgroesse", label: "How large is your company (number of employees)?", type: "select",
       options: [
         { value: "solo", label: "1 (sole proprietor / freelancer)" }, { value: "team", label: "2–10 (small team)" }, { value: "kmu", label: "11–100 (SME)" }
       ],
-      description: "The size of your company influences recommendations and funding."
+      description: "A rough estimate is fine—this helps us right‑size suggestions and funding options (especially for small teams)."
     },
     { key: "selbststaendig", label: "Legal form for a single person", type: "select",
       options: [
-        { value: "freiberufler", label: "Freelancer / self-employed" }, { value: "kapitalgesellschaft", label: "Single-member corporation (GmbH/UG)" },
+        { value: "freiberufler", label: "Freelancer / self-employed" }, { value: "kapitalgesellschaft", label: "Single‑member corporation (GmbH/UG)" },
         { value: "einzelunternehmer", label: "Sole proprietorship (with trade licence)" }, { value: "sonstiges", label: "Other" }
       ],
-      description: "Please choose the legal form that applies to you.",
+      description: "Only relevant if you selected “1”. Choose the nearest legal form—“Other” is perfectly fine.",
       showIf: function (data) { return data.unternehmensgroesse === "solo"; }
     },
     { key: "bundesland", label: "State (regional funding opportunities)", type: "select",
@@ -112,11 +111,11 @@
         { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
         { value: "sn", label: "Saxony" }, { value: "st", label: "Saxony-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thuringia" }
       ],
-      description: "Your location determines which funding programs you can use."
+      description: "Select your registered business location—this determines which regional grants we’ll check."
     },
     { key: "hauptleistung", label: "What's your company's main product or core service?", type: "textarea",
       placeholder: "e.g. social media campaigns, CNC production, tax consulting for startups",
-      description: "Describe your core offering as specifically as possible."
+      description: "One or two sentences are enough. If you offer several things, name the most important one."
     },
     { key: "zielgruppen", label: "Which target groups do you serve?", type: "checkbox",
       options: [
@@ -125,7 +124,7 @@
         { value: "selbststaendige", label: "Self-employed / freelancers" }, { value: "oeffentliche_hand", label: "Public sector" },
         { value: "privatpersonen", label: "Private individuals" }, { value: "startups", label: "Startups" }, { value: "andere", label: "Other" }
       ],
-      description: "Multiple selections possible."
+      description: "Select all that apply. This helps us pick suitable use cases and examples."
     },
     { key: "jahresumsatz", label: "Annual revenue (estimate)", type: "select",
       options: [
@@ -133,7 +132,7 @@
         { value: "500k_2m", label: "€500,000–2 million" }, { value: "2m_10m", label: "€2–10 million" },
         { value: "ueber_10m", label: "Over €10 million" }, { value: "keine_angabe", label: "Prefer not to say" }
       ],
-      description: "For benchmarks and funding recommendations."
+      description: "Use last year or a rough estimate. This only steers benchmarks and possible grant levels—it won’t be published."
     },
     { key: "it_infrastruktur", label: "How is your IT infrastructure organized?", type: "select",
       options: [
@@ -141,11 +140,11 @@
         { value: "on_premise", label: "Own data centre (on-premises)" },
         { value: "hybrid", label: "Hybrid (cloud + own servers)" }, { value: "unklar", label: "Unclear / not decided yet" }
       ],
-      description: "Helps us select suitable security and integration recommendations."
+      description: "Pick your current setup. “Hybrid” is common—no problem at all."
     },
     { key: "interne_ki_kompetenzen", label: "Do you have an internal AI/digitalisation team?", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "in_planung", label: "In planning" } ],
-      description: "Helps recommend appropriate training and structures."
+      description: "If nobody is dedicated yet, select “No”—we’ll propose lightweight starts and training."
     },
     { key: "datenquellen", label: "Which types of data are available for AI projects?", type: "checkbox",
       options: [
@@ -153,21 +152,21 @@
         { value: "produktionsdaten", label: "Production/operations data" }, { value: "personaldaten", label: "Personnel/HR data" },
         { value: "marketingdaten", label: "Marketing/campaign data" }, { value: "sonstige", label: "Other data sources" }
       ],
-      description: "Select all relevant data sources."
+      description: "Tick only what you currently have access to. Even small datasets can be valuable."
     },
 
     // Block 2
     { key: "digitalisierungsgrad", label: "How digital are your internal processes? (1–10)", type: "slider", min: 1, max: 10, step: 1,
-      description: "1 = mostly paper/manual, 10 = fully digital/automated" },
+      description: "Move the slider by gut feel: 1 = paper/spreadsheets, 10 = largely automated. No audit—just orientation." },
     { key: "prozesse_papierlos", label: "What proportion of processes are paperless?", type: "select",
       options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
-      description: "Estimated is fine." },
+      description: "A simple estimate is fine. Helps us find quick wins." },
     { key: "automatisierungsgrad", label: "Degree of automation", type: "select",
       options: [
         { value: "sehr_niedrig", label: "Very low" }, { value: "eher_niedrig", label: "Rather low" },
         { value: "mittel", label: "Medium" }, { value: "eher_hoch", label: "Rather high" }, { value: "sehr_hoch", label: "Very high" }
       ],
-      description: "How much runs automatically vs manually?" },
+      description: "Think about day‑to‑day workflows (not just IT)." },
     { key: "ki_einsatz", label: "Where is AI already being used?", type: "checkbox",
       options: [
         { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Sales" }, { value: "buchhaltung", label: "Accounting" },
@@ -175,13 +174,14 @@
         { value: "forschung", label: "R&D" }, { value: "personal", label: "HR" }, { value: "keine", label: "No usage yet" },
         { value: "sonstiges", label: "Other" }
       ],
-      description: "Select all areas that apply." },
-    { key: "ki_knowhow", label: "Team's internal AI know-how", type: "select",
+      description: "If unsure, select “No usage yet”." },
+    { key: "ki_knowhow", label: "Team's internal AI know‑how", type: "select",
       options: [
         { value: "keine", label: "No experience" }, { value: "grundkenntnisse", label: "Basic knowledge" }, { value: "mittel", label: "Medium" },
         { value: "fortgeschritten", label: "Advanced" }, { value: "expertenwissen", label: "Expert knowledge" }
       ],
-      description: "Self-assessment is fine." },
+      description: "Self‑assessment only—we’ll right‑size the plan and training."
+    },
 
     // Block 3
     { key: "projektziel", label: "Main objective of next AI project", type: "checkbox",
@@ -191,8 +191,8 @@
         { value: "kundenservice", label: "Improve customer service" }, { value: "markterschliessung", label: "Market expansion" },
         { value: "personalentlastung", label: "Relieve staff" }, { value: "foerdermittel", label: "Apply for funding" }, { value: "andere", label: "Other" }
       ],
-      description: "Multiple selections possible." },
-    { key: "ki_projekte", label: "Ongoing or planned AI projects", type: "textarea", placeholder: "e.g. chatbot, automated quotes, text generators...", description: "Describe current or planned projects concretely." },
+      description: "Choose outcomes for the next 3–6 months—measurable and pragmatic." },
+    { key: "ki_projekte", label: "Ongoing or planned AI projects", type: "textarea", placeholder: "e.g. chatbot, automated quotes, text generators…", description: "Bullet points are fine. Mention tools/processes if relevant." },
     { key: "ki_usecases", label: "AI use cases of interest", type: "checkbox",
       options: [
         { value: "texterstellung", label: "Text generation" }, { value: "bildgenerierung", label: "Image generation" }, { value: "spracherkennung", label: "Speech recognition" },
@@ -200,126 +200,126 @@
         { value: "kundensupport", label: "Customer support" }, { value: "wissensmanagement", label: "Knowledge management" },
         { value: "marketing", label: "Marketing optimization" }, { value: "sonstiges", label: "Other" }
       ],
-      description: "Multiple selections possible." },
+      description: "Tick interest areas; we’ll suggest practical starting points." },
     { key: "ki_potenzial", label: "Greatest potential for AI in your company", type: "textarea",
-      placeholder: "e.g. faster reporting, personalized offers, automation...", description: "Where do you see the greatest potential?" },
+      placeholder: "e.g. faster reporting, personalized offers, automation…", description: "Where would a 10% time saving help most? Examples welcome." },
     { key: "usecase_priority", label: "Where should AI be introduced first?", type: "select",
       options: [
         { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Sales" }, { value: "buchhaltung", label: "Accounting" },
         { value: "produktion", label: "Production" }, { value: "kundenservice", label: "Customer service" }, { value: "it", label: "IT" },
         { value: "forschung", label: "R&D" }, { value: "personal", label: "HR" }, { value: "unbekannt", label: "Still unclear" }
       ],
-      description: "Which department has the most urgent need?" },
+      description: "Pick the department where a pilot would be easiest to launch." },
     { key: "ki_geschaeftsmodell_vision", label: "How could AI change your business model?", type: "textarea",
-      placeholder: "e.g. automated consultations, data-based services...", description: "Your long-term vision for AI transformation." },
+      placeholder: "e.g. automated consultations, data‑based services…", description: "How could AI create value (new services, faster flows)? No commitment." },
     { key: "moonshot", label: "Your bold AI vision in 3 years", type: "textarea",
-      placeholder: "e.g. 80% automation, doubled revenue...", description: "Think big - what would be a breakthrough?" },
+      placeholder: "e.g. 80% automation, doubled revenue…", description: "Ambitious yet realistic—helps set direction." },
 
     // Block 4
-    { key: "strategic_goals", label: "Specific goals with AI", type: "textarea", placeholder: "e.g. increase efficiency, new products, better service", description: "List your main strategic AI goals." },
+    { key: "strategic_goals", label: "Specific goals with AI", type: "textarea", placeholder: "e.g. increase efficiency, new products, better service", description: "Link AI goals to business KPIs (e.g., response time −30%)." },
     { key: "data_quality", label: "Quality of your data", type: "select",
       options: [ { value: "high", label: "High (complete, structured, current)" }, { value: "medium", label: "Medium (partly structured)" }, { value: "low", label: "Low (unstructured, gaps)" } ],
-      description: "Well-maintained data is crucial for AI success." },
+      description: "Used for effort estimation only—pick the closest option." },
     { key: "ai_roadmap", label: "AI roadmap or strategy", type: "select",
-      options: [ { value: "yes", label: "Yes - implemented" }, { value: "planning", label: "In planning" }, { value: "no", label: "Not yet available" } ],
-      description: "A clear roadmap supports structured implementation." },
+      options: [ { value: "yes", label: "Yes – implemented" }, { value: "planning", label: "In planning" }, { value: "no", label: "Not yet available" } ],
+      description: "If you don’t have one yet, that’s totally fine—we’ll provide a starter plan." },
     { key: "governance", label: "Data and AI governance guidelines", type: "select",
       options: [ { value: "yes", label: "Yes" }, { value: "partial", label: "Partial" }, { value: "no", label: "No" } ],
-      description: "Guidelines promote responsible AI projects." },
+      description: "Policies for data security, access and model usage. “No” is OK—we’ll share templates." },
     { key: "innovation_culture", label: "Openness to innovation", type: "select",
       options: [
         { value: "very_open", label: "Very open" }, { value: "rather_open", label: "Rather open" }, { value: "neutral", label: "Neutral" },
         { value: "rather_reluctant", label: "Rather reluctant" }, { value: "very_reluctant", label: "Very reluctant" }
       ],
-      description: "Innovation-friendly culture facilitates AI adoption." },
+      description: "Your feel for organisational openness—not a judgment." },
 
     // Block 5
     { key: "time_capacity", label: "Time per week for AI projects", type: "select",
       options: [ { value: "under_2", label: "Under 2 hours" }, { value: "2_5", label: "2–5 hours" }, { value: "5_10", label: "5–10 hours" }, { value: "over_10", label: "More than 10 hours" } ],
-      description: "Tailors recommendations to available time." },
+      description: "Be honest—we’ll design a plan that fits your calendar." },
     { key: "existing_tools", label: "Systems already in use", type: "checkbox",
       options: [
         { value: "crm", label: "CRM systems (HubSpot, Salesforce)" }, { value: "erp", label: "ERP systems (SAP, Odoo)" },
         { value: "project_management", label: "Project management (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing automation" },
         { value: "accounting", label: "Accounting software" }, { value: "none", label: "None / other" }
       ],
-      description: "Multiple selections – guides integration suggestions." },
+      description: "Select tools you actively use so we don’t suggest duplicates." },
     { key: "regulated_industry", label: "Regulated industry", type: "checkbox",
       options: [
         { value: "healthcare", label: "Health & medicine" }, { value: "finance", label: "Finance & insurance" },
         { value: "public", label: "Public sector" }, { value: "legal", label: "Legal services" }, { value: "none", label: "None of these" }
       ],
-      description: "Regulated industries need special compliance." },
+      description: "Tick any that apply—we’ll include sector‑specific compliance." },
     { key: "training_interests", label: "AI training topics of interest", type: "checkbox",
       options: [
         { value: "prompt_engineering", label: "Prompt engineering" }, { value: "llm_basics", label: "LLM basics" },
         { value: "data_quality_governance", label: "Data quality & governance" }, { value: "automation_scripts", label: "Automation & scripts" },
         { value: "ethics_regulation", label: "Ethical & legal foundations" }, { value: "none", label: "None / not sure" }
       ],
-      description: "Helps recommend suitable training." },
+      description: "We’ll propose a 2–4 hour starter training based on your selection." },
     { key: "vision_priority", label: "Most important vision aspect", type: "select",
       options: [
-        { value: "gpt_services", label: "GPT-based services" }, { value: "customer_service", label: "Improve customer service" },
-        { value: "data_products", label: "New data-driven products" }, { value: "process_automation", label: "Automate processes" },
+        { value: "gpt_services", label: "GPT‑based services" }, { value: "customer_service", label: "Improve customer service" },
+        { value: "data_products", label: "New data‑driven products" }, { value: "process_automation", label: "Automate processes" },
         { value: "market_leadership", label: "Achieve market leadership" }, { value: "unspecified", label: "No preference" }
       ],
-      description: "Helps prioritize recommendations." },
+      description: "Which ‘big lever’ matters most to you?" },
 
     // Block 6
     { key: "datenschutzbeauftragter", label: "Data protection officer", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "teilweise", label: "Partially (external/planning)" } ],
-      description: "Often mandatory - internal or external." },
+      description: "If not required, select “No”. We’ll tell you when a DPO is needed." },
     { key: "technische_massnahmen", label: "Technical data protection measures", type: "select",
       options: [ { value: "alle", label: "All relevant measures" }, { value: "teilweise", label: "Partially in place" }, { value: "keine", label: "None yet" } ],
-      description: "Firewalls, backups, access restrictions etc." },
+      description: "An honest view helps—we’ll propose quick security wins." },
     { key: "folgenabschaetzung", label: "Data protection impact assessment (DPIA)", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "teilweise", label: "Partially" } ],
-      description: "Required for many AI applications under GDPR." },
+      description: "We’ll flag if your use case is likely to need a DPIA." },
     { key: "meldewege", label: "Reporting procedures for incidents", type: "select",
       options: [ { value: "ja", label: "Yes, clear processes" }, { value: "teilweise", label: "Partially regulated" }, { value: "nein", label: "No" } ],
-      description: "Quick response to data protection breaches." },
+      description: "Do you have defined steps for incidents (including escalation)?" },
     { key: "loeschregeln", label: "Rules for data deletion/anonymization", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "teilweise", label: "Partially" }, { value: "nein", label: "No" } ],
-      description: "Important for AI compliance and GDPR." },
+      description: "Retention and deletion rules. We’ll provide simple starter templates." },
     { key: "ai_act_kenntnis", label: "Knowledge of EU AI Act", type: "select",
       options: [ { value: "sehr_gut", label: "Very well" }, { value: "gut", label: "Well" }, { value: "gehoert", label: "Heard of it" }, { value: "unbekannt", label: "Not yet familiar" } ],
-      description: "The EU AI Act brings new obligations." },
+      description: "No prior knowledge required—we’ll summarise obligations for you." },
     { key: "ki_hemmnisse", label: "Obstacles to AI adoption", type: "checkbox",
       options: [
-        { value: "rechtsunsicherheit", label: "Legal uncertainty" }, { value: "datenschutz", label: "Data protection" }, { value: "knowhow", label: "Lack of know-how" },
+        { value: "rechtsunsicherheit", label: "Legal uncertainty" }, { value: "datenschutz", label: "Data protection" }, { value: "knowhow", label: "Lack of know‑how" },
         { value: "budget", label: "Limited budget" }, { value: "teamakzeptanz", label: "Team acceptance" }, { value: "zeitmangel", label: "Lack of time" },
         { value: "it_integration", label: "IT integration" }, { value: "keine", label: "No obstacles" }, { value: "andere", label: "Other" }
       ],
-      description: "Select all that apply." },
+      description: "Select any blockers—we’ll suggest pragmatic workarounds and priorities." },
     { key: "bisherige_foerdermittel", label: "Previous funding received", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" } ],
-      description: "For digitalization or AI projects." },
+      description: "Helps us propose suitable follow‑up grants." },
     { key: "interesse_foerderung", label: "Interest in funding opportunities", type: "select",
       options: [ { value: "ja", label: "Yes, suggest programs" }, { value: "nein", label: "No need" }, { value: "unklar", label: "Unsure, please advise" } ],
-      description: "We'll filter suitable options." },
+      description: "If “Unsure”, we’ll do a quick eligibility check." },
     { key: "erfahrung_beratung", label: "Previous consulting on digitalization/AI", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "unklar", label: "Unclear" } ],
-      description: "External advice strengthens your position." },
+      description: "So we can build on what’s already there." },
     { key: "investitionsbudget", label: "Budget for AI/digitalization next year", type: "select",
       options: [ { value: "unter_2000", label: "Under €2,000" }, { value: "2000_10000", label: "€2,000–10,000" }, { value: "10000_50000", label: "€10,000–50,000" },
         { value: "ueber_50000", label: "More than €50,000" }, { value: "unklar", label: "Still unclear" } ],
-      description: "Even small budgets can deliver progress." },
+      description: "Even small budgets are fine—we’ll prioritise accordingly." },
     { key: "marktposition", label: "Market position", type: "select",
       options: [ { value: "marktfuehrer", label: "Market leader" }, { value: "oberes_drittel", label: "Top third" }, { value: "mittelfeld", label: "Middle field" },
         { value: "nachzuegler", label: "Laggard" }, { value: "unsicher", label: "Hard to assess" } ],
-      description: "Helps classify your results." },
+      description: "A rough internal estimate is enough." },
     { key: "benchmark_wettbewerb", label: "Compare with competitors", type: "select",
       options: [ { value: "ja", label: "Yes, regularly" }, { value: "nein", label: "No" }, { value: "selten", label: "Rarely" } ],
-      description: "Benchmarks help identify opportunities." },
+      description: "How often do you compare yourself externally? Orientation only." },
     { key: "innovationsprozess", label: "How innovations arise", type: "select",
       options: [
         { value: "innovationsteam", label: "Innovation team" }, { value: "mitarbeitende", label: "Through employees" },
         { value: "kunden", label: "With customers" }, { value: "berater", label: "External consultants" },
         { value: "zufall", label: "By chance" }, { value: "unbekannt", label: "No clear strategy" }
       ],
-      description: "Structured paths facilitate AI deployment." },
+      description: "How do new ideas typically start? This guides our change approach." },
     { key: "risikofreude", label: "Risk-taking with innovation (1–5)", type: "slider", min: 1, max: 5, step: 1,
-      description: "1 = safety-oriented, 5 = very bold" },
+      description: "Gut feel—helps us choose a suitable rollout pace." },
 
     // Block 7
     { key: "datenschutz",
@@ -565,7 +565,7 @@
     if (root) {
       root.innerHTML = '<section class="fb-section"><h2>Thank you for your submission!</h2>'
         + '<div class="guidance">Your AI analysis is now being created. '
-        + 'You will receive your personalised report as a PDF by email once finished.</div></section>';
+        + 'Once finished, you will receive your individual report as a PDF by email.</div></section>';
     }
 
     var token = getToken();
@@ -590,7 +590,6 @@
       keepalive: true
     }).then(function (res) {
       if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
-      // Keep autosave so users can edit later.
     }).catch(function(){});
   }
 

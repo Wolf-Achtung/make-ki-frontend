@@ -1,12 +1,11 @@
-/* File: formular/formbuilder_de_SINGLE_FULL.js */
-/* Multi-Step Wizard mit Scroll-to-Top & persistentem Autosave (inkl. Schrittfortsetzung). */
-/* Basierend auf deinen bisherigen Dateien. :contentReference[oaicite:1]{index=1} */
+/* Multi-Step Wizard (DE) – Scroll-to-Top, persistenter Autosave & Step-Resume */
+/* Schema 1.5.0 – Microcopy optimiert für kleine Unternehmen; Submit nur im letzten Schritt. */
 (function () {
   "use strict";
 
   // --------------------------- Konfiguration ---------------------------
   var LANG = "de";
-  var SCHEMA_VERSION = "1.4.0";
+  var SCHEMA_VERSION = "1.5.0";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -68,16 +67,16 @@
 
   // --------------------------- Inhalte ---------------------------
   var BLOCK_INTRO = [
-    "Hier erfassen wir Basisdaten (Branche, Größe, Standort). Sie steuern die Personalisierung des Reports und die passenden Förder- & Compliance-Hinweise.",
-    "Status-Quo zu Prozessen, Daten und bisherigen KI-Erfahrungen. Damit kalibrieren wir Quick Wins und die Start-Roadmap.",
-    "Ziele & wichtigste Anwendungsfälle: Was soll KI konkret leisten? Das fokussiert Empfehlungen und priorisiert Maßnahmen.",
-    "Strategie & Governance: Grundlagen für nachhaltigen KI-Einsatz und verantwortungsvolle Umsetzung.",
-    "Ressourcen & Präferenzen (Zeit, Tool-Affinität, vorhandene Lösungen). So passen wir Empfehlungen an Machbarkeit & Tempo an.",
-    "Rechtliches & Förderung: DSGVO, EU AI Act, Fördermöglichkeiten und Compliance-Aspekte für sicheren KI-Einsatz.",
+    "Hier erfassen wir Basisdaten (Branche, Größe, Standort). Keine Unterlagen nötig – grobe Angaben reichen völlig. So personalisieren wir Ihren Report und prüfen passende Förderung & Compliance.",
+    "Status Quo zu Prozessen, Daten und bisheriger KI-Nutzung. Ziel: schnelle, machbare Quick Wins und eine pragmatische Start‑Roadmap – auch für kleine Teams.",
+    "Ziele & wichtigste Anwendungsfälle: Was soll KI ganz konkret leisten? Wir fokussieren umsetzbare Maßnahmen mit sichtbarem Nutzen.",
+    "Strategie & Governance: einfache, tragfähige Leitplanken für nachhaltigen KI‑Einsatz ohne Bürokratie‑Overhead.",
+    "Ressourcen & Präferenzen (Zeit, Tool‑Landschaft). Wir passen Empfehlungen an Machbarkeit, Budget und Tempo an.",
+    "Rechtliches & Förderung: DSGVO, EU AI Act & Fördermöglichkeiten – verständlich erklärt, mit klaren To‑dos.",
     "Datenschutz & Absenden: Einwilligung bestätigen und den personalisierten Report starten."
   ];
 
-  // Felder (aus deiner Struktur, leicht geglättet)
+  // Felder (inkl. freundlich-konkreter Microcopy)
   var fields = [
     { key: "branche", label: "In welcher Branche ist Ihr Unternehmen tätig?", type: "select",
       options: [
@@ -88,20 +87,20 @@
         { value: "bau", label: "Bauwesen & Architektur" }, { value: "medien", label: "Medien & Kreativwirtschaft" },
         { value: "industrie", label: "Industrie & Produktion" }, { value: "logistik", label: "Transport & Logistik" }
       ],
-      description: "Ihre Hauptbranche beeinflusst Benchmarks, Tool-Empfehlungen und die Auswertung."
+      description: "Wählen Sie die Richtung, die am besten passt. Wir nutzen diese Info, um Beispiele, Tools und Förder-/Compliance-Hinweise branchengerecht zu wählen."
     },
     { key: "unternehmensgroesse", label: "Wie groß ist Ihr Unternehmen?", type: "select",
       options: [
         { value: "solo", label: "1 (Solo-Selbstständig/Freiberuflich)" }, { value: "team", label: "2–10 (Kleines Team)" }, { value: "kmu", label: "11–100 (KMU)" }
       ],
-      description: "Die Unternehmensgröße beeinflusst Empfehlungen und Fördermöglichkeiten."
+      description: "Grobe Schätzung reicht – so planen wir Vorschläge & Förderprogramme realistisch (auch für kleine Teams)."
     },
     { key: "selbststaendig", label: "Unternehmensform bei 1 Person", type: "select",
       options: [
-        { value: "freiberufler", label: "Freiberuflich/Selbstständig" }, { value: "kapitalgesellschaft", label: "1-Personen-Kapitalgesellschaft (GmbH/UG)" },
+        { value: "freiberufler", label: "Freiberuflich/Selbstständig" }, { value: "kapitalgesellschaft", label: "1‑Personen‑Kapitalgesellschaft (GmbH/UG)" },
         { value: "einzelunternehmer", label: "Einzelunternehmer (mit Gewerbe)" }, { value: "sonstiges", label: "Sonstiges" }
       ],
-      description: "Bitte wählen Sie die zutreffende Rechtsform.",
+      description: "Nur relevant, wenn Sie „1“ gewählt haben. Wählen Sie die nächste passende Rechtsform – „Sonstiges“ ist völlig in Ordnung.",
       showIf: function (data) { return data.unternehmensgroesse === "solo"; }
     },
     { key: "bundesland", label: "Bundesland (regionale Fördermöglichkeiten)", type: "select",
@@ -110,14 +109,13 @@
         { value: "bb", label: "Brandenburg" }, { value: "hb", label: "Bremen" }, { value: "hh", label: "Hamburg" },
         { value: "he", label: "Hessen" }, { value: "mv", label: "Mecklenburg-Vorpommern" }, { value: "ni", label: "Niedersachsen" },
         { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
-        { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" },
-        { value: "th", label: "Thüringen" }
+        { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
       ],
-      description: "Ihr Standort bestimmt verfügbare Fördermittel und Programme."
+      description: "Bitte den Hauptsitz bzw. Ort der Gewerbeanmeldung auswählen – darüber prüfen wir regionale Förderprogramme."
     },
     { key: "hauptleistung", label: "Was ist Ihre Hauptdienstleistung oder Ihr wichtigstes Produkt?", type: "textarea",
-      placeholder: "z.B. Social-Media-Kampagnen, CNC-Fertigung, Steuerberatung",
-      description: "Beschreiben Sie Ihre zentrale Leistung möglichst konkret."
+      placeholder: "z. B. Social‑Media‑Kampagnen, CNC‑Fertigung, Steuerberatung für Startups",
+      description: "1–2 Sätze genügen. Wenn Sie mehrere Leistungen haben, nennen Sie bitte die wichtigste."
     },
     { key: "zielgruppen", label: "Welche Zielgruppen bedienen Sie?", type: "checkbox",
       options: [
@@ -126,7 +124,7 @@
         { value: "selbststaendige", label: "Selbstständige/Freiberufler" }, { value: "oeffentliche_hand", label: "Öffentliche Hand" },
         { value: "privatpersonen", label: "Privatpersonen" }, { value: "startups", label: "Startups" }, { value: "andere", label: "Andere" }
       ],
-      description: "Mehrfachauswahl möglich."
+      description: "Mehrfachauswahl möglich. Hilft uns, passende Use‑Cases und Beispiele zu wählen."
     },
     { key: "jahresumsatz", label: "Jahresumsatz (Schätzung)", type: "select",
       options: [
@@ -134,41 +132,41 @@
         { value: "500k_2m", label: "500.000–2 Mio. €" }, { value: "2m_10m", label: "2–10 Mio. €" },
         { value: "ueber_10m", label: "Über 10 Mio. €" }, { value: "keine_angabe", label: "Keine Angabe" }
       ],
-      description: "Hilft bei Benchmarks und Förderempfehlungen."
+      description: "Schätzen Sie den Umsatz des letzten Jahres. Dient nur zur Orientierung (Benchmark, Förderhöhen) – keine Veröffentlichung."
     },
     { key: "it_infrastruktur", label: "Wie ist Ihre IT-Infrastruktur organisiert?", type: "select",
       options: [
-        { value: "cloud", label: "Cloud-basiert (z.B. Microsoft 365, Google Cloud)" },
-        { value: "on_premise", label: "Eigenes Rechenzentrum (On-Premises)" },
+        { value: "cloud", label: "Cloud‑basiert (z. B. Microsoft 365, Google Cloud)" },
+        { value: "on_premise", label: "Eigenes Rechenzentrum (On‑Premises)" },
         { value: "hybrid", label: "Hybrid (Cloud + eigene Server)" }, { value: "unklar", label: "Unklar / noch offen" }
       ],
-      description: "Hilft bei Sicherheits- und Integrationsempfehlungen."
+      description: "Bitte den Ist‑Zustand wählen. „Hybrid“ ist häufig – alles gut."
     },
     { key: "interne_ki_kompetenzen", label: "Gibt es ein internes KI-/Digitalisierungsteam?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "in_planung", label: "In Planung" } ],
-      description: "Wichtig für Schulungs- und Struktur-Empfehlungen."
+      description: "Wenn es kein Team gibt: „Nein“ wählen – wir schlagen schlanke Einstiege & Schulungen vor."
     },
     { key: "datenquellen", label: "Welche Datentypen stehen für KI-Projekte zur Verfügung?", type: "checkbox",
       options: [
         { value: "kundendaten", label: "Kundendaten (CRM, Service)" }, { value: "verkaufsdaten", label: "Verkaufs-/Bestelldaten" },
-        { value: "produktionsdaten", label: "Produktions-/Betriebsdaten" }, { value: "personaldaten", label: "Personal-/HR-Daten" },
+        { value: "produktionsdaten", label: "Produktions-/Betriebsdaten" }, { value: "personaldaten", label: "Personal-/HR‑Daten" },
         { value: "marketingdaten", label: "Marketing-/Kampagnendaten" }, { value: "sonstige", label: "Sonstige Datenquellen" }
       ],
-      description: "Mehrfachauswahl möglich."
+      description: "Nur ankreuzen, worauf Sie aktuell Zugriff haben. Auch kleine Datensätze sind wertvoll."
     },
 
     // Block 2: Status Quo
     { key: "digitalisierungsgrad", label: "Wie digital sind Ihre internen Prozesse? (1–10)", type: "slider", min: 1, max: 10, step: 1,
-      description: "1 = hauptsächlich Papier/manuell, 10 = vollständig digital/automatisiert" },
+      description: "Schieben Sie nach Gefühl: 1 = viel Papier/Excel, 10 = weitgehend automatisiert. Keine Prüfung – nur zur Einordnung." },
     { key: "prozesse_papierlos", label: "Anteil papierloser Prozesse", type: "select",
       options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
-      description: "Grobe Schätzung genügt." },
+      description: "Grobe Schätzung reicht. Hilft uns, schnelle Erfolge zu identifizieren." },
     { key: "automatisierungsgrad", label: "Automatisierungsgrad", type: "select",
       options: [
         { value: "sehr_niedrig", label: "Sehr niedrig" }, { value: "eher_niedrig", label: "Eher niedrig" },
         { value: "mittel", label: "Mittel" }, { value: "eher_hoch", label: "Eher hoch" }, { value: "sehr_hoch", label: "Sehr hoch" }
       ],
-      description: "Wie viel läuft automatisiert vs. manuell?" },
+      description: "Gemeint sind Ihre täglichen Abläufe (nicht nur IT)." },
     { key: "ki_einsatz", label: "Wo wird KI bereits eingesetzt?", type: "checkbox",
       options: [
         { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Vertrieb" }, { value: "buchhaltung", label: "Buchhaltung" },
@@ -176,13 +174,13 @@
         { value: "forschung", label: "Forschung & Entwicklung" }, { value: "personal", label: "Personal" }, { value: "keine", label: "Noch keine Nutzung" },
         { value: "sonstiges", label: "Sonstiges" }
       ],
-      description: "Alle relevanten Bereiche ankreuzen." },
+      description: "Falls unklar: „Noch keine Nutzung“ wählen." },
     { key: "ki_knowhow", label: "KI-Know-how im Team", type: "select",
       options: [
         { value: "keine", label: "Keine Erfahrung" }, { value: "grundkenntnisse", label: "Grundkenntnisse" }, { value: "mittel", label: "Mittel" },
         { value: "fortgeschritten", label: "Fortgeschritten" }, { value: "expertenwissen", label: "Expertenwissen" }
       ],
-      description: "Selbsteinschätzung genügt." },
+      description: "Selbsteinschätzung – wir passen Roadmap & Training an." },
 
     // Block 3: Ziele & Projekte
     { key: "projektziel", label: "Ziel des nächsten KI-/Digitalisierungsprojekts", type: "checkbox",
@@ -192,134 +190,135 @@
         { value: "kundenservice", label: "Kundenservice verbessern" }, { value: "markterschliessung", label: "Markterschließung" },
         { value: "personalentlastung", label: "Personalentlastung" }, { value: "foerdermittel", label: "Fördermittel beantragen" }, { value: "andere", label: "Andere" }
       ],
-      description: "Mehrfachauswahl möglich." },
-    { key: "ki_projekte", label: "Laufende/geplante KI-Projekte", type: "textarea", placeholder: "z.B. Chatbot, Angebotsautomation, Generatoren...", description: "Bitte konkret beschreiben." },
+      description: "Wählen Sie Ziele für die nächsten 3–6 Monate – messbar und pragmatisch." },
+    { key: "ki_projekte", label: "Laufende/geplante KI-Projekte", type: "textarea", placeholder: "z. B. Chatbot, Angebotsautomation, Generatoren…", description: "Stichpunkte sind ok. Nennen Sie Tools/Prozesse, wenn vorhanden." },
     { key: "ki_usecases", label: "Besonders interessante KI-Use-Cases", type: "checkbox",
       options: [
         { value: "texterstellung", label: "Texterstellung" }, { value: "bildgenerierung", label: "Bildgenerierung" }, { value: "spracherkennung", label: "Spracherkennung" },
         { value: "prozessautomatisierung", label: "Prozessautomatisierung" }, { value: "datenanalyse", label: "Datenanalyse & Prognose" },
         { value: "kundensupport", label: "Kundensupport" }, { value: "wissensmanagement", label: "Wissensmanagement" },
-        { value: "marketing", label: "Marketing-Optimierung" }, { value: "sonstiges", label: "Sonstiges" }
+        { value: "marketing", label: "Marketing‑Optimierung" }, { value: "sonstiges", label: "Sonstiges" }
       ],
-      description: "Mehrfachauswahl möglich." },
-    { key: "ki_potenzial", label: "Größtes KI-Potenzial im Unternehmen", type: "textarea", placeholder: "z.B. Reporting, personalisierte Angebote, Automatisierung...", description: "Wo sehen Sie das größte Potenzial?" },
+      description: "Markieren Sie Interessensfelder; wir schlagen alltagstaugliche Starts vor." },
+    { key: "ki_potenzial", label: "Größtes KI-Potenzial im Unternehmen", type: "textarea",
+      placeholder: "z. B. schnelleres Reporting, personalisierte Angebote, Automatisierung …", description: "Wo würden 10 % Zeitersparnis am meisten helfen? Beispiele willkommen." },
     { key: "usecase_priority", label: "Bereich mit höchster Priorität", type: "select",
       options: [
         { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Vertrieb" }, { value: "buchhaltung", label: "Buchhaltung" },
         { value: "produktion", label: "Produktion" }, { value: "kundenservice", label: "Kundenservice" }, { value: "it", label: "IT" },
         { value: "forschung", label: "Forschung & Entwicklung" }, { value: "personal", label: "Personal" }, { value: "unbekannt", label: "Noch unklar" }
       ],
-      description: "Wo lohnt der Einstieg zuerst?" },
+      description: "Wählen Sie den Bereich, in dem ein Pilot am leichtesten zu starten ist." },
     { key: "ki_geschaeftsmodell_vision", label: "Wie kann KI Ihr Geschäftsmodell verändern?", type: "textarea",
-      placeholder: "z.B. KI-gestütztes Portal, datenbasierte Plattform...", description: "Ihre langfristige Vision für KI-Transformation." },
-    { key: "moonshot", label: "Ihre mutige 3-Jahres-Vision", type: "textarea",
-      placeholder: "z.B. 80% Automatisierung, verdoppelter Umsatz...", description: "Denken Sie groß - was wäre ein Durchbruch?" },
+      placeholder: "z. B. KI‑gestütztes Portal, datenbasierte Services …", description: "Wie könnte KI Mehrwert schaffen (neue Services, schnellere Abläufe)? Keine Verpflichtung." },
+    { key: "moonshot", label: "Ihre mutige 3‑Jahres‑Vision", type: "textarea",
+      placeholder: "z. B. 80 % Automatisierung, verdoppelter Umsatz …", description: "Ambitioniert, aber realistisch – hilft bei der Ausrichtung." },
 
     // Block 4: Strategie & Governance
-    { key: "strategische_ziele", label: "Konkrete Ziele mit KI", type: "textarea", placeholder: "z.B. Effizienz steigern, neue Produkte, besserer Service", description: "Nennen Sie Ihre strategischen Hauptziele." },
+    { key: "strategische_ziele", label: "Konkrete Ziele mit KI", type: "textarea", placeholder: "z. B. Effizienz steigern, neue Produkte, besserer Service", description: "Verknüpfen Sie KI‑Ziele mit Business‑KPIs (z. B. Bearbeitungszeit −30 %)." },
     { key: "datenqualitaet", label: "Qualität Ihrer Daten", type: "select",
       options: [ { value: "hoch", label: "Hoch (vollständig, strukturiert, aktuell)" }, { value: "mittel", label: "Mittel (teilweise strukturiert)" }, { value: "niedrig", label: "Niedrig (unstrukturiert, Lücken)" } ],
-      description: "Gut gepflegte Daten sind Basis für KI-Erfolg." },
+      description: "Nur für die Aufwandsschätzung wichtig – wählen Sie die nächste passende Option." },
     { key: "ai_roadmap", label: "KI-Roadmap oder Strategie", type: "select",
-      options: [ { value: "ja", label: "Ja - implementiert" }, { value: "in_planung", label: "In Planung" }, { value: "nein", label: "Noch nicht vorhanden" } ],
-      description: "Eine klare Roadmap erleichtert die Umsetzung." },
+      options: [ { value: "ja", label: "Ja – implementiert" }, { value: "in_planung", label: "In Planung" }, { value: "nein", label: "Noch nicht vorhanden" } ],
+      description: "Falls noch nicht vorhanden: völlig ok – wir liefern einen Einstieg." },
     { key: "governance", label: "Richtlinien für Daten-/KI-Governance", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "Governance fördert verantwortungsvolle Projekte." },
+      description: "Regeln zu Datensicherheit, Zugriffen, Modelfreigaben. „Nein“ ist ok – wir geben Vorlagen." },
     { key: "innovationskultur", label: "Offenheit für Innovationen", type: "select",
       options: [
         { value: "sehr_offen", label: "Sehr offen" }, { value: "eher_offen", label: "Eher offen" }, { value: "neutral", label: "Neutral" },
         { value: "eher_zurueckhaltend", label: "Eher zurückhaltend" }, { value: "sehr_zurueckhaltend", label: "Sehr zurückhaltend" }
       ],
-      description: "Innovationsfreundliche Kultur erleichtert KI-Einführung." },
+      description: "Einschätzung der Offenheit – keine Bewertung." },
 
     // Block 5: Ressourcen & Präferenzen
     { key: "zeitbudget", label: "Zeit pro Woche für KI-Projekte", type: "select",
       options: [ { value: "unter_2", label: "Unter 2 Stunden" }, { value: "2_5", label: "2–5 Stunden" }, { value: "5_10", label: "5–10 Stunden" }, { value: "ueber_10", label: "Über 10 Stunden" } ],
-      description: "Hilft, Empfehlungen an verfügbare Zeit anzupassen." },
+      description: "Bitte ehrlich einschätzen – wir planen so, dass es in Ihren Kalender passt." },
     { key: "vorhandene_tools", label: "Bereits genutzte Systeme", type: "checkbox",
       options: [
-        { value: "crm", label: "CRM-Systeme (HubSpot, Salesforce)" }, { value: "erp", label: "ERP-Systeme (SAP, Odoo)" },
+        { value: "crm", label: "CRM‑Systeme (HubSpot, Salesforce)" }, { value: "erp", label: "ERP‑Systeme (SAP, Odoo)" },
         { value: "projektmanagement", label: "Projektmanagement (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing Automation" },
         { value: "buchhaltung", label: "Buchhaltungssoftware" }, { value: "keine", label: "Keine / andere" }
       ],
-      description: "Mehrfachauswahl - hilft bei Integrationsempfehlungen." },
+      description: "Markieren Sie aktiv genutzte Systeme, damit wir keine Doppelstrukturen vorschlagen." },
     { key: "regulierte_branche", label: "Regulierte Branche", type: "checkbox",
       options: [
         { value: "gesundheit", label: "Gesundheit & Medizin" }, { value: "finanzen", label: "Finanzen & Versicherungen" },
         { value: "oeffentlich", label: "Öffentlicher Sektor" }, { value: "recht", label: "Rechtliche Dienstleistungen" }, { value: "keine", label: "Keine dieser Branchen" }
       ],
-      description: "Regulierte Branchen brauchen besondere Compliance." },
+      description: "Ankreuzen, falls zutreffend – wir berücksichtigen branchenspezifische Anforderungen." },
     { key: "trainings_interessen", label: "Interessante KI-Trainingsthemen", type: "checkbox",
       options: [
-        { value: "prompt_engineering", label: "Prompt Engineering" }, { value: "llm_basics", label: "LLM-Grundlagen" },
+        { value: "prompt_engineering", label: "Prompt Engineering" }, { value: "llm_basics", label: "LLM‑Grundlagen" },
         { value: "datenqualitaet_governance", label: "Datenqualität & Governance" }, { value: "automatisierung", label: "Automatisierung & Skripte" },
         { value: "ethik_recht", label: "Ethische & rechtliche Grundlagen" }, { value: "keine", label: "Keine / noch unklar" }
       ],
-      description: "Hilft bei Schulungsempfehlungen." },
+      description: "Wir empfehlen ein 2–4‑stündiges Starter‑Training basierend auf Ihrer Auswahl." },
     { key: "vision_prioritaet", label: "Wichtigster Visions-Aspekt", type: "select",
       options: [
-        { value: "gpt_services", label: "GPT-basierte Services" }, { value: "kundenservice", label: "Kundenservice verbessern" },
+        { value: "gpt_services", label: "GPT‑basierte Services" }, { value: "kundenservice", label: "Kundenservice verbessern" },
         { value: "datenprodukte", label: "Neue datenbasierte Produkte" }, { value: "prozessautomation", label: "Prozessautomatisierung" },
         { value: "marktfuehrerschaft", label: "Marktführerschaft erreichen" }, { value: "keine_angabe", label: "Keine Angabe" }
       ],
-      description: "Hilft, Empfehlungen zu priorisieren." },
+      description: "Welcher „große Hebel“ ist Ihnen am wichtigsten?" },
 
     // Block 6: Rechtliches & Förderung
     { key: "datenschutzbeauftragter", label: "Datenschutzbeauftragter vorhanden?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "teilweise", label: "Teilweise (extern/Planung)" } ],
-      description: "Oft Pflicht - intern oder extern." },
+      description: "Falls nicht erforderlich: „Nein“ wählen – wir zeigen, wann ein DSB nötig ist." },
     { key: "technische_massnahmen", label: "Technische Schutzmaßnahmen", type: "select",
       options: [ { value: "alle", label: "Alle relevanten Maßnahmen" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "keine", label: "Noch keine" } ],
-      description: "Firewalls, Backups, Zugangsbeschränkungen etc." },
+      description: "Ehrliche Einschätzung hilft – wir schlagen schnelle Sicherheitsgewinne vor." },
     { key: "folgenabschaetzung", label: "Datenschutz-Folgenabschätzung (DSFA)", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "teilweise", label: "Teilweise" } ],
-      description: "Für viele KI-Anwendungen unter DSGVO erforderlich." },
+      description: "Wir markieren, wenn eine DSFA für Ihren Use Case sinnvoll/erforderlich ist." },
     { key: "meldewege", label: "Meldewege bei Vorfällen", type: "select",
       options: [ { value: "ja", label: "Ja, klar geregelt" }, { value: "teilweise", label: "Teilweise geregelt" }, { value: "nein", label: "Nein" } ],
-      description: "Schnelle Reaktion auf Datenschutzverstöße." },
+      description: "Gibt es feste Abläufe bei Vorfällen (inkl. Meldeketten)?" },
     { key: "loeschregeln", label: "Regeln für Datenlöschung/-anonymisierung", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "Wichtig für KI-Compliance und DSGVO." },
+      description: "Regeln für Aufbewahrung/Löschung. Wir liefern einfache Startvorlagen." },
     { key: "ai_act_kenntnis", label: "Kenntnis EU AI Act", type: "select",
       options: [ { value: "sehr_gut", label: "Sehr gut" }, { value: "gut", label: "Gut" }, { value: "gehoert", label: "Schon mal gehört" }, { value: "unbekannt", label: "Noch nicht bekannt" } ],
-      description: "Der EU AI Act bringt neue Pflichten." },
+      description: "Keine Vorkenntnisse erforderlich – wir fassen die Pflichten für Sie zusammen." },
     { key: "ki_hemmnisse", label: "Hemmnisse beim KI-Einsatz", type: "checkbox",
       options: [
-        { value: "rechtsunsicherheit", label: "Rechtsunsicherheit" }, { value: "datenschutz", label: "Datenschutz" }, { value: "knowhow", label: "Fehlendes Know-how" },
+        { value: "rechtsunsicherheit", label: "Rechtsunsicherheit" }, { value: "datenschutz", label: "Datenschutz" }, { value: "knowhow", label: "Fehlendes Know‑how" },
         { value: "budget", label: "Begrenztes Budget" }, { value: "teamakzeptanz", label: "Teamakzeptanz" }, { value: "zeitmangel", label: "Zeitmangel" },
-        { value: "it_integration", label: "IT-Integration" }, { value: "keine", label: "Keine Hemmnisse" }, { value: "andere", label: "Andere" }
+        { value: "it_integration", label: "IT‑Integration" }, { value: "keine", label: "Keine Hemmnisse" }, { value: "andere", label: "Andere" }
       ],
-      description: "Alle zutreffenden auswählen." },
+      description: "Wählen Sie alle Hürden – wir geben pragmatische Umgehungen & Priorisierung." },
     { key: "bisherige_foerdermittel", label: "Bereits Fördermittel erhalten?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" } ],
-      description: "Für Digitalisierungs-/KI-Projekte." },
+      description: "Hilft uns, passende Anschlussförderungen vorzuschlagen." },
     { key: "interesse_foerderung", label: "Interesse an Fördermöglichkeiten", type: "select",
       options: [ { value: "ja", label: "Ja, Programme vorschlagen" }, { value: "nein", label: "Kein Bedarf" }, { value: "unklar", label: "Unklar, bitte beraten" } ],
-      description: "Wir filtern passende Optionen." },
+      description: "Bei „Unklar“ prüfen wir unverbindlich die Förderfähigkeit." },
     { key: "erfahrung_beratung", label: "Bisherige Beratung zu Digitalisierung/KI", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "unklar", label: "Unklar" } ],
-      description: "Externe Beratung stärkt Ihre Position." },
+      description: "Damit wir auf Bestehendem aufbauen können." },
     { key: "investitionsbudget", label: "Budget für KI/Digitalisierung nächstes Jahr", type: "select",
       options: [ { value: "unter_2000", label: "Unter 2.000 €" }, { value: "2000_10000", label: "2.000–10.000 €" }, { value: "10000_50000", label: "10.000–50.000 €" },
         { value: "ueber_50000", label: "Über 50.000 €" }, { value: "unklar", label: "Noch unklar" } ],
-      description: "Auch kleine Budgets können Fortschritt bringen." },
+      description: "Auch mit kleinem Budget ist ein sinnvoller Start möglich – wir priorisieren danach." },
     { key: "marktposition", label: "Marktposition", type: "select",
       options: [ { value: "marktfuehrer", label: "Marktführer" }, { value: "oberes_drittel", label: "Oberes Drittel" }, { value: "mittelfeld", label: "Mittelfeld" },
         { value: "nachzuegler", label: "Nachzügler" }, { value: "unsicher", label: "Schwer einzuschätzen" } ],
-      description: "Hilft bei der Einordnung Ihrer Ergebnisse." },
+      description: "Rough estimate genügt – rein für die Einordnung." },
     { key: "benchmark_wettbewerb", label: "Vergleich mit Wettbewerbern", type: "select",
       options: [ { value: "ja", label: "Ja, regelmäßig" }, { value: "nein", label: "Nein" }, { value: "selten", label: "Selten" } ],
-      description: "Benchmarks helfen, Chancen zu identifizieren." },
+      description: "Wie oft vergleichen Sie sich extern? Dient der Einordnung." },
     { key: "innovationsprozess", label: "Wie entstehen Innovationen?", type: "select",
       options: [
         { value: "innovationsteam", label: "Innovationsteam" }, { value: "mitarbeitende", label: "Durch Mitarbeitende" },
         { value: "kunden", label: "Mit Kunden" }, { value: "berater", label: "Externe Berater" },
         { value: "zufall", label: "Zufällig" }, { value: "unbekannt", label: "Keine klare Strategie" }
       ],
-      description: "Strukturierte Wege erleichtern KI-Einsatz." },
+      description: "Wie entstehen Neuheiten bei Ihnen? Daraus leiten wir Change‑Ansätze ab." },
     { key: "risikofreude", label: "Risikofreude bei Innovation (1–5)", type: "slider", min: 1, max: 5, step: 1,
-      description: "1 = sicherheitsorientiert, 5 = sehr mutig" },
+      description: "Bauchgefühl – das hilft uns beim passenden Einführungstempo." },
 
     // Block 7: Datenschutz & Absenden
     { key: "datenschutz", label:
@@ -475,7 +474,6 @@
         var missing = validateCurrentBlock(true);
         if (missing.length === 0 && currentBlock < blocks.length-1) { currentBlock++; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); }
       });
-      // Direkt initial validieren, um Button ggf. zu deaktivieren
       next.disabled = validateCurrentBlock(false).length > 0;
     }
 
@@ -496,7 +494,7 @@
 
   // --------------------------- Data & Validation ---------------------------
   function handleChange(e) {
-    // schreibe alle sichtbaren Felder des aktuellen Blocks in formData
+    // sichtbare Felder des aktuellen Blocks in formData schreiben
     var block = blocks[currentBlock];
     for (var i=0;i<block.keys.length;i++){
       var k = block.keys[i]; var f = findField(k); if (!f) continue;
@@ -507,7 +505,7 @@
 
     // Conditionals: re-render, damit showIf greift
     if (e && e.target && e.target.id === "unternehmensgroesse") {
-      renderStep(); scrollToStepTop(false); // sanft nach oben in den Block
+      renderStep(); scrollToStepTop(false);
       return;
     }
 
@@ -610,7 +608,7 @@
       keepalive: true
     }).then(function (res) {
       if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
-      // ⚠️ Autosave absichtlich NICHT löschen – damit späteres Editieren ohne Neuanfang möglich ist.
+      // Autosave bleibt absichtlich erhalten (späteres Editieren möglich).
     }).catch(function(){});
   }
 
