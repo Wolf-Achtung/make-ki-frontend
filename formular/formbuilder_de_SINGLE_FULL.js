@@ -157,7 +157,7 @@
 
     // Block 2: Status Quo
     { key: "digitalisierungsgrad", label: "Wie digital sind Ihre internen Prozesse? (1–10)", type: "slider", min: 1, max: 10, step: 1,
-      description: "Schieben Sie nach Gefühl: 1 = viel Papier/Excel, 10 = weitgehend automatisiert. Keine Prüfung – nur zur Einordnung." },
+      description: "Schieben Sie nach Gefühl: 1 = viel Papier, 10 = weitgehend automatisiert. Keine Prüfung – nur zur Einordnung." },
     { key: "prozesse_papierlos", label: "Anteil papierloser Prozesse", type: "select",
       options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
       description: "Grobe Schätzung reicht. Hilft uns, schnelle Erfolge zu identifizieren." },
