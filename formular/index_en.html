@@ -53,7 +53,7 @@
     <header class="header-card" aria-label="Page header">
       <div class="header-top">
         <div class="brand">
-          <div class="logo">AI</div>
+        <div class="logo" aria-label="AI Logo">AI</div>
           <div class="brand-text">
             <div class="subtitle">AI-Security.now</div>
             <h1>AI Checkup Report</h1>
@@ -68,7 +68,9 @@
         </label>
       </div>
       <div class="progress-container" aria-label="Progress">
-        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-fill" id="progress-fill" style="width:0%" aria-valuenow="0"></div>
+      </div>
       </div>
     </header>
 
