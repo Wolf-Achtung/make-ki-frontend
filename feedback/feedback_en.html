@@ -1,196 +1,189 @@
+<!-- File: feedback_en.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Feedback for the AI Readiness Check</title>
-<meta name="robots" content="noindex, nofollow"/>
-<style>
-  :root{ --bg:#0c1b2a; --card:#0f2538; --muted:#9eb5c7; --text:#e7f0f7; --accent:#2e6fce; --accent2:#1b9aaa; --ok:#21c07a; --border:rgba(255,255,255,.12); }
-  *{ box-sizing:border-box }
-  body{ margin:0; padding:24px; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial }
-  .wrap{ max-width:840px; margin:0 auto; }
-  header h1{ margin:0 0 .25rem; font-size:clamp(1.4rem,2.6vw,1.9rem) }
-  header p{ margin:.25rem 0 1rem; color:var(--muted) }
-  form{ background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.1rem; box-shadow:0 10px 30px rgba(0,0,0,.25) }
-  .row{ display:grid; grid-template-columns:1fr 1fr; gap:.75rem }
-  @media (max-width:780px){ .row{ grid-template-columns:1fr } }
-  label b{ display:block; margin:.6rem 0 .35rem }
-  select, input[type="text"], textarea{ width:100%; padding:.7rem .8rem; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,.06); color:var(--text) }
-  textarea{ min-height:110px; resize:vertical }
-  .help{ color:var(--muted); font-size:.85rem; margin:.35rem 0 .5rem }
-  .likert{ display:grid; gap:.35rem; margin:.6rem 0 .2rem }
-  .actions{ display:flex; gap:.75rem; flex-wrap:wrap; align-items:center; margin-top:.75rem }
-  button{ background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; border:0; padding:.75rem 1rem; border-radius:12px; font-weight:700; cursor:pointer }
-  .ghost{ background:transparent; border:1px solid var(--border) }
-  .note{ color:var(--muted); font-size:.82rem }
-  .success{ display:none; margin-top:.6rem; color:var(--ok); font-weight:700 }
-  .error{ display:none; margin-top:.6rem; color:#ff8080; font-weight:700 }
-  .card{ background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:.75rem }
-</style>
+<title>Feedback for the AI Checkup Report</title>
+<link rel="preload" as="style" href="feedback-page.css"/>
+<link rel="stylesheet" href="feedback-page.css"/>
+<script>const API_BASE="https://make-ki-backend-neu-production.up.railway.app";</script>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>Feedback for the AI Readiness Check</h1>
-    <p>Thanks for testing! Your feedback helps us reach the Gold Standard. Time: 2–3 minutes.</p>
+  <header class="brand-header">
+    <div class="brand-inner">
+      <div class="brand-texts">
+        <h1>Feedback on the AI Checkup Report</h1>
+        <p class="subtitle">2 minutes. Helps us improve language, flow and recommendations.</p>
+      </div>
+      <div class="brand-badges"><img src="/assets/tuev.svg" alt="TÜV"/><img src="/assets/eu.svg" alt="EU"/></div>
+    </div>
   </header>
 
-  <form id="feedback-form" novalidate>
-    <input type="hidden" name="email" id="feedback-email"/>
-    <input type="hidden" name="variant" id="variant"/>
-    <input type="hidden" name="report_version" id="report_version"/>
+  <main class="form-shell">
+    <form id="feedback-form" class="form-container card" novalidate>
+      <input type="hidden" name="variant" id="variant"/>
+      <input type="hidden" name="report_version" id="report_version"/>
+      <input type="hidden" name="lang_ui" id="lang_ui" value="en"/>
+      <input type="hidden" name="timestamp" id="timestamp"/>
 
-    <div class="row card">
-      <div>
-        <label><b>Tested variant</b></label>
-        <select id="variant_visible">
-          <option value="">Please choose …</option>
-          <option>Solo (self‑employed/freelance)</option><option>Small team (2–10)</option><option>SME (11–100)</option>
-        </select>
-        <div class="help">Can be prefilled via <code>?variant=solo|team|sme</code>.</div>
-      </div>
-      <div>
-        <label><b>Report version (optional)</b></label>
-        <input id="report_version_visible" type="text" placeholder="e.g., 0.9.3 / build 1234"/>
-        <div class="help">Can be prefilled via <code>?version=0.9.3</code>.</div>
-      </div>
-    </div>
+      <p class="intro">We only use your answers to improve the product.</p>
 
-    <div class="card">
-      <label><b>1) Overall, how helpful was the report?</b></label>
-      <div class="likert">
+      <div class="form-group">
+        <label for="user_email" class="req">Your email address</label>
+        <input type="email" name="user_email" id="user_email" required maxlength="160" placeholder="Email address"/>
+        <span class="hint">Required (for follow‑ups if needed; no marketing).</span>
+      </div>
+
+      <div class="form-group">
+        <label for="hilfe" class="req">How helpful was the AI Checkup overall?</label>
         <select name="hilfe" id="hilfe" required>
           <option value="">Please choose</option>
-          <option>Not helpful at all</option><option>Rather not helpful</option><option>Mixed</option><option>Quite helpful</option><option>Very helpful</option>
+          <option>Very helpful</option><option>Quite helpful</option><option>So-so</option><option>Rather unhelpful</option><option>Not helpful at all</option>
         </select>
       </div>
 
-      <label><b>2) Clarity: analysis & interpretation</b></label>
-      <div class="likert">
-        <select name="verstaendlich_analyse" id="verstaendlich1" required>
-          <option value="">Please choose</option>
-          <option>Not clear at all</option><option>Rather unclear</option><option>Partly clear, partly unclear</option><option>Mostly clear</option><option>Very clear</option>
-        </select>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="verstaendlich1" class="req">How understandable are the analysis & evaluation?</label>
+          <select name="verstaendlich_analyse" id="verstaendlich1" required>
+            <option value="">Please choose</option>
+            <option>Very understandable</option><option>Mostly understandable</option><option>Partly understandable</option><option>Rather hard to understand</option><option>Not understandable at all</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="verstaendlich2" class="req">Are the recommendations clearly formulated?</label>
+          <select name="verstaendlich_empfehlung" id="verstaendlich2" required>
+            <option value="">Please choose</option>
+            <option>Very clear and understandable</option><option>Mostly clear</option><option>Partly clear, partly unclear</option><option>Partly unclear</option><option>Not clear at all</option>
+          </select>
+        </div>
       </div>
 
-      <label><b>3) Clarity: recommendations</b></label>
-      <div class="likert">
-        <select name="verstaendlich_empfehlung" id="verstaendlich2" required>
-          <option value="">Please choose</option>
-          <option>Not clear at all</option><option>Rather unclear</option><option>Partly clear, partly unclear</option><option>Mostly clear</option><option>Very clear</option>
-        </select>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="vertrauen" class="req">How credible & trustworthy does the report appear?</label>
+          <select name="vertrauen" id="vertrauen" required>
+            <option value="">Please choose</option>
+            <option>Very credible & trustworthy</option><option>Quite credible</option><option>Moderately credible</option><option>Rather not credible</option><option>Not credible at all</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dauer" class="req">How did you find the length?</label>
+          <select name="dauer" id="dauer" required>
+            <option value="">Please choose</option>
+            <option>Fine as is</option><option>A bit long but still OK</option><option>Far too long</option>
+          </select>
+        </div>
       </div>
 
-      <label><b>4) Trustworthiness/credibility</b></label>
-      <div class="likert">
-        <select name="vertrauen" id="vertrauen" required>
-          <option value="">Please choose</option>
-          <option>Not trustworthy</option><option>Somewhat weak</option><option>Average</option><option>Quite trustworthy</option><option>Very trustworthy</option>
-        </select>
+      <div class="form-group">
+        <label for="serio">What would further increase your trust?</label>
+        <textarea name="serio" id="serio" maxlength="1500" placeholder="What would increase your trust?"></textarea>
+        <div class="hint" id="c_serio">0 / 1500</div>
+      </div>
+      <div class="form-group">
+        <label for="textstellen">Were there any passages that were too complex, long or unclear?</label>
+        <textarea name="textstellen" id="textstellen" maxlength="1500" placeholder="Please briefly describe …"></textarea>
+        <div class="hint" id="c_textstellen">0 / 1500</div>
+      </div>
+      <div class="form-group">
+        <label for="unsicher">Where would you like additional explanations or clarifications?</label>
+        <textarea name="unsicher" id="unsicher" maxlength="1500" placeholder="Questions or missing explanations …"></textarea>
+        <div class="hint" id="c_unsicher">0 / 1500</div>
+      </div>
+      <div class="form-group">
+        <label for="features">Which additional content would be helpful (tables, charts, examples …)?</label>
+        <textarea name="features" id="features" maxlength="1500" placeholder="E.g., more tables, examples, charts …"></textarea>
+        <div class="hint" id="c_features">0 / 1500</div>
+      </div>
+      <div class="form-group">
+        <label for="freitext">Any other feedback, ideas or suggestions?</label>
+        <textarea name="freitext" id="freitext" maxlength="1500" placeholder="Further thoughts or suggestions …"></textarea>
+        <div class="hint" id="c_freitext">0 / 1500</div>
       </div>
 
-      <label><b>5) Questionnaire length</b></label>
-      <div class="likert">
-        <select name="dauer" id="dauer" required>
-          <option value="">Please choose</option>
-          <option>Good as is</option><option>A bit long, still OK</option><option>Far too long</option>
-        </select>
+      <div class="form-group">
+        <span class="label-like">Optional: Referral</span>
+        <div class="grid-2">
+          <div>
+            <label for="tipp_name">Name</label>
+            <input type="text" name="tipp_name" id="tipp_name" maxlength="120" placeholder="Full name"/>
+          </div>
+          <div>
+            <label for="tipp_firma">Company</label>
+            <input type="text" name="tipp_firma" id="tipp_firma" maxlength="120" placeholder="Company"/>
+          </div>
+        </div>
+        <label for="tipp_email">Email</label>
+        <input type="email" name="tipp_email" id="tipp_email" maxlength="160" placeholder="Email address"/>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="card">
-        <label for="best"><b>What did you like most?</b></label>
-        <textarea id="best" name="best" placeholder="Short & specific …"></textarea>
-      </div>
-      <div class="card">
-        <label for="next"><b>What should we improve next?</b></label>
-        <textarea id="next" name="next" placeholder="What would increase your value the most?"></textarea>
-      </div>
-    </div>
+      <button type="submit" class="btn-primary">Submit feedback</button>
+      <div id="status" class="feedback" role="status" aria-live="polite"></div>
+    </form>
+  </main>
 
-    <div class="actions">
-      <button type="submit">Send feedback</button>
-      <button type="button" id="save" class="ghost">Save as CSV</button>
-      <span class="note">We only use your answers to improve the product.</span>
-    </div>
-    <div id="success" class="success">✅ Thanks – feedback sent.</div>
-    <div id="error" class="error">⚠️ Sending failed. Please try again later.</div>
-  </form>
-</div>
+  <footer class="footer"><div class="lizenz">© KI‑Sicherheit.jetzt · EU AI · GDPR</div></footer>
 
 <script>
-  const ENDPOINTS = ["https://make-ki-backend-neu-production.up.railway.app/feedback", "https://make-ki-backend-neu-production.up.railway.app/api/feedback", "https://make-ki-backend-neu-production.up.railway.app/v1/feedback"];
-  function getToken(){ try{ return localStorage.getItem("jwt") || ""; }catch(e){ return ""; } }
-  function getEmailFromJWT(t){ try{ const p=JSON.parse(atob(t.split(".")[1])); return p.email||p.sub||null; }catch(e){ return null; } }
-  function qs(n){ return new URLSearchParams(location.search).get(n); }
+(function(){
+  const ENDPOINTS = [
+    `${API_BASE}/feedback`,
+    `${API_BASE}/api/feedback`,
+    `${API_BASE}/v1/feedback`,
+    `${API_BASE}/feedback_email`
+  ];
+  const qs = (n) => new URLSearchParams(location.search).get(n) || "";
+  document.getElementById("variant").value = qs("variant") || "";
+  document.getElementById("report_version").value = qs("version") || "";
 
-  (function init(){
-    const token = getToken();
-    if (!token){ window.location.href="/login.html"; return; }
-    const email = getEmailFromJWT(token);
-    if (email) document.getElementById("feedback-email").value = email;
-
-    const map = { solo:'Solo (self‑employed/freelance)', team:'Small team (2–10)', sme:'SME (11–100)', kmu:'SME (11–100)' };
-    let v = (qs("variant") || "").toLowerCase();
-    v = decodeURIComponent(v).replace(/\{|\}/g,"").trim();
-    if (v && map[v]) {
-      document.getElementById("variant_visible").value = map[v];
-      document.getElementById("variant").value = map[v];
-    }
-    const ver = qs("version"); if (ver) {
-      document.getElementById("report_version_visible").value = ver;
-      document.getElementById("report_version").value = ver;
-    }
-    document.getElementById("variant_visible").addEventListener("change", e => document.getElementById("variant").value = e.target.value);
-    document.getElementById("report_version_visible").addEventListener("input", e => document.getElementById("report_version").value = e.target.value);
-  })();
+  const setCount = (id) => {
+    const ta = document.getElementById(id.replace("c_",""));
+    const c = document.getElementById(id);
+    const max = parseInt(ta.getAttribute("maxlength")||"0",10);
+    const upd = () => { c.textContent = `${ta.value.length} / ${max}`; };
+    ta.addEventListener("input", upd); upd();
+  };
+  ["c_serio","c_textstellen","c_unsicher","c_features","c_freitext"].forEach(setCount);
 
   function serialize(form){
-    const data = new FormData(form);
-    const obj = Object.fromEntries(data.entries());
-    obj.timestamp = new Date().toISOString();
+    const fd = new FormData(form); const obj = {};
+    fd.forEach((v,k)=> obj[k]=v); obj.timestamp = new Date().toISOString();
+    obj.email = obj.email || obj.user_email; obj.lang_ui = "en";
     return obj;
   }
-  function downloadCSV(obj){
-    const headers = Object.keys(obj);
-    const values = headers.map(k => String(obj[k]).replace(/\"/g,'""'));
-    const csv = headers.join(",") + "\n" + values.map(v => `"${v}"`).join(",");
-    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-    const a=document.createElement("a"); const ts=new Date().toISOString().replace(/[:T]/g,"-").split(".")[0];
-    a.href=URL.createObjectURL(blob); a.download = `feedback_en_${ts}.csv`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
-  }
-  document.getElementById("save").addEventListener("click", ()=> downloadCSV(serialize(document.getElementById("feedback-form"))));
 
-  async function postToAny(urls, payload, token) {
-    let lastErr=null;
-    for (const u of urls) {
-      try {
-        const res = await fetch(u, {
-          method:"POST",
-          headers: {"Content-Type":"application/json", ...(token?{"Authorization":"Bearer "+token }:{})},
-          body: JSON.stringify(payload)
-        });
+  async function postToAny(urls, payload){
+    let lastErr = null;
+    for (const u of urls){
+      try{
+        const res = await fetch(u, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
         if (res.ok) return true;
-        lastErr = res.status;
-      } catch(e) { lastErr = e; }
+        lastErr = `HTTP ${res.status}`;
+      }catch(e){ lastErr = e?.message || e; }
     }
     throw lastErr || new Error("submit failed");
   }
 
   document.getElementById("feedback-form").addEventListener("submit", async (e)=>{
     e.preventDefault();
-    const token = getToken();
-    const obj = serialize(e.target);
-    try {
-      await postToAny(ENDPOINTS, obj, token);
-      document.getElementById("success").style.display="block";
-      setTimeout(()=> window.location.href="/formular/danke.html", 500);
-    } catch(e) {
-      document.getElementById("error").style.display="block";
+    const form = e.target;
+    const status = document.getElementById("status");
+    status.className = "feedback"; status.textContent = "Sending feedback …"; status.style.display="block";
+    try{
+      await postToAny(ENDPOINTS, serialize(form));
+      status.className = "feedback ok"; status.textContent = "Thanks – feedback sent.";
+      form.reset();
+      ["c_serio","c_textstellen","c_unsicher","c_features","c_freitext"].forEach(id=>{
+        const el=document.getElementById(id); if(el){el.textContent = el.textContent.replace(/^\d+/, "0");}
+      });
+    }catch(err){
+      console.error(err);
+      status.className = "feedback error"; status.textContent = "Sending failed. Please try again later.";
     }
   });
+})();
 </script>
 </body>
 </html>
