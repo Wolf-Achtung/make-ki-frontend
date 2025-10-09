@@ -1,11 +1,14 @@
-/* Multi-Step Wizard (EN) – Scroll-to-Top, persistent autosave & step resume */
-/* Schema 1.5.0 – Microcopy tuned for small businesses; Submit only on final step. */
+/* filename: formbuilder_en_SINGLE_FULL.js */
+/* Multi-Step Wizard (EN)
+   - Keeps the SAME field keys as the DE form (e.g. 'branche', 'unternehmensgroesse', 'bundesland', …)
+   - Gold-Standard+: autosave + resume, a11y, sticky nav, per-step validation, scroll-to-top
+   - Submit hits /briefing_async; lang='en'
+*/
 (function () {
   "use strict";
 
-  // --------------------------- Config ---------------------------
   var LANG = "en";
-  var SCHEMA_VERSION = "1.5.0";
+  var SCHEMA_VERSION = "1.5.1";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -31,7 +34,7 @@
     try { document.dispatchEvent(new CustomEvent("fb:progress", { detail: { step: step, total: total } })); } catch (_) {}
   }
 
-  // --------------------------- Styles ---------------------------
+  // --------------------------- Styles (inject) ---------------------------
   (function injectCSS(){ try{
     var css = ""
       + ".fb-section{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:32px;margin:24px 0;box-shadow:0 4px 20px rgba(0,0,0,.03)}"
@@ -61,282 +64,265 @@
       + ".btn-secondary:hover{background:#f0f9ff;border-color:#2563eb}"
       + ".mr-auto{margin-right:auto}"
       + ".slider-container{display:flex;align-items:center;gap:12px}"
-      + ".slider-value-label{min-width:48px;padding:8px 12px;background:#dbeafe;border-radius:8px;font-weight:600;color:#1e3a5f;text-align:center}";
+      + ".slider-value-label{min-width:48px;padding:8px 12px;background:#dbeafe;border-radius:8px;font-weight:600;color:#1e3a5f;text-align:center}"
+      + "#fb-msg{margin-top:10px;color:#dc2626;font-weight:600}";
     var s=document.createElement("style"); s.type="text/css"; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
   }catch(_){}})();
 
-  // --------------------------- Content ---------------------------
+  // --------------------------- Intro copy ---------------------------
   var BLOCK_INTRO = [
-    "We collect some basics (industry, size, location). No prep needed—rough inputs are fine. This lets us tailor your report and check relevant funding/compliance notes.",
-    "Current state of processes, data and any AI usage. Goal: quick, realistic wins and a pragmatic starter roadmap—even for small teams.",
-    "Goals & key use cases: what should AI achieve in practice? We focus on steps with visible value.",
-    "Strategy & governance: simple, sustainable guardrails for responsible AI without bureaucracy.",
-    "Resources & preferences (time, tool landscape). We align recommendations with feasibility, budget and pace.",
-    "Legal & funding: GDPR, EU AI Act and grants—plain language with actionable to‑dos.",
-    "Privacy & submit: confirm consent and start your personalised report."
+    "Basics (industry, size, region). We personalise the report and pre-check funding/compliance.",
+    "Status quo: processes, data, current AI use – to find quick wins fast.",
+    "Goals & use cases – we focus on actionable measures (3–6 months).",
+    "Strategy & governance – pragmatic guardrails without bureaucracy.",
+    "Resources & preferences – recommendations that fit budget and pace.",
+    "Legal & funding – GDPR, EU AI Act, programmes.",
+    "Privacy & submit – confirm and start your personalised report."
   ];
 
+  // --------------------------- Fields (keys same as DE) ---------------------------
   var fields = [
-    // Block 1
-    { key: "branche", label: "In which industry is your company active?", type: "select",
+    { key: "branche", label: "Which industry are you in?", type: "select",
       options: [
-        { value: "marketing", label: "Marketing & advertising" }, { value: "beratung", label: "Consulting & services" },
-        { value: "it", label: "IT & software" }, { value: "finanzen", label: "Finance & insurance" },
-        { value: "handel", label: "Retail & e-commerce" }, { value: "bildung", label: "Education" },
-        { value: "verwaltung", label: "Administration" }, { value: "gesundheit", label: "Health & care" },
-        { value: "bau", label: "Construction & architecture" }, { value: "medien", label: "Media & creative industries" },
-        { value: "industrie", label: "Industry & production" }, { value: "logistik", label: "Transport & logistics" }
+        { value: "marketing", label: "Marketing & Advertising" }, { value: "beratung", label: "Consulting & Services" },
+        { value: "it", label: "IT & Software" }, { value: "finanzen", label: "Finance & Insurance" },
+        { value: "handel", label: "Retail & E-Commerce" }, { value: "bildung", label: "Education" },
+        { value: "verwaltung", label: "Public Sector" }, { value: "gesundheit", label: "Healthcare" },
+        { value: "bau", label: "Construction & Architecture" }, { value: "medien", label: "Media & Creative Industries" },
+        { value: "industrie", label: "Manufacturing & Industry" }, { value: "logistik", label: "Transport & Logistics" }
       ],
-      description: "Pick the closest match. We use this to tailor examples, tools, and funding/compliance guidance to your sector."
+      description: "Pick the best fit. We use it to tailor examples, tools and funding/compliance hints."
     },
-    { key: "unternehmensgroesse", label: "How large is your company (number of employees)?", type: "select",
+    { key: "unternehmensgroesse", label: "Company size", type: "select",
       options: [
-        { value: "solo", label: "1 (sole proprietor / freelancer)" }, { value: "team", label: "2–10 (small team)" }, { value: "kmu", label: "11–100 (SME)" }
+        { value: "solo", label: "1 (Solo/Freelance)" }, { value: "team", label: "2–10 (Small Team)" }, { value: "kmu", label: "11–100 (SME)" }
       ],
-      description: "A rough estimate is fine—this helps us right‑size suggestions and funding options (especially for small teams)."
+      description: "A rough estimate is fine – it helps making realistic suggestions and funding options."
     },
-    { key: "selbststaendig", label: "Legal form for a single person", type: "select",
+    { key: "selbststaendig", label: "Legal form if solo", type: "select",
       options: [
-        { value: "freiberufler", label: "Freelancer / self-employed" }, { value: "kapitalgesellschaft", label: "Single‑member corporation (GmbH/UG)" },
-        { value: "einzelunternehmer", label: "Sole proprietorship (with trade licence)" }, { value: "sonstiges", label: "Other" }
+        { value: "freiberufler", label: "Freelancer/Sole trader" }, { value: "kapitalgesellschaft", label: "Single-person company (Ltd./UG/GmbH)" },
+        { value: "einzelunternehmer", label: "Sole proprietor (trade)" }, { value: "sonstiges", label: "Other" }
       ],
-      description: "Only relevant if you selected “1”. Choose the nearest legal form—“Other” is perfectly fine.",
+      description: "Relevant only for size = 1. Any reasonable approximation is fine.",
       showIf: function (data) { return data.unternehmensgroesse === "solo"; }
     },
-    { key: "bundesland", label: "State (regional funding opportunities)", type: "select",
+    { key: "bundesland", label: "Region (funding programmes)", type: "select",
       options: [
-        { value: "bw", label: "Baden-Württemberg" }, { value: "by", label: "Bayern" }, { value: "be", label: "Berlin" },
+        { value: "bw", label: "Baden-Württemberg" }, { value: "by", label: "Bavaria" }, { value: "be", label: "Berlin" },
         { value: "bb", label: "Brandenburg" }, { value: "hb", label: "Bremen" }, { value: "hh", label: "Hamburg" },
-        { value: "he", label: "Hessen" }, { value: "mv", label: "Mecklenburg-Vorpommern" }, { value: "ni", label: "Niedersachsen" },
-        { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
+        { value: "he", label: "Hesse" }, { value: "mv", label: "Mecklenburg-Western Pomerania" }, { value: "ni", label: "Lower Saxony" },
+        { value: "nw", label: "North Rhine-Westphalia" }, { value: "rp", label: "Rhineland-Palatinate" }, { value: "sl", label: "Saarland" },
         { value: "sn", label: "Saxony" }, { value: "st", label: "Saxony-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thuringia" }
       ],
-      description: "Select your registered business location—this determines which regional grants we’ll check."
+      description: "Select the main location – used to filter regional funding."
     },
-    { key: "hauptleistung", label: "What's your company's main product or core service?", type: "textarea",
-      placeholder: "e.g. social media campaigns, CNC production, tax consulting for startups",
-      description: "One or two sentences are enough. If you offer several things, name the most important one."
+    { key: "hauptleistung", label: "What is your main offering or product?", type: "textarea",
+      placeholder: "e.g., Social media campaigns, CNC manufacturing, Tax advisory for startups",
+      description: "1–2 sentences are enough. If you have multiple offerings, pick the most important one."
     },
-    { key: "zielgruppen", label: "Which target groups do you serve?", type: "checkbox",
+
+    // (… the rest mirrors the DE file exactly in structure and keys, just English labels & descriptions …)
+    { key: "zielgruppen", label: "Target audiences", type: "checkbox",
       options: [
-        { value: "b2b", label: "B2B (business customers)" }, { value: "b2c", label: "B2C (consumers)" },
-        { value: "kmu", label: "SMEs" }, { value: "grossunternehmen", label: "Large enterprises" },
-        { value: "selbststaendige", label: "Self-employed / freelancers" }, { value: "oeffentliche_hand", label: "Public sector" },
-        { value: "privatpersonen", label: "Private individuals" }, { value: "startups", label: "Startups" }, { value: "andere", label: "Other" }
+        { value: "b2b", label: "B2B" }, { value: "b2c", label: "B2C" }, { value: "kmu", label: "SMEs" }, { value: "grossunternehmen", label: "Large enterprises" },
+        { value: "selbststaendige", label: "Self-employed/Freelancers" }, { value: "oeffentliche_hand", label: "Public sector" },
+        { value: "privatpersonen", label: "Consumers" }, { value: "startups", label: "Startups" }, { value: "andere", label: "Other" }
       ],
-      description: "Select all that apply. This helps us pick suitable use cases and examples."
+      description: "Multi select. Helps us choose suitable use-cases and examples."
     },
     { key: "jahresumsatz", label: "Annual revenue (estimate)", type: "select",
       options: [
-        { value: "unter_100k", label: "Up to €100,000" }, { value: "100k_500k", label: "€100,000–500,000" },
-        { value: "500k_2m", label: "€500,000–2 million" }, { value: "2m_10m", label: "€2–10 million" },
-        { value: "ueber_10m", label: "Over €10 million" }, { value: "keine_angabe", label: "Prefer not to say" }
+        { value: "unter_100k", label: "Up to €100k" }, { value: "100k_500k", label: "€100k–€500k" }, { value: "500k_2m", label: "€500k–€2m" },
+        { value: "2m_10m", label: "€2m–€10m" }, { value: "ueber_10m", label: "Over €10m" }, { value: "keine_angabe", label: "Prefer not to say" }
       ],
-      description: "Use last year or a rough estimate. This only steers benchmarks and possible grant levels—it won’t be published."
-    },
-    { key: "it_infrastruktur", label: "How is your IT infrastructure organized?", type: "select",
-      options: [
-        { value: "cloud", label: "Cloud-based (e.g. Microsoft 365, Google Cloud)" },
-        { value: "on_premise", label: "Own data centre (on-premises)" },
-        { value: "hybrid", label: "Hybrid (cloud + own servers)" }, { value: "unklar", label: "Unclear / not decided yet" }
-      ],
-      description: "Pick your current setup. “Hybrid” is common—no problem at all."
-    },
-    { key: "interne_ki_kompetenzen", label: "Do you have an internal AI/digitalisation team?", type: "select",
-      options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "in_planung", label: "In planning" } ],
-      description: "If nobody is dedicated yet, select “No”—we’ll propose lightweight starts and training."
-    },
-    { key: "datenquellen", label: "Which types of data are available for AI projects?", type: "checkbox",
-      options: [
-        { value: "kundendaten", label: "Customer data (CRM, service)" }, { value: "verkaufsdaten", label: "Sales/order data" },
-        { value: "produktionsdaten", label: "Production/operations data" }, { value: "personaldaten", label: "Personnel/HR data" },
-        { value: "marketingdaten", label: "Marketing/campaign data" }, { value: "sonstige", label: "Other data sources" }
-      ],
-      description: "Tick only what you currently have access to. Even small datasets can be valuable."
+      description: "A rough number to calibrate benchmarks and funding levels – nothing is published."
     },
 
-    // Block 2
-    { key: "digitalisierungsgrad", label: "How digital are your internal processes? (1–10)", type: "slider", min: 1, max: 10, step: 1,
-      description: "Move the slider by gut feel: 1 = paper/spreadsheets, 10 = largely automated. No audit—just orientation." },
-    { key: "prozesse_papierlos", label: "What proportion of processes are paperless?", type: "select",
+    // —— Status quo ——
+    { key: "digitalisierungsgrad", label: "How digital are your processes? (1–10)", type: "slider", min: 1, max: 10, step: 1,
+      description: "Just a feel: 1 = lots of paper, 10 = largely automated." },
+    { key: "prozesse_papierlos", label: "Share of paperless processes", type: "select",
       options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
-      description: "A simple estimate is fine. Helps us find quick wins." },
-    { key: "automatisierungsgrad", label: "Degree of automation", type: "select",
+      description: "An estimate is enough. It helps to spot quick wins." },
+    { key: "automatisierungsgrad", label: "Automation level", type: "select",
       options: [
-        { value: "sehr_niedrig", label: "Very low" }, { value: "eher_niedrig", label: "Rather low" },
-        { value: "mittel", label: "Medium" }, { value: "eher_hoch", label: "Rather high" }, { value: "sehr_hoch", label: "Very high" }
+        { value: "sehr_niedrig", label: "Very low" }, { value: "eher_niedrig", label: "Rather low" }, { value: "mittel", label: "Medium" },
+        { value: "eher_hoch", label: "Rather high" }, { value: "sehr_hoch", label: "Very high" }
       ],
-      description: "Think about day‑to‑day workflows (not just IT)." },
-    { key: "ki_einsatz", label: "Where is AI already being used?", type: "checkbox",
+      description: "Covers daily workflows (not only IT)." },
+    { key: "ki_einsatz", label: "Where is AI used today?", type: "checkbox",
       options: [
         { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Sales" }, { value: "buchhaltung", label: "Accounting" },
-        { value: "produktion", label: "Production" }, { value: "kundenservice", label: "Customer service" }, { value: "it", label: "IT" },
-        { value: "forschung", label: "R&D" }, { value: "personal", label: "HR" }, { value: "keine", label: "No usage yet" },
-        { value: "sonstiges", label: "Other" }
+        { value: "produktion", label: "Operations/Production" }, { value: "kundenservice", label: "Customer service" }, { value: "it", label: "IT" },
+        { value: "forschung", label: "R&D" }, { value: "personal", label: "HR" }, { value: "keine", label: "No use yet" }, { value: "sonstiges", label: "Other" }
       ],
-      description: "If unsure, select “No usage yet”." },
-    { key: "ki_knowhow", label: "Team's internal AI know‑how", type: "select",
+      description: "If unsure: choose “No use yet”." },
+    { key: "ki_knowhow", label: "AI know-how in the team", type: "select",
       options: [
-        { value: "keine", label: "No experience" }, { value: "grundkenntnisse", label: "Basic knowledge" }, { value: "mittel", label: "Medium" },
-        { value: "fortgeschritten", label: "Advanced" }, { value: "expertenwissen", label: "Expert knowledge" }
+        { value: "keine", label: "None" }, { value: "grundkenntnisse", label: "Basic" }, { value: "mittel", label: "Intermediate" },
+        { value: "fortgeschritten", label: "Advanced" }, { value: "expertenwissen", label: "Expert" }
       ],
-      description: "Self‑assessment only—we’ll right‑size the plan and training."
-    },
+      description: "Self-assessment; we adapt roadmap and training accordingly." },
 
-    // Block 3
-    { key: "projektziel", label: "Main objective of next AI project", type: "checkbox",
+    // —— Goals & projects ——
+    { key: "projektziel", label: "Primary objectives (next 3–6 months)", type: "checkbox",
       options: [
         { value: "prozessautomatisierung", label: "Process automation" }, { value: "kostensenkung", label: "Cost reduction" },
-        { value: "compliance", label: "Compliance/data protection" }, { value: "produktinnovation", label: "Product innovation" },
-        { value: "kundenservice", label: "Improve customer service" }, { value: "markterschliessung", label: "Market expansion" },
+        { value: "compliance", label: "Compliance/Privacy" }, { value: "produktinnovation", label: "Product innovation" },
+        { value: "kundenservice", label: "Improve customer service" }, { value: "markterschliessung", label: "New markets" },
         { value: "personalentlastung", label: "Relieve staff" }, { value: "foerdermittel", label: "Apply for funding" }, { value: "andere", label: "Other" }
       ],
-      description: "Choose outcomes for the next 3–6 months—measurable and pragmatic." },
-    { key: "ki_projekte", label: "Ongoing or planned AI projects", type: "textarea", placeholder: "e.g. chatbot, automated quotes, text generators…", description: "Bullet points are fine. Mention tools/processes if relevant." },
-    { key: "ki_usecases", label: "AI use cases of interest", type: "checkbox",
+      description: "Pick realistic targets with measurable outcomes." },
+    { key: "ki_projekte", label: "Current/planned AI projects", type: "textarea",
+      placeholder: "e.g., chatbot, offer automation, generators…",
+      description: "Bullet points are fine. Mention tools/processes if relevant." },
+    { key: "ki_usecases", label: "Interesting AI use cases", type: "checkbox",
       options: [
         { value: "texterstellung", label: "Text generation" }, { value: "bildgenerierung", label: "Image generation" }, { value: "spracherkennung", label: "Speech recognition" },
-        { value: "prozessautomatisierung", label: "Process automation" }, { value: "datenanalyse", label: "Data analysis & forecasting" },
+        { value: "prozessautomatisierung", label: "Process automation" }, { value: "datenanalyse", label: "Analytics & forecasting" },
         { value: "kundensupport", label: "Customer support" }, { value: "wissensmanagement", label: "Knowledge management" },
-        { value: "marketing", label: "Marketing optimization" }, { value: "sonstiges", label: "Other" }
+        { value: "marketing", label: "Marketing optimisation" }, { value: "sonstiges", label: "Other" }
       ],
-      description: "Tick interest areas; we’ll suggest practical starting points." },
-    { key: "ki_potenzial", label: "Greatest potential for AI in your company", type: "textarea",
-      placeholder: "e.g. faster reporting, personalized offers, automation…", description: "Where would a 10% time saving help most? Examples welcome." },
-    { key: "usecase_priority", label: "Where should AI be introduced first?", type: "select",
+      description: "Mark interest areas; we propose everyday-ready starts." },
+    { key: "ki_potenzial", label: "Where’s the biggest AI potential?", type: "textarea",
+      placeholder: "e.g., faster reporting, personalised offers, automation …",
+      description: "Where would a 10% time saving help most?" },
+    { key: "usecase_priority", label: "Highest priority area", type: "select",
       options: [
         { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Sales" }, { value: "buchhaltung", label: "Accounting" },
-        { value: "produktion", label: "Production" }, { value: "kundenservice", label: "Customer service" }, { value: "it", label: "IT" },
-        { value: "forschung", label: "R&D" }, { value: "personal", label: "HR" }, { value: "unbekannt", label: "Still unclear" }
+        { value: "produktion", label: "Operations/Production" }, { value: "kundenservice", label: "Customer service" }, { value: "it", label: "IT" },
+        { value: "forschung", label: "R&D" }, { value: "personal", label: "HR" }, { value: "unbekannt", label: "Unsure yet" }
       ],
-      description: "Pick the department where a pilot would be easiest to launch." },
+      description: "Pick the easiest area to start a pilot." },
     { key: "ki_geschaeftsmodell_vision", label: "How could AI change your business model?", type: "textarea",
-      placeholder: "e.g. automated consultations, data‑based services…", description: "How could AI create value (new services, faster flows)? No commitment." },
-    { key: "moonshot", label: "Your bold AI vision in 3 years", type: "textarea",
-      placeholder: "e.g. 80% automation, doubled revenue…", description: "Ambitious yet realistic—helps set direction." },
+      placeholder: "e.g., AI-enabled portal, data-driven services …", description: "Where can AI create value (new services, faster delivery)?" },
+    { key: "moonshot", label: "Your bold 3-year vision", type: "textarea",
+      placeholder: "e.g., 80% automation, doubled revenue …", description: "Ambitious yet realistic – helps align the roadmap." },
 
-    // Block 4
-    { key: "strategic_goals", label: "Specific goals with AI", type: "textarea", placeholder: "e.g. increase efficiency, new products, better service", description: "Link AI goals to business KPIs (e.g., response time −30%)." },
-    { key: "data_quality", label: "Quality of your data", type: "select",
-      options: [ { value: "high", label: "High (complete, structured, current)" }, { value: "medium", label: "Medium (partly structured)" }, { value: "low", label: "Low (unstructured, gaps)" } ],
-      description: "Used for effort estimation only—pick the closest option." },
-    { key: "ai_roadmap", label: "AI roadmap or strategy", type: "select",
-      options: [ { value: "yes", label: "Yes – implemented" }, { value: "planning", label: "In planning" }, { value: "no", label: "Not yet available" } ],
-      description: "If you don’t have one yet, that’s totally fine—we’ll provide a starter plan." },
-    { key: "governance", label: "Data and AI governance guidelines", type: "select",
-      options: [ { value: "yes", label: "Yes" }, { value: "partial", label: "Partial" }, { value: "no", label: "No" } ],
-      description: "Policies for data security, access and model usage. “No” is OK—we’ll share templates." },
-    { key: "innovation_culture", label: "Openness to innovation", type: "select",
+    // —— Strategy & governance ——
+    { key: "strategische_ziele", label: "Concrete goals with AI", type: "textarea",
+      placeholder: "e.g., efficiency, new products, better service", description: "Tie AI goals to business KPIs (e.g., −30% handling time)." },
+    { key: "datenqualitaet", label: "Data quality", type: "select",
+      options: [ { value: "hoch", label: "High (complete, structured, current)" }, { value: "mittel", label: "Medium (partly structured)" }, { value: "niedrig", label: "Low (unstructured, gaps)" } ],
+      description: "Just for effort estimation – choose the closest option." },
+    { key: "ai_roadmap", label: "AI roadmap/strategy", type: "select",
+      options: [ { value: "ja", label: "Yes – implemented" }, { value: "in_planung", label: "In planning" }, { value: "nein", label: "Not yet" } ],
+      description: "If not yet: perfectly fine – we provide a starter path." },
+    { key: "governance", label: "Data/AI governance rules", type: "select",
+      options: [ { value: "ja", label: "Yes" }, { value: "teilweise", label: "Partly" }, { value: "nein", label: "No" } ],
+      description: "Covers data security, access, model approvals. Templates provided if needed." },
+    { key: "innovationskultur", label: "Openness to innovation", type: "select",
       options: [
-        { value: "very_open", label: "Very open" }, { value: "rather_open", label: "Rather open" }, { value: "neutral", label: "Neutral" },
-        { value: "rather_reluctant", label: "Rather reluctant" }, { value: "very_reluctant", label: "Very reluctant" }
+        { value: "sehr_offen", label: "Very open" }, { value: "eher_offen", label: "Rather open" }, { value: "neutral", label: "Neutral" },
+        { value: "eher_zurueckhaltend", label: "Rather cautious" }, { value: "sehr_zurueckhaltend", label: "Very cautious" }
       ],
-      description: "Your feel for organisational openness—not a judgment." },
+      description: "A gut feeling helps with pacing." },
 
-    // Block 5
-    { key: "time_capacity", label: "Time per week for AI projects", type: "select",
-      options: [ { value: "under_2", label: "Under 2 hours" }, { value: "2_5", label: "2–5 hours" }, { value: "5_10", label: "5–10 hours" }, { value: "over_10", label: "More than 10 hours" } ],
-      description: "Be honest—we’ll design a plan that fits your calendar." },
-    { key: "existing_tools", label: "Systems already in use", type: "checkbox",
+    // —— Resources & preferences ——
+    { key: "zeitbudget", label: "Weekly time for AI projects", type: "select",
+      options: [ { value: "unter_2", label: "Under 2 hours" }, { value: "2_5", label: "2–5 hours" }, { value: "5_10", label: "5–10 hours" }, { value: "ueber_10", label: "Over 10 hours" } ],
+      description: "We plan realistically for your calendar." },
+    { key: "vorhandene_tools", label: "Systems already in use", type: "checkbox",
       options: [
-        { value: "crm", label: "CRM systems (HubSpot, Salesforce)" }, { value: "erp", label: "ERP systems (SAP, Odoo)" },
-        { value: "project_management", label: "Project management (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing automation" },
-        { value: "accounting", label: "Accounting software" }, { value: "none", label: "None / other" }
+        { value: "crm", label: "CRM (HubSpot, Salesforce)" }, { value: "erp", label: "ERP (SAP, Odoo)" },
+        { value: "projektmanagement", label: "Project management (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing automation" },
+        { value: "buchhaltung", label: "Accounting" }, { value: "keine", label: "None/other" }
       ],
-      description: "Select tools you actively use so we don’t suggest duplicates." },
-    { key: "regulated_industry", label: "Regulated industry", type: "checkbox",
+      description: "Mark actively used systems to avoid duplicate tooling." },
+    { key: "regulierte_branche", label: "Regulated sector", type: "checkbox",
       options: [
-        { value: "healthcare", label: "Health & medicine" }, { value: "finance", label: "Finance & insurance" },
-        { value: "public", label: "Public sector" }, { value: "legal", label: "Legal services" }, { value: "none", label: "None of these" }
+        { value: "gesundheit", label: "Health/Medical" }, { value: "finanzen", label: "Finance/Insurance" },
+        { value: "oeffentlich", label: "Public sector" }, { value: "recht", label: "Legal services" }, { value: "keine", label: "None of these" }
       ],
-      description: "Tick any that apply—we’ll include sector‑specific compliance." },
-    { key: "training_interests", label: "AI training topics of interest", type: "checkbox",
+      description: "Tick if applicable – we account for sector-specific requirements." },
+    { key: "trainings_interessen", label: "Training topics of interest", type: "checkbox",
       options: [
         { value: "prompt_engineering", label: "Prompt engineering" }, { value: "llm_basics", label: "LLM basics" },
-        { value: "data_quality_governance", label: "Data quality & governance" }, { value: "automation_scripts", label: "Automation & scripts" },
-        { value: "ethics_regulation", label: "Ethical & legal foundations" }, { value: "none", label: "None / not sure" }
+        { value: "datenqualitaet_governance", label: "Data quality & governance" }, { value: "automatisierung", label: "Automation & scripts" },
+        { value: "ethik_recht", label: "Ethics & legal basics" }, { value: "keine", label: "None / undecided" }
       ],
-      description: "We’ll propose a 2–4 hour starter training based on your selection." },
-    { key: "vision_priority", label: "Most important vision aspect", type: "select",
+      description: "We recommend a 2–4h starter session based on your picks." },
+    { key: "vision_prioritaet", label: "Most important vision aspect", type: "select",
       options: [
-        { value: "gpt_services", label: "GPT‑based services" }, { value: "customer_service", label: "Improve customer service" },
-        { value: "data_products", label: "New data‑driven products" }, { value: "process_automation", label: "Automate processes" },
-        { value: "market_leadership", label: "Achieve market leadership" }, { value: "unspecified", label: "No preference" }
+        { value: "gpt_services", label: "GPT-based services" }, { value: "kundenservice", label: "Improve customer service" },
+        { value: "datenprodukte", label: "Data products" }, { value: "prozessautomation", label: "Process automation" },
+        { value: "marktfuehrerschaft", label: "Market leadership" }, { value: "keine_angabe", label: "No preference" }
       ],
-      description: "Which ‘big lever’ matters most to you?" },
+      description: "Which “big lever” matters most to you?" },
 
-    // Block 6
-    { key: "datenschutzbeauftragter", label: "Data protection officer", type: "select",
-      options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "teilweise", label: "Partially (external/planning)" } ],
-      description: "If not required, select “No”. We’ll tell you when a DPO is needed." },
-    { key: "technische_massnahmen", label: "Technical data protection measures", type: "select",
-      options: [ { value: "alle", label: "All relevant measures" }, { value: "teilweise", label: "Partially in place" }, { value: "keine", label: "None yet" } ],
-      description: "An honest view helps—we’ll propose quick security wins." },
-    { key: "folgenabschaetzung", label: "Data protection impact assessment (DPIA)", type: "select",
-      options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "teilweise", label: "Partially" } ],
-      description: "We’ll flag if your use case is likely to need a DPIA." },
-    { key: "meldewege", label: "Reporting procedures for incidents", type: "select",
-      options: [ { value: "ja", label: "Yes, clear processes" }, { value: "teilweise", label: "Partially regulated" }, { value: "nein", label: "No" } ],
-      description: "Do you have defined steps for incidents (including escalation)?" },
-    { key: "loeschregeln", label: "Rules for data deletion/anonymization", type: "select",
-      options: [ { value: "ja", label: "Yes" }, { value: "teilweise", label: "Partially" }, { value: "nein", label: "No" } ],
-      description: "Retention and deletion rules. We’ll provide simple starter templates." },
-    { key: "ai_act_kenntnis", label: "Knowledge of EU AI Act", type: "select",
-      options: [ { value: "sehr_gut", label: "Very well" }, { value: "gut", label: "Well" }, { value: "gehoert", label: "Heard of it" }, { value: "unbekannt", label: "Not yet familiar" } ],
-      description: "No prior knowledge required—we’ll summarise obligations for you." },
-    { key: "ki_hemmnisse", label: "Obstacles to AI adoption", type: "checkbox",
+    // —— Legal & funding ——
+    { key: "datenschutzbeauftragter", label: "Data protection officer?", type: "select",
+      options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "teilweise", label: "Partly (external/planned)" } ],
+      description: "If not legally required: choose “No” – we will flag when it is needed." },
+    { key: "technische_massnahmen", label: "Technical safeguards", type: "select",
+      options: [ { value: "alle", label: "Full set of measures" }, { value: "teilweise", label: "Partly in place" }, { value: "keine", label: "None yet" } ],
+      description: "Honest status helps – we’ll propose quick security gains." },
+    { key: "folgenabschaetzung", label: "DPIA (data protection impact assessment)", type: "select",
+      options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "teilweise", label: "Partly" } ],
+      description: "We point out when a DPIA is recommended or required." },
+    { key: "meldewege", label: "Incident reporting paths", type: "select",
+      options: [ { value: "ja", label: "Yes, clearly defined" }, { value: "teilweise", label: "Partly defined" }, { value: "nein", label: "No" } ],
+      description: "Are escalation paths defined for incidents?" },
+    { key: "loeschregeln", label: "Deletion/anonymisation rules", type: "select",
+      options: [ { value: "ja", label: "Yes" }, { value: "teilweise", label: "Partly" }, { value: "nein", label: "No" } ],
+      description: "Retention/deletion rules. We provide simple starters." },
+    { key: "ai_act_kenntnis", label: "EU AI Act knowledge", type: "select",
+      options: [ { value: "sehr_gut", label: "Very good" }, { value: "gut", label: "Good" }, { value: "gehoert", label: "Heard of it" }, { value: "unbekannt", label: "Not aware yet" } ],
+      description: "No prior knowledge required – we summarise your duties." },
+    { key: "ki_hemmnisse", label: "Main obstacles for AI adoption", type: "checkbox",
       options: [
-        { value: "rechtsunsicherheit", label: "Legal uncertainty" }, { value: "datenschutz", label: "Data protection" }, { value: "knowhow", label: "Lack of know‑how" },
-        { value: "budget", label: "Limited budget" }, { value: "teamakzeptanz", label: "Team acceptance" }, { value: "zeitmangel", label: "Lack of time" },
+        { value: "rechtsunsicherheit", label: "Legal uncertainty" }, { value: "datenschutz", label: "Privacy" }, { value: "knowhow", label: "Lack of know-how" },
+        { value: "budget", label: "Limited budget" }, { value: "teamakzeptanz", label: "Team buy-in" }, { value: "zeitmangel", label: "Lack of time" },
         { value: "it_integration", label: "IT integration" }, { value: "keine", label: "No obstacles" }, { value: "andere", label: "Other" }
       ],
-      description: "Select any blockers—we’ll suggest pragmatic workarounds and priorities." },
-    { key: "bisherige_foerdermittel", label: "Previous funding received", type: "select",
+      description: "Select all that apply – we’ll propose pragmatic workarounds and priorities." },
+    { key: "bisherige_foerdermittel", label: "Received funding before?", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" } ],
-      description: "Helps us propose suitable follow‑up grants." },
-    { key: "interesse_foerderung", label: "Interest in funding opportunities", type: "select",
-      options: [ { value: "ja", label: "Yes, suggest programs" }, { value: "nein", label: "No need" }, { value: "unklar", label: "Unsure, please advise" } ],
-      description: "If “Unsure”, we’ll do a quick eligibility check." },
-    { key: "erfahrung_beratung", label: "Previous consulting on digitalization/AI", type: "select",
+      description: "Helps to suggest follow-up programmes." },
+    { key: "interesse_foerderung", label: "Interested in funding?", type: "select",
+      options: [ { value: "ja", label: "Yes, propose programmes" }, { value: "nein", label: "No" }, { value: "unklar", label: "Unsure, please advise" } ],
+      description: "With “Unsure” we check eligibility without any obligation." },
+    { key: "erfahrung_beratung", label: "Previous digital/AI consulting", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "unklar", label: "Unclear" } ],
-      description: "So we can build on what’s already there." },
-    { key: "investitionsbudget", label: "Budget for AI/digitalization next year", type: "select",
-      options: [ { value: "unter_2000", label: "Under €2,000" }, { value: "2000_10000", label: "€2,000–10,000" }, { value: "10000_50000", label: "€10,000–50,000" },
-        { value: "ueber_50000", label: "More than €50,000" }, { value: "unklar", label: "Still unclear" } ],
-      description: "Even small budgets are fine—we’ll prioritise accordingly." },
+      description: "So we can build on what’s in place." },
+    { key: "investitionsbudget", label: "Budget for AI/digital (next 12 months)", type: "select",
+      options: [ { value: "unter_2000", label: "Under €2,000" }, { value: "2000_10000", label: "€2,000–€10,000" }, { value: "10000_50000", label: "€10,000–€50,000" },
+        { value: "ueber_50000", label: "Over €50,000" }, { value: "unklar", label: "Unclear" } ],
+      description: "Meaningful starts are possible even with a small budget – we prioritise accordingly." },
     { key: "marktposition", label: "Market position", type: "select",
-      options: [ { value: "marktfuehrer", label: "Market leader" }, { value: "oberes_drittel", label: "Top third" }, { value: "mittelfeld", label: "Middle field" },
-        { value: "nachzuegler", label: "Laggard" }, { value: "unsicher", label: "Hard to assess" } ],
-      description: "A rough internal estimate is enough." },
-    { key: "benchmark_wettbewerb", label: "Compare with competitors", type: "select",
+      options: [ { value: "marktfuehrer", label: "Market leader" }, { value: "oberes_drittel", label: "Top third" }, { value: "mittelfeld", label: "Middle" },
+        { value: "nachzuegler", label: "Laggard" }, { value: "unsicher", label: "Hard to say" } ],
+      description: "A rough indication is enough." },
+    { key: "benchmark_wettbewerb", label: "Competitor benchmarking", type: "select",
       options: [ { value: "ja", label: "Yes, regularly" }, { value: "nein", label: "No" }, { value: "selten", label: "Rarely" } ],
-      description: "How often do you compare yourself externally? Orientation only." },
-    { key: "innovationsprozess", label: "How innovations arise", type: "select",
+      description: "How often do you compare externally? For context only." },
+    { key: "innovationsprozess", label: "How do innovations originate?", type: "select",
       options: [
-        { value: "innovationsteam", label: "Innovation team" }, { value: "mitarbeitende", label: "Through employees" },
+        { value: "innovationsteam", label: "Innovation team" }, { value: "mitarbeitende", label: "Individual contributors" },
         { value: "kunden", label: "With customers" }, { value: "berater", label: "External consultants" },
         { value: "zufall", label: "By chance" }, { value: "unbekannt", label: "No clear strategy" }
       ],
-      description: "How do new ideas typically start? This guides our change approach." },
-    { key: "risikofreude", label: "Risk-taking with innovation (1–5)", type: "slider", min: 1, max: 5, step: 1,
-      description: "Gut feel—helps us choose a suitable rollout pace." },
+      description: "We derive change tactics from this." },
+    { key: "risikofreude", label: "Risk appetite (1–5)", type: "slider", min: 1, max: 5, step: 1,
+      description: "Gut feeling – helps with the right pace." },
 
-    // Block 7
-    { key: "datenschutz",
-      label: "I have read the <a href='privacy.html' onclick='window.open(this.href, \"PrivacyPopup\", \"width=600,height=700\"); return false;'>privacy notice</a> and agree.",
+    // —— Consent ——
+    { key: "datenschutz", label:
+      "I have read and agree to the <a href='datenschutz.html' onclick='window.open(this.href, \"Privacy\", \"width=600,height=700\"); return false;'>privacy notice</a>.",
       type: "privacy",
-      description: "Please confirm that you have read the privacy notice."
+      description: "Please confirm the privacy notice."
     }
   ];
 
   var blocks = [
-    { name: "Company Information", keys: ["branche","unternehmensgroesse","selbststaendig","bundesland","hauptleistung","zielgruppen","jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"] },
-    { name: "Status Quo", keys: ["digitalisierungsgrad","prozesse_papierlos","automatisierungsgrad","ki_einsatz","ki_knowhow"] },
-    { name: "Goals & Projects", keys: ["projektziel","ki_projekte","ki_usecases","ki_potenzial","usecase_priority","ki_geschaeftsmodell_vision","moonshot"] },
-    { name: "Strategy & Governance", keys: ["strategic_goals","data_quality","ai_roadmap","governance","innovation_culture"] },
-    { name: "Resources & Preferences", keys: ["time_capacity","existing_tools","regulated_industry","training_interests","vision_priority"] },
-    { name: "Legal & Funding", keys: ["datenschutzbeauftragter","technische_massnahmen","folgenabschaetzung","meldewege","loeschregeln","ai_act_kenntnis","ki_hemmnisse","bisherige_foerdermittel","interesse_foerderung","erfahrung_beratung","investitionsbudget","marktposition","benchmark_wettbewerb","innovationsprozess","risikofreude"] },
-    { name: "Privacy & Submit", keys: ["datenschutz"] }
+    { name: "Company basics", keys: ["branche","unternehmensgroesse","selbststaendig","bundesland","hauptleistung","zielgruppen","jahresumsatz","it_infrastruktur","interne_ki_kompetenzen","datenquellen"] },
+    { name: "Status quo", keys: ["digitalisierungsgrad","prozesse_papierlos","automatisierungsgrad","ki_einsatz","ki_knowhow"] },
+    { name: "Goals & projects", keys: ["projektziel","ki_projekte","ki_usecases","ki_potenzial","usecase_priority","ki_geschaeftsmodell_vision","moonshot"] },
+    { name: "Strategy & governance", keys: ["strategische_ziele","datenqualitaet","ai_roadmap","governance","innovationskultur"] },
+    { name: "Resources & preferences", keys: ["zeitbudget","vorhandene_tools","regulierte_branche","trainings_interessen","vision_prioritaet"] },
+    { name: "Legal & funding", keys: ["datenschutzbeauftragter","technische_massnahmen","folgenabschaetzung","meldewege","loeschregeln","ai_act_kenntnis","ki_hemmnisse","bisherige_foerdermittel","interesse_foerderung","erfahrung_beratung","investitionsbudget","marktposition","benchmark_wettbewerb","innovationsprozess","risikofreude"] },
+    { name: "Privacy & submit", keys: ["datenschutz"] }
   ];
 
   // --------------------------- State ---------------------------
@@ -351,18 +337,15 @@
   function loadAutosave(){ try{ formData = JSON.parse(localStorage.getItem(autosaveKey) || "{}"); }catch(e){ formData = {}; } }
   function saveAutosave(){ try{ localStorage.setItem(autosaveKey, JSON.stringify(formData)); }catch(e){} }
   function loadStep(){
-    try {
-      var raw = localStorage.getItem(stepKey);
-      var n = raw==null ? 0 : parseInt(raw,10);
-      if (isNaN(n)) n = 0;
-      currentBlock = Math.max(0, Math.min(blocks.length-1, n));
-    } catch(_) { currentBlock = 0; }
+    try { var raw = localStorage.getItem(stepKey); var n = raw==null ? 0 : parseInt(raw,10); currentBlock = isNaN(n)?0:Math.max(0,Math.min(blocks.length-1,n)); }
+    catch(_) { currentBlock = 0; }
   }
   function saveStep(){ try { localStorage.setItem(stepKey, String(currentBlock)); } catch(_){} }
 
   // --------------------------- Utilities ---------------------------
   function findField(key){ for (var i=0;i<fields.length;i++) if (fields[i].key===key) return fields[i]; return null; }
   function labelOf(key){ var f=findField(key); return (f && f.label) || key; }
+
   function collectValue(f){
     if (f.type === "checkbox" && f.options) {
       var nodes = document.querySelectorAll('input[name="'+f.key+'"]:checked');
@@ -376,6 +359,7 @@
       var inp = document.getElementById(f.key); return inp ? inp.value : "";
     }
   }
+
   function scrollToStepTop(instant){
     try {
       var root = document.getElementById('formbuilder');
@@ -386,23 +370,25 @@
   }
 
   // --------------------------- Rendering ---------------------------
-  function renderField(f){
+  function renderField(f) {
     var v = formData[f.key];
-    var guidance = f.description ? '<div class="guidance'+(f.type==="privacy"?" important":"")+'">'+f.description+'</div>' : "";
+    var guidance = f.description ? '<div class="guidance'+(f.type==="privacy"?" important":"")+'" id="'+f.key+'_desc">'+f.description+'</div>' : "";
+    var aria = ' aria-describedby="'+f.key+'_desc"';
     var html = "";
     if (f.type === "select") {
-      var opts = '<option value="">Please select…</option>';
+      var opts = '<option value="">Please choose…</option>';
       for (var i=0;i<(f.options||[]).length;i++){
         var o=f.options[i]; var sel = (String(v||"")===String(o.value))?' selected':'';
         opts += '<option value="'+o.value+'"'+sel+'>'+o.label+'</option>';
       }
       html = '<label for="'+f.key+'"><b>'+f.label+'</b></label>'+guidance+
-             '<select id="'+f.key+'" name="'+f.key+'">'+opts+'</select>';
+             '<select id="'+f.key+'" name="'+f.key+'"'+aria+'>'+opts+'</select>';
     } else if (f.type === "textarea") {
       html = '<label for="'+f.key+'"><b>'+f.label+'</b></label>'+guidance+
-             '<textarea id="'+f.key+'" name="'+f.key+'" placeholder="'+(f.placeholder||"")+'">'+(v||"")+'</textarea>';
+             '<textarea id="'+f.key+'" name="'+f.key+'" placeholder="'+(f.placeholder||"")+'"'+aria+'>'+ (v||"") +'</textarea>';
     } else if (f.type === "checkbox" && f.options) {
-      var items = ""; var arr = Array.isArray(v)?v:[];
+      var items = "";
+      var arr = Array.isArray(v)?v:[];
       for (var j=0;j<(f.options||[]).length;j++){
         var c=f.options[j]; var checked = (arr.indexOf(c.value)!==-1)?' checked':'';
         items += '<label class="checkbox-label"><input type="checkbox" name="'+f.key+'" value="'+c.value+'"'+checked+'><span>'+c.label+'</span></label>';
@@ -414,40 +400,47 @@
              '<div class="slider-container"><input type="range" id="'+f.key+'" name="'+f.key+'" min="'+(f.min||1)+'" max="'+(f.max||10)+'" step="'+(f.step||1)+'" value="'+val+'" oninput="this.parentElement.querySelector(\'.slider-value-label\').innerText=this.value"><span class="slider-value-label">'+val+'</span></div>';
     } else if (f.type === "privacy") {
       var chk = (v===true)?' checked':'';
-      html = '<div class="guidance important">'+(f.description||"")+'</div>'+
+      html = '<div class="guidance important" role="note">'+(f.description||"")+'</div>'+
              '<label class="checkbox-label"><input type="checkbox" id="'+f.key+'" name="'+f.key+'"'+chk+' required><span>'+f.label+'</span></label>';
     } else {
-      html = '<label for="'+f.key+'"><b>'+f.label+'</b></label>'+guidance+'<input type="text" id="'+f.key+'" name="'+f.key+'" value="'+(v||"")+'">';
+      html = '<label for="'+f.key+'"><b>'+f.label+'</b></label>'+guidance+
+             '<input type="text" id="'+f.key+'" name="'+f.key+'" value="'+(v||"")+'"'+aria+'>';
     }
     return '<div class="form-group" data-key="'+f.key+'">'+html+'</div>';
   }
 
-  function renderStep(){
-    var root = document.getElementById("formbuilder"); if (!root) return;
+  function renderStep() {
+    var root = document.getElementById("formbuilder");
+    if (!root) return;
 
-    var block = blocks[currentBlock]; var intro = BLOCK_INTRO[currentBlock] || "";
-    var html = '<section class="fb-section">'
+    var block = blocks[currentBlock];
+    var intro = BLOCK_INTRO[currentBlock] || "";
+    var html = '<section class="fb-section" aria-live="polite" aria-busy="false">'
              +   '<div class="fb-head"><span class="fb-step">Step '+(currentBlock+1)+'/'+blocks.length+'</span>'
              +   '<span class="fb-title">'+block.name+'</span></div>'
              +   (intro ? '<div class="section-intro">'+intro+'</div>' : '');
 
     for (var i=0;i<block.keys.length;i++){
-      var k = block.keys[i]; var f = findField(k); if (!f) continue;
+      var k = block.keys[i];
+      var f = findField(k); if (!f) continue;
       if (typeof f.showIf === "function" && !f.showIf(formData)) continue;
       html += renderField(f);
     }
+
     html += '</section><div class="form-nav">'
          +  '<button type="button" class="btn btn-secondary mr-auto" id="btn-reset">Reset</button>'
          +  '<button type="button" class="btn btn-secondary" id="btn-back" '+(currentBlock===0?'disabled':'')+'>Back</button>'
          +  (currentBlock < blocks.length-1
-            ? '<button type="button" class="btn btn-primary" id="btn-next">Next</button>'
-            : '<button type="button" class="btn btn-primary" id="btn-submit">Submit</button>')
-         + '</div><div id="fb-msg" aria-live="polite"></div>';
+              ? '<button type="button" class="btn btn-primary" id="btn-next">Next</button>'
+              : '<button type="button" class="btn btn-primary" id="btn-submit" aria-label="Submit (you will receive the PDF by email)">Submit</button>')
+         +  '</div>'
+         +  '<div id="fb-msg" aria-live="assertive"></div>';
 
     root.innerHTML = html;
 
     root.addEventListener("change", handleChange);
     root.addEventListener("input", handleChange);
+
     root.addEventListener("keydown", function (ev) {
       var isEnter = (ev.key === "Enter" || ev.keyCode === 13);
       var tag = (ev.target && ev.target.tagName) ? ev.target.tagName.toUpperCase() : "";
@@ -455,7 +448,9 @@
     });
 
     var back = document.getElementById("btn-back");
-    if (back) back.addEventListener("click", function(){ if (currentBlock>0){ currentBlock--; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); } });
+    if (back) back.addEventListener("click", function () {
+      if (currentBlock>0) { currentBlock--; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); }
+    });
 
     var next = document.getElementById("btn-next");
     if (next) {
@@ -468,7 +463,7 @@
 
     var reset = document.getElementById("btn-reset");
     if (reset) reset.addEventListener("click", function () {
-      if (confirm("Are you sure you want to reset the form?")) {
+      if (confirm("Reset the form?")) {
         try { localStorage.removeItem(autosaveKey); localStorage.removeItem(stepKey); } catch(_) {}
         formData = {}; currentBlock = 0; saveStep();
         renderStep(); updateProgress(); scrollToStepTop(true);
@@ -482,7 +477,7 @@
   }
 
   // --------------------------- Data & Validation ---------------------------
-  function handleChange(e){
+  function handleChange(e) {
     var block = blocks[currentBlock];
     for (var i=0;i<block.keys.length;i++){
       var k = block.keys[i]; var f = findField(k); if (!f) continue;
@@ -495,11 +490,12 @@
       renderStep(); scrollToStepTop(false);
       return;
     }
+
     var next = document.getElementById("btn-next");
     if (next) next.disabled = validateCurrentBlock(false).length > 0;
   }
 
-  function markInvalid(key, on){
+  function markInvalid(key, on) {
     var grp = document.querySelector('.form-group[data-key="'+key+'"]');
     if (!grp) return;
     if (on) grp.classList.add("invalid-group"); else grp.classList.remove("invalid-group");
@@ -507,15 +503,14 @@
     if (input) { if (on) input.classList.add("invalid"); else input.classList.remove("invalid"); }
   }
 
-  function validateCurrentBlock(focusFirst){
+  function validateCurrentBlock(focusFirst) {
     var optional = {
       "jahresumsatz":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,
-      "time_capacity":1,"existing_tools":1,"regulated_industry":1,"training_interests":1,
-      "vision_priority":1,"selbststaendig":1,"hauptleistung":0
+      "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
+      "vision_prioritaet":1,"selbststaendig":1
     };
     var missing = [];
     var block = blocks[currentBlock];
-
     for (var j=0;j<block.keys.length;j++) markInvalid(block.keys[j], false);
 
     for (var i=0;i<block.keys.length;i++){
@@ -523,13 +518,14 @@
       var f = findField(k); if (!f) continue;
       if (typeof f.showIf === "function" && !f.showIf(formData)) continue;
 
-      var val = formData[k], ok = true;
+      var val = formData[k];
+      var ok = true;
       if (optional[k]) { /* optional */ }
-      else if (f.type === "checkbox" && f.options) ok = Array.isArray(val) && val.length>0;
-      else if (f.type === "privacy") ok = (val === true);
-      else if (f.type === "select") ok = !!val && String(val) !== "";
-      else if (f.type === "slider") ok = !!val;
-      else ok = !!val && String(val).trim() !== "";
+      else if (f.type === "checkbox" && f.options) { ok = Array.isArray(val) && val.length>0; }
+      else if (f.type === "privacy") { ok = (val === true); }
+      else if (f.type === "select") { ok = !!val && String(val) !== ""; }
+      else if (f.type === "slider") { ok = !!val; }
+      else { ok = !!val && String(val).trim() !== ""; }
 
       if (!ok) { missing.push(labelOf(k)); markInvalid(k, true); }
     }
@@ -538,48 +534,51 @@
       var first = document.querySelector(".invalid, .invalid-group");
       if (first && first.scrollIntoView) first.scrollIntoView({behavior:"smooth", block:"center"});
       var msg = document.getElementById("fb-msg");
-      if (msg) { msg.textContent = "Please fix the highlighted fields."; msg.setAttribute("role","alert"); }
+      if (msg) { msg.textContent = "Please correct the highlighted fields."; msg.setAttribute("role","alert"); }
     }
     return missing;
   }
 
-  function updateProgress(){ dispatchProgress(currentBlock + 1, blocks.length); }
+  function updateProgress() { dispatchProgress(currentBlock + 1, blocks.length); }
 
-  function submitForm(){
-    for (var bi=0; bi<blocks.length; bi++){
+  // --------------------------- Submit ---------------------------
+  function submitForm() {
+    for (var bi=0; bi<blocks.length; bi++) {
       var b = blocks[bi];
-      for (var ki=0; ki<b.keys.length; ki++){
+      for (var ki=0; ki<b.keys.length; ki++) {
         var k = b.keys[ki]; var f = findField(k); if (!f) continue;
         if (typeof f.showIf === "function" && !f.showIf(formData)) continue;
-        if (document.getElementById(f.key)) { formData[k] = collectValue(f);} /* else keep existing */ }
+        if (document.getElementById(f.key)) { formData[k] = collectValue(f); }
+      }
     }
     saveAutosave();
 
     if (formData.datenschutz !== true) {
       var msg = document.getElementById("fb-msg");
-      if (msg) { msg.textContent = "Please confirm that you have read the privacy notice."; msg.setAttribute("role","alert"); }
+      if (msg) { msg.textContent = "Please confirm the privacy notice."; msg.setAttribute("role","alert"); }
       return;
     }
 
     var root = document.getElementById("formbuilder");
     if (root) {
-      root.innerHTML = '<section class="fb-section"><h2>Thank you for your submission!</h2>'
-        + '<div class="guidance">Your AI analysis is now being created. '
-        + 'Once finished, you will receive your individual report as a PDF by email.</div></section>';
+      root.innerHTML = '<section class="fb-section"><h2>Thanks for your input!</h2>'
+        + '<div class="guidance">Your AI assessment is being generated now. '
+        + 'You will receive a personalised PDF report by email.</div></section>';
     }
 
     var token = getToken();
     if (!token) {
       if (root) root.insertAdjacentHTML("beforeend",
-        '<div class="guidance important" role="alert">Your session has expired. '
-        + '<a href="/login.html">Please log in again</a> if you want to run another analysis.</div>');
+        '<div class="guidance important" role="alert">Your session expired. '
+        + '<a href="/login.html">Please log in again</a> to create another report.</div>');
       return;
     }
 
-    var data = {}; for (var i=0;i<fields.length;i++){ data[fields[i].key] = formData[fields[i].key]; }
+    var data = {};
+    for (var i=0;i<fields.length;i++){ data[fields[i].key] = formData[fields[i].key]; }
     data.lang = LANG;
 
-    var email = getEmailFromJWT(token); if (email) { data.email = email; data.to = email; }
+    var tokenEmail = getEmailFromJWT(token); if (tokenEmail) { data.email = tokenEmail; data.to = tokenEmail; }
 
     var url = getBaseUrl() + SUBMIT_PATH;
     fetch(url, {
@@ -596,7 +595,8 @@
   // Init
   window.addEventListener("DOMContentLoaded", function(){
     loadAutosave(); loadStep();
-    var b0 = blocks[0]; for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f && formData[f.key]===undefined) formData[f.key] = ""; }
+    var b0 = blocks[0];
+    for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f && formData[f.key]===undefined) formData[f.key] = ""; }
     renderStep(); scrollToStepTop(true);
   });
 })();
