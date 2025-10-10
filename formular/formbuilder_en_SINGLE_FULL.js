@@ -8,7 +8,7 @@
   "use strict";
 
   var LANG = "en";
-  var SCHEMA_VERSION = "1.5.1";
+  var SCHEMA_VERSION = "2025-10-10.1";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -122,7 +122,6 @@
       description: "1–2 sentences are enough. If you have multiple offerings, pick the most important one."
     },
 
-    // (… the rest mirrors the DE file exactly in structure and keys, just English labels & descriptions …)
     { key: "zielgruppen", label: "Target audiences", type: "checkbox",
       options: [
         { value: "b2b", label: "B2B" }, { value: "b2c", label: "B2C" }, { value: "kmu", label: "SMEs" }, { value: "grossunternehmen", label: "Large enterprises" },
@@ -592,9 +591,22 @@
     }).catch(function(){});
   }
 
+  // ---------- Sanity check (warn if block keys not found as fields) ----------
+  function checkSchema() {
+    try {
+      var defined = {}; for (var i=0;i<fields.length;i++) defined[fields[i].key] = 1;
+      var missing = [];
+      for (var b=0;b<blocks.length;b++){
+        var karr = blocks[b].keys || [];
+        for (var j=0;j<karr.length;j++){ if (!defined[karr[j]]) missing.push(karr[j]); }
+      }
+      if (missing.length) console.warn("[Formbuilder-EN] Missing field definitions:", missing.join(", "));
+    } catch (_) {}
+  }
+
   // Init
   window.addEventListener("DOMContentLoaded", function(){
-    loadAutosave(); loadStep();
+    loadAutosave(); loadStep(); checkSchema();
     var b0 = blocks[0];
     for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f && formData[f.key]===undefined) formData[f.key] = ""; }
     renderStep(); scrollToStepTop(true);

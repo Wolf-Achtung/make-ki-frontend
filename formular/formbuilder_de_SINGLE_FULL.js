@@ -9,7 +9,7 @@
   "use strict";
 
   var LANG = "de";
-  var SCHEMA_VERSION = "1.5.2";
+  var SCHEMA_VERSION = "2025-10-10.1";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
