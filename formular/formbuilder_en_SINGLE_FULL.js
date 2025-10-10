@@ -8,7 +8,7 @@
   "use strict";
 
   var LANG = "en";
-  var SCHEMA_VERSION = "2025-10-10.1";
+  var SCHEMA_VERSION = "1.5.4";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -121,7 +121,6 @@
       placeholder: "e.g., Social media campaigns, CNC manufacturing, Tax advisory for startups",
       description: "1–2 sentences are enough. If you have multiple offerings, pick the most important one."
     },
-
     { key: "zielgruppen", label: "Target audiences", type: "checkbox",
       options: [
         { value: "b2b", label: "B2B" }, { value: "b2c", label: "B2C" }, { value: "kmu", label: "SMEs" }, { value: "grossunternehmen", label: "Large enterprises" },
@@ -136,6 +135,34 @@
         { value: "2m_10m", label: "€2m–€10m" }, { value: "ueber_10m", label: "Over €10m" }, { value: "keine_angabe", label: "Prefer not to say" }
       ],
       description: "A rough number to calibrate benchmarks and funding levels – nothing is published."
+    },
+
+    /* — FIX/ADD: the following three fields were missing or wrong type — */
+    { key: "it_infrastruktur", label: "How is your IT infrastructure organised?", type: "select",
+      options: [
+        { value: "cloud", label: "Cloud‑based (e.g., Microsoft 365, Google Cloud)" },
+        { value: "on_premise", label: "Own data centre (on‑premise)" },
+        { value: "hybrid", label: "Hybrid (cloud + own servers)" },
+        { value: "unklar", label: "Unclear / undecided" }
+      ],
+      description: "Please select the current state. “Hybrid” is very common – that’s fine."
+    },
+    { key: "interne_ki_kompetenzen", label: "Do you have an internal AI/Digital team?", type: "select",
+      options: [
+        { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "in_planung", label: "Planned" }
+      ],
+      description: "If not: choose “No” – we’ll suggest lean starters and trainings."
+    },
+    { key: "datenquellen", label: "Which data types are available for AI projects?", type: "checkbox",
+      options: [
+        { value: "kundendaten", label: "Customer data (CRM, service)" },
+        { value: "verkaufsdaten", label: "Sales / order data" },
+        { value: "produktionsdaten", label: "Operations / production data" },
+        { value: "personaldaten", label: "HR / personnel data" },
+        { value: "marketingdaten", label: "Marketing / campaign data" },
+        { value: "sonstige", label: "Other data sources" }
+      ],
+      description: "Tick only what you currently have access to. Small datasets are fine."
     },
 
     // —— Status quo ——
@@ -591,22 +618,9 @@
     }).catch(function(){});
   }
 
-  // ---------- Sanity check (warn if block keys not found as fields) ----------
-  function checkSchema() {
-    try {
-      var defined = {}; for (var i=0;i<fields.length;i++) defined[fields[i].key] = 1;
-      var missing = [];
-      for (var b=0;b<blocks.length;b++){
-        var karr = blocks[b].keys || [];
-        for (var j=0;j<karr.length;j++){ if (!defined[karr[j]]) missing.push(karr[j]); }
-      }
-      if (missing.length) console.warn("[Formbuilder-EN] Missing field definitions:", missing.join(", "));
-    } catch (_) {}
-  }
-
   // Init
   window.addEventListener("DOMContentLoaded", function(){
-    loadAutosave(); loadStep(); checkSchema();
+    loadAutosave(); loadStep();
     var b0 = blocks[0];
     for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f && formData[f.key]===undefined) formData[f.key] = ""; }
     renderStep(); scrollToStepTop(true);

@@ -9,7 +9,7 @@
   "use strict";
 
   var LANG = "de";
-  var SCHEMA_VERSION = "2025-10-10.1";
+  var SCHEMA_VERSION = "1.5.4";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
@@ -152,16 +152,33 @@
       description: "Nur zur Kalibrierung von Benchmarks & Förderung – nichts wird veröffentlicht."
     },
 
-    /* — optional: kurze System-/Daten-Infos — */
-    { key: "it_infrastruktur", label: "IT-Infrastruktur (kurz)", type: "textarea",
-      placeholder: "z. B. Microsoft 365, Google Workspace, On-Prem-ERP, Cloud-CRM …",
-      description: "Optional – hilft, Tool-Empfehlungen zu präzisieren." },
-    { key: "interne_ki_kompetenzen", label: "Interne KI-Kompetenzen", type: "textarea",
-      placeholder: "z. B. Prompt-Know-how, Python/R, Automatisierungen, DataOps …",
-      description: "Optional – Rollen/Skill-Level, falls vorhanden." },
-    { key: "datenquellen", label: "Wichtige Datenquellen", type: "textarea",
-      placeholder: "z. B. CRM, ERP, Support-Tickets, DMS, Web-Analytics …",
-      description: "Optional – für realistische Quick-Wins/Use-Cases." },
+    /* — FIX: vorher fälschlich textarea; jetzt Select/Checkbox — */
+    { key: "it_infrastruktur", label: "Wie ist Ihre IT-Infrastruktur organisiert?", type: "select",
+      options: [
+        { value: "cloud", label: "Cloud‑basiert (z. B. Microsoft 365, Google Cloud)" },
+        { value: "on_premise", label: "Eigenes Rechenzentrum (On‑Premises)" },
+        { value: "hybrid", label: "Hybrid (Cloud + eigene Server)" },
+        { value: "unklar", label: "Unklar / noch offen" }
+      ],
+      description: "Bitte den Ist‑Zustand wählen. „Hybrid“ ist häufig – alles gut."
+    },
+    { key: "interne_ki_kompetenzen", label: "Gibt es ein internes KI-/Digitalisierungsteam?", type: "select",
+      options: [
+        { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "in_planung", label: "In Planung" }
+      ],
+      description: "Wenn es kein Team gibt: „Nein“ wählen – wir schlagen schlanke Einstiege & Schulungen vor."
+    },
+    { key: "datenquellen", label: "Welche Datentypen stehen für KI-Projekte zur Verfügung?", type: "checkbox",
+      options: [
+        { value: "kundendaten", label: "Kundendaten (CRM, Service)" },
+        { value: "verkaufsdaten", label: "Verkaufs-/Bestelldaten" },
+        { value: "produktionsdaten", label: "Produktions-/Betriebsdaten" },
+        { value: "personaldaten", label: "Personal-/HR‑Daten" },
+        { value: "marketingdaten", label: "Marketing-/Kampagnendaten" },
+        { value: "sonstige", label: "Sonstige Datenquellen" }
+      ],
+      description: "Nur ankreuzen, worauf Sie aktuell Zugriff haben. Auch kleine Datensätze sind wertvoll."
+    },
 
     /* — Status Quo — */
     { key: "digitalisierungsgrad", label: "Wie digital sind Ihre Prozesse? (1–10)", type: "slider", min: 1, max: 10, step: 1,
