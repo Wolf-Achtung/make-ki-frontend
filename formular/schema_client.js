@@ -6,6 +6,8 @@
   "use strict";
 
   var SCHEMA_URLS = [
+    "/schema",  // backend canonical schema (FastAPI)
+
     "/schema.json",
     "./schema.json",
     "/formular/schema.json",
