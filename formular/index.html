@@ -5,7 +5,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KI-Checkup-Report – Fragebogen</title>
-  <!-- API-Basis zentral, vom Formbuilder gelesen -->
   <meta name="api-base" content="https://make-ki-backend-neu-production.up.railway.app" />
   <style>
     :root {
@@ -14,8 +13,7 @@
       --fs: 18px; --lh: 1.7;
       --space-xs: 8px; --space-sm: 16px; --space-md: 24px; --space-lg: 32px; --space-xl: 48px;
       --text-primary: #1e293b; --text-secondary: #475569;
-      --bg-main: #f8fafc; --bg-card: #ffffff;
-      --border-light: #e2e8f0;
+      --bg-main: #f8fafc; --bg-card: #ffffff; --border-light: #e2e8f0;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -50,8 +48,6 @@
     footer { text-align: center; color: var(--text-secondary); font-size: 14px; margin-top: var(--space-xl); padding: var(--space-md); line-height: 1.6; }
     @media (max-width: 768px) { .container { padding: var(--space-md) var(--space-sm); } .form-section { padding: var(--space-md); } }
   </style>
-  <script defer src="./schema_client.js"></script>
-  <script defer src="./schema_autofill.js"></script>
 </head>
 <body>
   <div class="container">
@@ -73,9 +69,9 @@
         </label>
       </div>
       <div class="progress-container" aria-label="Fortschritt">
-      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-fill" id="progress-fill" style="width:0%" aria-valuenow="0"></div>
-      </div>
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill" id="progress-fill" style="width:0%" aria-valuenow="0"></div>
+        </div>
       </div>
     </header>
 
@@ -89,13 +85,10 @@
   </div>
 
   <script>
-    // Browser-Scroll-Wiederherstellung abstellen (sonst "springt" der Browser in alte Positionen)
     try { if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } } catch(_) {}
-    // Sprachumschalter
     document.getElementById('lang-selector').addEventListener('change', (e) => {
       if (e.target.value === 'en') location.href = 'index_en.html';
     });
-    // Fortschritt vom Formbuilder dynamisch übernehmen
     document.addEventListener('fb:progress', (ev) => {
       try {
         const { step, total } = ev.detail || {};
@@ -105,8 +98,9 @@
       } catch (_) {}
     });
   </script>
-  <script defer src="./formbuilder_de_SINGLE_FULL.js?v=20251004"></script>
-  <script defer src="./schema_client.js"></script>
-  <script defer src="./schema_autofill.js"></script>
+  <!-- Load order: formbuilder → schema_client → schema_autofill (once!) -->
+  <script defer src="./formbuilder_de_SINGLE_FULL.js?v=20251010"></script>
+  <script defer src="./schema_client.js?v=20251010"></script>
+  <script defer src="./schema_autofill.js?v=20251010"></script>
 </body>
 </html>

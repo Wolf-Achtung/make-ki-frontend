@@ -47,15 +47,13 @@
     footer { text-align: center; color: var(--text-secondary); font-size: 14px; margin-top: var(--space-xl); padding: var(--space-md); line-height: 1.6; }
     @media (max-width: 768px) { .container { padding: var(--space-md) var(--space-sm); } .form-section { padding: var(--space-md); } }
   </style>
-  <script defer src="./schema_client.js"></script>
-  <script defer src="./schema_autofill.js"></script>
 </head>
 <body>
   <div class="container">
     <header class="header-card" aria-label="Page header">
       <div class="header-top">
         <div class="brand">
-        <div class="logo" aria-label="AI Logo">AI</div>
+          <div class="logo" aria-label="AI Logo">AI</div>
           <div class="brand-text">
             <div class="subtitle">AI-Security.now</div>
             <h1>AI Checkup Report</h1>
@@ -70,9 +68,9 @@
         </label>
       </div>
       <div class="progress-container" aria-label="Progress">
-      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-fill" id="progress-fill" style="width:0%" aria-valuenow="0"></div>
-      </div>
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill" id="progress-fill" style="width:0%" aria-valuenow="0"></div>
+        </div>
       </div>
     </header>
 
@@ -98,8 +96,9 @@
       } catch (_) {}
     });
   </script>
-  <script defer src="./formbuilder_en_SINGLE_FULL.js?v=20251004"></script>
-  <script defer src="./schema_client.js"></script>
-  <script defer src="./schema_autofill.js"></script>
+  <!-- Load order: formbuilder → schema_client → schema_autofill (once!) -->
+  <script defer src="./formbuilder_en_SINGLE_FULL.js?v=20251010"></script>
+  <script defer src="./schema_client.js?v=20251010"></script>
+  <script defer src="./schema_autofill.js?v=20251010"></script>
 </body>
 </html>
