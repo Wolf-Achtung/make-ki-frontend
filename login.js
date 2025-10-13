@@ -4,23 +4,13 @@
 
   function backendOrigin() {
     const m = document.querySelector('meta[name="backend-origin"]');
-    const cfg = (m && m.content || "").trim();
-    if (cfg) return cfg.replace(/\/+$/,"");
-    // Fallback: window.KI_BACKEND_ORIGIN can be injected by hosting env
+    const env = (m && m.content || "").trim();
+    if (env) return env.replace(/\/+$/,"");
     if (window.KI_BACKEND_ORIGIN) return String(window.KI_BACKEND_ORIGIN).replace(/\/+$/,"");
-    // Developer default (local)
-    return "http://localhost:8000";
-  }
-
-  async function corsEcho(origin) {
-    try {
-      const r = await fetch(origin + "/health/cors-echo", { method: "GET", mode: "cors", credentials: "omit" });
-      return await r.json();
-    } catch (e) { return {}; }
+    return location.origin; // default: same origin (dev)
   }
 
   async function apiLogin(origin, email, password) {
-    // Use JSON; credentials omitted to simplify CORS (no cookies).
     const res = await fetch(origin + "/api/login", {
       method: "POST",
       mode: "cors",
@@ -30,36 +20,34 @@
     });
     if (!res.ok) {
       const txt = await res.text();
-      throw new Error("HTTP " + res.status + " – " + txt.slice(0, 300));
+      throw new Error("HTTP " + res.status + " – " + txt.slice(0, 400));
     }
     return await res.json();
   }
 
-  function show(el, msg) { if (el) { el.textContent = msg; el.style.display = "block"; } }
-  function hide(el) { if (el) el.style.display = "none"; }
+  function show(el, msg){ if(el){ el.textContent = msg; el.style.display = "block"; } }
+  function hide(el){ if(el){ el.style.display = "none"; } }
 
   window.addEventListener("DOMContentLoaded", function(){
-    const form = document.getElementById("loginForm");
     const email = document.getElementById("email");
     const password = document.getElementById("password");
-    const err = document.getElementById("err");
+    const lang = document.getElementById("lang");
     const ok = document.getElementById("ok");
+    const err = document.getElementById("err");
+    const btn = document.getElementById("loginBtn");
     const origin = backendOrigin();
 
-    form.addEventListener("submit", async function(ev){
-      ev.preventDefault();
+    btn.addEventListener("click", async function(){
       hide(err); hide(ok);
-
       try {
-        // Quick sanity check
-        const echo = await corsEcho(origin);
-        console.debug("CORS echo", echo);
-
         const data = await apiLogin(origin, email.value, password.value);
-        show(ok, "Login OK – Token erstellt.");
-        console.log("Token", data.token);
-      } catch (e) {
-        show(err, "Serverfehler / CORS: " + (e && e.message ? e.message : String(e)));
+        localStorage.setItem("ki_token", data.token);
+        localStorage.setItem("ki_email", data.email);
+        const target = lang.value === "de" ? "./formular/index.html" : "./formular/index_en.html";
+        show(ok, "Login OK – Weiterleitung...");
+        setTimeout(()=> location.href = target, 200);
+      } catch(e){
+        show(err, "Login fehlgeschlagen: " + (e && e.message ? e.message : String(e)));
         console.error(e);
       }
     });
