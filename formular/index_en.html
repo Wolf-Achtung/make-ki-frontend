@@ -1,104 +1,39 @@
-<!-- File: formular/index_en.html (EN) -->
+<!-- filename: frontend/formular/index_en.html -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Checkup Report – Questionnaire</title>
-  <meta name="api-base" content="https://make-ki-backend-neu-production.up.railway.app" />
-  <style>
-    :root {
-      --primary-blue:#1e3a5f; --accent-blue:#2563eb; --light-blue:#dbeafe;
-      --sky-blue:#e0f2fe; --pale-blue:#f0f9ff;
-      --fs:18px; --lh:1.7; --space-xs:8px; --space-sm:16px; --space-md:24px; --space-lg:32px; --space-xl:48px;
-      --text-primary:#1e293b; --text-secondary:#475569;
-      --bg-main:#f8fafc; --bg-card:#ffffff; --border-light:#e2e8f0;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden;white-space:nowrap}
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      font-size: var(--fs); line-height: var(--lh); color: var(--text-primary);
-      background: linear-gradient(135deg, var(--pale-blue) 0%, var(--bg-main) 100%); min-height: 100vh;
-    }
-    .container { max-width: 1024px; margin: 0 auto; padding: var(--space-lg) var(--space-md); }
-    .header-card {
-      background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 20px;
-      padding: var(--space-lg); box-shadow: 0 10px 40px rgba(0,0,0,.04); margin-bottom: var(--space-lg);
-    }
-    .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-md); }
-    .brand { display: flex; align-items: center; gap: var(--space-sm); }
-    .logo { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
-      display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 20px; }
-    .brand-text h1 { font-size: 28px; font-weight: 700; color: var(--primary-blue); margin-bottom: 4px; }
-    .subtitle { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
-    .lang-selector {
-      padding: 10px 16px; border: 2px solid var(--border-light); border-radius: 12px; background: var(--bg-card);
-      font-size: 16px; color: var(--text-primary); font-weight: 500; cursor: pointer; transition: all .3s ease;
-    }
-    .lang-selector:hover { border-color: var(--accent-blue); box-shadow: 0 2px 8px rgba(37,99,235,.1); }
-    .lang-selector:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
-    .progress-container { margin-top: var(--space-md); }
-    .progress-bar { height: 8px; background: var(--light-blue); border-radius: 8px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-blue), #3b82f6); width: 0%; transition: width .25s ease; }
-    .form-section { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 20px;
-      padding: var(--space-lg); margin-bottom: var(--space-md); box-shadow: 0 4px 20px rgba(0,0,0,.03); }
-    footer { text-align: center; color: var(--text-secondary); font-size: 14px; margin-top: var(--space-xl); padding: var(--space-md); line-height: 1.6; }
-    @media (max-width: 768px) { .container { padding: var(--space-md) var(--space-sm); } .form-section { padding: var(--space-md); } }
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Check – Questionnaire (EN)</title>
+  <link rel="stylesheet" href="../shared.css">
 </head>
 <body>
   <div class="container">
-    <header class="header-card" aria-label="Page header">
-      <div class="header-top">
-        <div class="brand">
-          <div class="logo" aria-label="AI Logo">AI</div>
-          <div class="brand-text">
-            <div class="subtitle">AI-Security.now</div>
-            <h1>AI Checkup Report</h1>
-          </div>
-        </div>
-        <label>
-          <span class="visually-hidden">Select language</span>
-          <select class="lang-selector" id="lang-selector" aria-label="Select language">
-            <option value="de">🇩🇪 Deutsch</option>
-            <option value="en" selected>🇬🇧 English</option>
-          </select>
-        </label>
-      </div>
-      <div class="progress-container" aria-label="Progress">
-        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-          <div class="progress-fill" id="progress-fill" style="width:0%" aria-valuenow="0"></div>
-        </div>
-      </div>
-    </header>
+    <div class="card">
+      <h1>Questionnaire (EN)</h1>
+      <p class="notice">Field names are identical to the German version to keep backend keys stable.</p>
+      <form id="form">
+        <label for="company">Company</label>
+        <input id="company" name="company" type="text" required>
 
-    <main id="formbuilder" class="form-section" aria-live="polite"></main>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
 
-    <footer>
-      © AI-Security.now | TÜV-certified AI Management: Wolf Hohl 2025<br />
-      Content for client projects only. No redistribution without written permission.
-    </footer>
+        <label for="employees">Headcount</label>
+        <input id="employees" name="employees" type="text" placeholder="e.g. 25">
+
+        <label for="goals">Goals (short)</label>
+        <input id="goals" name="goals" type="text" placeholder="Top 3 goals">
+
+        <div class="progress"><div id="bar"></div></div>
+        <div class="row">
+          <button class="btn" type="submit">Generate report</button>
+        </div>
+      </form>
+      <div id="msg" class="banner ok hidden"></div>
+      <div id="err" class="banner error hidden"></div>
+    </div>
   </div>
-
-  <script>
-    try { if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } } catch(_) {}
-    document.getElementById('lang-selector').addEventListener('change', (e) => {
-      if (e.target.value === 'de') location.href = 'index.html';
-    });
-    document.addEventListener('fb:progress', (ev) => {
-      try {
-        const { step, total } = ev.detail || {};
-        const pct = Math.max(0, Math.min(100, Math.round((step / total) * 100)));
-        const fill = document.getElementById('progress-fill');
-        if (fill) { fill.style.width = pct + '%'; fill.setAttribute('aria-valuenow', String(pct)); }
-      } catch (_) {}
-    });
-  </script>
-  <!-- Load order: formbuilder → schema_client → schema_autofill (once!) -->
-  <script defer src="./formbuilder_en_SINGLE_FULL.js?v=20251010"></script>
-  <script defer src="./schema_client.js?v=20251010"></script>
-  <script defer src="./schema_autofill.js?v=20251010"></script>
+  <script src="./formbuilder_en.js" defer></script>
 </body>
 </html>
