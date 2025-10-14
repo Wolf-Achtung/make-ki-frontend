@@ -1,0 +1,25 @@
+# filename: netlify.toml
+# Static hosting with API proxy to Railway. No build step or publish dir required.
+
+[[redirects]]
+  from = "/api/*"
+  to   = "https://make-ki-backend-neu-production.up.railway.app/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/health*"
+  to   = "https://make-ki-backend-neu-production.up.railway.app/health:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/metrics"
+  to   = "https://make-ki-backend-neu-production.up.railway.app/metrics"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
