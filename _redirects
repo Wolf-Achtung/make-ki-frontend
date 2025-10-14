@@ -1,4 +1,3 @@
 /api/*  https://make-ki-backend-neu-production.up.railway.app/api/:splat  200
-/healthz  https://make-ki-backend-neu-production.up.railway.app/healthz        200
-/health   https://make-ki-backend-neu-production.up.railway.app/health         200
-/metrics  https://make-ki-backend-neu-production.up.railway.app/metrics        200
+/healthz https://make-ki-backend-neu-production.up.railway.app/healthz 200
+/metrics https://make-ki-backend-neu-production.up.railway.app/metrics 200
