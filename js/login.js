@@ -1,4 +1,4 @@
-// login.js — robustes Login mit Failover + klare Meldungen
+// login.js — DB-basierter Login
 (async function(){
   const frm = document.getElementById('loginForm');
   const alertEl = document.getElementById('alert');
@@ -12,46 +12,36 @@
     alertEl.style.display = 'block';
   }
 
-  // Health check (optional UI-Hinweis)
+  // optionaler Healthcheck
   try{
     const r = await apiFetch('/healthz', {method:'GET', cache:'no-store', timeoutMs:1500});
     if(!r.ok) show('Health: Fehler – HTTP ' + r.status);
-  }catch(e){
-    show('Health: Fehler – nicht erreichbar');
-  }
+  }catch{ /* ignore */ }
 
   frm.addEventListener('submit', async (evt)=>{
     evt.preventDefault();
     alertEl.style.display = 'none';
     btn.disabled = true;
 
-    const payload = {
-      email: (email.value||'').trim(),
-      password: (pwd.value||'')
-    };
+    const payload = { email: (email.value||'').trim(), password: (pwd.value||'') };
+    if(!payload.email || !payload.password){
+      show('Bitte E‑Mail und Passwort eingeben.'); btn.disabled = false; return;
+    }
     try{
       const res = await apiFetch('/login', {
         method: 'POST',
         headers: {'content-type':'application/json'},
         body: JSON.stringify(payload),
         cache:'no-store',
-        timeoutMs: 7000
+        timeoutMs: 10000
       });
-
       if(!res.ok){
         let txt = 'Login fehlgeschlagen (HTTP ' + res.status + ')';
         try{ const j = await res.json(); if(j && j.detail) txt += ' – ' + j.detail; }catch{}
-        show(txt);
-        btn.disabled = false;
-        return;
+        show(txt); btn.disabled = false; return;
       }
       const data = await res.json();
-      if(!data || !data.token){
-        show('Login fehlgeschlagen – ungültige Antwort.');
-        btn.disabled = false;
-        return;
-      }
-      // Save token + navigate
+      if(!data || !data.token){ show('Login fehlgeschlagen – ungültige Antwort.'); btn.disabled = false; return; }
       localStorage.setItem('AUTH_TOKEN', data.token);
       const next = new URLSearchParams(location.search).get('next') || '/formular/index.html';
       location.href = next;
