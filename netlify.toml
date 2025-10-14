@@ -1,8 +1,5 @@
 # filename: netlify.toml
-# Proxy API and health endpoints from Netlify (frontend) to Railway (backend).
-
-[build]
-  publish = "dist"  # optional (set to your build output folder), or remove if not used
+# Static hosting with API proxy to Railway. No build step or publish dir required.
 
 [[redirects]]
   from = "/api/*"
@@ -22,15 +19,7 @@
   status = 200
   force = true
 
-# Optional: tighten headers for API responses proxied via Netlify
-# (do not set CORS here since we use same-origin calls to /api/*).
 [[headers]]
   for = "/api/*"
   [headers.values]
     Cache-Control = "no-store"
-
-# Optional SPA fallback (uncomment if your frontend is a SPA and you handle routes client-side)
-# [[redirects]]
-#   from = "/*"
-#   to   = "/index.html"
-#   status = 200
