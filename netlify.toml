@@ -1,0 +1,36 @@
+# filename: netlify.toml
+# Proxy API and health endpoints from Netlify (frontend) to Railway (backend).
+
+[build]
+  publish = "dist"  # optional (set to your build output folder), or remove if not used
+
+[[redirects]]
+  from = "/api/*"
+  to   = "https://make-ki-backend-neu-production.up.railway.app/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/health*"
+  to   = "https://make-ki-backend-neu-production.up.railway.app/health:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/metrics"
+  to   = "https://make-ki-backend-neu-production.up.railway.app/metrics"
+  status = 200
+  force = true
+
+# Optional: tighten headers for API responses proxied via Netlify
+# (do not set CORS here since we use same-origin calls to /api/*).
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
+
+# Optional SPA fallback (uncomment if your frontend is a SPA and you handle routes client-side)
+# [[redirects]]
+#   from = "/*"
+#   to   = "/index.html"
+#   status = 200
