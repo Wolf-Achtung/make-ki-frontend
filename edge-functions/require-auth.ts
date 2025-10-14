@@ -1,5 +1,3 @@
-// filename: edge-functions/require-auth.ts
-// Netlify Edge Function – protects /formular/* by validating JWT in cookie "ki_token".
 import { verify } from "https://deno.land/x/djwt@v2.9/mod.ts";
 
 export default async (request: Request, context: any) => {
