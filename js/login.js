@@ -6,7 +6,8 @@
     const m = document.querySelector('meta[name="api-base"]');
     let b = (window.API_BASE||'').trim();
     if(m && m.content){ b = m.content; }
-    if(!b){ b = location.origin; }
+    // leer => same-origin => Netlify proxy
+    if(!b){ b = ''; }
     return b.replace(/\/+$/,''); 
   }
 
@@ -67,8 +68,7 @@
 
   form.addEventListener('submit', doLogin);
 
-  // Health-Check
-  document.getElementById('checkHealth').addEventListener('click', async function(e){
+  document.getElementById('checkHealth')?.addEventListener('click', async function(e){
     e.preventDefault();
     try{
       const res = await fetch(apiBase()+'/healthz');

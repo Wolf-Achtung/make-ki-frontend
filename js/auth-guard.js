@@ -3,14 +3,6 @@
   const LOGIN_PATH = '/login.html';
   const TOKEN_KEY = 'ki_token';
 
-  function qs(sel){ return document.querySelector(sel); }
-  function apiBase(){
-    const m = document.querySelector('meta[name="api-base"]');
-    let b = (window.API_BASE||'').trim();
-    if(m && m.content){ b = m.content; }
-    if(!b){ b = location.origin; }
-    return b.replace(/\/+$/,''); 
-  }
   function getToken(){
     try{
       const t = localStorage.getItem(TOKEN_KEY);
@@ -35,16 +27,8 @@
   function isTokenValid(t){
     const p = parseJwt(t);
     if(!p || typeof p.exp !== 'number') return false;
-    const skew = 30; // seconds
+    const skew = 30;
     return (Date.now()/1000) < (p.exp - skew);
-  }
-  async function verifyOnServer(t){
-    try{
-      const res = await fetch(apiBase()+'/api/auth/verify', {
-        headers: { 'Authorization': 'Bearer '+t }
-      });
-      return res.ok;
-    }catch(e){ return false; }
   }
   async function ensureAuth(){
     const t = getToken();
@@ -54,30 +38,18 @@
       location.replace(LOGIN_PATH + '?next=' + next);
       return false;
     }
-    // background server verify (does not block UI)
-    verifyOnServer(t).then(ok => {
-      if(!ok){
-        clearToken();
-        const next = encodeURIComponent(location.pathname + location.search + location.hash);
-        location.replace(LOGIN_PATH + '?next=' + next);
-      }
-    });
-
-    // Provide authFetch globally
+    // Expose helper
     window.authFetch = function(url, opts){
-      const token = getToken();
       const headers = Object.assign({}, (opts && opts.headers) || {}, {
-        'Authorization': 'Bearer '+ token,
+        'Authorization': 'Bearer '+ t,
         'Content-Type': 'application/json'
       });
-      const finalUrl = /^https?:/i.test(url) ? url : (apiBase() + url);
+      const finalUrl = /^https?:/i.test(url) ? url : url;
       const finalOpts = Object.assign({}, opts || {}, { headers });
       return fetch(finalUrl, finalOpts);
     };
-    window.auth = { getToken, clearToken, apiBase };
+    window.auth = { clearToken };
     return true;
   }
-
-  const mustGuard = location.pathname.indexOf('/formular/') !== -1;
-  if(mustGuard){ ensureAuth(); }
+  if(location.pathname.indexOf('/formular/') !== -1){ ensureAuth(); }
 })();
