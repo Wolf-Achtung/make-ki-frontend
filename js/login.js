@@ -1,82 +1,63 @@
-(function(){
-  'use strict';
+// login.js — robustes Login mit Failover + klare Meldungen
+(async function(){
+  const frm = document.getElementById('loginForm');
+  const alertEl = document.getElementById('alert');
+  const email = document.getElementById('email');
+  const pwd = document.getElementById('password');
+  const btn = document.getElementById('btnLogin');
 
-  function qs(sel){ return document.querySelector(sel); }
-  function apiBase(){
-    const m = document.querySelector('meta[name="api-base"]');
-    let b = (window.API_BASE||'').trim();
-    if(m && m.content){ b = m.content; }
-    // leer => same-origin => Netlify proxy
-    if(!b){ b = ''; }
-    return b.replace(/\/+$/,''); 
+  function show(msg, ok=false){
+    alertEl.textContent = msg;
+    alertEl.className = 'alert' + (ok ? ' ok' : '');
+    alertEl.style.display = 'block';
   }
 
-  const form = qs('#loginForm');
-  const email = qs('#email');
-  const password = qs('#password');
-  const btn = qs('#btnLogin');
-  const alertErr = qs('#alertErr');
-  const alertOk = qs('#alertOk');
-
-  function showErr(msg){
-    alertErr.textContent = msg || 'Fehler';
-    alertErr.style.display = 'block';
-    alertOk.style.display = 'none';
-  }
-  function showOk(msg){
-    alertOk.textContent = msg || 'OK';
-    alertOk.style.display = 'block';
-    alertErr.style.display = 'none';
+  // Health check (optional UI-Hinweis)
+  try{
+    const r = await apiFetch('/healthz', {method:'GET', cache:'no-store', timeoutMs:1500});
+    if(!r.ok) show('Health: Fehler – HTTP ' + r.status);
+  }catch(e){
+    show('Health: Fehler – nicht erreichbar');
   }
 
-  async function doLogin(evt){
+  frm.addEventListener('submit', async (evt)=>{
     evt.preventDefault();
-    alertErr.style.display = 'none';
+    alertEl.style.display = 'none';
     btn.disabled = true;
+
+    const payload = {
+      email: (email.value||'').trim(),
+      password: (pwd.value||'')
+    };
     try{
-      const payload = { email: email.value.trim(), password: password.value };
-      const res = await fetch(apiBase()+'/api/login', {
+      const res = await apiFetch('/login', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(payload)
+        headers: {'content-type':'application/json'},
+        body: JSON.stringify(payload),
+        cache:'no-store',
+        timeoutMs: 7000
       });
+
       if(!res.ok){
-        let txt = 'Login fehlgeschlagen (HTTP '+res.status+')';
-        try{ const d = await res.json(); if(d && d.detail) txt = d.detail; }catch(e){}
-        showErr(txt);
+        let txt = 'Login fehlgeschlagen (HTTP ' + res.status + ')';
+        try{ const j = await res.json(); if(j && j.detail) txt += ' – ' + j.detail; }catch{}
+        show(txt);
+        btn.disabled = false;
         return;
       }
       const data = await res.json();
-      if(data && data.token){
-        try{
-          localStorage.setItem('ki_token', data.token);
-          document.cookie = 'ki_token='+encodeURIComponent(data.token)+'; Path=/; Max-Age='+(14*86400)+'; SameSite=Lax';
-        }catch(e){}
-        showOk('Erfolg – weiterleiten …');
-        const params = new URLSearchParams(location.search);
-        const next = params.get('next') || '/formular/index.html';
-        location.replace(next);
-      }else{
-        showErr('Unerwartete Antwort vom Server');
+      if(!data || !data.token){
+        show('Login fehlgeschlagen – ungültige Antwort.');
+        btn.disabled = false;
+        return;
       }
+      // Save token + navigate
+      localStorage.setItem('AUTH_TOKEN', data.token);
+      const next = new URLSearchParams(location.search).get('next') || '/formular/index.html';
+      location.href = next;
     }catch(e){
-      showErr('Netzwerkfehler: '+ e);
-    }finally{
+      show('Netzwerkfehler – bitte erneut versuchen.');
       btn.disabled = false;
-    }
-  }
-
-  form.addEventListener('submit', doLogin);
-
-  document.getElementById('checkHealth')?.addEventListener('click', async function(e){
-    e.preventDefault();
-    try{
-      const res = await fetch(apiBase()+'/healthz');
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data = await res.json();
-      showOk('Health: OK – Provider: '+ (data?.env?.llm_provider || 'n/a'));
-    }catch(err){
-      showErr('Health: Fehler – '+ err.message);
     }
   });
 })();
