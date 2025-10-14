@@ -1,14 +1,19 @@
 # filename: netlify.toml
-# Statisches Frontend mit API-Proxy zu Railway (kein publish/build erzwungen).
+# Static hosting with API proxy to Railway + Edge auth for /formular/*
 
-# --- API-Proxy: alle /api/* Calls zum Railway-Backend ---
+[edge_functions]
+  directory = "edge-functions"
+
+[[edge_functions]]
+  path = "/formular/*"
+  function = "require-auth"
+
 [[redirects]]
   from = "/api/*"
   to   = "https://make-ki-backend-neu-production.up.railway.app/api/:splat"
   status = 200
   force = true
 
-# --- Health/Debug explizit (inkl. /healthz) ---
 [[redirects]]
   from = "/healthz"
   to   = "https://make-ki-backend-neu-production.up.railway.app/healthz"
@@ -27,9 +32,7 @@
   status = 200
   force = true
 
-# Optional: API-Header härten (Caching aus, CORS regeln wir nicht hier, weil Same-Origin via Proxy)
 [[headers]]
   for = "/api/*"
   [headers.values]
     Cache-Control = "no-store"
-

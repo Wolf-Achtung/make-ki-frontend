@@ -3,11 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login · KI-Sicherheit</title>
-
-  <!-- API-Basis fest auf Railway (sofort wirksam, selbst wenn Netlify-Redirects noch nicht aktiv sind) -->
-  <meta name="api-base" content="https://make-ki-backend-neu-production.up.railway.app">
-
+  <title>Login · KI‑Sicherheit</title>
+  <!-- Leer lassen: relative /api/... → Netlify-Proxy greift -->
+  <meta name="api-base" content="">
   <style>
     :root{--c1:#0a53b0;--c2:#ff7a00}
     *{box-sizing:border-box}
@@ -37,16 +35,16 @@
     <div id="alertOk" class="ok" role="status"></div>
     <form id="loginForm" novalidate>
       <div class="row">
-        <label for="email">E-Mail</label>
+        <label for="email">E‑Mail</label>
         <input id="email" name="email" type="email" autocomplete="email" required placeholder="name@firma.de">
       </div>
       <div class="row">
-        <label for="password">Passwort <span class="hint">(optional – nur falls DB-Login aktiviert ist)</span></label>
+        <label for="password">Passwort <span class="hint">(optional – nur falls DB‑Login aktiviert ist)</span></label>
         <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••">
       </div>
       <button id="btnLogin" type="submit">Anmelden</button>
     </form>
-    <p class="foot">Probleme? <a href="#" id="checkHealth">System-Status</a></p>
+    <p class="foot">Probleme? <a href="#" id="checkHealth">System‑Status</a></p>
   </main>
   <script src="/js/auth-guard.js"></script>
   <script src="/js/login.js"></script>
