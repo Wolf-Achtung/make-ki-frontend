@@ -1,6 +1,4 @@
-# filename: netlify.toml
 # Use default edge functions directory: "netlify/edge-functions"
-# Avoid redefining keys by declaring only the routes with [[edge_functions]].
 
 [[edge_functions]]
   path = "/formular/*"
