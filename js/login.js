@@ -28,13 +28,6 @@
     alertErr.style.display = 'none';
   }
 
-  function setToken(token){
-    try{
-      localStorage.setItem('ki_token', token);
-      document.cookie = 'ki_token='+encodeURIComponent(token)+'; Path=/; Max-Age='+(14*86400)+'; SameSite=Lax';
-    }catch(e){}
-  }
-
   async function doLogin(evt){
     evt.preventDefault();
     alertErr.style.display = 'none';
@@ -47,14 +40,17 @@
         body: JSON.stringify(payload)
       });
       if(!res.ok){
-        let txt = 'Login fehlgeschlagen';
+        let txt = 'Login fehlgeschlagen (HTTP '+res.status+')';
         try{ const d = await res.json(); if(d && d.detail) txt = d.detail; }catch(e){}
         showErr(txt);
         return;
       }
       const data = await res.json();
       if(data && data.token){
-        setToken(data.token);
+        try{
+          localStorage.setItem('ki_token', data.token);
+          document.cookie = 'ki_token='+encodeURIComponent(data.token)+'; Path=/; Max-Age='+(14*86400)+'; SameSite=Lax';
+        }catch(e){}
         showOk('Erfolg – weiterleiten …');
         const params = new URLSearchParams(location.search);
         const next = params.get('next') || '/formular/index.html';
@@ -71,7 +67,7 @@
 
   form.addEventListener('submit', doLogin);
 
-  // Health check link
+  // Health-Check
   document.getElementById('checkHealth').addEventListener('click', async function(e){
     e.preventDefault();
     try{
