@@ -242,8 +242,8 @@
                     localStorage.setItem('jwt', data.token);
                     localStorage.setItem('user_email', email);
                     
-                    // Zur Hauptseite weiterleiten
-                    window.location.href = '/index.html';
+                    // Zum Formular-Ordner weiterleiten
+                    window.location.href = '/formular/';
                 } else {
                     hideLoading();
                     if (response.status === 401) {
@@ -261,11 +261,32 @@
             }
         });
         
-        // Prüfen ob bereits eingeloggt
+        // Optional: Intelligentere Token-Prüfung
         const token = localStorage.getItem('jwt');
         if (token) {
-            // Optional: Token validieren oder direkt weiterleiten
-            window.location.href = '/index.html';
+            // Token vorhanden - prüfe ob es noch gültig ist
+            try {
+                // JWT decode und Expiry prüfen
+                const parts = token.split('.');
+                if (parts.length === 3) {
+                    const payload = JSON.parse(atob(parts[1]));
+                    const exp = payload.exp;
+                    const now = Math.floor(Date.now() / 1000);
+                    
+                    if (exp && exp > now) {
+                        // Token ist noch gültig - weiterleiten
+                        window.location.href = '/formular/';
+                    } else {
+                        // Token abgelaufen - entfernen
+                        localStorage.removeItem('jwt');
+                        localStorage.removeItem('user_email');
+                    }
+                }
+            } catch (e) {
+                // Bei Fehler Token entfernen
+                localStorage.removeItem('jwt');
+                localStorage.removeItem('user_email');
+            }
         }
     })();
     </script>
