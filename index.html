@@ -94,11 +94,38 @@
       display: block;
       margin-bottom: 0.5rem;
     }
+    .user-info {
+      background: #e0f4ff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logout-btn {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
   </style>
 </head>
 <body>
 
 <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="logo" />
+
+<!-- User Info Bar (wird nur angezeigt wenn eingeloggt) -->
+<div id="userInfo" class="user-info" style="display: none;">
+  <span>Angemeldet als: <strong id="userEmail"></strong></span>
+  <button class="logout-btn" onclick="logout()">Abmelden</button>
+</div>
 
 <h1>Zertifiziert. Dokumentiert. KI-konform.</h1>
 <p>Der <strong>KI-Check-Report</strong> liefert Ihnen in wenigen Minuten eine strukturierte Einschätzung Ihres KI-Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.</p>
@@ -119,7 +146,7 @@
 
 <div class="preisbox">
   <p><strong>KI-Status-Report</strong><br>inkl. Maßnahmen-Plan & Förder-Übersicht</p>
-  <a href="/login.html" class="button">Jetzt Voll-Check starten</a>
+  <a href="#" id="startButton" class="button">Jetzt Voll-Check starten</a>
 </div>
 
 <div class="pro-tipp">
@@ -128,16 +155,17 @@
 
 <h2>Ihre konkreten Vorteile:</h2>
 <div class="testimonial-container">
-  <div class="testimonial show"><strong>„Endlich ein Audit, das konkrete Maßnahmen liefert.“</strong></div>
-  <div class="testimonial"><strong>„Für den Handel Gold wert. Gerade gegenüber Investoren.“</strong></div>
-  <div class="testimonial"><strong>„Hilft, den EU AI Act stressfrei anzugehen.“</strong></div>
-  <div class="testimonial"><strong>„Tipp: das Zertifikat direkt in Angeboten nutzen.“</strong></div>
-  <div class="testimonial"><strong>„Super schneller Voll-Check mit klarem Ergebnis.“</strong></div>
-  <div class="testimonial"><strong>„Erleichtert die jährliche Risikoanalyse enorm.“</strong></div>
-  <div class="testimonial"><strong>„Zeigt, wo man DSGVO-technisch wirklich steht.“</strong></div>
+  <div class="testimonial show"><strong>„Endlich ein Audit, das konkrete Maßnahmen liefert."</strong></div>
+  <div class="testimonial"><strong>„Für den Handel Gold wert. Gerade gegenüber Investoren."</strong></div>
+  <div class="testimonial"><strong>„Hilft, den EU AI Act stressfrei anzugehen."</strong></div>
+  <div class="testimonial"><strong>„Tipp: das Zertifikat direkt in Angeboten nutzen."</strong></div>
+  <div class="testimonial"><strong>„Super schneller Voll-Check mit klarem Ergebnis."</strong></div>
+  <div class="testimonial"><strong>„Erleichtert die jährliche Risikoanalyse enorm."</strong></div>
+  <div class="testimonial"><strong>„Zeigt, wo man DSGVO-technisch wirklich steht."</strong></div>
 </div>
 
 <script>
+// Testimonial Rotation
 const testimonials = document.querySelectorAll('.testimonial');
 let index = Math.floor(Math.random() * testimonials.length);
 
@@ -150,6 +178,42 @@ function showTestimonial() {
 
 showTestimonial();
 setInterval(showTestimonial, 4000);
+
+// Authentication Check
+function checkAuth() {
+  const token = localStorage.getItem('jwt');
+  const email = localStorage.getItem('user_email');
+  const startButton = document.getElementById('startButton');
+  const userInfo = document.getElementById('userInfo');
+  const userEmail = document.getElementById('userEmail');
+  
+  if (token && email) {
+    // User ist eingeloggt
+    userInfo.style.display = 'flex';
+    userEmail.textContent = email;
+    startButton.href = '/formular/';  // Zum Fragebogen-Ordner
+  } else {
+    // User ist nicht eingeloggt
+    userInfo.style.display = 'none';
+    startButton.href = '/login.html';  // Zur Login-Seite
+  }
+}
+
+function logout() {
+  localStorage.removeItem('jwt');
+  localStorage.removeItem('user_email');
+  // Weitere localStorage items entfernen falls vorhanden
+  const keys = Object.keys(localStorage);
+  keys.forEach(key => {
+    if (key.startsWith('autosave_form_')) {
+      localStorage.removeItem(key);
+    }
+  });
+  window.location.reload();
+}
+
+// Check auth status on page load
+document.addEventListener('DOMContentLoaded', checkAuth);
 </script>
 
 </body>
