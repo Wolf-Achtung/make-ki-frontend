@@ -30,19 +30,6 @@
       padding: 0;
     }
     
-    html {
-      scroll-behavior: smooth;
-    }
-    
-    .visually-hidden {
-      position: absolute !important;
-      clip: rect(1px,1px,1px,1px);
-      height: 1px;
-      width: 1px;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       font-size: var(--fs);
@@ -123,12 +110,6 @@
       box-shadow: 0 2px 8px rgba(37,99,235,.1);
     }
     
-    .lang-selector:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-    }
-    
     .progress-container {
       margin-top: var(--space-md);
     }
@@ -156,46 +137,6 @@
       box-shadow: 0 4px 20px rgba(0,0,0,.03);
     }
     
-    .auth-error {
-      background: #fef2f2;
-      border: 2px solid #dc2626;
-      border-radius: 12px;
-      padding: 24px;
-      text-align: center;
-      color: #dc2626;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .auth-error h2 {
-      margin-bottom: 12px;
-    }
-    
-    .auth-error p {
-      margin-bottom: 8px;
-    }
-    
-    .auth-error a {
-      color: var(--accent-blue);
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-block;
-      margin-top: 12px;
-      padding: 10px 20px;
-      background: white;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-    }
-    
-    .auth-error a:hover {
-      background: var(--pale-blue);
-      transform: translateY(-2px);
-    }
-    
     .user-bar {
       background: #e0f4ff;
       padding: 10px 20px;
@@ -205,25 +146,12 @@
       justify-content: space-between;
       align-items: center;
       font-size: 14px;
-      animation: slideDown 0.3s ease;
-    }
-    
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
     
     .user-bar a {
       color: var(--accent-blue);
       text-decoration: none;
       font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: background 0.2s ease;
-    }
-    
-    .user-bar a:hover {
-      background: rgba(37, 99, 235, 0.1);
     }
     
     .loading-spinner {
@@ -249,238 +177,303 @@
       to { transform: rotate(360deg); }
     }
     
+    .debug-info {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .debug-info h3 {
+      color: #92400e;
+      margin-bottom: 10px;
+    }
+    
+    .debug-info pre {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    
+    .error-message {
+      background: #fef2f2;
+      border: 2px solid #dc2626;
+      border-radius: 12px;
+      padding: 20px;
+      color: #dc2626;
+      margin: 20px 0;
+    }
+    
+    .success-message {
+      background: #d4edda;
+      border: 2px solid #28a745;
+      border-radius: 12px;
+      padding: 20px;
+      color: #155724;
+      margin: 20px 0;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    
+    .btn:hover {
+      background: var(--primary-blue);
+    }
+    
     footer {
       text-align: center;
       color: var(--text-secondary);
       font-size: 14px;
       margin-top: var(--space-xl);
       padding: var(--space-md);
-      line-height: 1.6;
-    }
-    
-    @media (max-width: 768px) {
-      .container {
-        padding: var(--space-md) var(--space-sm);
-      }
-      
-      .form-section {
-        padding: var(--space-md);
-      }
-      
-      .header-top {
-        flex-direction: column;
-        gap: var(--space-md);
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <header class="header-card" aria-label="Seiteneinleitung">
-      <div class="user-bar" id="userBar" style="display:none;">
-        <span>Angemeldet als: <strong id="userEmail"></strong></span>
+    <header class="header-card">
+      <div class="user-bar" id="userBar">
+        <span>Angemeldet als: <strong id="userEmail">...</strong></span>
         <a href="../index.html" onclick="logout(); return false;">Abmelden</a>
       </div>
       <div class="header-top">
         <div class="brand">
-          <div class="logo" aria-label="KI Logo">KI</div>
+          <div class="logo">KI</div>
           <div class="brand-text">
             <div class="subtitle">KI-Sicherheit.jetzt</div>
             <h1>KI-Checkup-Report</h1>
           </div>
         </div>
         <label>
-          <span class="visually-hidden">Sprache wählen</span>
-          <select class="lang-selector" id="lang-selector" aria-label="Sprache wählen">
+          <select class="lang-selector" id="lang-selector">
             <option value="de" selected>🇩🇪 Deutsch</option>
             <option value="en">🇬🇧 English</option>
           </select>
         </label>
       </div>
-      <div class="progress-container" aria-label="Fortschritt">
-        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-          <div class="progress-fill" id="progress-fill" style="width:0%" aria-valuenow="0"></div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
         </div>
       </div>
     </header>
 
-    <main id="formbuilder" class="form-section" aria-live="polite">
+    <main id="formbuilder" class="form-section">
       <div class="loading-spinner">
         <div class="spinner"></div>
         <p>Formular wird geladen...</p>
       </div>
     </main>
 
+    <div class="debug-info">
+      <h3>🔍 Debug Information</h3>
+      <pre id="debug-output">Initialisiere...</pre>
+      <div style="margin-top: 10px;">
+        <button class="btn" onclick="tryLoadScript('formbuilder_de_SINGLE_FULL.js')">Test: formbuilder_de_SINGLE_FULL.js</button>
+        <button class="btn" onclick="tryLoadScript('./formbuilder_de_SINGLE_FULL.js')">Test: ./formbuilder_de_SINGLE_FULL.js</button>
+        <button class="btn" onclick="tryLoadScript('../formbuilder_de_SINGLE_FULL.js')">Test: ../formbuilder_de_SINGLE_FULL.js</button>
+        <button class="btn" onclick="checkFileExists()">Check Files</button>
+      </div>
+    </div>
+
     <footer>
-      © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br />
-      Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br />
-      Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.
+      © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025
     </footer>
   </div>
 
   <script>
-    (function() {
-      'use strict';
-      
-      // Configuration
-      const RETRY_DELAY = 2000;
-      const MAX_RETRIES = 3;
-      
-      // Validate JWT Token
-      function validateToken(token) {
-        try {
-          if (!token) return false;
-          const parts = token.split('.');
-          if (parts.length !== 3) return false;
-          
-          const payload = JSON.parse(atob(parts[1]));
-          const exp = payload.exp;
-          const now = Math.floor(Date.now() / 1000);
-          
-          return exp && exp > now;
-        } catch (e) {
-          console.error('Token validation error:', e);
-          return false;
-        }
+    // Debug output function
+    function debugLog(message, data = null) {
+      const output = document.getElementById('debug-output');
+      const timestamp = new Date().toLocaleTimeString();
+      const currentText = output.textContent;
+      let newText = `[${timestamp}] ${message}`;
+      if (data) {
+        newText += '\n' + JSON.stringify(data, null, 2);
       }
+      output.textContent = currentText + '\n' + newText;
+      console.log(message, data);
+    }
+
+    // Logout function
+    window.logout = function() {
+      localStorage.removeItem('jwt');
+      localStorage.removeItem('user_email');
+      localStorage.removeItem('mock_login');
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('autosave_form_')) {
+          localStorage.removeItem(key);
+        }
+      });
+      window.location.href = '../index.html';
+    };
+
+    // Try to load a script
+    window.tryLoadScript = function(path) {
+      debugLog(`Attempting to load: ${path}`);
       
-      // Logout function
-      window.logout = function() {
-        localStorage.removeItem('jwt');
-        localStorage.removeItem('user_email');
-        
-        // Clear all autosave data
-        const keys = Object.keys(localStorage);
-        keys.forEach(key => {
-          if (key.startsWith('autosave_form_')) {
-            localStorage.removeItem(key);
-          }
-        });
-        
-        // Redirect to main page
-        window.location.href = '../index.html';
+      const script = document.createElement('script');
+      script.src = path;
+      
+      script.onload = function() {
+        debugLog(`✅ SUCCESS: ${path} loaded!`);
+        document.getElementById('formbuilder').innerHTML = `
+          <div class="success-message">
+            <h3>Script geladen!</h3>
+            <p>Der Pfad <strong>${path}</strong> funktioniert.</p>
+            <p>Das Formular sollte jetzt erscheinen...</p>
+          </div>
+        `;
       };
       
-      // Load form script
-      function loadFormScript(retryCount = 0) {
+      script.onerror = function() {
+        debugLog(`❌ FAILED: ${path} not found`);
+      };
+      
+      document.body.appendChild(script);
+    };
+
+    // Check if files exist
+    window.checkFileExists = async function() {
+      const paths = [
+        'formbuilder_de_SINGLE_FULL.js',
+        './formbuilder_de_SINGLE_FULL.js',
+        '../formbuilder_de_SINGLE_FULL.js',
+        '/formular/formbuilder_de_SINGLE_FULL.js',
+        '../formular/formbuilder_de_SINGLE_FULL.js'
+      ];
+      
+      debugLog('Checking file existence...');
+      
+      for (const path of paths) {
         try {
-          const script = document.createElement('script');
-          script.src = './formbuilder_de_SINGLE_FULL.js?v=' + Date.now();
-          script.defer = true;
-          
-          script.onload = function() {
-            console.log('Form script loaded successfully');
-          };
-          
-          script.onerror = function() {
-            console.error('Failed to load form script');
-            if (retryCount < MAX_RETRIES) {
-              setTimeout(() => loadFormScript(retryCount + 1), RETRY_DELAY);
-            } else {
-              document.getElementById('formbuilder').innerHTML = `
-                <div class="auth-error">
-                  <h2>Ladefehler</h2>
-                  <p>Das Formular konnte nicht geladen werden.</p>
-                  <a href="../index.html">Zurück zur Startseite</a>
-                </div>
-              `;
-            }
-          };
-          
-          document.body.appendChild(script);
-        } catch (e) {
-          console.error('Script loading error:', e);
-        }
-      }
-      
-      // Authentication check
-      function checkAuth() {
-        const token = localStorage.getItem('jwt');
-        const email = localStorage.getItem('user_email');
-        const formBuilder = document.getElementById('formbuilder');
-        const userBar = document.getElementById('userBar');
-        const userEmail = document.getElementById('userEmail');
-        
-        // Debug logging
-        console.log('Checking auth - Token exists:', !!token);
-        console.log('Token valid:', validateToken(token));
-        
-        if (!token || !validateToken(token)) {
-          // Not logged in or invalid token - show error message
-          formBuilder.innerHTML = `
-            <div class="auth-error">
-              <h2>Nicht angemeldet</h2>
-              <p>Sie müssen sich anmelden, um den Fragebogen auszufüllen.</p>
-              <a href="../login.html">Zur Anmeldung</a>
-            </div>
-          `;
-          
-          // Clean up invalid data
-          if (token && !validateToken(token)) {
-            console.log('Token expired, cleaning up');
-            localStorage.removeItem('jwt');
-            localStorage.removeItem('user_email');
-          }
-          
-          return false;
-        }
-        
-        // User is logged in
-        if (userBar && email) {
-          userBar.style.display = 'flex';
-          userEmail.textContent = email;
-        }
-        
-        // Load form script
-        loadFormScript();
-        return true;
-      }
-      
-      // Scroll restoration
-      try { 
-        if ('scrollRestoration' in history) { 
-          history.scrollRestoration = 'manual'; 
-        } 
-      } catch(e) {
-        console.error('Scroll restoration error:', e);
-      }
-      
-      // Language selector
-      document.getElementById('lang-selector').addEventListener('change', function(e) {
-        if (e.target.value === 'en') {
-          window.location.href = 'index_en.html';
-        }
-      });
-      
-      // Progress event listener
-      document.addEventListener('fb:progress', function(ev) {
-        try {
-          const { step, total } = ev.detail || {};
-          const pct = Math.max(0, Math.min(100, Math.round((step / total) * 100)));
-          const fill = document.getElementById('progress-fill');
-          
-          if (fill) { 
-            fill.style.width = pct + '%'; 
-            fill.setAttribute('aria-valuenow', String(pct)); 
+          const response = await fetch(path, { method: 'HEAD' });
+          if (response.ok) {
+            debugLog(`✅ Found: ${path} (Status: ${response.status})`);
+          } else {
+            debugLog(`❌ Not found: ${path} (Status: ${response.status})`);
           }
         } catch (e) {
-          console.error('Progress update error:', e);
+          debugLog(`❌ Error checking ${path}: ${e.message}`);
         }
+      }
+    };
+
+    // Check authentication
+    function checkAuth() {
+      const token = localStorage.getItem('jwt');
+      const email = localStorage.getItem('user_email');
+      const mockLogin = localStorage.getItem('mock_login');
+      
+      debugLog('Authentication Status:', {
+        hasToken: !!token,
+        email: email || 'none',
+        isMockLogin: mockLogin === 'true',
+        tokenLength: token ? token.length : 0
       });
       
-      // Initialize on page load
-      document.addEventListener('DOMContentLoaded', checkAuth);
+      if (!token) {
+        document.getElementById('formbuilder').innerHTML = `
+          <div class="error-message">
+            <h2>Nicht angemeldet</h2>
+            <p>Kein Token gefunden.</p>
+            <a href="../login.html">Zur Anmeldung</a>
+          </div>
+        `;
+        return false;
+      }
       
-      // Check auth on visibility change (tab switch back)
-      document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-          const token = localStorage.getItem('jwt');
-          if (!validateToken(token)) {
-            window.location.href = '../login.html';
+      // Update user display
+      if (email) {
+        document.getElementById('userEmail').textContent = email;
+      }
+      
+      // Try to validate token
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(atob(parts[1]));
+          debugLog('Token payload:', payload);
+          
+          const exp = payload.exp;
+          const now = Math.floor(Date.now() / 1000);
+          const isValid = !exp || exp > now;
+          
+          debugLog('Token validation:', {
+            expires: exp ? new Date(exp * 1000).toLocaleString() : 'never',
+            isValid: isValid
+          });
+          
+          if (!isValid) {
+            debugLog('Token expired!');
           }
         }
+      } catch (e) {
+        debugLog('Token parsing error:', e.message);
+      }
+      
+      return true;
+    }
+
+    // Check current location
+    function checkLocation() {
+      debugLog('Current location:', {
+        href: window.location.href,
+        pathname: window.location.pathname,
+        host: window.location.host
       });
-    })();
+      
+      debugLog('Expected script location:', {
+        relative: './formbuilder_de_SINGLE_FULL.js',
+        absolute: window.location.origin + '/formular/formbuilder_de_SINGLE_FULL.js'
+      });
+    }
+
+    // Language selector
+    document.getElementById('lang-selector').addEventListener('change', function(e) {
+      if (e.target.value === 'en') {
+        window.location.href = 'index_en.html';
+      }
+    });
+
+    // Progress event listener
+    document.addEventListener('fb:progress', function(ev) {
+      debugLog('Progress event received:', ev.detail);
+      try {
+        const { step, total } = ev.detail || {};
+        const pct = Math.max(0, Math.min(100, Math.round((step / total) * 100)));
+        const fill = document.getElementById('progress-fill');
+        if (fill) { 
+          fill.style.width = pct + '%'; 
+        }
+      } catch (e) {
+        debugLog('Progress update error:', e.message);
+      }
+    });
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      debugLog('Page loaded, starting checks...');
+      checkLocation();
+      
+      if (checkAuth()) {
+        debugLog('Auth OK, attempting to load form script...');
+        // Automatisch versuchen, das Script zu laden
+        setTimeout(() => tryLoadScript('./formbuilder_de_SINGLE_FULL.js'), 1000);
+      }
+    });
   </script>
 </body>
 </html>
