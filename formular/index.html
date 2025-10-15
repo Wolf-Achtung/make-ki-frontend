@@ -401,6 +401,10 @@
         const userBar = document.getElementById('userBar');
         const userEmail = document.getElementById('userEmail');
         
+        // Debug logging
+        console.log('Checking auth - Token exists:', !!token);
+        console.log('Token valid:', validateToken(token));
+        
         if (!token || !validateToken(token)) {
           // Not logged in or invalid token - show error message
           formBuilder.innerHTML = `
@@ -412,7 +416,8 @@
           `;
           
           // Clean up invalid data
-          if (!validateToken(token)) {
+          if (token && !validateToken(token)) {
+            console.log('Token expired, cleaning up');
             localStorage.removeItem('jwt');
             localStorage.removeItem('user_email');
           }
