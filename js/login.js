@@ -1,4 +1,4 @@
-// login.js — DB-basierter Login
+// login.js — DB-basierter Login über Proxy
 (async function(){
   const frm = document.getElementById('loginForm');
   const alertEl = document.getElementById('alert');
@@ -11,12 +11,6 @@
     alertEl.className = 'alert' + (ok ? ' ok' : '');
     alertEl.style.display = 'block';
   }
-
-  // optionaler Healthcheck
-  try{
-    const r = await apiFetch('/healthz', {method:'GET', cache:'no-store', timeoutMs:1500});
-    if(!r.ok) show('Health: Fehler – HTTP ' + r.status);
-  }catch{ /* ignore */ }
 
   frm.addEventListener('submit', async (evt)=>{
     evt.preventDefault();
@@ -32,7 +26,6 @@
         method: 'POST',
         headers: {'content-type':'application/json'},
         body: JSON.stringify(payload),
-        cache:'no-store',
         timeoutMs: 10000
       });
       if(!res.ok){
@@ -46,8 +39,7 @@
       const next = new URLSearchParams(location.search).get('next') || '/formular/index.html';
       location.href = next;
     }catch(e){
-      show('Netzwerkfehler – bitte erneut versuchen.');
-      btn.disabled = false;
+      show('Netzwerkfehler – bitte erneut versuchen.'); btn.disabled = false;
     }
   });
 })();
