@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard | KI-Check</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <style>
+    table { border-collapse: collapse; width: 100%; margin-top:20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #e0f4ff; }
+    .filter { margin: 1em 0; }
+    .filter input { padding: 6px; margin-right: 6px; }
+    .filter button { padding: 6px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+
+  <div class="filter">
+    <label>Start-Datum: <input type="date" id="start"></label>
+    <label>End-Datum: <input type="date" id="end"></label>
+    <button onclick="loadStats()">Filter anwenden</button>
+    <button onclick="exportCSV()">CSV exportieren (Nutzung)</button>
+  </div>
+
+  <table id="stats-table">
+    <thead>
+      <tr><th>Email</th><th>Total</th><th>Letzte Nutzung</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2 style="margin-top:40px;">Feedback Logs</h2>
+  <button onclick="exportFeedbackCSV()">CSV exportieren (Feedback)</button>
+  <table id="feedback-table">
+    <thead>
+      <tr><th>Email</th><th>Feedback</th><th>Datum</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const token = localStorage.getItem("jwt");
+    if (!token) window.location.href = "/login.html";
+
+    async function loadStats() {
+      const start = document.getElementById("start").value;
+      const end = document.getElementById("end").value;
+      let url = "https://make-ki-backend-neu-production.up.railway.app/api/stats";
+      const params = [];
+      if (start) params.push(`start=${start}`);
+      if (end) params.push(`end=${end}`);
+      if (params.length) url += "?" + params.join("&");
+
+      const res = await fetch(url, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok) return alert("Nicht berechtigt oder Serverfehler.");
+      const data = await res.json();
+      const tbody = document.querySelector("#stats-table tbody");
+      tbody.innerHTML = data.map(row => `
+        <tr>
+          <td>${row.email}</td>
+          <td>${row.total}</td>
+          <td>${row.last_use || ""}</td>
+        </tr>
+      `).join("");
+    }
+
+    async function loadFeedback() {
+      const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/feedback-logs", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok) return console.error("Fehler beim Laden der Feedback-Logs");
+      const data = await res.json();
+      const tbody = document.querySelector("#feedback-table tbody");
+      tbody.innerHTML = data.map(row => `
+        <tr>
+          <td>${row.email}</td>
+          <td><pre style="white-space:pre-wrap;font-size:0.9em">${JSON.stringify(row.feedback_data, null, 2)}</pre></td>
+          <td>${row.created_at}</td>
+        </tr>
+      `).join("");
+    }
+
+    function exportCSV() {
+      const start = document.getElementById("start").value;
+      const end = document.getElementById("end").value;
+      let url = "https://make-ki-backend-neu-production.up.railway.app/api/export-logs";
+      const params = [];
+      if (start) params.push(`start=${start}`);
+      if (end) params.push(`end=${end}`);
+      if (params.length) url += "?" + params.join("&");
+      window.open(url + `&token=${token}`, "_blank");
+    }
+
+    function exportFeedbackCSV() {
+      window.open(`https://make-ki-backend-neu-production.up.railway.app/api/export-feedback?token=${token}`, "_blank");
+    }
+
+  </script>
+<script>
+(function(){
+  let token = localStorage.getItem("jwt");
+
+  if (!token) {
+    // Kein Token gespeichert? Fallback-Feld einblenden
+    document.body.innerHTML = `
+      <div style="max-width:400px;margin:100px auto;font-family:sans-serif;">
+        <h2>Admin-Token eingeben</h2>
+        <input type="text" id="tokenInput" placeholder="JWT Token" style="width:100%;padding:8px;">
+        <button style="margin-top:12px;padding:8px 14px;" onclick="saveToken()">Speichern & Weiter</button>
+      </div>
+    `;
+  } else {
+    loadAdminData(token);
+  }
+
+  window.saveToken = function(){
+    const t = document.getElementById("tokenInput").value.trim();
+    if (!t) return alert("Bitte Token eingeben");
+    localStorage.setItem("jwt", t);
+    location.reload();
+  }
+
+  async function loadAdminData(token) {
+    // Dein bestehender Load-Mechanismus hier, Beispiel:
+    try {
+      const res = await fetch("/api/admin-check", { headers: { "Authorization": `Bearer ${token}` }});
+      if (!res.ok) throw new Error("Token ungültig oder kein Admin");
+      console.log("Admin Zugriff erlaubt");
+      // Hier kannst du deine anderen Admin-Loads starten:
+      loadStats();
+      loadFeedback();
+    } catch(e){
+      alert("Zugriff verweigert: " + e.message);
+      localStorage.removeItem("jwt");
+      location.reload();
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
