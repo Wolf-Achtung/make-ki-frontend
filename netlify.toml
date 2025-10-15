@@ -1,7 +1,7 @@
 [build]
   publish = "."
 
-# Keine Edge Functions für Login/Verify – alles via Proxy zu Railway
+# Proxy zu Railway (kein Direktzugriff vom Browser)
 [[redirects]]
   from = "/api/*"
   to   = "https://make-ki-backend-neu-production.up.railway.app/api/:splat"
