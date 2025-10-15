@@ -77,6 +77,7 @@
             border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
+            font-family: inherit;
         }
         
         input:hover {
@@ -87,6 +88,11 @@
             outline: none;
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
+        
+        input.invalid {
+            border-color: #dc2626;
+            background: #fef2f2;
         }
         
         .btn {
@@ -103,7 +109,7 @@
             margin-top: 10px;
         }
         
-        .btn:hover {
+        .btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(37,99,235,.3);
         }
@@ -118,8 +124,17 @@
             color: #dc2626;
             font-size: 14px;
             margin-top: 10px;
+            padding: 10px;
+            background: #fef2f2;
+            border-radius: 8px;
             text-align: center;
             display: none;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .error-message.show {
@@ -136,6 +151,47 @@
         .loading.show {
             display: block;
         }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -144,7 +200,7 @@
         <h1>KI-Checkup Login</h1>
         <p class="subtitle">Melden Sie sich an, um Ihre KI-Analyse zu starten</p>
         
-        <form id="loginForm">
+        <form id="loginForm" novalidate>
             <div class="form-group">
                 <label for="email">E-Mail-Adresse</label>
                 <input 
@@ -154,6 +210,7 @@
                     required 
                     placeholder="ihre@email.de"
                     autocomplete="email"
+                    aria-describedby="email-error"
                 >
             </div>
             
@@ -166,6 +223,7 @@
                     required 
                     placeholder="••••••••"
                     autocomplete="current-password"
+                    aria-describedby="password-error"
                 >
             </div>
             
@@ -173,24 +231,43 @@
                 Anmelden
             </button>
             
-            <div class="error-message" id="errorMsg"></div>
-            <div class="loading" id="loadingMsg">Wird verarbeitet...</div>
+            <div class="error-message" id="errorMsg" role="alert"></div>
+            <div class="loading" id="loadingMsg">
+                <span class="spinner"></span>Wird verarbeitet...
+            </div>
         </form>
+        
+        <div class="back-link">
+            <a href="./index.html">← Zurück zur Startseite</a>
+        </div>
     </div>
 
     <script>
     (function() {
         'use strict';
         
-        // Backend URL - WICHTIG: Richtige URL verwenden
+        // Configuration
         const API_BASE = 'https://make-ki-backend-neu-production.up.railway.app';
         
+        // DOM Elements
         const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
         const submitBtn = document.getElementById('submitBtn');
         const errorMsg = document.getElementById('errorMsg');
         const loadingMsg = document.getElementById('loadingMsg');
         
-        function showError(message) {
+        // WICHTIG: Keine automatische Weiterleitung bei vorhandenem Token!
+        // Der User muss sich explizit einloggen
+        
+        // Utility Functions
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function showError(message, details = '') {
+            console.error('Login error:', message, details);
             errorMsg.textContent = message;
             errorMsg.classList.add('show');
             loadingMsg.classList.remove('show');
@@ -199,6 +276,8 @@
         
         function hideError() {
             errorMsg.classList.remove('show');
+            emailInput.classList.remove('invalid');
+            passwordInput.classList.remove('invalid');
         }
         
         function showLoading() {
@@ -212,82 +291,148 @@
             submitBtn.disabled = false;
         }
         
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            
-            if (!email || !password) {
-                showError('Bitte füllen Sie alle Felder aus');
-                return;
-            }
-            
-            showLoading();
-            
+        // Login Function
+        async function performLogin(email, password) {
             try {
+                console.log('Attempting login to:', API_BASE + '/api/login');
+                
                 const response = await fetch(`${API_BASE}/api/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({ 
+                        email: email, 
+                        password: password 
+                    }),
+                    mode: 'cors',
                     credentials: 'include'
                 });
                 
-                const data = await response.json();
+                console.log('Response status:', response.status);
+                
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('Failed to parse response as JSON:', e);
+                    data = { message: 'Server response was not valid JSON' };
+                }
+                
+                console.log('Response data:', data);
                 
                 if (response.ok && data.token) {
-                    // Token im localStorage speichern
+                    // Success - store token and redirect
                     localStorage.setItem('jwt', data.token);
                     localStorage.setItem('user_email', email);
                     
-                    // Zum Formular-Ordner weiterleiten
-                    window.location.href = '/formular/';
+                    console.log('Login successful, redirecting...');
+                    
+                    // Short delay for user feedback
+                    setTimeout(() => {
+                        window.location.href = './formular/index.html';
+                    }, 100);
+                    
+                    return true;
                 } else {
                     hideLoading();
+                    
+                    // Handle specific error cases
                     if (response.status === 401) {
-                        showError('Ungültige Anmeldedaten');
+                        emailInput.classList.add('invalid');
+                        passwordInput.classList.add('invalid');
+                        showError('Ungültige E-Mail-Adresse oder Passwort');
                     } else if (response.status === 429) {
                         showError('Zu viele Versuche. Bitte warten Sie einen Moment.');
+                    } else if (response.status === 404) {
+                        showError('Login-Service nicht erreichbar. Bitte später versuchen.');
+                    } else if (response.status >= 500) {
+                        showError('Serverfehler. Bitte versuchen Sie es später erneut.');
                     } else {
-                        showError(data.detail || 'Anmeldung fehlgeschlagen');
+                        showError(data.detail || data.message || `Anmeldung fehlgeschlagen (Status: ${response.status})`);
                     }
+                    return false;
                 }
             } catch (error) {
+                console.error('Network or parsing error:', error);
                 hideLoading();
-                console.error('Login error:', error);
-                showError('Netzwerkfehler. Bitte versuchen Sie es später erneut.');
+                
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    showError('Verbindungsfehler. Bitte überprüfen Sie Ihre Internetverbindung oder versuchen Sie es später erneut.', error.message);
+                } else {
+                    showError('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.', error.message);
+                }
+                return false;
+            }
+        }
+        
+        // Form Submit Handler
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            
+            // Client-side validation
+            hideError();
+            
+            if (!email) {
+                emailInput.classList.add('invalid');
+                showError('Bitte geben Sie Ihre E-Mail-Adresse ein');
+                emailInput.focus();
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                emailInput.classList.add('invalid');
+                showError('Bitte geben Sie eine gültige E-Mail-Adresse ein');
+                emailInput.focus();
+                return;
+            }
+            
+            if (!password) {
+                passwordInput.classList.add('invalid');
+                showError('Bitte geben Sie Ihr Passwort ein');
+                passwordInput.focus();
+                return;
+            }
+            
+            if (password.length < 6) {
+                passwordInput.classList.add('invalid');
+                showError('Das Passwort muss mindestens 6 Zeichen lang sein');
+                passwordInput.focus();
+                return;
+            }
+            
+            showLoading();
+            await performLogin(email, password);
+        });
+        
+        // Clear error on input
+        emailInput.addEventListener('input', function() {
+            if (emailInput.classList.contains('invalid')) {
+                hideError();
             }
         });
         
-        // Optional: Intelligentere Token-Prüfung
-        const token = localStorage.getItem('jwt');
-        if (token) {
-            // Token vorhanden - prüfe ob es noch gültig ist
-            try {
-                // JWT decode und Expiry prüfen
-                const parts = token.split('.');
-                if (parts.length === 3) {
-                    const payload = JSON.parse(atob(parts[1]));
-                    const exp = payload.exp;
-                    const now = Math.floor(Date.now() / 1000);
-                    
-                    if (exp && exp > now) {
-                        // Token ist noch gültig - weiterleiten
-                        window.location.href = '/formular/';
-                    } else {
-                        // Token abgelaufen - entfernen
-                        localStorage.removeItem('jwt');
-                        localStorage.removeItem('user_email');
-                    }
-                }
-            } catch (e) {
-                // Bei Fehler Token entfernen
-                localStorage.removeItem('jwt');
-                localStorage.removeItem('user_email');
+        passwordInput.addEventListener('input', function() {
+            if (passwordInput.classList.contains('invalid')) {
+                hideError();
             }
-        }
+        });
+        
+        // Focus email field on load
+        window.addEventListener('load', function() {
+            emailInput.focus();
+        });
+        
+        // Debug: Log current state
+        console.log('Login page loaded');
+        console.log('API endpoint:', API_BASE + '/api/login');
+        
+        // Test credentials hint (nur für Entwicklung)
+        console.log('Test-Login: test@example.com / password123');
     })();
     </script>
 </body>
