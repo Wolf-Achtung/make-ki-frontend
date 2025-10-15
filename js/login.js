@@ -1,10 +1,11 @@
-// login.js — DB-basierter Login über Proxy
-(async function(){
+// login.js — DB-basierter Login über Proxy. Mit Test-Bypass.
+(function(){
   const frm = document.getElementById('loginForm');
   const alertEl = document.getElementById('alert');
   const email = document.getElementById('email');
   const pwd = document.getElementById('password');
   const btn = document.getElementById('btnLogin');
+  const btnBypass = document.getElementById('btnBypass');
 
   function show(msg, ok=false){
     alertEl.textContent = msg;
@@ -41,5 +42,11 @@
     }catch(e){
       show('Netzwerkfehler – bitte erneut versuchen.'); btn.disabled = false;
     }
+  });
+
+  btnBypass.addEventListener('click', ()=>{
+    try{ localStorage.setItem('AUTH_BYPASS','1'); }catch{}
+    const next = '/formular/index.html';
+    location.href = next;
   });
 })();
