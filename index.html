@@ -5,123 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KI-Check Pro – KI-Sicherheit.jetzt</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
-      color: #1e293b;
+      font-family: 'IBM Plex Mono', monospace;
+      background-color: #f7f9fb;
+      color: #0d2b4a;
       padding: 2rem;
       max-width: 800px;
       margin: auto;
-      min-height: 100vh;
     }
-    
     h1, h2, h3 {
-      color: #1e3a5f;
+      color: #0d2b4a;
     }
-    
-    h1 {
-      font-size: 2rem;
-      margin: 2rem 0;
-    }
-    
     .logo {
       max-width: 220px;
       margin: 0 auto 2rem;
       display: block;
     }
-    
     .logos {
       display: flex;
       justify-content: space-around;
       align-items: center;
       flex-wrap: wrap;
       margin: 2rem 0;
-      gap: 1rem;
     }
-    
     .logos img {
       max-height: 60px;
       margin: 0.5rem;
     }
-    
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 2rem 0;
-    }
-    
-    ul li {
-      padding: 0.5rem 0;
-      color: #475569;
-    }
-    
-    ul li::before {
-      content: "✓";
-      color: #22c55e;
-      font-weight: bold;
-      margin-right: 0.5rem;
-    }
-    
     .button {
-      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      background-color: #003b5a;
       color: white;
       border: none;
       padding: 0.8rem 1.6rem;
       font-size: 1rem;
-      border-radius: 12px;
+      border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
       display: inline-block;
       margin-top: 1rem;
-      transition: all 0.25s ease;
-      font-weight: 600;
     }
-    
     .button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+      background-color: #005080;
     }
-    
     .preisbox {
       background: #ffffff;
-      border: 2px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 2rem;
+      border: 2px solid #003b5a;
+      border-radius: 10px;
+      padding: 1.5rem;
       margin-top: 2rem;
       text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     }
-    
     .preisbox strong {
       font-size: 1.5rem;
-      color: #1e3a5f;
+      color: #003b5a;
     }
-    
     .pro-tipp {
       margin-top: 2rem;
       background: #e0f4ff;
       padding: 1rem;
-      border-radius: 12px;
-      border-left: 4px solid #2563eb;
+      border-left: none;
+      border-radius: 6px;
     }
-    
-    .pro-tipp strong {
-      color: #1e3a5f;
-    }
-    
     .testimonial-container {
       position: relative;
-      height: 100px;
-      margin: 3rem 0;
+      height: 140px;
+      margin-top: 3rem;
       overflow: hidden;
     }
-    
     .testimonial {
       position: absolute;
       top: 0;
@@ -130,80 +80,25 @@
       opacity: 0;
       transition: all 1s ease-in-out;
       background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      border-left: 3px solid #2563eb;
+      border-left: none;
+      padding: 1rem;
+      border-radius: 6px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
     }
-    
     .testimonial.show {
       left: 0;
       right: 0;
       opacity: 1;
     }
-    
     .testimonial strong {
       display: block;
       margin-bottom: 0.5rem;
-      color: #1e3a5f;
-    }
-    
-    .user-info {
-      background: #e0f4ff;
-      padding: 12px 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .logout-btn {
-      background: #dc2626;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background 0.2s ease;
-      font-weight: 600;
-    }
-    
-    .logout-btn:hover {
-      background: #b91c1c;
-    }
-    
-    @media (max-width: 768px) {
-      body {
-        padding: 1rem;
-      }
-      
-      h1 {
-        font-size: 1.5rem;
-      }
-      
-      .logos {
-        flex-direction: column;
-      }
     }
   </style>
 </head>
 <body>
 
 <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="logo" />
-
-<!-- User Info Bar (wird nur angezeigt wenn eingeloggt) -->
-<div id="userInfo" class="user-info" style="display: none;">
-  <span>Angemeldet als: <strong id="userEmail"></strong></span>
-  <button class="logout-btn" onclick="logout()">Abmelden</button>
-</div>
 
 <h1>Zertifiziert. Dokumentiert. KI-konform.</h1>
 <p>Der <strong>KI-Check-Report</strong> liefert Ihnen in wenigen Minuten eine strukturierte Einschätzung Ihres KI-Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.</p>
@@ -216,15 +111,15 @@
 </div>
 
 <ul>
-  <li>DSGVO- & EU AI Act-konform</li>
-  <li>mit detaillierter Risikoanalyse</li>
-  <li>mit konkreten Empfehlungen & Tools</li>
-  <li>TÜV-zertifizierte Beratung</li>
+  <li>✓ DSGVO- & EU AI Act-konform</li>
+  <li>✓ mit detaillierter Risikoanalyse</li>
+  <li>✓ mit konkreten Empfehlungen & Tools</li>
+  <li>✓ TÜV-zertifizierte Beratung</li>
 </ul>
 
 <div class="preisbox">
   <p><strong>KI-Status-Report</strong><br>inkl. Maßnahmen-Plan & Förder-Übersicht</p>
-  <a href="#" id="startButton" class="button">Jetzt Voll-Check starten</a>
+  <a href="/login.html" class="button">Jetzt Voll-Check starten</a>
 </div>
 
 <div class="pro-tipp">
@@ -233,102 +128,28 @@
 
 <h2>Ihre konkreten Vorteile:</h2>
 <div class="testimonial-container">
-  <div class="testimonial show"><strong>„Endlich ein Audit, das konkrete Maßnahmen liefert."</strong></div>
-  <div class="testimonial"><strong>„Für den Handel Gold wert. Gerade gegenüber Investoren."</strong></div>
-  <div class="testimonial"><strong>„Hilft, den EU AI Act stressfrei anzugehen."</strong></div>
-  <div class="testimonial"><strong>„Tipp: das Zertifikat direkt in Angeboten nutzen."</strong></div>
-  <div class="testimonial"><strong>„Super schneller Voll-Check mit klarem Ergebnis."</strong></div>
-  <div class="testimonial"><strong>„Erleichtert die jährliche Risikoanalyse enorm."</strong></div>
-  <div class="testimonial"><strong>„Zeigt, wo man DSGVO-technisch wirklich steht."</strong></div>
+  <div class="testimonial show"><strong>„Endlich ein Audit, das konkrete Maßnahmen liefert.“</strong></div>
+  <div class="testimonial"><strong>„Für den Handel Gold wert. Gerade gegenüber Investoren.“</strong></div>
+  <div class="testimonial"><strong>„Hilft, den EU AI Act stressfrei anzugehen.“</strong></div>
+  <div class="testimonial"><strong>„Tipp: das Zertifikat direkt in Angeboten nutzen.“</strong></div>
+  <div class="testimonial"><strong>„Super schneller Voll-Check mit klarem Ergebnis.“</strong></div>
+  <div class="testimonial"><strong>„Erleichtert die jährliche Risikoanalyse enorm.“</strong></div>
+  <div class="testimonial"><strong>„Zeigt, wo man DSGVO-technisch wirklich steht.“</strong></div>
 </div>
 
 <script>
-(function() {
-  'use strict';
-  
-  // Testimonial Rotation
-  const testimonials = document.querySelectorAll('.testimonial');
-  let currentIndex = 0;
-  
-  function showNextTestimonial() {
-    testimonials.forEach((t, i) => {
-      t.classList.toggle('show', i === currentIndex);
-    });
-    currentIndex = (currentIndex + 1) % testimonials.length;
-  }
-  
-  // Start rotation
-  setInterval(showNextTestimonial, 4000);
-  
-  // Authentication Management
-  function checkAuth() {
-    const token = localStorage.getItem('jwt');
-    const email = localStorage.getItem('user_email');
-    const startButton = document.getElementById('startButton');
-    const userInfo = document.getElementById('userInfo');
-    const userEmail = document.getElementById('userEmail');
-    
-    if (token && email) {
-      // Validate token expiry
-      try {
-        const parts = token.split('.');
-        if (parts.length === 3) {
-          const payload = JSON.parse(atob(parts[1]));
-          const exp = payload.exp;
-          const now = Math.floor(Date.now() / 1000);
-          
-          if (exp && exp > now) {
-            // Token valid - show logged in state
-            userInfo.style.display = 'flex';
-            userEmail.textContent = email;
-            startButton.href = './formular/index.html';
-            return;
-          } else {
-            // Token expired - cleanup
-            localStorage.removeItem('jwt');
-            localStorage.removeItem('user_email');
-          }
-        }
-      } catch (e) {
-        console.error('Token validation error:', e);
-        localStorage.removeItem('jwt');
-        localStorage.removeItem('user_email');
-      }
-    }
-    
-    // Not logged in or invalid token
-    userInfo.style.display = 'none';
-    startButton.href = './login.html';
-  }
-  
-  // Global logout function
-  window.logout = function() {
-    // Clear all auth data
-    localStorage.removeItem('jwt');
-    localStorage.removeItem('user_email');
-    
-    // Clear autosave data
-    const keys = Object.keys(localStorage);
-    keys.forEach(key => {
-      if (key.startsWith('autosave_form_')) {
-        localStorage.removeItem(key);
-      }
-    });
-    
-    // Reload page
-    window.location.reload();
-  };
-  
-  // Initialize on page load
-  document.addEventListener('DOMContentLoaded', checkAuth);
-  
-  // Check auth on visibility change (tab switch)
-  document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-      checkAuth();
-    }
+const testimonials = document.querySelectorAll('.testimonial');
+let index = Math.floor(Math.random() * testimonials.length);
+
+function showTestimonial() {
+  testimonials.forEach((t, i) => {
+    t.classList.toggle('show', i === index);
   });
-})();
+  index = (index + 1) % testimonials.length;
+}
+
+showTestimonial();
+setInterval(showTestimonial, 4000);
 </script>
 
 </body>
