@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="de"><meta charset="utf-8"><title>Probe-Report</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<body>
+  <h1>Probe-Report</h1>
+  <p>Dieser Test ruft <code>/briefing_async</code> ohne Login auf.</p>
+  <button id="btn">Briefing senden</button>
+  <pre id="out"></pre>
+
+<script src="/js/api-base.js"></script>
+<script>
+document.getElementById('btn').addEventListener('click', async ()=>{
+  const payload = {
+    lang: "de",
+    email: "test@example.com",
+    company: "Demo GmbH",
+    answers: { branche: "Dienstleistung", groesse: "10-49", fokus: "KI-Readiness Probeaufruf" }
+  };
+  const out = document.getElementById('out');
+  out.textContent = "Sende...";
+  try{
+    const r = await apiFetch('/briefing_async', {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify(payload),
+      timeoutMs: 20000
+    });
+    const txt = await r.text();
+    out.textContent = "HTTP " + r.status + "\n" + txt;
+  }catch(e){
+    out.textContent = "Fehler: " + e;
+  }
+});
+</script>
+</body></html>
