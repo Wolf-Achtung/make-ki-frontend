@@ -1,3 +1,4 @@
+<!-- filename: index.html -->
 <!doctype html>
 <html lang="de">
 <head>
@@ -6,218 +7,34 @@
   <title>KI-Checkup-Report – Fragebogen</title>
   <meta name="api-base" content="https://make-ki-backend-neu-production.up.railway.app" />
   <style>
-    :root { 
-      --primary-blue:#1e3a5f; 
-      --accent-blue:#2563eb; 
-      --light-blue:#dbeafe; 
-      --pale-blue:#f0f9ff;
-      --fs:18px; 
-      --lh:1.7; 
-      --space-sm:16px; 
-      --space-md:24px; 
-      --space-lg:32px; 
-      --space-xl:48px;
-      --text-primary:#1e293b; 
-      --text-secondary:#475569; 
-      --bg-main:#f8fafc; 
-      --bg-card:#ffffff; 
-      --border-light:#e2e8f0;
-    }
-    
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    html {
-      scroll-behavior: smooth;
-    }
-    
-    .visually-hidden {
-      position: absolute !important;
-      clip: rect(1px,1px,1px,1px);
-      height: 1px;
-      width: 1px;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      font-size: var(--fs);
-      line-height: var(--lh);
-      color: var(--text-primary);
-      background: linear-gradient(135deg, var(--pale-blue) 0%, var(--bg-main) 100%);
-      min-height: 100vh;
-    }
-    
-    .container {
-      max-width: 1024px;
-      margin: 0 auto;
-      padding: var(--space-lg) var(--space-md);
-    }
-    
-    .header-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      border-radius: 20px;
-      padding: var(--space-lg);
-      box-shadow: 0 10px 40px rgba(0,0,0,.04);
-      margin-bottom: var(--space-lg);
-    }
-    
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: var(--space-md);
-    }
-    
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-    
-    .logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 20px;
-    }
-    
-    .brand-text h1 {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--primary-blue);
-      margin-bottom: 4px;
-    }
-    
-    .subtitle {
-      font-size: 14px;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-    
-    .lang-selector {
-      padding: 10px 16px;
-      border: 2px solid var(--border-light);
-      border-radius: 12px;
-      background: var(--bg-card);
-      font-size: 16px;
-      color: var(--text-primary);
-      font-weight: 500;
-      cursor: pointer;
-      transition: all .3s ease;
-    }
-    
-    .lang-selector:hover {
-      border-color: var(--accent-blue);
-      box-shadow: 0 2px 8px rgba(37,99,235,.1);
-    }
-    
-    .lang-selector:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-    }
-    
-    .progress-container {
-      margin-top: var(--space-md);
-    }
-    
-    .progress-bar {
-      height: 8px;
-      background: var(--light-blue);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-blue), #3b82f6);
-      width: 0%;
-      transition: width .25s ease;
-    }
-    
-    .form-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      border-radius: 20px;
-      padding: var(--space-lg);
-      margin-bottom: var(--space-md);
-      box-shadow: 0 4px 20px rgba(0,0,0,.03);
-    }
-    
-    .user-bar {
-      background: #e0f4ff;
-      padding: 10px 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      animation: slideDown 0.3s ease;
-    }
-    
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .user-bar a {
-      color: var(--accent-blue);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: background 0.2s ease;
-    }
-    
-    .user-bar a:hover {
-      background: rgba(37, 99, 235, 0.1);
-    }
-    
-    footer {
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 14px;
-      margin-top: var(--space-xl);
-      padding: var(--space-md);
-      line-height: 1.6;
-    }
-    
-    @media (max-width: 768px) {
-      .container {
-        padding: var(--space-md) var(--space-sm);
-      }
-      
-      .form-section {
-        padding: var(--space-md);
-      }
-      
-      .header-top {
-        flex-direction: column;
-        gap: var(--space-md);
-      }
-    }
+    :root { --primary-blue:#1e3a5f; --accent-blue:#2563eb; --light-blue:#dbeafe; --pale-blue:#f0f9ff;
+            --fs:18px; --lh:1.7; --space-sm:16px; --space-md:24px; --space-lg:32px; --space-xl:48px;
+            --text-primary:#1e293b; --text-secondary:#475569; --bg-main:#f8fafc; --bg-card:#ffffff; --border-light:#e2e8f0;}
+    *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+    .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);height:1px;width:1px;overflow:hidden;white-space:nowrap}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:var(--fs);line-height:var(--lh);color:var(--text-primary);
+         background:linear-gradient(135deg,var(--pale-blue) 0%, var(--bg-main) 100%);min-height:100vh}
+    .container{max-width:1024px;margin:0 auto;padding:var(--space-lg) var(--space-md)}
+    .header-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:20px;padding:var(--space-lg);box-shadow:0 10px 40px rgba(0,0,0,.04);margin-bottom:var(--space-lg)}
+    .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-md)}
+    .brand{display:flex;align-items:center;gap:var(--space-sm)}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent-blue),var(--primary-blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px}
+    .brand-text h1{font-size:28px;font-weight:700;color:var(--primary-blue);margin-bottom:4px}
+    .subtitle{font-size:14px;color:var(--text-secondary);font-weight:500}
+    .lang-selector{padding:10px 16px;border:2px solid var(--border-light);border-radius:12px;background:var(--bg-card);font-size:16px;color:var(--text-primary);font-weight:500;cursor:pointer;transition:all .3s ease}
+    .lang-selector:hover{border-color:var(--accent-blue);box-shadow:0 2px 8px rgba(37,99,235,.1)}
+    .lang-selector:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+    .progress-container{margin-top:var(--space-md)}
+    .progress-bar{height:8px;background:var(--light-blue);border-radius:8px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-blue),#3b82f6);width:0%;transition:width .25s ease}
+    .form-section{background:var(--bg-card);border:1px solid var(--border-light);border-radius:20px;padding:var(--space-lg);margin-bottom:var(--space-md);box-shadow:0 4px 20px rgba(0,0,0,.03)}
+    footer{text-align:center;color:var(--text-secondary);font-size:14px;margin-top:var(--space-xl);padding:var(--space-md);line-height:1.6}
+    @media (max-width:768px){.container{padding:var(--space-md) var(--space-sm)}.form-section{padding:var(--space-md)}}
   </style>
 </head>
 <body>
   <div class="container">
     <header class="header-card" aria-label="Seiteneinleitung">
-      <div class="user-bar" id="userBar">
-        <span>Angemeldet als: <strong id="userEmail">Lade...</strong></span>
-        <a href="../index.html" onclick="logout(); return false;">Abmelden</a>
-      </div>
       <div class="header-top">
         <div class="brand">
           <div class="logo" aria-label="KI Logo">KI</div>
@@ -241,9 +58,7 @@
       </div>
     </header>
 
-    <main id="formbuilder" class="form-section" aria-live="polite">
-      <!-- Formular wird hier vom JavaScript geladen -->
-    </main>
+    <main id="formbuilder" class="form-section" aria-live="polite"></main>
 
     <footer>
       © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br />
@@ -253,106 +68,19 @@
   </div>
 
   <script>
-    (function() {
-      'use strict';
-      
-      // Logout function (global für formbuilder.js)
-      window.logout = function() {
-        localStorage.removeItem('jwt');
-        localStorage.removeItem('user_email');
-        localStorage.removeItem('mock_login');
-        
-        // Clear all autosave data
-        const keys = Object.keys(localStorage);
-        keys.forEach(key => {
-          if (key.startsWith('autosave_form_')) {
-            localStorage.removeItem(key);
-          }
-        });
-        
-        // Redirect to main page
-        window.location.href = '../index.html';
-      };
-      
-      // Update user display
-      function updateUserDisplay() {
-        const email = localStorage.getItem('user_email');
-        const userEmail = document.getElementById('userEmail');
-        
-        if (userEmail && email) {
-          userEmail.textContent = email;
-        }
-      }
-      
-      // Scroll restoration
-      try { 
-        if ('scrollRestoration' in history) { 
-          history.scrollRestoration = 'manual'; 
-        } 
-      } catch(e) {
-        console.error('Scroll restoration error:', e);
-      }
-      
-      // Language selector
-      document.getElementById('lang-selector').addEventListener('change', function(e) {
-        if (e.target.value === 'en') {
-          window.location.href = 'index_en.html';
-        }
-      });
-      
-      // Progress event listener
-      document.addEventListener('fb:progress', function(ev) {
-        try {
-          const { step, total } = ev.detail || {};
-          const pct = Math.max(0, Math.min(100, Math.round((step / total) * 100)));
-          const fill = document.getElementById('progress-fill');
-          
-          if (fill) { 
-            fill.style.width = pct + '%'; 
-            fill.setAttribute('aria-valuenow', String(pct)); 
-          }
-        } catch (e) {
-          console.error('Progress update error:', e);
-        }
-      });
-      
-      // Load the form script directly - no auth check
-      // The form script itself will handle auth if needed
-      function loadFormScript() {
-        console.log('Loading form script...');
-        const script = document.createElement('script');
-        script.src = './formbuilder_de_SINGLE_FULL.js?v=' + Date.now();
-        script.defer = true;
-        
-        script.onload = function() {
-          console.log('Form script loaded successfully');
-        };
-        
-        script.onerror = function() {
-          console.error('Failed to load form script');
-          const formBuilder = document.getElementById('formbuilder');
-          if (formBuilder) {
-            formBuilder.innerHTML = `
-              <div style="text-align: center; padding: 40px; color: #dc2626;">
-                <h2>Ladefehler</h2>
-                <p>Das Formular konnte nicht geladen werden.</p>
-                <p style="margin-top: 20px;">
-                  <a href="../index.html" style="color: #2563eb;">Zurück zur Startseite</a>
-                </p>
-              </div>
-            `;
-          }
-        };
-        
-        document.body.appendChild(script);
-      }
-      
-      // Initialize on page load
-      document.addEventListener('DOMContentLoaded', function() {
-        updateUserDisplay();
-        loadFormScript();
-      });
-    })();
+    try { if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } } catch(_) {}
+    document.getElementById('lang-selector').addEventListener('change', (e) => {
+      if (e.target.value === 'en') location.href = 'index_en.html';
+    });
+    document.addEventListener('fb:progress', (ev) => {
+      try {
+        const { step, total } = ev.detail || {};
+        const pct = Math.max(0, Math.min(100, Math.round((step / total) * 100)));
+        const fill = document.getElementById('progress-fill');
+        if (fill) { fill.style.width = pct + '%'; fill.setAttribute('aria-valuenow', String(pct)); }
+      } catch (_) {}
+    });
   </script>
+  <script defer src="./formbuilder_de_SINGLE_FULL.js?v=20251010"></script>
 </body>
 </html>
