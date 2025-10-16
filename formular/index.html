@@ -1,86 +1,106 @@
-<!-- filename: index.html -->
-<!doctype html>
+<!-- filename: formular/index.html -->
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KI-Checkup-Report – Fragebogen</title>
-  <meta name="api-base" content="https://sublime-consideration-production.up.railway.app" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Fragebogen – KI-Status-Report</title>
   <style>
-    :root { --primary-blue:#1e3a5f; --accent-blue:#2563eb; --light-blue:#dbeafe; --pale-blue:#f0f9ff;
-            --fs:18px; --lh:1.7; --space-sm:16px; --space-md:24px; --space-lg:32px; --space-xl:48px;
-            --text-primary:#1e293b; --text-secondary:#475569; --bg-main:#f8fafc; --bg-card:#ffffff; --border-light:#e2e8f0;}
-    *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
-    .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);height:1px;width:1px;overflow:hidden;white-space:nowrap}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:var(--fs);line-height:var(--lh);color:var(--text-primary);
-         background:linear-gradient(135deg,var(--pale-blue) 0%, var(--bg-main) 100%);min-height:100vh}
-    .container{max-width:1024px;margin:0 auto;padding:var(--space-lg) var(--space-md)}
-    .header-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:20px;padding:var(--space-lg);box-shadow:0 10px 40px rgba(0,0,0,.04);margin-bottom:var(--space-lg)}
-    .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-md)}
-    .brand{display:flex;align-items:center;gap:var(--space-sm)}
-    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent-blue),var(--primary-blue));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px}
-    .brand-text h1{font-size:28px;font-weight:700;color:var(--primary-blue);margin-bottom:4px}
-    .subtitle{font-size:14px;color:var(--text-secondary);font-weight:500}
-    .lang-selector{padding:10px 16px;border:2px solid var(--border-light);border-radius:12px;background:var(--bg-card);font-size:16px;color:var(--text-primary);font-weight:500;cursor:pointer;transition:all .3s ease}
-    .lang-selector:hover{border-color:var(--accent-blue);box-shadow:0 2px 8px rgba(37,99,235,.1)}
-    .lang-selector:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-    .progress-container{margin-top:var(--space-md)}
-    .progress-bar{height:8px;background:var(--light-blue);border-radius:8px;overflow:hidden}
-    .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-blue),#3b82f6);width:0%;transition:width .25s ease}
-    .form-section{background:var(--bg-card);border:1px solid var(--border-light);border-radius:20px;padding:var(--space-lg);margin-bottom:var(--space-md);box-shadow:0 4px 20px rgba(0,0,0,.03)}
-    footer{text-align:center;color:var(--text-secondary);font-size:14px;margin-top:var(--space-xl);padding:var(--space-md);line-height:1.6}
-    @media (max-width:768px){.container{padding:var(--space-md) var(--space-sm)}.form-section{padding:var(--space-md)}}
+    :root { --bg:#f7f9fb; --fg:#0d2b4a; --primary:#003b5a; --muted:#6b7280; }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--fg);margin:0;padding:2rem;line-height:1.5;}
+    main{max-width:900px;margin:0 auto;}
+    label{display:block;margin-top:1rem;font-weight:600}
+    input,select,textarea{width:100%;padding:.7rem;border:1px solid #cbd5e1;border-radius:8px}
+    button{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:.8rem 1.2rem;margin-top:1rem;cursor:pointer}
+    .muted{color:var(--muted)}
+    .result{border:1px solid #cbd5e1;background:#fff;border-radius:12px;margin-top:1rem;padding:1rem}
+    .hidden{display:none}
   </style>
+  <script src="../js/api.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <header class="header-card" aria-label="Seiteneinleitung">
-      <div class="header-top">
-        <div class="brand">
-          <div class="logo" aria-label="KI Logo">KI</div>
-          <div class="brand-text">
-            <div class="subtitle">KI-Sicherheit.jetzt</div>
-            <h1>KI-Checkup-Report</h1>
-          </div>
-        </div>
-        <label>
-          <span class="visually-hidden">Sprache wählen</span>
-          <select class="lang-selector" id="lang-selector" aria-label="Sprache wählen">
-            <option value="de" selected>🇩🇪 Deutsch</option>
-            <option value="en">🇬🇧 English</option>
-          </select>
-        </label>
-      </div>
-      <div class="progress-container" aria-label="Fortschritt">
-        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-          <div class="progress-fill" id="progress-fill" style="width:0%" aria-valuenow="0"></div>
-        </div>
-      </div>
-    </header>
+<main>
+  <h1>Fragebogen</h1>
+  <p class="muted">Bitte Unternehmen und E‑Mail angeben. Die Auswertung erfolgt im Hintergrund; das Ergebnis erscheint hier automatisch.</p>
+  <form id="form">
+    <label>Unternehmen
+      <input name="company" required/>
+    </label>
+    <label>E‑Mail
+      <input name="email" type="email" required/>
+    </label>
+    <label>Sprache
+      <select name="lang">
+        <option value="DE" selected>Deutsch</option>
+        <option value="EN">English</option>
+      </select>
+    </label>
+    <label>Notizen (optional)
+      <textarea name="notes" rows="4" placeholder="Kontext, Ziele, Besonderheiten…"></textarea>
+    </label>
+    <button type="submit">Report starten</button>
+  </form>
 
-    <main id="formbuilder" class="form-section" aria-live="polite"></main>
+  <div id="progress" class="muted hidden">Report wird erstellt…</div>
+  <div id="html" class="result hidden"></div>
+  <p id="pdfrow" class="hidden"><button id="pdfbtn">PDF herunterladen</button></p>
+</main>
 
-    <footer>
-      © KI-Sicherheit.jetzt | TÜV-zertifiziertes KI-Management: Wolf Hohl 2025<br />
-      Alle Inhalte ausschließlich zur Nutzung im Rahmen der KI-Readiness- und Datenschutzberatung.<br />
-      Weitergabe oder Veröffentlichung nur mit schriftlicher Genehmigung.
-    </footer>
-  </div>
+<script>
+  const form = document.getElementById('form');
+  const progress = document.getElementById('progress');
+  const htmlBox = document.getElementById('html');
+  const pdfRow = document.getElementById('pdfrow');
+  const pdfBtn = document.getElementById('pdfbtn');
 
-  <script>
-    try { if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } } catch(_) {}
-    document.getElementById('lang-selector').addEventListener('change', (e) => {
-      if (e.target.value === 'en') location.href = 'index_en.html';
-    });
-    document.addEventListener('fb:progress', (ev) => {
-      try {
-        const { step, total } = ev.detail || {};
-        const pct = Math.max(0, Math.min(100, Math.round((step / total) * 100)));
-        const fill = document.getElementById('progress-fill');
-        if (fill) { fill.style.width = pct + '%'; fill.setAttribute('aria-valuenow', String(pct)); }
-      } catch (_) {}
-    });
-  </script>
-  <script defer src="./formbuilder_de_SINGLE_FULL.js?v=20251010"></script>
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    progress.classList.remove('hidden'); htmlBox.classList.add('hidden'); pdfRow.classList.add('hidden');
+    const fd = new FormData(form);
+    const payload = {
+      lang: fd.get('lang'),
+      company: fd.get('company'),
+      email: fd.get('email'),
+      answers: { notes: fd.get('notes') }
+    };
+    try {
+      const queued = await KIAPI.analyze(payload);
+      const id = queued.report_id;
+      // poll
+      let tries = 0;
+      while(tries++ < 60){
+        const r = await KIAPI.result(id);
+        if (r.status === 'done') {
+          progress.classList.add('hidden');
+          htmlBox.innerHTML = r.html || '<em>Kein Inhalt erhalten.</em>';
+          htmlBox.classList.remove('hidden');
+          pdfRow.classList.remove('hidden');
+          pdfBtn.onclick = async () => {
+            const res = await KIAPI.generatePdf(r.html || '', 'KI-Status-Report.pdf');
+            if (res && res.mode === 'fallback' && res.data) {
+              const a = document.createElement('a');
+              a.href = 'data:text/html;base64,' + res.data;
+              a.download = res.filename || 'report.html';
+              a.click();
+            } else if (res && res.url) {
+              window.location.href = res.url;
+            } else {
+              alert('PDF konnte nicht erstellt werden.');
+            }
+          };
+          return;
+        } else if (r.status === 'failed'){
+          progress.textContent = 'Fehler bei der Erstellung.';
+          return;
+        }
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      progress.textContent = 'Timeout beim Warten auf das Ergebnis.';
+    } catch(err){
+      progress.textContent = 'Fehler: ' + (err && err.message ? err.message : String(err));
+    }
+  });
+</script>
 </body>
 </html>
