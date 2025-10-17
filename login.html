@@ -5,19 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | KI-Check</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="js/config.js"></script>
   <style>
-    .popup-container{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;justify-content:center;align-items:center;z-index:1000}
-    .popup{background:#fff;padding:2rem;border-radius:12px;max-width:420px;width:92%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-    .popup img{max-width:160px;margin-bottom:1rem}
-    .popup p{font-size:.95rem;margin:.8rem 0 1.2rem;color:#1c3763}
-    .popup input,.popup button{width:100%;padding:.7rem;margin:.4rem 0;border-radius:10px;border:1px solid #dce6f5}
-    .popup button{background:linear-gradient(90deg,#1f66ff,#18a999);color:#fff;border:none;font-weight:700;cursor:pointer}
-    .popup button[disabled]{opacity:.6;cursor:not-allowed}
-    .msg{margin-top:1rem;font-size:.95rem;padding:.8rem;border-radius:8px;display:none}
-    .msg.show{display:block}
-    .msg.info{color:#1c3763;background:#eaf6ff;border:1px solid #b5d6f6}
-    .msg.err{color:#8b1e1e;background:#ffecec;border:1px solid #ffc7c7}
-    .muted{font-size:.85rem;color:#5b6b7a;margin-top:.6rem}
+    .popup-container { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; justify-content:center; align-items:center; z-index:1000; }
+    .popup { background:#fff; padding:2rem; border-radius:12px; max-width:420px; width:92%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.2); }
+    .popup img { max-width:160px; margin-bottom:1rem; }
+    .popup p { font-size:.95rem; margin:.8rem 0 1.2rem; color:#1c3763; }
+    .popup input, .popup button { width:100%; padding:.7rem; margin:.4rem 0; border-radius:10px; border:1px solid #dce6f5; }
+    .popup button { background:linear-gradient(90deg,#1f66ff,#18a999); color:#fff; border:none; font-weight:700; cursor:pointer; }
+    .popup button[disabled] { opacity:.6; cursor:not-allowed; }
+    .msg { margin-top:1rem; font-size:.95rem; padding:.8rem; border-radius:8px; display:none; }
+    .msg.show { display:block; }
+    .msg.info { color:#1c3763; background:#eaf6ff; border:1px solid #b5d6f6; }
+    .msg.err { color:#8b1e1e; background:#ffecec; border:1px solid #ffc7c7; }
+    .muted { font-size:.85rem; color:#5b6b7a; margin-top:.6rem; }
   </style>
 </head>
 <body>
@@ -40,18 +41,18 @@
 
 <script>
 (function(){
-  const API = "https://sublime-consideration-production.up.railway.app";
+  const API = window.ENV_BACKEND || "";
   const form = document.getElementById("login-form");
   const btn  = document.getElementById("btn-login");
   const msg  = document.getElementById("msg");
   const emailEl = document.getElementById("email");
   const passEl  = document.getElementById("password");
 
-  function show(type, text){
-    msg.className = "msg show " + (type==="err"?"err":"info");
+  function show(type, text) {
+    msg.className = "msg show " + (type === "err" ? "err" : "info");
     msg.innerText = text;
   }
-  function loading(on){
+  function loading(on) {
     btn.disabled = !!on;
     btn.innerText = on ? "Anmeldung läuft …" : "Login";
   }
@@ -62,11 +63,10 @@
     const email = (emailEl.value || "").trim();
     const password = passEl.value || "";
 
-    if(!email || !password){
-      show("err","Bitte E-Mail und Passwort eingeben.");
+    if (!email || !password) {
+      show("err", "Bitte E-Mail und Passwort eingeben.");
       return;
     }
-
     loading(true);
     try {
       const res = await fetch(`${API}/api/login`, {
@@ -74,48 +74,32 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
-
-      if(!res.ok){
-        const t = await res.text();
+      if (!res.ok) {
+        const t = await res.text().catch(()=>'');
         show("err", `Login fehlgeschlagen (${res.status}). Bitte prüfen Sie Ihre Eingaben.`);
         console.error("Login error:", res.status, t);
         loading(false);
         return;
       }
-
       const data = await res.json();
-
-      // ✅ WICHTIG: Backend liefert "access_token"
-      const jwt = data && (data.access_token || data.token); // Fallback, falls sich Backend ändert
-      if(!jwt || typeof jwt !== "string" || jwt.split(".").length !== 3){
-        show("err","Unerwartete Serverantwort – kein gültiges Token erhalten.");
+      const jwt = data && (data.access_token || data.token);
+      if (!jwt || typeof jwt !== "string" || jwt.split(".").length !== 3) {
+        show("err", "Unerwartete Serverantwort – kein gültiges Token erhalten.");
         console.error("Unexpected login payload:", data);
         loading(false);
         return;
       }
-
-      // Token speichern – GENAU unter dem Key "jwt"
       try { localStorage.setItem("jwt", jwt); } catch(e) {}
-
-      show("info","Erfolgreich angemeldet. Weiterleiten …");
-      // kleiner Delay, damit man die Meldung kurz sieht
-      setTimeout(() => { window.location.href = "/formular/index.html"; }, 350);
-
-    } catch(err){
+      show("info", "Erfolgreich angemeldet. Weiterleiten …");
+      setTimeout(() => {
+        window.location.href = "/formular/index.html";
+      }, 350);
+    } catch(err) {
       console.error("Netzwerk/Serverfehler:", err);
-      show("err","Serverfehler. Bitte später erneut versuchen.");
+      show("err", "Serverfehler. Bitte später erneut versuchen.");
       loading(false);
     }
   });
-
-  // Komfort: falls der Nutzer schon eingeloggt ist, ersparen wir ihm das Tippen
-  try {
-    const t = localStorage.getItem("jwt");
-    if(t && t.split(".").length === 3){
-      // optional: direkt zum Formular
-      // window.location.href = "/formular/index.html";
-    }
-  } catch(e){}
 })();
 </script>
 
