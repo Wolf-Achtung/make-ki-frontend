@@ -1,12 +1,18 @@
 /* filename: js/api.js
  * Minimal SDK for KI-Status-Report Backend (Gold-Standard+)
- * - Base URL via window.ENV_BACKEND or same origin
+ * - Base URL: window.ENV_BACKEND OR <meta name="backend" content="...">
  * - Fetch wrapper with retry/backoff and JSON error mapping
  * - Public methods: analyze(), result(), generatePdf(), sendFeedback(), health()
  */
 (function(global){
+  function getBaseUrl(){
+    if (global.ENV_BACKEND) return global.ENV_BACKEND;
+    const m = document.querySelector('meta[name="backend"]');
+    if (m && m.content) return m.content;
+    return ''; // same-origin (only for local dev)
+  }
   const DEFAULTS = {
-    baseUrl: global.ENV_BACKEND || '',
+    get baseUrl(){ return getBaseUrl(); },
     retries: 2,
     timeoutMs: 20000
   };
@@ -15,7 +21,8 @@
   function rid(){ return (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2); }
 
   async function request(path, opts={}){
-    const url = (DEFAULTS.baseUrl || '') + path;
+    const base = DEFAULTS.baseUrl || '';
+    const url = base + path;
     const headers = Object.assign({
       'Content-Type': 'application/json',
       'X-Request-ID': rid()
