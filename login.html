@@ -1,123 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | KI‑Check</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login – KI‑Sicherheit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="color-scheme" content="light dark">
   <style>
-    .popup-container{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;justify-content:center;align-items:center;z-index:1000}
-    .popup{background:#fff;padding:2rem;border-radius:12px;max-width:420px;width:92%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-    .popup img{max-width:160px;margin-bottom:1rem}
-    .popup p{font-size:.95rem;margin:.8rem 0 1.2rem;color:#1c3763}
-    .popup input,.popup button{width:100%;padding:.7rem;margin:.4rem 0;border-radius:10px;border:1px solid #dce6f5}
-    .popup button{background:linear-gradient(90deg,#1f66ff,#18a999);color:#fff;border:none;font-weight:700;cursor:pointer}
-    .popup button[disabled]{opacity:.6;cursor:not-allowed}
-    .msg{margin-top:1rem;font-size:.95rem;padding:.8rem;border-radius:8px;display:none}
-    .msg.show{display:block}
-    .msg.info{color:#1c3763;background:#eaf6ff;border:1px solid #b5d6f6}
-    .msg.err{color:#8b1e1e;background:#ffecec;border:1px solid #ffc7c7}
-    .muted{font-size:.85rem;color:#5b6b7a;margin-top:.6rem}
+    :root{--bg:#0b1220;--card:#fff;--text:#0b1220;--muted:#6b7280;--brand:#1d4ed8;--brand-2:#10b981}
+    @media (prefers-color-scheme: dark){:root{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--brand:#60a5fa;--brand-2:#34d399}}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--text);display:grid;place-items:center;min-height:100vh}
+    .card{background:var(--card);border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.2);padding:28px;max-width:480px;width:92%}
+    h1{font-size:1.25rem;margin:0 0 6px 0}
+    p{margin:8px 0;color:var(--muted);font-size:.95rem}
+    label{display:block;margin:14px 0 6px 0}
+    input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #e5e7eb;background:transparent;color:inherit}
+    button{width:100%;padding:12px 16px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;font-weight:600;margin-top:14px;cursor:pointer}
+    .note{font-size:.85rem;text-align:center;color:var(--muted)}
+    .msg{margin-top:12px;padding:10px;border-radius:8px}
+    .msg.ok{background:#ecfdf5;color:#065f46}
+    .msg.err{background:#fef2f2;color:#991b1b}
+    small a{color:inherit}
   </style>
 </head>
 <body>
-
-<div class="popup-container">
-  <div class="popup" role="dialog" aria-labelledby="h2" aria-modal="true">
-    <img src="ki-sicherheit-logo.webp" alt="KI‑Sicherheit Logo">
-    <h2 id="h2">Login für Ihren KI‑Check</h2>
+  <main class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Login für Ihren KI‑Check</h1>
     <p>Hinweis: In der Testphase kann die Report‑Erstellung ein paar Minuten dauern.</p>
-
     <form id="login-form" novalidate>
-      <input type="email" id="email" name="email" placeholder="E‑Mail" required autocomplete="username" inputmode="email"/>
-      <input type="password" id="password" name="password" placeholder="Passwort" required autocomplete="current-password"/>
-      <button id="btn-login" type="submit">Login</button>
-      <div id="msg" class="msg" role="status" aria-live="polite"></div>
-      <div class="muted">Probleme? Bitte E‑Mail & Passwort exakt wie in der Einladung verwenden (Groß‑/Kleinschreibung beachten).</div>
-      <p class="muted"><a href="index.html" aria-label="Zurück zur Startseite">← Zurück</a></p>
+      <label for="email">E‑Mail</label>
+      <input id="email" name="email" type="email" autocomplete="email" required inputmode="email" placeholder="ihr.name@firma.de">
+      <label for="password">Passwort</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••">
+      <button type="submit">Login</button>
+      <p class="note">Probleme? Bitte E‑Mail &amp; Passwort exakt wie in der Einladung verwenden (Groß-/Kleinschreibung beachten).</p>
+      <div id="msg" class="msg" hidden aria-live="polite"></div>
     </form>
-  </div>
-</div>
+    <p class="note"><small>Datenschutz: Ihre Zugangsdaten werden ausschließlich zur Authentifizierung verwendet. <a href="/datenschutz.html">Mehr</a>.</small></p>
+  </main>
 
-<script src="config.js"></script>
-<script>
-(function(){
-  const DEFAULT_BACKEND = "https://sublime-consideration-production.up.railway.app";
-  const API = (window.__CONFIG__ && window.__CONFIG__.BACKEND_BASE_URL) || DEFAULT_BACKEND;
-
-  const form = document.getElementById("login-form");
-  const btn  = document.getElementById("btn-login");
-  const msg  = document.getElementById("msg");
-  const emailEl = document.getElementById("email");
-  const passEl  = document.getElementById("password");
-
-  function show(type, text){
-    msg.className = "msg show " + (type==="err"?"err":"info");
-    msg.innerText = text;
-  }
-  function loading(on){
-    btn.disabled = !!on;
-    btn.innerText = on ? "Anmeldung läuft …" : "Login";
-  }
-  function getNext(){
-    try{
-      const p = new URLSearchParams(location.search);
-      return p.get("next") || "/formular/index.html";
-    }catch(_){ return "/formular/index.html"; }
-  }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    msg.className = "msg"; msg.innerText = "";
-    const email = (emailEl.value || "").trim();
-    const password = passEl.value || "";
-
-    if(!email || !password){
-      show("err","Bitte E‑Mail und Passwort eingeben.");
-      return;
-    }
-
-    loading(true);
-    try {
-      const res = await fetch(API.replace(/\/$/, '') + "/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-
-      let data = null;
-      try { data = await res.json(); } catch(_) { /* text fallback ignored */ }
-
-      if(!res.ok){
-        const errText = (data && (data.detail || data.error)) || ("HTTP " + res.status);
-        show("err", "Login fehlgeschlagen: " + errText);
-        loading(false);
-        return;
-      }
-
-      const jwt = data && (data.access_token || data.token);
-      if(!jwt || typeof jwt !== "string" || jwt.split(".").length !== 3){
-        show("err","Unerwartete Serverantwort – kein gültiges Token erhalten.");
-        loading(false);
-        return;
-      }
-
-      try { localStorage.setItem("jwt", jwt); } catch(_){}
-      show("info","Erfolgreich angemeldet. Weiterleiten …");
-      setTimeout(() => { window.location.href = getNext(); }, 400);
-
-    } catch(err){
-      console.error("Netzwerk/Serverfehler:", err);
-      show("err","Serverfehler. Bitte später erneut versuchen.");
-    } finally {
-      loading(false);
-    }
-  });
-
-  // Komfort: auto-focus
-  try{ document.getElementById(emailEl.value ? "password" : "email").focus(); }catch(_){}
-})();
-</script>
-
+  <script>
+    // --- CONFIG ---
+    // Netlify environment: set BACKEND_URL in site settings. Fallback to same origin.
+    window.BACKEND_URL = window.BACKEND_URL || (window.NETLIFY ? window.NETLIFY.env.BACKEND_URL : "") || "";
+  </script>
+  <script src="./js/login.js" defer></script>
 </body>
 </html>
