@@ -1,89 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard – KI‑Check Pro</title>
-  <style>
-    body { font-family: Arial, Helvetica, sans-serif; background-color: #f4f6fa; color: #0d2b4a; padding: 2rem; max-width: 1000px; margin: auto; }
-    h1 { margin-bottom: 1rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    th, td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 0.9rem; }
-    th { background-color: #eef3fa; color: #1f3a63; font-weight: 600; }
-    tr:nth-child(even) { background-color: #f9fbfd; }
-    .btn { padding: 0.3rem 0.6rem; font-size: 0.85rem; border: none; border-radius: 4px; cursor: pointer; color: white; }
-    .btn-regenerate { background-color: #2563eb; }
-    .btn-regenerate:hover { background-color: #1e49b0; }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin – Status</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <style>.out{white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;}</style>
 </head>
 <body>
-  <h1>Admin Dashboard</h1>
-  <p>Übersicht über eingegangene Fragebögen und Möglichkeit zur erneuten PDF‑Erstellung.</p>
-  <table id="submissions">
-    <thead>
-      <tr>
-        <th>Job-ID</th>
-        <th>E-Mail</th>
-        <th>Datum</th>
-        <th>Score (%)</th>
-        <th>Aktionen</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <script src="js/config.js"></script>
-  <script>
-    async function loadSubmissions() {
-      const token = localStorage.getItem('jwt');
-      if (!token) {
-        alert('Bitte einloggen.');
-        window.location.href = '/login.html';
-        return;
-      }
-      try {
-        const baseUrl = window.ENV_BACKEND || '';
-        const res = await fetch(baseUrl + '/admin/submissions', {
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-        if (!res.ok) throw new Error('Fehler beim Laden der Daten');
-        const data = await res.json();
-        const tbody = document.querySelector('#submissions tbody');
-        tbody.innerHTML = '';
-        data.forEach(item => {
-          const tr = document.createElement('tr');
-          const created = item.created ? new Date(item.created * 1000).toLocaleString('de-DE') : '';
-          tr.innerHTML = `
-            <td>${item.job_id}</td>
-            <td>${item.user_email || ''}</td>
-            <td>${created}</td>
-            <td>${item.score_percent ?? ''}</td>
-            <td><button class="btn btn-regenerate" data-id="${item.job_id}">Neu generieren</button></td>
-          `;
-          tbody.appendChild(tr);
-        });
-        document.querySelectorAll('.btn-regenerate').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const jobId = btn.getAttribute('data-id');
-            if (!confirm('PDF für diesen Fragebogen neu generieren und versenden?')) return;
-            const res2 = await fetch(`${baseUrl}/admin/submissions/${jobId}/regenerate`, {
-              method: 'POST',
-              headers: { 'Authorization': 'Bearer ' + token }
-            });
-            const json = await res2.json();
-            if (json.ok) {
-              alert('Regeneration gestartet (Job-ID: ' + json.job_id + ').');
-            } else {
-              alert('Fehler: ' + (json.detail || json.error));
-            }
-          });
-        });
-      } catch (err) {
-        console.error(err);
-        alert('Fehler beim Laden der Einsendungen.');
-      }
-    }
-    loadSubmissions();
-  </script>
+<header class="site-header"><h1>Admin Status</h1></header>
+<main class="container">
+  <section class="card">
+    <form id="adminForm">
+      <div class="field">
+        <label for="token">JWT‑Token (role=admin)</label>
+        <input id="token" name="token" type="password" placeholder="eyJhbGciOi...">
+      </div>
+      <div class="actions">
+        <button>Aktualisieren</button>
+      </div>
+    </form>
+  </section>
+  <section class="card">
+    <h2>Ausgabe</h2>
+    <div id="out" class="out"></div>
+  </section>
+</main>
+<script src="/config.js"></script>
+<script>
+const f = document.getElementById('adminForm');
+const out = document.getElementById('out');
+f.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const token = document.getElementById('token').value.trim();
+  out.textContent = 'Lade…';
+  try {
+    const res = await fetch(window.__CONFIG__.BACKEND_BASE_URL + '/admin/status', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const text = await res.text();
+    out.innerHTML = text; // HTML vom Backend (CSP beachten)
+  } catch (err) {
+    out.textContent = 'Fehler: ' + (err && err.message ? err.message : err);
+  }
+});
+</script>
 </body>
 </html>

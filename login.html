@@ -3,58 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | KI-Check</title>
+  <title>Login | KI‑Check</title>
   <link rel="stylesheet" href="styles.css" />
-  <script src="js/config.js"></script>
   <style>
-    .popup-container { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; justify-content:center; align-items:center; z-index:1000; }
-    .popup { background:#fff; padding:2rem; border-radius:12px; max-width:420px; width:92%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.2); }
-    .popup img { max-width:160px; margin-bottom:1rem; }
-    .popup p { font-size:.95rem; margin:.8rem 0 1.2rem; color:#1c3763; }
-    .popup input, .popup button { width:100%; padding:.7rem; margin:.4rem 0; border-radius:10px; border:1px solid #dce6f5; }
-    .popup button { background:linear-gradient(90deg,#1f66ff,#18a999); color:#fff; border:none; font-weight:700; cursor:pointer; }
-    .popup button[disabled] { opacity:.6; cursor:not-allowed; }
-    .msg { margin-top:1rem; font-size:.95rem; padding:.8rem; border-radius:8px; display:none; }
-    .msg.show { display:block; }
-    .msg.info { color:#1c3763; background:#eaf6ff; border:1px solid #b5d6f6; }
-    .msg.err { color:#8b1e1e; background:#ffecec; border:1px solid #ffc7c7; }
-    .muted { font-size:.85rem; color:#5b6b7a; margin-top:.6rem; }
+    .popup-container{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;justify-content:center;align-items:center;z-index:1000}
+    .popup{background:#fff;padding:2rem;border-radius:12px;max-width:420px;width:92%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    .popup img{max-width:160px;margin-bottom:1rem}
+    .popup p{font-size:.95rem;margin:.8rem 0 1.2rem;color:#1c3763}
+    .popup input,.popup button{width:100%;padding:.7rem;margin:.4rem 0;border-radius:10px;border:1px solid #dce6f5}
+    .popup button{background:linear-gradient(90deg,#1f66ff,#18a999);color:#fff;border:none;font-weight:700;cursor:pointer}
+    .popup button[disabled]{opacity:.6;cursor:not-allowed}
+    .msg{margin-top:1rem;font-size:.95rem;padding:.8rem;border-radius:8px;display:none}
+    .msg.show{display:block}
+    .msg.info{color:#1c3763;background:#eaf6ff;border:1px solid #b5d6f6}
+    .msg.err{color:#8b1e1e;background:#ffecec;border:1px solid #ffc7c7}
+    .muted{font-size:.85rem;color:#5b6b7a;margin-top:.6rem}
   </style>
 </head>
 <body>
 
 <div class="popup-container">
-  <div class="popup">
-    <img src="ki-sicherheit-logo.webp" alt="KI-Sicherheit Logo">
-    <h2>Login für Deinen KI-Check</h2>
-    <p>Hinweis: Die Erstellung des KI-Readiness-Reports kann in der Testphase ein paar Minuten dauern.</p>
+  <div class="popup" role="dialog" aria-labelledby="h2" aria-modal="true">
+    <img src="ki-sicherheit-logo.webp" alt="KI‑Sicherheit Logo">
+    <h2 id="h2">Login für Ihren KI‑Check</h2>
+    <p>Hinweis: In der Testphase kann die Report‑Erstellung ein paar Minuten dauern.</p>
 
     <form id="login-form" novalidate>
-      <input type="email" id="email" name="email" placeholder="E-Mail" required autocomplete="username" />
-      <input type="password" id="password" name="password" placeholder="Passwort" required autocomplete="current-password" />
+      <input type="email" id="email" name="email" placeholder="E‑Mail" required autocomplete="username" inputmode="email"/>
+      <input type="password" id="password" name="password" placeholder="Passwort" required autocomplete="current-password"/>
       <button id="btn-login" type="submit">Login</button>
-      <div id="msg" class="msg"></div>
-      <div class="muted">Probleme beim Login? Bitte E-Mail & Passwort exakt wie in der Einladung verwenden (Groß-/Kleinschreibung beachten).</div>
+      <div id="msg" class="msg" role="status" aria-live="polite"></div>
+      <div class="muted">Probleme? Bitte E‑Mail & Passwort exakt wie in der Einladung verwenden (Groß‑/Kleinschreibung beachten).</div>
+      <p class="muted"><a href="index.html" aria-label="Zurück zur Startseite">← Zurück</a></p>
     </form>
   </div>
 </div>
 
+<script src="config.js"></script>
 <script>
 (function(){
-  const API = window.ENV_BACKEND || "";
+  const DEFAULT_BACKEND = "https://sublime-consideration-production.up.railway.app";
+  const API = (window.__CONFIG__ && window.__CONFIG__.BACKEND_BASE_URL) || DEFAULT_BACKEND;
+
   const form = document.getElementById("login-form");
   const btn  = document.getElementById("btn-login");
   const msg  = document.getElementById("msg");
   const emailEl = document.getElementById("email");
   const passEl  = document.getElementById("password");
 
-  function show(type, text) {
-    msg.className = "msg show " + (type === "err" ? "err" : "info");
+  function show(type, text){
+    msg.className = "msg show " + (type==="err"?"err":"info");
     msg.innerText = text;
   }
-  function loading(on) {
+  function loading(on){
     btn.disabled = !!on;
     btn.innerText = on ? "Anmeldung läuft …" : "Login";
+  }
+  function getNext(){
+    try{
+      const p = new URLSearchParams(location.search);
+      return p.get("next") || "/formular/index.html";
+    }catch(_){ return "/formular/index.html"; }
   }
 
   form.addEventListener("submit", async (e) => {
@@ -63,43 +72,50 @@
     const email = (emailEl.value || "").trim();
     const password = passEl.value || "";
 
-    if (!email || !password) {
-      show("err", "Bitte E-Mail und Passwort eingeben.");
+    if(!email || !password){
+      show("err","Bitte E‑Mail und Passwort eingeben.");
       return;
     }
+
     loading(true);
     try {
-      const res = await fetch(`${API}/api/login`, {
+      const res = await fetch(API.replace(/\/$/, '') + "/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
-      if (!res.ok) {
-        const t = await res.text().catch(()=>'');
-        show("err", `Login fehlgeschlagen (${res.status}). Bitte prüfen Sie Ihre Eingaben.`);
-        console.error("Login error:", res.status, t);
+
+      let data = null;
+      try { data = await res.json(); } catch(_) { /* text fallback ignored */ }
+
+      if(!res.ok){
+        const errText = (data && (data.detail || data.error)) || ("HTTP " + res.status);
+        show("err", "Login fehlgeschlagen: " + errText);
         loading(false);
         return;
       }
-      const data = await res.json();
+
       const jwt = data && (data.access_token || data.token);
-      if (!jwt || typeof jwt !== "string" || jwt.split(".").length !== 3) {
-        show("err", "Unerwartete Serverantwort – kein gültiges Token erhalten.");
-        console.error("Unexpected login payload:", data);
+      if(!jwt || typeof jwt !== "string" || jwt.split(".").length !== 3){
+        show("err","Unerwartete Serverantwort – kein gültiges Token erhalten.");
         loading(false);
         return;
       }
-      try { localStorage.setItem("jwt", jwt); } catch(e) {}
-      show("info", "Erfolgreich angemeldet. Weiterleiten …");
-      setTimeout(() => {
-        window.location.href = "/formular/index.html";
-      }, 350);
-    } catch(err) {
+
+      try { localStorage.setItem("jwt", jwt); } catch(_){}
+      show("info","Erfolgreich angemeldet. Weiterleiten …");
+      setTimeout(() => { window.location.href = getNext(); }, 400);
+
+    } catch(err){
       console.error("Netzwerk/Serverfehler:", err);
-      show("err", "Serverfehler. Bitte später erneut versuchen.");
+      show("err","Serverfehler. Bitte später erneut versuchen.");
+    } finally {
       loading(false);
     }
   });
+
+  // Komfort: auto-focus
+  try{ document.getElementById(emailEl.value ? "password" : "email").focus(); }catch(_){}
 })();
 </script>
 
