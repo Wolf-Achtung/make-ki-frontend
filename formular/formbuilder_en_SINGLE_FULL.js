@@ -10,11 +10,16 @@
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefing_async";
 
-  function getBaseUrl() {
-    try {
-      var meta = document.querySelector('meta[name="api-base"]');
-      var v = (meta && meta.content) || (window.API_BASE || "");
-      return String(v || "").replace(/\/+$/, "");
+  function getBaseUrl(){
+      try {
+        var cfg = window.__CONFIG__ || {};
+        var v = cfg.API_BASE || '';
+        if (!v) {
+          var meta = document.querySelector('meta[name="api-base"]');
+          v = (meta && meta.content) || (window.API_BASE || '/api');
+        }
+        return String(v || '/api').replace(/\/+$/, '');
+      } catch (e) { return '/api'; }
     } catch (e) { return ""; }
   }
   function getToken() {
