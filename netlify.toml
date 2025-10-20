@@ -18,7 +18,7 @@
   status = 200
   force = true
 
-# Conservative security headers (kept permissive for typical SPA needs)
+# Security headers with Railway backend support
 [[headers]]
   for = "/*"
   [headers.values]
@@ -28,7 +28,7 @@
     X-XSS-Protection = "0"
     Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
     Cross-Origin-Opener-Policy = "same-origin"
-    Cross-Origin-Resource-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "cross-origin"  # Geändert von "same-origin" zu "cross-origin" für externe API-Calls
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-    # CSP: allow self + inline styles/scripts typical for simple static sites; you can tighten later.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    # CSP: Erlaubt Verbindungen zum Railway-Backend und Netlify Functions
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://sublime-consideration-production.up.railway.app /.netlify/functions/*; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
