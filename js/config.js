@@ -1,3 +1,8 @@
 // filename: js/config.js
-// Global configuration for frontend -> backend base URL.
-window.ENV_BACKEND = window.ENV_BACKEND || 'https://sublime-consideration-production.up.railway.app';
+// DEPRECATED: load root config and expose legacy variable.
+(function(){
+  var s = document.createElement('script');
+  s.src = '../config.js'; // ensure root config is loaded
+  s.async = false;
+  document.currentScript.parentNode.insertBefore(s, document.currentScript);
+})();

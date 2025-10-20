@@ -1,12 +1,17 @@
 (function(){
+  'use strict';
   const form = document.getElementById('login-form');
   const msg = document.getElementById('msg');
-  const API = (window.BACKEND_URL || '').replace(/\/$/, '') + '/api';
 
   function show(type, text){
     msg.hidden = false;
     msg.className = 'msg ' + (type === 'ok' ? 'ok' : 'err');
     msg.textContent = text;
+  }
+
+  function apiBase(){
+    const cfg = window.__CONFIG__ || {};
+    return (cfg.API_BASE || '/api').replace(/\/$/, '');
   }
 
   form.addEventListener('submit', async (e) => {
@@ -15,28 +20,41 @@
     const password = document.getElementById('password').value || '';
     if(!email || !password){ show('err', 'Bitte E‑Mail und Passwort eingeben.'); return; }
 
-    try{
-      const res = await fetch(API + '/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json().catch(() => ({}));
-      if(!res.ok){
-        const reason = (data && (data.detail || data.message)) || res.status + ' ' + res.statusText;
-        show('err', 'Login fehlgeschlagen: ' + reason);
-        return;
+    const endpoints = ['/login','/auth/login','/auth_login'];
+    const base = apiBase();
+    let lastErr = null;
+    try {
+      for (const ep of endpoints){
+        try{
+          const res = await fetch(base + ep, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json', 'Accept':'application/json'},
+            body: JSON.stringify({ email, password }),
+            credentials: 'omit'
+          });
+          const ct = res.headers.get('content-type') || '';
+          const data = ct.includes('application/json') ? await res.json() : { text: await res.text() };
+          if (res.ok && data){
+            const token = data.access_token || data.token || data.jwt || data.id_token;
+            if (!token) throw new Error('Login ok, aber kein Token im Response.');
+            try { localStorage.setItem('auth_token', token); } catch(_) {}
+            show('ok', 'Login erfolgreich. Weiterleitung…');
+            setTimeout(() => {
+              const next = sessionStorage.getItem('post_login_redirect') || '/formular/index.html';
+              window.location.assign(next);
+            }, 300);
+            return;
+          } else {
+            lastErr = new Error('HTTP ' + res.status + (data && data.text ? (': ' + String(data.text).slice(0,200)) : ''));
+          }
+        }catch(err){
+          lastErr = err;
+        }
       }
-      // Persist token and redirect
-      localStorage.setItem('auth_token', data.access_token);
-      show('ok', 'Login erfolgreich. Weiterleitung…');
-      setTimeout(() => {
-        const next = sessionStorage.getItem('post_login_redirect') || '/';
-        window.location.assign(next);
-      }, 400);
-    }catch(err){
+      throw lastErr || new Error('Login fehlgeschlagen.');
+    } catch(err){
       console.error(err);
-      show('err', 'Netzwerkfehler. Bitte versuchen Sie es erneut.');
+      show('err', 'Login fehlgeschlagen. Bitte Zugangsdaten prüfen.');
     }
   });
 })();
