@@ -111,7 +111,7 @@
     </div>
 
     <script>
-        const API_BASE = 'https://make-ki-backend-neu-production.up.railway.app';
+        const API_BASE = (window.__CONFIG__ && window.__CONFIG__.BACKEND_BASE_URL) || '';
         
         function log(elementId, message, type = 'info') {
             const element = document.getElementById(elementId);
@@ -140,7 +140,7 @@
                 log('backend-result', `Response Headers: ${JSON.stringify(Object.fromEntries(response.headers))}`, 'info');
                 
                 // Test 2: Health check endpoints
-                const healthEndpoints = ['/health', '/api/health', '/api/status', '/'];
+                const healthEndpoints = ['/api/healthz', '/api/health', '/api/status', '/'];
                 
                 for (const endpoint of healthEndpoints) {
                     try {
