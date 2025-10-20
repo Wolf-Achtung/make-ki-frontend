@@ -1,12 +1,34 @@
-# filename: netlify.toml
-# Security & performance headers (no API proxy; use CORS with full backend URL configured in config.js)
+[build]
+  command = ""
+  publish = "."
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = []
+
+# In local dev (`netlify dev`), functions run on this port
+[dev]
+  functionsPort = 9999
+
+# Proxy all /api/* requests through the Netlify function.
+# The function will forward the request to your Railway backend as set in the BACKEND_ORIGIN env var.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/proxy/:splat"
+  status = 200
+  force = true
+
+# Conservative security headers (kept permissive for typical SPA needs)
 [[headers]]
   for = "/*"
   [headers.values]
-    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Referrer-Policy = "strict-origin-when-cross-origin"
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
-    Referrer-Policy = "no-referrer-when-downgrade"
+    X-XSS-Protection = "0"
     Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
-    # CSP: adjust backend origin if needed
-    Content-Security-Policy = "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; base-uri 'self'; form-action 'self' https:; frame-ancestors 'none';"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    # CSP: allow self + inline styles/scripts typical for simple static sites; you can tighten later.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
