@@ -4,37 +4,54 @@
   "use strict";
 
   // --------------------------- Konfiguration ---------------------------
-  var LANG = "de";
-  var SCHEMA_VERSION = "1.5.0";
-  var STORAGE_PREFIX = "autosave_form_";
-  var SUBMIT_PATH = "/briefing_async";
+// --------------------------- Konfiguration ---------------------------
+var LANG = "de";
+var SCHEMA_VERSION = "1.5.0";
+var STORAGE_PREFIX = "autosave_form_";
+var SUBMIT_PATH = "/briefing_async";
 
-  function getBaseUrl(){
-      try {
-        var cfg = window.__CONFIG__ || {};
-        var v = cfg.API_BASE || '';
-        if (!v) {
-          var meta = document.querySelector('meta[name="api-base"]');
-          v = (meta && meta.content) || (window.API_BASE || '/api');
-        }
-        return String(v || '/api').replace(/\/+$/, '');
-      } catch (e) { return '/api'; }
-    } .catch (e) { return ""; }
+function getBaseUrl() {
+  try {
+    var cfg = window.__CONFIG__ || {};
+    var v = cfg.API_BASE || '';
+    if (!v) {
+      var meta = document.querySelector('meta[name="api-base"]');
+      v = (meta && meta.content) || (window.API_BASE || '/api');
+    }
+    return String(v || '/api').replace(/\/+$/, '');
+  } catch (e) { 
+    return '/api'; 
   }
-  function getToken() {
-    var keys = ["jwt", "access_token", "id_token", "AUTH_TOKEN", "token"];
-    for (var i = 0; i < keys.length; i++) { try { var t = localStorage.getItem(keys[i]); if (t) return t; } catch (e) {} }
-    return null;
+}
+
+function getToken() {
+  var keys = ["jwt", "access_token", "id_token", "AUTH_TOKEN", "token"];
+  for (var i = 0; i < keys.length; i++) { 
+    try { 
+      var t = localStorage.getItem(keys[i]); 
+      if (t) return t; 
+    } catch (e) {} 
   }
-  function getEmailFromJWT(token) {
-    try { if (!token || token.split(".").length !== 3) return null;
-      var payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.email || payload.preferred_username || payload.sub || null;
-    } catch (e) { return null; }
+  return null;
+}
+
+function getEmailFromJWT(token) {
+  try { 
+    if (!token || token.split(".").length !== 3) return null;
+    var payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.email || payload.preferred_username || payload.sub || null;
+  } catch (e) { 
+    return null; 
   }
-  function dispatchProgress(step, total) {
-    try { document.dispatchEvent(new CustomEvent("fb:progress", { detail: { step: step, total: total } })); } catch (_) {}
-  }
+}
+
+function dispatchProgress(step, total) {
+  try { 
+    document.dispatchEvent(new CustomEvent("fb:progress", { 
+      detail: { step: step, total: total } 
+    })); 
+  } catch (_) {}
+}
 
   // --------------------------- Styles (inject) ---------------------------
   (function injectCSS(){ try{
