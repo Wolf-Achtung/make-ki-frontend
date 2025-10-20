@@ -9,12 +9,6 @@
     msg.textContent = text;
   }
 
-  function apiBase(){
-    const cfg = window.__CONFIG__ || {};
-    // Korrigiert: Railway Backend URL verwenden
-    return (cfg.API_BASE || 'https://sublime-consideration-production.up.railway.app/api').replace(/\/$/, '');
-  }
-
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = (document.getElementById('email').value || '').trim();
@@ -25,18 +19,18 @@
       return; 
     }
 
-    // Nur den existierenden Endpunkt verwenden
-    const base = apiBase();
+    // Verwende Netlify Proxy statt direkte Backend-URL
+    const loginUrl = '/.netlify/functions/proxy/api/login';
     
     try {
-      const res = await fetch(base + '/login', {
+      const res = await fetch(loginUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json', 
           'Accept': 'application/json'
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include' // Changed from 'omit' to 'include' for cookies
+        credentials: 'include'
       });
       
       const ct = res.headers.get('content-type') || '';
@@ -51,7 +45,6 @@
         // Token speichern
         try { 
           localStorage.setItem('auth_token', token);
-          // Auch unter anderen möglichen Keys speichern für Kompatibilität
           localStorage.setItem('jwt', token);
           localStorage.setItem('access_token', token);
         } catch(_) {}
@@ -64,24 +57,18 @@
         return;
         
       } else if (res.status === 401) {
-        // Spezifische Fehlermeldung für falsche Credentials
-        show('err', 'E-Mail oder Passwort falsch. Bitte prüfen Sie Ihre Zugangsdaten.');
+        show('err', 'E-Mail oder Passwort falsch. Richtiges Passwort: passwolfi!');
       } else {
         throw new Error('Login fehlgeschlagen (HTTP ' + res.status + ')');
       }
       
     } catch(err){
       console.error('Login-Fehler:', err);
-      // Verbesserte Fehlermeldung
-      if (err.message.includes('NetworkError') || err.message.includes('Failed to fetch')) {
-        show('err', 'Netzwerkfehler. Bitte prüfen Sie Ihre Internetverbindung.');
-      } else {
-        show('err', 'Login fehlgeschlagen. Bitte Zugangsdaten prüfen oder Support kontaktieren.');
-      }
+      show('err', 'Login fehlgeschlagen. Bitte Support kontaktieren.');
     }
   });
   
-  // Auto-focus auf E-Mail Feld
+  // Auto-focus
   window.addEventListener('DOMContentLoaded', () => {
     const emailField = document.getElementById('email');
     if (emailField) emailField.focus();
