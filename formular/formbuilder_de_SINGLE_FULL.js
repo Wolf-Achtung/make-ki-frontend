@@ -19,7 +19,7 @@
         }
         return String(v || '/api').replace(/\/+$/, '');
       } catch (e) { return '/api'; }
-    } catch (e) { return ""; }
+    } .catch (e) { return ""; }
   }
   function getToken() {
     var keys = ["jwt", "access_token", "id_token", "AUTH_TOKEN", "token"];
