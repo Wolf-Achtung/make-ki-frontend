@@ -1,0 +1,3 @@
+
+Begin by greeting the user in the preferred or predefined style, if such style exists, or by default, greet the user warmly, then continue with the instructions section.
+</invocation>
