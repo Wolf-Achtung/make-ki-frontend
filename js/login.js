@@ -1,30 +1,68 @@
-(async function(){
-  const q = new URLSearchParams(location.search);
-  if (q.get('email')) document.getElementById('email').value = q.get('email');
+(function(){
+  "use strict";
 
-  const msg = document.getElementById('msg');
-  function setMsg(t){ msg.textContent = t; }
-  function showCode(){ document.getElementById('code-box').classList.remove('hidden'); }
-
-  document.getElementById('btn-request').addEventListener('click', async function(){
+  function apiBase(){
     try{
-      const email = document.getElementById('email').value.trim();
-      if (!email) return setMsg('Bitte E‑Mail eingeben.');
-      const r = await API.request('/auth/request-code', { method:'POST', body: JSON.stringify({ email }) });
-      setMsg('Code gesendet. Prüfen Sie Ihr Postfach.' + (r.dev_code ? ' DEV-Code: ' + r.dev_code : ''));
-      showCode();
-      if (q.get('code')) document.getElementById('code').value = q.get('code');
-    }catch(e){ setMsg('Fehler: ' + e.message); }
-  });
+      var meta = document.querySelector('meta[name="api-base"]');
+      return (meta && meta.content) || (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '/api';
+    } catch(_) { return '/api'; }
+  }
+  function setMsg(t){ var el=document.getElementById('msg'); if(el) el.textContent=t||''; }
+  function setErr(t){ var el=document.getElementById('err'); if(!el)return; el.textContent=t||''; el.hidden=!t; }
+  function byId(id){ return document.getElementById(id); }
 
-  document.getElementById('btn-login').addEventListener('click', async function(){
-    try{
-      const email = document.getElementById('email').value.trim();
-      const code = document.getElementById('code').value.trim();
-      const r = await API.request('/auth/login', { method:'POST', body: JSON.stringify({ email, code }) });
-      localStorage.setItem('jwt', r.token);
-      setMsg('Erfolgreich eingeloggt.');
-      location.href = '/formular/index.html';
-    }catch(e){ setMsg('Login fehlgeschlagen: ' + e.message); }
-  });
+  var btnReq = byId('btn-request');
+  var btnLogin = byId('btn-login');
+  var emailEl = byId('email');
+  var codeArea = byId('code-area');
+  var codeEl = byId('code');
+
+  if(btnReq){
+    btnReq.addEventListener('click', async function(){
+      setErr(''); setMsg('Sende Code …');
+      var email = (emailEl.value || '').trim().toLowerCase();
+      if(!email || email.indexOf('@')===-1){ setErr('Bitte gültige E‑Mail eingeben.'); setMsg(''); return; }
+      try{
+        var res = await fetch(apiBase() + '/auth/request-code', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({email: email})
+        });
+        if(!res.ok){ throw new Error('Fehler ' + res.status); }
+        var data = await res.json().catch(function(){ return {}; });
+        setMsg('Code gesendet. Bitte Posteingang prüfen.' + (data.dev_code ? ' (DEV: '+data.dev_code+')' : ''));
+        codeArea.style.display = 'block';
+        codeEl && codeEl.focus();
+      }catch(e){
+        setErr('Senden fehlgeschlagen. ' + (e && e.message ? e.message : ''));
+        setMsg('');
+      }
+    });
+  }
+
+  if(btnLogin){
+    btnLogin.addEventListener('click', async function(){
+      setErr(''); setMsg('Anmeldung …');
+      var email = (emailEl.value || '').trim().toLowerCase();
+      var code = (codeEl.value || '').trim();
+      if(!email || !code){ setErr('E‑Mail und Code eingeben.'); setMsg(''); return; }
+      try{
+        var res = await fetch(apiBase() + '/auth/login', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({email: email, code: code})
+        });
+        if(!res.ok){
+          var txt = await res.text().catch(function(){ return ''; });
+          throw new Error('Login fehlgeschlagen (' + res.status + '). ' + txt);
+        }
+        var data = await res.json();
+        if(!(data && data.token)){ throw new Error('Kein Token erhalten'); }
+        try{ localStorage.setItem('jwt', data.token); }catch(_){}
+        setMsg('Erfolg. Weiterleitung …');
+        location.href = '/formular/index.html';
+      }catch(e){
+        setErr(String(e && e.message ? e.message : e || 'Unbekannter Fehler'));
+        setMsg('');
+      }
+    });
+  }
 })();
