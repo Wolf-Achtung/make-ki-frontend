@@ -3,39 +3,58 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login – KI-Readiness</title>
+  <title>Login – KI‑Readiness</title>
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="/styles.css">
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
-    .card { max-width: 520px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; }
-    label { display:block; margin: 8px 0 4px; }
-    input[type="email"], input[type="text"] { width: 100%; padding: 10px; border:1px solid #cbd5e1; border-radius:8px; }
-    button { margin-top: 12px; padding: 10px 14px; border-radius: 10px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; cursor: pointer; }
-    .muted { color:#64748b; }
-    .hidden { display:none; }
+    .login-wrap { max-width: 1100px; margin: 0 auto; padding: 8vh 2vw 10vh 2vw; display:flex; gap:36px; align-items:flex-start; }
+    .login-hero { flex: 1 1 300px; min-width: 260px; }
+    .login-hero img { max-width: 360px; width: 100%; height: auto; border-radius: 16px; box-shadow: 0 6px 30px #18324a16; }
+    .login-card { flex: 1 1 520px; background:#fff; border-radius:16px; padding:26px 26px 22px 26px; box-shadow:0 6px 30px #18324a16; border:1px solid #e6edf3; }
+    .headline { font-family:'Share Tech Mono', monospace; color:#224664; font-size:2.0rem; margin:0 0 8px 0; }
+    .sub { color:#3b566d; margin:0 0 14px 0; }
+    label { font-weight:600; color:#224664; display:block; margin:12px 0 6px 0; }
+    input[type="email"], input[type="text"] { width:100%; font-size:1rem; padding:10px 14px; border-radius:10px; border:2px solid #b7c9d8; background:#f7faff; outline:none; }
+    input:focus { border-color:#08385d; background:#fff; }
+    .btn-row { display:flex; gap:12px; align-items:center; margin-top:12px; }
+    .hint { color:#58728a; font-size:0.98rem; margin-top:6px; }
+    .err { color:#b42318; margin-top:8px; }
+    @media (max-width: 900px){ .login-wrap { flex-direction: column; align-items: center; } .login-hero img { max-width: 85vw; } }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Login</h1>
-    <p class="muted">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
-    <label for="email">E‑Mail</label>
-    <input id="email" type="email" placeholder="name@firma.de" autocomplete="email" required>
-    <button id="btn-request">Code anfordern</button>
-
-    <div id="code-box" class="hidden">
-      <label for="code">Code</label>
-      <input id="code" type="text" inputmode="numeric" maxlength="6" placeholder="123456">
-      <button id="btn-login">Einloggen</button>
+  <main class="login-wrap">
+    <div class="login-hero">
+      <img src="/vorlage.png" alt="KI‑Readiness Illustration">
     </div>
 
-    <p id="msg" class="muted"></p>
-  </div>
+    <section class="login-card" aria-labelledby="h1">
+      <h1 id="h1" class="headline">Login</h1>
+      <p class="sub">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
 
-  <script src="/js/config.js"></script>
-  <script src="/js/api.js"></script>
+      <form id="login-form" novalidate>
+        <label for="email">E‑Mail</label>
+        <input type="email" id="email" name="email" placeholder="ihr.name@firma.de" autocomplete="email" required>
+
+        <div class="btn-row">
+          <button type="button" class="btn" id="btn-request">Code anfordern</button>
+        </div>
+
+        <div id="code-area" style="display:none">
+          <label for="code">Code</label>
+          <input type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="6" maxlength="6">
+          <div class="btn-row">
+            <button type="button" class="btn" id="btn-login">Einloggen</button>
+          </div>
+        </div>
+
+        <p id="msg" class="hint" role="status"></p>
+        <p id="err" class="err" role="alert" hidden></p>
+      </form>
+    </section>
+  </main>
+
   <script src="/js/login.js"></script>
 </body>
 </html>
