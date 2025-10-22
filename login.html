@@ -2,49 +2,40 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Login – KI‑Sicherheit</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <meta name="color-scheme" content="light dark">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login – KI-Readiness</title>
+  <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/styles.css">
   <style>
-    :root{--bg:#0b1220;--card:#fff;--text:#0b1220;--muted:#6b7280;--brand:#1d4ed8;--brand-2:#10b981}
-    @media (prefers-color-scheme: dark){:root{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--brand:#60a5fa;--brand-2:#34d399}}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--text);display:grid;place-items:center;min-height:100vh}
-    .card{background:var(--card);border-radius:16px;box-shadow:0 6px 30px rgba(0,0,0,.2);padding:28px;max-width:480px;width:92%}
-    h1{font-size:1.25rem;margin:0 0 6px 0}
-    p{margin:8px 0;color:var(--muted);font-size:.95rem}
-    label{display:block;margin:14px 0 6px 0}
-    input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #e5e7eb;background:transparent;color:inherit}
-    button{width:100%;padding:12px 16px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;font-weight:600;margin-top:14px;cursor:pointer}
-    .note{font-size:.85rem;text-align:center;color:var(--muted)}
-    .msg{margin-top:12px;padding:10px;border-radius:8px}
-    .msg.ok{background:#ecfdf5;color:#065f46}
-    .msg.err{background:#fef2f2;color:#991b1b}
-    small a{color:inherit}
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+    .card { max-width: 520px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; }
+    label { display:block; margin: 8px 0 4px; }
+    input[type="email"], input[type="text"] { width: 100%; padding: 10px; border:1px solid #cbd5e1; border-radius:8px; }
+    button { margin-top: 12px; padding: 10px 14px; border-radius: 10px; border: 1px solid #0ea5e9; background: #0ea5e9; color: #fff; cursor: pointer; }
+    .muted { color:#64748b; }
+    .hidden { display:none; }
   </style>
 </head>
 <body>
-  <main class="card" role="main" aria-labelledby="title">
-    <h1 id="title">Login für Ihren KI‑Check</h1>
-    <p>Hinweis: In der Testphase kann die Report‑Erstellung ein paar Minuten dauern.</p>
-    <form id="login-form" novalidate>
-      <label for="email">E‑Mail</label>
-      <input id="email" name="email" type="email" autocomplete="email" required inputmode="email" placeholder="ihr.name@firma.de">
-      <label for="password">Passwort</label>
-      <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••">
-      <button type="submit">Login</button>
-      <p class="note">Probleme? Bitte E‑Mail &amp; Passwort exakt wie in der Einladung verwenden (Groß-/Kleinschreibung beachten).</p>
-      <div id="msg" class="msg" hidden aria-live="polite"></div>
-    </form>
-    <p class="note"><small>Datenschutz: Ihre Zugangsdaten werden ausschließlich zur Authentifizierung verwendet. <a href="/datenschutz.html">Mehr</a>.</small></p>
-  </main>
+  <div class="card">
+    <h1>Login</h1>
+    <p class="muted">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
+    <label for="email">E‑Mail</label>
+    <input id="email" type="email" placeholder="name@firma.de" autocomplete="email" required>
+    <button id="btn-request">Code anfordern</button>
 
-  <script>
-    // --- CONFIG ---
-    // Netlify environment: set BACKEND_URL in site settings. Fallback to same origin.
-    window.BACKEND_URL = window.BACKEND_URL || (window.NETLIFY ? window.NETLIFY.env.BACKEND_URL : "") || "";
-  </script>
-  <script src="./js/login.js" defer></script>
+    <div id="code-box" class="hidden">
+      <label for="code">Code</label>
+      <input id="code" type="text" inputmode="numeric" maxlength="6" placeholder="123456">
+      <button id="btn-login">Einloggen</button>
+    </div>
+
+    <p id="msg" class="muted"></p>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/login.js"></script>
 </body>
 </html>
