@@ -1,12 +1,4 @@
-# Netlify config – relaxed but safe CSP for API calls
-# Place this file at the ROOT of your Netlify site repo.
-
 [[headers]]
 for = "/*"
   [headers.values]
-  # Allow API calls to Railway backend + local dev
-  Content-Security-Policy = "default-src 'self'; connect-src 'self' https://api-ki-backend-neu-production.up.railway.app https://*.netlify.app http://localhost:8000 http://127.0.0.1:8000; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'"
-  Referrer-Policy = "strict-origin-when-cross-origin"
-  X-Content-Type-Options = "nosniff"
-  X-Frame-Options = "DENY"
-  Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+  Content-Security-Policy = "default-src 'self'; connect-src 'self' https://api-ki-backend-neu-production.up.railway.app https://*.netlify.app http://localhost:8000 http://127.0.0.1:8000; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'"
