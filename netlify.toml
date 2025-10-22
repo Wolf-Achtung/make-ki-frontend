@@ -1,34 +1,12 @@
-[build]
-  command = ""
-  publish = "."
+# Netlify config – relaxed but safe CSP for API calls
+# Place this file at the ROOT of your Netlify site repo.
 
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = []
-
-# In local dev (`netlify dev`), functions run on this port
-[dev]
-  functionsPort = 9999
-
-# Proxy all /api/* requests through the Netlify function.
-# The function will forward the request to your Railway backend as set in the BACKEND_ORIGIN env var.
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/proxy/:splat"
-  status = 200
-  force = true
-
-# Security headers with Railway backend support
 [[headers]]
-  for = "/*"
+for = "/*"
   [headers.values]
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "0"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
-    Cross-Origin-Opener-Policy = "same-origin"
-    Cross-Origin-Resource-Policy = "cross-origin"  # Geändert von "same-origin" zu "cross-origin" für externe API-Calls
-    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-    # CSP: Erlaubt Verbindungen zum Railway-Backend und Netlify Functions
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://sublime-consideration-production.up.railway.app /.netlify/functions/*; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  # Allow API calls to Railway backend + local dev
+  Content-Security-Policy = "default-src 'self'; connect-src 'self' https://api-ki-backend-neu-production.up.railway.app https://*.netlify.app http://localhost:8000 http://127.0.0.1:8000; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  X-Content-Type-Options = "nosniff"
+  X-Frame-Options = "DENY"
+  Permissions-Policy = "geolocation=(), microphone=(), camera=()"
