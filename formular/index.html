@@ -1,27 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="robots" content="noindex, nofollow"/>
-  <meta name="api-base" content="">
-  <title>Fragebogen – KI-Status-Report</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fragebogen – KI-Readiness</title>
+  <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/formular/formular.css">
   <style>
-    :root { --bg:#f7f9fb; --fg:#0d2b4a; --muted:#6b7280; }
-    * { box-sizing:border-box; }
-    body { font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif; background:var(--bg); color:var(--fg); margin:0; line-height:1.5; }
-    main { max-width:960px; margin:0 auto; padding:2rem; }
-    .muted { color:var(--muted); }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 10px; }
+    #app { max-width: 1000px; margin: 0 auto; }
   </style>
-  <script src="../config.js"></script>
-  <script src="../js/api.js" defer></script>
 </head>
 <body>
-<main>
-  <h1>Fragebogen</h1>
-  <p class="muted">Die Auswertung erfolgt im Hintergrund; das Ergebnis erscheint im Anschluss automatisch.</p>
-  <div id="formbuilder"></div>
-</main>
-<script src="formbuilder_de_SINGLE_FULL.js"></script>
+  <div id="app">
+    <h1>Fragebogen</h1>
+    <div id="form-root"></div>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/api.js"></script>
+  <!-- Laden der bestehenden Formbuilder-Logik -->
+  <script src="/formular/formbuilder_de_SINGLE_FULL.js"></script>
 </body>
 </html>
