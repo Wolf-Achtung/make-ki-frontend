@@ -4,50 +4,189 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Datenschutzerklärung – KI-Sicherheit.jetzt</title>
+  <link rel="stylesheet" href="styles.css" />
   <style>
+    /* Popup-spezifische Anpassungen */
     body {
-      font-family: 'IBM Plex Mono', monospace;
-      background-color: #f7f9fb;
-      color: #0d2b4a;
-      padding: 2rem;
-      max-width: 800px;
-      margin: auto;
+      padding: 0;
+      margin: 0;
+      background: #f0f6fa;
     }
-    h1, h2 {
-      color: #0d2b4a;
+    
+    .datenschutz-container {
+      max-width: 670px;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 4px 32px rgba(24,53,91,0.09), 0 1.5px 8px rgba(24,53,91,0.11);
+      padding: 38px 32px 26px 32px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
-    p {
-      margin-bottom: 1.2rem;
+    
+    .datenschutz-header {
+      margin-bottom: 2em;
+      border-bottom: 2px solid #dde8f3;
+      padding-bottom: 1.2em;
     }
-    a {
-      color: #003b5a;
+    
+    .datenschutz-header h1 {
+      font-size: 2.13rem;
+      font-weight: 700;
+      margin: 0 0 0.3em 0;
+      color: #062452;
+      letter-spacing: -0.011em;
+    }
+    
+    .datenschutz-section {
+      margin-bottom: 2.2em;
+    }
+    
+    .datenschutz-section h2 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #1c3763;
+      margin: 0 0 0.8em 0;
+      letter-spacing: 0.004em;
+    }
+    
+    .datenschutz-section p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #18355b;
+      margin-bottom: 1rem;
+    }
+    
+    .datenschutz-section a {
+      color: #1863a7;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .datenschutz-section a:hover {
+      color: #2d8cff;
       text-decoration: underline;
+    }
+    
+    .datenschutz-section strong {
+      color: #1c3763;
+      font-weight: 600;
+    }
+    
+    .contact-info {
+      background: #f2f9ff;
+      padding: 1.2em 1.5em;
+      border-radius: 12px;
+      border: 1.5px solid #dde8f3;
+      margin: 1em 0;
+    }
+    
+    .copyright {
+      text-align: center;
+      padding-top: 2em;
+      margin-top: 2em;
+      border-top: 1.6px solid #dde8f3;
+      color: #18355b;
+      opacity: 0.87;
+      font-size: 0.95rem;
+    }
+    
+    /* Scrollbar-Styling */
+    .datenschutz-container::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    .datenschutz-container::-webkit-scrollbar-track {
+      background: #f0f6fa;
+      border-radius: 10px;
+    }
+    
+    .datenschutz-container::-webkit-scrollbar-thumb {
+      background: #b5d6f6;
+      border-radius: 10px;
+    }
+    
+    .datenschutz-container::-webkit-scrollbar-thumb:hover {
+      background: #2d8cff;
+    }
+    
+    @media (max-width: 690px) {
+      .datenschutz-container {
+        margin: 10px;
+        padding: 20px 18px;
+        border-radius: 16px;
+      }
+      
+      .datenschutz-header h1 {
+        font-size: 1.6rem;
+      }
+      
+      .datenschutz-section h2 {
+        font-size: 1.15rem;
+      }
     }
   </style>
 </head>
 <body>
-<h1>Datenschutzerklärung</h1>
+  <div class="datenschutz-container">
+    <div class="datenschutz-header">
+      <h1>Datenschutzerklärung</h1>
+    </div>
 
-<h2>Verantwortliche Stelle</h2>
-<p>Wolf Hohl, TÜV-zertifiziertes KI-Management<br>
-Berlin, Deutschland<br>
-E-Mail: kontakt@ki-sicherheit.jetzt</p>
+    <div class="datenschutz-section">
+      <h2>Verantwortliche Stelle</h2>
+      <div class="contact-info">
+        <p style="margin-bottom: 0;">
+          <strong>Wolf Hohl</strong>, TÜV-zertifiziertes KI-Management<br>
+          Berlin, Deutschland<br>
+          E-Mail: <a href="mailto:kontakt@ki-sicherheit.jetzt">kontakt@ki-sicherheit.jetzt</a>
+        </p>
+      </div>
+    </div>
 
-<h2>Datenverarbeitung durch KI-Tools</h2>
-<p>Zur Erstellung Ihres Executive-Briefings verarbeiten wir Ihre Angaben mittels eines Sprachmodells (GPT).
-Die Verarbeitung kann auf Servern außerhalb der EU stattfinden. Es werden ausschließlich die von Ihnen angegebenen Informationen übermittelt.
-Eine Speicherung über den Analyseprozess hinaus erfolgt nicht.</p>
+    <div class="datenschutz-section">
+      <h2>Datenverarbeitung durch KI-Tools</h2>
+      <p>
+        Zur Erstellung Ihres Executive-Briefings verarbeiten wir Ihre Angaben mittels 
+        Sprachmodellen (LLM). Die Verarbeitung findet ausschließlich auf Servern innerhalb 
+        der EU statt, sinngemäß der DSGVO sowie des EU AI-Acts. Es werden ausschließlich 
+        die von Ihnen angegebenen Informationen übermittelt. Eine Speicherung über den 
+        Analyseprozess hinaus erfolgt nicht.
+      </p>
+    </div>
 
-<h2>Rechtsgrundlage & Widerruf</h2>
-<p><strong>Rechtsgrundlage:</strong> Ihre Einwilligung gem. Art. 6 Abs. 1 lit. a DSGVO.</p>
-<p><strong>Widerruf:</strong> Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen. Senden Sie hierzu einfach eine E-Mail an <a href="mailto:kontakt@ki-sicherheit.jetzt">kontakt@ki-sicherheit.jetzt</a>.</p>
+    <div class="datenschutz-section">
+      <h2>Rechtsgrundlage & Widerruf</h2>
+      <p>
+        <strong>Rechtsgrundlage:</strong> Ihre Einwilligung gem. Art. 6 Abs. 1 lit. a DSGVO.
+      </p>
+      <p>
+        <strong>Widerruf:</strong> Sie können Ihre Einwilligung jederzeit mit Wirkung für 
+        die Zukunft widerrufen. Senden Sie hierzu einfach eine E-Mail an 
+        <a href="mailto:kontakt@ki-sicherheit.jetzt">kontakt@ki-sicherheit.jetzt</a>.
+      </p>
+    </div>
 
-<h2>Haftungshinweis</h2>
-<p>Die generierten Auswertungen stellen keine Rechts- oder Steuerberatung dar. Für die Umsetzung bleibt Ihr Unternehmen verantwortlich.</p>
+    <div class="datenschutz-section">
+      <h2>Haftungshinweis</h2>
+      <p>
+        Die generierten Auswertungen stellen keine Rechts- oder Steuerberatung dar. 
+        Für die Umsetzung bleibt Ihr Unternehmen verantwortlich.
+      </p>
+    </div>
 
-<h2>Weitere Hinweise</h2>
-<p>Mehr Informationen zu allgemeinen Datenschutzrechten finden Sie bei Ihrer Aufsichtsbehörde oder unter <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj">EU-DSGVO</a>.</p>
+    <div class="datenschutz-section">
+      <h2>Weitere Hinweise</h2>
+      <p>
+        Mehr Informationen zu allgemeinen Datenschutzrechten finden Sie bei Ihrer 
+        Aufsichtsbehörde oder unter 
+        <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj" target="_blank" rel="noopener">EU-DSGVO</a>.
+      </p>
+    </div>
 
-<p>© 2025 KI-Sicherheit.jetzt</p>
+    <div class="copyright">
+      © 2025 KI-Sicherheit.jetzt
+    </div>
+  </div>
 </body>
 </html>
