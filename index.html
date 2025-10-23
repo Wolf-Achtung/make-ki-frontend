@@ -14,9 +14,6 @@
       background: #ffffff;
       color: #0d2b4a;
       line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
       padding: 2rem 1rem;
     }
     
@@ -24,27 +21,28 @@
       max-width: 1100px;
       width: 100%;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
     }
     
-    .hero-section {
+    .content-wrapper {
       display: flex;
       gap: 3rem;
-      align-items: center;
-      margin-bottom: 3rem;
+      align-items: flex-start;
     }
     
-    .hero-image {
+    .left-column {
       flex: 0 0 380px;
     }
     
-    .hero-image img {
+    .right-column {
+      flex: 1;
+    }
+    
+    .left-column img {
       width: 100%;
       height: auto;
       border-radius: 12px;
-    }
-    
-    .hero-content {
-      flex: 1;
     }
     
     h1 {
@@ -85,7 +83,7 @@
       display: flex;
       gap: 2.5rem;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       margin: 3rem 0 2rem;
       flex-wrap: wrap;
     }
@@ -101,7 +99,7 @@
     }
     
     .cta-section {
-      text-align: center;
+      text-align: left;
       margin: 2rem 0;
     }
     
@@ -141,7 +139,7 @@
     .button-group {
       display: flex;
       gap: 1rem;
-      justify-content: center;
+      justify-content: flex-start;
       flex-wrap: wrap;
     }
     
@@ -162,7 +160,7 @@
     .testimonials-section h2 {
       font-size: 1.5rem;
       color: #08385d;
-      text-align: center;
+      text-align: left;
       margin-bottom: 1.5rem;
     }
     
@@ -170,15 +168,15 @@
       position: relative;
       height: 70px;
       overflow: hidden;
-      text-align: center;
+      text-align: left;
     }
     
     .testimonial {
       position: absolute;
       top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%;
+      left: 0;
+      transform: translateY(-50%);
+      width: 100%;
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
       color: #3b566d;
@@ -191,22 +189,18 @@
     }
     
     @media (max-width: 968px) {
-      .hero-section {
+      .content-wrapper {
         flex-direction: column;
         gap: 2rem;
       }
       
-      .hero-image {
+      .left-column {
         flex: 0 0 auto;
         max-width: 380px;
       }
       
       h1 {
         font-size: 2rem;
-      }
-      
-      .cta-section {
-        padding: 1.5rem;
       }
     }
     
@@ -226,12 +220,12 @@
 
 <div class="container">
   
-  <section class="hero-section">
-    <div class="hero-image">
+  <div class="content-wrapper">
+    <div class="left-column">
       <img src="badges/ki-building.webp" alt="KI-Sicherheit Illustration" onerror="this.style.display='none'">
     </div>
     
-    <div class="hero-content">
+    <div class="right-column">
       <h1>Zertifiziert. Dokumentiert. KI‑konform.</h1>
       
       <p class="lead">
@@ -242,36 +236,36 @@
         <li><strong>✓ DSGVO- & EU AI Act‑konform</strong></li>
         <li><strong>✓ mit detaillierter Risikoanalyse</strong></li>
         <li><strong>✓ mit konkreten Empfehlungen & Tools</strong></li>
-        <li><strong>✓ TÜV‑zertifiziertes KI-Beratungs-Management</strong></li>
+        <li><strong>✓ TÜV‑zertifizierte Beratung</strong></li>
       </ul>
+      
+      <section class="cta-section">
+        <div class="button-group">
+          <a id="ctaLogin" href="login.html" class="button">Jetzt KI-Check starten</a>
+        </div>
+      </section>
+      
+      <section class="testimonials-section">
+        <h2>Ihre konkreten Vorteile</h2>
+        <div class="testimonial-slider">
+          <div class="testimonial show">„Endlich konkrete Maßnahmen statt nur Theorie."</div>
+          <div class="testimonial">„Perfekt für die Investor-Kommunikation."</div>
+          <div class="testimonial">„EU AI Act? Jetzt weiß ich, wo ich stehe."</div>
+          <div class="testimonial">„Schneller Check, klare Handlungsempfehlungen."</div>
+          <div class="testimonial">„Spart mir Stunden bei der Risikoanalyse."</div>
+          <div class="testimonial">„Zeigt sofort die DSGVO-Lücken auf."</div>
+          <div class="testimonial">„Strukturiert, verständlich, umsetzbar."</div>
+        </div>
+      </section>
+      
+      <section class="badges-bottom">
+        <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
+        <img src="badges/dsgvo.svg" alt="DSGVO konform">
+        <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+        <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
+      </section>
     </div>
-  </section>
-  
-  <section class="cta-section">
-    <div class="button-group">
-      <a id="ctaLogin" href="login.html" class="button">Jetzt KI-Check starten</a>
-    </div>
-  </section>
-  
-  <section class="testimonials-section">
-    <h2>Ihre konkreten Vorteile</h2>
-    <div class="testimonial-slider">
-      <div class="testimonial show">„Endlich konkrete Maßnahmen statt nur Theorie."</div>
-      <div class="testimonial">„Perfekt für die Investor-Kommunikation."</div>
-      <div class="testimonial">„EU AI Act? Jetzt weiß ich, wo ich stehe."</div>
-      <div class="testimonial">„Schneller Check, klare Handlungsempfehlungen."</div>
-      <div class="testimonial">„Spart mir Stunden bei der Risikoanalyse."</div>
-      <div class="testimonial">„Zeigt sofort die DSGVO-Lücken auf."</div>
-      <div class="testimonial">„Strukturiert, verständlich, umsetzbar."</div>
-    </div>
-  </section>
-  
-  <section class="badges-bottom">
-    <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
-    <img src="badges/dsgvo.svg" alt="DSGVO konform">
-    <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-    <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
-  </section>
+  </div>
   
 </div>
 
