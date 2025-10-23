@@ -6,60 +6,199 @@
   <title>Login — KI‑Readiness</title>
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/styles.css">
   <style>
-    /* Fallback, falls eine alte dunkle styles.css deployed ist */
-    html, body { background: #f9fafb !important; color: #224664 !important; }
-    .login-wrap { max-width: 1100px; margin: 0 auto; padding: 8vh 2vw 10vh 2vw; display:flex; gap:36px; align-items:flex-start; }
-    .login-hero { flex: 1 1 300px; min-width: 260px; }
-    .login-hero img { max-width: 360px; width: 100%; height: auto; border-radius: 16px; box-shadow: 0 6px 30px #18324a16; }
-    .login-card { flex: 1 1 520px; background:#fff; border-radius:16px; padding:26px 26px 22px 26px; box-shadow:0 6px 30px #18324a16; border:1px solid #e6edf3; }
-    .headline { font-family:'Share Tech Mono', monospace; color:#224664; font-size:2.0rem; margin:0 0 8px 0; }
-    .sub { color:#3b566d; margin:0 0 14px 0; }
-    label { font-weight:600; color:#224664; display:block; margin:12px 0 6px 0; }
-    input[type="email"], input[type="text"] { width:100%; font-size:1rem; padding:10px 14px; border-radius:10px; border:2px solid #b7c9d8; background:#f7faff; outline:none; }
-    input:focus { border-color:#08385d; background:#fff; }
-    .btn-row { display:flex; gap:12px; align-items:center; margin-top:12px; }
-    .hint { color:#58728a; font-size:0.98rem; margin-top:6px; }
-    .err { color:#b42318; margin-top:8px; }
-    .btn { background: linear-gradient(135deg, #08385d 0%, #224664 100%); color: #fff; font-weight: 600; font-size: 1rem; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(8, 56, 93, 0.2); }
-    .btn:hover { background: linear-gradient(135deg, #0a4470 0%, #2a5578 100%); box-shadow: 0 4px 12px rgba(8, 56, 93, 0.3); transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(8, 56, 93, 0.3); }
-    @media (max-width: 900px){ .login-wrap { flex-direction: column; align-items: center; } .login-hero img { max-width: 85vw; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: #ffffff;
+      color: #0d2b4a;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    .login-container {
+      max-width: 1100px;
+      width: 100%;
+      display: flex;
+      gap: 4rem;
+      align-items: center;
+    }
+    
+    .login-image {
+      flex: 0 0 400px;
+    }
+    
+    .login-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(8, 56, 93, 0.1);
+    }
+    
+    .login-form-wrapper {
+      flex: 1;
+      max-width: 480px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      color: #08385d;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .subtitle {
+      color: #3b566d;
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      color: #08385d;
+      margin-bottom: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    input[type="email"], 
+    input[type="text"] {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.9rem 1rem;
+      border-radius: 10px;
+      border: 2px solid #d4e3f0;
+      background: #f7f9fb;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    
+    input:focus {
+      border-color: #08385d;
+      background: #fff;
+    }
+    
+    .button {
+      background: #08385d;
+      color: #fff;
+      border: none;
+      padding: 0.9rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(8, 56, 93, 0.2);
+      margin-top: 1rem;
+    }
+    
+    .button:hover {
+      background: #0a4470;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(8, 56, 93, 0.3);
+    }
+    
+    .button:active {
+      transform: translateY(0);
+    }
+    
+    #code-area {
+      margin-top: 1.5rem;
+    }
+    
+    .hint {
+      color: #3b566d;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+    }
+    
+    .err {
+      color: #d32f2f;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+    
+    @media (max-width: 968px) {
+      .login-container {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      
+      .login-image {
+        flex: 0 0 auto;
+        max-width: 400px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      body {
+        padding: 1.5rem;
+      }
+      
+      h1 {
+        font-size: 1.75rem;
+      }
+      
+      .button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <main class="login-wrap">
-    <div class="login-hero">
-      <img src="/assets/vorlage.webp" alt="KI‑Readiness Illustration" onerror="this.style.display='none'">
-    </div>
 
-    <section class="login-card" aria-labelledby="h1">
-      <h1 id="h1" class="headline">Login</h1>
-      <p class="sub">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
+<div class="login-container">
+  <div class="login-image">
+    <img src="badges/ki-robot.webp" alt="KI‑Readiness Illustration" onerror="this.style.display='none'">
+  </div>
 
-      <form id="login-form" novalidate>
-        <label for="email">E‑Mail</label>
-        <input type="email" id="email" name="email" placeholder="ihr.name@firma.de" autocomplete="email" required>
+  <div class="login-form-wrapper">
+    <h1>Login</h1>
+    <p class="subtitle">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
 
-        <div class="btn-row">
-          <button type="button" class="btn" id="btn-request">Code anfordern</button>
-        </div>
+    <form id="login-form" novalidate>
+      <label for="email">E‑Mail</label>
+      <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        placeholder="ihr.name@firma.de" 
+        autocomplete="email" 
+        required
+      >
 
-        <div id="code-area" style="display:none">
-          <label for="code">Code</label>
-          <input type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="6" maxlength="6">
-          <div class="btn-row">
-            <button type="button" class="btn" id="btn-login">Einloggen</button>
-          </div>
-        </div>
+      <button type="button" class="button" id="btn-request">Code anfordern</button>
 
-        <p id="msg" class="hint" role="status"></p>
-        <p id="err" class="err" role="alert" hidden></p>
-      </form>
-    </section>
-  </main>
+      <div id="code-area" style="display:none">
+        <label for="code">Code</label>
+        <input 
+          type="text" 
+          id="code" 
+          name="code" 
+          inputmode="numeric" 
+          autocomplete="one-time-code" 
+          placeholder="123456" 
+          minlength="6" 
+          maxlength="6"
+        >
+        <button type="button" class="button" id="btn-login">Einloggen</button>
+      </div>
 
-  <script src="/js/login.js"></script>
+      <p id="msg" class="hint" role="status"></p>
+      <p id="err" class="err" role="alert" hidden></p>
+    </form>
+  </div>
+</div>
+
+<script src="/js/login.js"></script>
 </body>
 </html>
