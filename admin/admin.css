@@ -1,0 +1,20 @@
+/* admin/admin.css additions for Auto-Refresh & Toast */
+.toast{
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  background: #0b3b8f;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(11,59,143,.25);
+  opacity: 0;
+  transition: opacity .25s ease, transform .25s ease;
+  transform: translateY(-8px);
+  z-index: 9999;
+  max-width: 60vw;
+  font-size: 14px;
+}
+.toast.show{ opacity: 1; transform: translateY(0); }
+.toast.warn{ background: #b45309; }
+.toast.err{ background: #b42318; }
