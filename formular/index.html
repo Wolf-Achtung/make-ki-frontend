@@ -20,6 +20,7 @@
     .progress { font-size:0.95rem; color:#35597a; background:#e7f0fb; padding:6px 12px; border-radius:999px; }
     #formbuilder { min-height: 420px; }
     .notice { color:#58728a; margin:8px 0 14px 0; }
+    .noscript { padding:12px 14px; border-radius:10px; background:#fff3cd; color:#7c5300; border:1px solid #ffe69c; }
   </style>
 </head>
 <body>
@@ -30,6 +31,7 @@
         <span class="progress" id="fb-progress" aria-live="polite"></span>
       </div>
       <p class="notice" id="guard" hidden>Bitte zuerst einloggen.</p>
+      <noscript><p class="noscript">Bitte JavaScript aktivieren – der Fragebogen benötigt JavaScript.</p></noscript>
 
       <!-- WICHTIG: Der Formbuilder erwartet genau dieses Element -->
       <div id="formbuilder"></div>
@@ -55,6 +57,9 @@
       el.textContent = 'Schritt ' + e.detail.step + ' / ' + e.detail.total;
     });
   </script>
+
+  <!-- Prefill/Autosync (Draft) – muss VOR dem Formbuilder geladen werden -->
+  <script src="/formular/prefill.js"></script>
 
   <!-- Der Formbuilder initialisiert sich selbst nach DOMContentLoaded und rendert in #formbuilder -->
   <script src="/formular/formbuilder_de_SINGLE_FULL.js" defer></script>
