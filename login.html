@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login – KI‑Readiness</title>
+  <title>Login — KI‑Readiness</title>
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="/styles.css">
@@ -22,6 +22,9 @@
     .btn-row { display:flex; gap:12px; align-items:center; margin-top:12px; }
     .hint { color:#58728a; font-size:0.98rem; margin-top:6px; }
     .err { color:#b42318; margin-top:8px; }
+    .btn { background: linear-gradient(135deg, #08385d 0%, #224664 100%); color: #fff; font-weight: 600; font-size: 1rem; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(8, 56, 93, 0.2); }
+    .btn:hover { background: linear-gradient(135deg, #0a4470 0%, #2a5578 100%); box-shadow: 0 4px 12px rgba(8, 56, 93, 0.3); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(8, 56, 93, 0.3); }
     @media (max-width: 900px){ .login-wrap { flex-direction: column; align-items: center; } .login-hero img { max-width: 85vw; } }
   </style>
 </head>
