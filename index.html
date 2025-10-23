@@ -81,17 +81,23 @@
       color: #08385d;
     }
     
-    .badges {
+    .badges-bottom {
       display: flex;
-      gap: 1.2rem;
+      gap: 2.5rem;
       align-items: center;
-      margin-top: 1.5rem;
+      justify-content: center;
+      margin: 3rem 0 2rem;
       flex-wrap: wrap;
     }
     
-    .badges img {
-      height: 38px;
+    .badges-bottom img {
+      height: 65px;
       opacity: 0.9;
+      transition: opacity 0.2s;
+    }
+    
+    .badges-bottom img:hover {
+      opacity: 1;
     }
     
     .cta-section {
@@ -229,22 +235,15 @@
       <h1>Zertifiziert. Dokumentiert. KI‑konform.</h1>
       
       <p class="lead">
-        Der <strong>KI‑Check‑Report</strong> liefert Ihnen eine strukturierte Einschätzung Ihres KI‑Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.
+        Der <strong>KI‑Check‑Report</strong> liefert Ihnen in wenigen Minuten eine strukturierte Einschätzung Ihres KI‑Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.
       </p>
       
       <ul class="features-list">
         <li><strong>✓ DSGVO- & EU AI Act‑konform</strong></li>
         <li><strong>✓ mit detaillierter Risikoanalyse</strong></li>
         <li><strong>✓ mit konkreten Empfehlungen & Tools</strong></li>
-        <li><strong>✓ TÜV‑zertifizierte Beratung</strong></li>
+        <li><strong>✓ TÜV‑zertifiziertes KI-Beratungs-Management</strong></li>
       </ul>
-      
-      <div class="badges">
-        <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
-        <img src="badges/dsgvo.svg" alt="DSGVO konform">
-        <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-        <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
-      </div>
     </div>
   </section>
   
@@ -265,6 +264,13 @@
       <div class="testimonial">„Zeigt sofort die DSGVO-Lücken auf."</div>
       <div class="testimonial">„Strukturiert, verständlich, umsetzbar."</div>
     </div>
+  </section>
+  
+  <section class="badges-bottom">
+    <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
+    <img src="badges/dsgvo.svg" alt="DSGVO konform">
+    <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+    <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
   </section>
   
 </div>
