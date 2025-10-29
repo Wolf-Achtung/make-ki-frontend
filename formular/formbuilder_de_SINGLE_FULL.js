@@ -277,13 +277,13 @@ function dispatchProgress(step, total) {
         { value: "ethik_recht", label: "Ethische & rechtliche Grundlagen" }, { value: "keine", label: "Keine / noch unklar" }
       ],
       description: "Wir empfehlen ein 2–4-stündiges Starter-Training basierend auf Ihrer Auswahl." },
-    { key: "vision_prioritaet", label: "Wichtigster Visions-Aspekt", type: "select",
+    { key: "vision_prioritaet", label: "Wichtigster strategischer Hebel", type: "select",
       options: [
-        { value: "gpt_services", label: "GPT-basierte Services" }, { value: "kundenservice", label: "Kundenservice verbessern" },
-        { value: "datenprodukte", label: "Neue datenbasierte Produkte" }, { value: "prozessautomation", label: "Prozessautomatisierung" },
-        { value: "marktfuehrerschaft", label: "Marktführerschaft erreichen" }, { value: "keine_angabe", label: "Keine Angabe" }
+        { value: "gpt_services", label: "KI-gestützte Services und Produkte" }, { value: "kundenservice", label: "Optimierung Kundenservice und Support" },
+        { value: "datenprodukte", label: "Entwicklung datenbasierter Angebote" }, { value: "prozessautomation", label: "Automatisierung interner Prozesse" },
+        { value: "marktfuehrerschaft", label: "Technologieführerschaft im Markt" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
-      description: "Bitte wählen Sie den Aspekt Ihrer Vision, den Sie als wichtigsten Hebel betrachten." },
+      description: "In welchem Bereich sehen Sie den größten strategischen Hebel für den KI-Einsatz in Ihrem Unternehmen?" },
 
     // Block 6: Rechtliches & Förderung
     { key: "datenschutzbeauftragter", label: "Datenschutzbeauftragter vorhanden?", type: "select",
@@ -293,14 +293,14 @@ function dispatchProgress(step, total) {
       options: [ { value: "alle", label: "Alle relevanten Maßnahmen" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "keine", label: "Noch keine" } ],
       description: "Bitte schätzen Sie den Status Ihrer technischen Sicherheitsmaßnahmen ehrlich ein. Nur so können wir Ihnen schnell wirkende Verbesserungen vorschlagen." },
     { key: "folgenabschaetzung", label: "Datenschutz-Folgenabschätzung (DSFA)", type: "select",
-      options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "teilweise", label: "Teilweise" } ],
-      description: "Sollte für Ihren Anwendungsfall eine DSFA sinnvoll oder erforderlich sein, werden wir Sie darauf hinweisen." },
-    { key: "meldewege", label: "Meldewege bei Vorfällen", type: "select",
-      options: [ { value: "ja", label: "Ja, klar geregelt" }, { value: "teilweise", label: "Teilweise geregelt" }, { value: "nein", label: "Nein" } ],
-      description: "Hier geht es darum, ob in Ihrem Unternehmen feste Abläufe für den Umgang mit Sicherheitsvorfällen definiert sind (zum Beispiel klare Meldeketten)." },
-    { key: "loeschregeln", label: "Regeln für Datenlöschung/-anonymisierung", type: "select",
-      options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "Hier ist gefragt, ob es Regeln zur Aufbewahrung und Löschung bzw. Anonymisierung von Daten gibt. Falls nicht, stellen wir Ihnen einfache Vorlagen zur Verfügung." },
+      options: [ { value: "ja", label: "Ja, durchgeführt" }, { value: "nein", label: "Nein, noch nicht" }, { value: "teilweise", label: "In Planung" } ],
+      description: "Haben Sie bereits eine Datenschutz-Folgenabschätzung (DSFA) durchgeführt oder geplant? Wir prüfen, ob eine DSFA für Ihre KI-Vorhaben erforderlich ist." },
+    { key: "meldewege", label: "Meldewege bei Sicherheitsvorfällen", type: "select",
+      options: [ { value: "ja", label: "Ja, klar definiert" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "nein", label: "Nein, noch nicht geregelt" } ],
+      description: "Gibt es in Ihrem Unternehmen definierte Prozesse und Meldewege für IT-Sicherheitsvorfälle (z. B. Notfallkontakte, Eskalationsketten)?" },
+    { key: "loeschregeln", label: "Richtlinien für Datenlöschung und -anonymisierung", type: "select",
+      options: [ { value: "ja", label: "Ja, dokumentiert" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "nein", label: "Nein, noch nicht definiert" } ],
+      description: "Haben Sie dokumentierte Richtlinien für die Aufbewahrungsfristen, Löschung und Anonymisierung von Daten? Falls nicht, unterstützen wir Sie mit praktischen Vorlagen." },
     { key: "ai_act_kenntnis", label: "Kenntnis EU AI Act", type: "select",
       options: [ { value: "sehr_gut", label: "Sehr gut" }, { value: "gut", label: "Gut" }, { value: "gehoert", label: "Schon mal gehört" }, { value: "unbekannt", label: "Noch nicht bekannt" } ],
       description: "Hier sind keine Vorkenntnisse nötig. Wir fassen die relevanten Pflichten des EU AI Act für Sie verständlich zusammen." },
