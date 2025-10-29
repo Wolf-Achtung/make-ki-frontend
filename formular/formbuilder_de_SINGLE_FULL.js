@@ -1,5 +1,5 @@
-/* Multi-Step Wizard (DE) - Scroll-to-Top, persistenter Autosave & Step-Resume */
-/* Schema 1.5.0 - Microcopy optimiert für kleine Unternehmen; Submit nur im letzten Schritt. */
+/* Multi-Step Wizard (DE) – Scroll-to-Top, persistenter Autosave & Step-Resume */
+/* Schema 1.5.0 – Microcopy optimiert für kleine Unternehmen; Submit nur im letzten Schritt. */
 (function () {
   "use strict";
 
@@ -89,12 +89,12 @@ function dispatchProgress(step, total) {
 
   // --------------------------- Inhalte ---------------------------
   var BLOCK_INTRO = [
-    "Hier erfassen wir Basisdaten (Branche, Größe, Standort). Keine Unterlagen nötig - grobe Angaben reichen völlig. So personalisieren wir Ihren Report und prüfen passende Förderung & Compliance.",
-    "Status Quo zu Prozessen, Daten und bisheriger KI-Nutzung. Ziel: schnelle, machbare Quick Wins und eine pragmatische Start-Roadmap - auch für kleine Teams.",
+    "Hier erfassen wir Basisdaten (Branche, Größe, Standort). Keine Unterlagen nötig – grobe Angaben reichen völlig. So personalisieren wir Ihren Report und prüfen passende Förderung & Compliance.",
+    "Status Quo zu Prozessen, Daten und bisheriger KI-Nutzung. Ziel: schnelle, machbare Quick Wins und eine pragmatische Start-Roadmap – auch für kleine Teams.",
     "Ziele & wichtigste Anwendungsfälle: Was soll KI ganz konkret leisten? Wir fokussieren umsetzbare Maßnahmen mit sichtbarem Nutzen.",
     "Strategie & Governance: einfache, tragfähige Leitplanken für nachhaltigen KI-Einsatz ohne Bürokratie-Overhead.",
     "Ressourcen & Präferenzen (Zeit, Tool-Landschaft). Wir passen Empfehlungen an Machbarkeit, Budget und Tempo an.",
-    "Rechtliches & Förderung: DSGVO, EU AI Act & Fördermöglichkeiten - verständlich erklärt, mit klaren To-dos.",
+    "Rechtliches & Förderung: DSGVO, EU AI Act & Fördermöglichkeiten – verständlich erklärt, mit klaren To-dos.",
     "Datenschutz & Absenden: Einwilligung bestätigen und den personalisierten Report starten."
   ];
 
@@ -113,16 +113,16 @@ function dispatchProgress(step, total) {
     },
     { key: "unternehmensgroesse", label: "Wie groß ist Ihr Unternehmen?", type: "select",
       options: [
-        { value: "solo", label: "1 (Solo-Selbstständig/Freiberuflich)" }, { value: "team", label: "2-10 (Kleines Team)" }, { value: "kmu", label: "11-100 (KMU)" }
+        { value: "solo", label: "1 (Solo-Selbstständig/Freiberuflich)" }, { value: "team", label: "2–10 (Kleines Team)" }, { value: "kmu", label: "11–100 (KMU)" }
       ],
-      description: "Eine grobe Schätzung genügt. So können wir unsere Vorschläge und Förderprogramme realistisch planen - auch für kleine Teams."
+      description: "Eine grobe Schätzung genügt. So können wir unsere Vorschläge und Förderprogramme realistisch planen – auch für kleine Teams."
     },
     { key: "selbststaendig", label: "Unternehmensform bei 1 Person", type: "select",
       options: [
         { value: "freiberufler", label: "Freiberuflich/Selbstständig" }, { value: "kapitalgesellschaft", label: "1-Personen-Kapitalgesellschaft (GmbH/UG)" },
         { value: "einzelunternehmer", label: "Einzelunternehmer (mit Gewerbe)" }, { value: "sonstiges", label: "Sonstiges" }
       ],
-      description: "Diese Frage ist nur relevant, wenn Sie zuvor "1" ausgewählt haben. Bitte wählen Sie die Rechtsform, die am ehesten zutrifft - "Sonstiges" ist ebenfalls völlig in Ordnung.",
+      description: "Diese Frage ist nur relevant, wenn Sie zuvor die Option mit 1 Person ausgewählt haben. Bitte wählen Sie die Rechtsform, die am ehesten zutrifft – Sonstiges ist ebenfalls völlig in Ordnung.",
       showIf: function (data) { return data.unternehmensgroesse === "solo"; }
     },
     { key: "bundesland", label: "Bundesland (regionale Fördermöglichkeiten)", type: "select",
@@ -150,8 +150,8 @@ function dispatchProgress(step, total) {
     },
     { key: "jahresumsatz", label: "Jahresumsatz (Schätzung)", type: "select",
       options: [
-        { value: "unter_100k", label: "Bis 100.000 €" }, { value: "100k_500k", label: "100.000-500.000 €" },
-        { value: "500k_2m", label: "500.000-2 Mio. €" }, { value: "2m_10m", label: "2-10 Mio. €" },
+        { value: "unter_100k", label: "Bis 100.000 €" }, { value: "100k_500k", label: "100.000–500.000 €" },
+        { value: "500k_2m", label: "500.000–2 Mio. €" }, { value: "2m_10m", label: "2–10 Mio. €" },
         { value: "ueber_10m", label: "Über 10 Mio. €" }, { value: "keine_angabe", label: "Keine Angabe" }
       ],
       description: "Bitte schätzen Sie den Jahresumsatz Ihres Unternehmens im letzten Jahr. Diese Angabe dient nur zur Orientierung (z. B. für Vergleiche oder Fördermöglichkeiten) und wird nicht veröffentlicht."
@@ -162,11 +162,11 @@ function dispatchProgress(step, total) {
         { value: "on_premise", label: "Eigenes Rechenzentrum (On-Premises)" },
         { value: "hybrid", label: "Hybrid (Cloud + eigene Server)" }, { value: "unklar", label: "Unklar / noch offen" }
       ],
-      description: "Bitte wählen Sie den aktuellen Stand Ihrer IT-Infrastruktur. "Hybrid" ist weit verbreitet und völlig in Ordnung."
+      description: "Bitte wählen Sie den aktuellen Stand Ihrer IT-Infrastruktur. Hybrid ist weit verbreitet und völlig in Ordnung."
     },
     { key: "interne_ki_kompetenzen", label: "Gibt es ein internes KI-/Digitalisierungsteam?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "in_planung", label: "In Planung" } ],
-      description: "Falls es kein eigenes Team dafür gibt, wählen Sie bitte "Nein". Wir schlagen Ihnen dann schlanke Einstiegsmöglichkeiten und Schulungen vor."
+      description: "Falls es kein eigenes Team dafür gibt, wählen Sie bitte Nein. Wir schlagen Ihnen dann schlanke Einstiegsmöglichkeiten und Schulungen vor."
     },
     { key: "datenquellen", label: "Welche Datentypen stehen für KI-Projekte zur Verfügung?", type: "checkbox",
       options: [
@@ -178,17 +178,17 @@ function dispatchProgress(step, total) {
     },
 
     // Block 2: Status Quo
-    { key: "digitalisierungsgrad", label: "Wie digital sind Ihre internen Prozesse? (1-10)", type: "slider", min: 1, max: 10, step: 1,
-      description: "Ziehen Sie den Regler nach Ihrem Gefühl: 1 steht für viele Papierprozesse, 10 für weitgehend automatisierte Abläufe. Es gibt kein Richtig oder Falsch - diese Angabe dient nur einer groben Einordnung." },
+    { key: "digitalisierungsgrad", label: "Wie digital sind Ihre internen Prozesse? (1–10)", type: "slider", min: 1, max: 10, step: 1,
+      description: "Ziehen Sie den Regler nach Ihrem Gefühl: 1 steht für viele Papierprozesse, 10 für weitgehend automatisierte Abläufe. Es gibt kein Richtig oder Falsch – diese Angabe dient nur einer groben Einordnung." },
     { key: "prozesse_papierlos", label: "Anteil papierloser Prozesse", type: "select",
-      options: [ { value: "0-20", label: "0-20%" }, { value: "21-50", label: "21-50%" }, { value: "51-80", label: "51-80%" }, { value: "81-100", label: "81-100%" } ],
+      options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
       description: "Eine grobe Schätzung genügt. Diese Angabe hilft uns, schnell erzielbare Erfolge zu erkennen." },
     { key: "automatisierungsgrad", label: "Automatisierungsgrad", type: "select",
       options: [
         { value: "sehr_niedrig", label: "Sehr niedrig" }, { value: "eher_niedrig", label: "Eher niedrig" },
         { value: "mittel", label: "Mittel" }, { value: "eher_hoch", label: "Eher hoch" }, { value: "sehr_hoch", label: "Sehr hoch" }
       ],
-      description: "Gemeint ist der Automatisierungsgrad Ihrer gesamten täglichen Abläufe - nicht nur der IT-Prozesse." },
+      description: "Gemeint ist der Automatisierungsgrad Ihrer gesamten täglichen Abläufe – nicht nur der IT-Prozesse." },
     { key: "ki_einsatz", label: "Wo wird KI bereits eingesetzt?", type: "checkbox",
       options: [
         { value: "chatbots", label: "Chatbots / Kundenservice" }, { value: "marketing", label: "Marketing & Content" },
@@ -196,7 +196,7 @@ function dispatchProgress(step, total) {
         { value: "produktion", label: "Produktion / Logistik" }, { value: "hr", label: "Personalmanagement" },
         { value: "andere", label: "Andere Bereiche" }, { value: "noch_keine", label: "Noch keine Nutzung" }
       ],
-      description: "Falls Sie sich nicht sicher sind, wählen Sie bitte "Noch keine Nutzung"." },
+      description: "Falls Sie sich nicht sicher sind, wählen Sie bitte die Option 'Noch keine Nutzung'." },
     { key: "ki_kompetenz", label: "KI-Kompetenz im Team", type: "select",
       options: [
         { value: "hoch", label: "Hoch" }, { value: "mittel", label: "Mittel" },
@@ -205,14 +205,14 @@ function dispatchProgress(step, total) {
       description: "Diese Angabe ist eine Selbsteinschätzung. Sie hilft uns, die Roadmap und Schulungen entsprechend anzupassen." },
 
     // Block 3: Ziele & Use Cases
-    { key: "ki_ziele", label: "Ziele mit KI in den nächsten 3-6 Monaten", type: "checkbox",
+    { key: "ki_ziele", label: "Ziele mit KI in den nächsten 3–6 Monaten", type: "checkbox",
       options: [
         { value: "effizienz", label: "Effizienz steigern" }, { value: "automatisierung", label: "Automatisierung" },
         { value: "neue_produkte", label: "Neue Produkte/Services" }, { value: "kundenservice", label: "Kundenservice verbessern" },
         { value: "datenauswertung", label: "Daten besser nutzen" }, { value: "kosten_senken", label: "Kosten senken" },
         { value: "wettbewerbsfaehigkeit", label: "Wettbewerbsfähigkeit" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
-      description: "Bitte wählen Sie die Ziele aus, die Sie in den nächsten 3-6 Monaten verfolgen möchten - möglichst konkrete und messbare Vorhaben." },
+      description: "Bitte wählen Sie die Ziele aus, die Sie in den nächsten 3–6 Monaten verfolgen möchten – möglichst konkrete und messbare Vorhaben." },
     { key: "ki_projekte", label: "Laufende/geplante KI-Projekte", type: "textarea", placeholder: "z. B. Chatbot, Angebotsautomation, Generatoren…", description: "Stichpunkte sind vollkommen in Ordnung. Falls vorhanden, erwähnen Sie bitte auch bereits eingesetzte Tools oder Prozesse." },
     { key: "anwendungsfaelle", label: "Interessante Anwendungsfälle", type: "checkbox",
       options: [
@@ -236,26 +236,26 @@ function dispatchProgress(step, total) {
     { key: "vision_3_jahre", label: "Vision in 3 Jahren", type: "textarea",
       placeholder: "z. B. 80 % Automatisierung, verdoppelter Umsatz …", description: "Formulieren Sie hier gerne eine ambitionierte, aber realistische 3-Jahres-Vision. Diese hilft uns, die strategische Ausrichtung Ihres Unternehmens besser zu verstehen." },
 
-    { key: "strategische_ziele", label: "Konkrete Ziele mit KI", type: "textarea", placeholder: "z. B. Effizienz steigern, neue Produkte, besserer Service", description: "Versuchen Sie, Ihre KI-Ziele mit geschäftlichen Kennzahlen zu verknüpfen - z. B. Bearbeitungszeit um 30 % reduzieren." },
+    { key: "strategische_ziele", label: "Konkrete Ziele mit KI", type: "textarea", placeholder: "z. B. Effizienz steigern, neue Produkte, besserer Service", description: "Versuchen Sie, Ihre KI-Ziele mit geschäftlichen Kennzahlen zu verknüpfen – z. B. Bearbeitungszeit um 30 % reduzieren." },
     { key: "massnahmen_komplexitaet", label: "Aufwand für die Einführung", type: "select",
       options: [ { value: "niedrig", label: "Niedrig" }, { value: "mittel", label: "Mittel" }, { value: "hoch", label: "Hoch" }, { value: "unklar", label: "Unklar" } ],
       description: "Diese Angabe hilft uns, den Aufwand für die Einführung von KI besser abzuschätzen. Bitte wählen Sie die Option, die am ehesten zutrifft." },
     { key: "roadmap_vorhanden", label: "KI-Roadmap/Strategie vorhanden?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "Falls Sie noch keine KI-Roadmap oder -Strategie haben, ist das völlig in Ordnung - wir zeigen Ihnen dann einen möglichen Einstieg auf." },
+      description: "Falls Sie noch keine KI-Roadmap oder -Strategie haben, ist das völlig in Ordnung – wir zeigen Ihnen dann einen möglichen Einstieg auf." },
     { key: "governance_richtlinien", label: "KI-Governance-Richtlinien vorhanden?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "Hier sind Richtlinien zu Datensicherheit, Zugriffsrechten und Modell-Freigaben gemeint. "Nein" ist völlig in Ordnung - wir stellen Ihnen in diesem Fall entsprechende Vorlagen bereit." },
+      description: "Hier sind Richtlinien zu Datensicherheit, Zugriffsrechten und Modell-Freigaben gemeint. Nein ist völlig in Ordnung – wir stellen Ihnen in diesem Fall entsprechende Vorlagen bereit." },
     { key: "change_management", label: "Veränderungsbereitschaft im Team", type: "select",
       options: [
         { value: "sehr_hoch", label: "Sehr hoch" }, { value: "hoch", label: "Hoch" },
         { value: "mittel", label: "Mittel" }, { value: "niedrig", label: "Niedrig" }, { value: "sehr_niedrig", label: "Sehr niedrig" }
       ],
-      description: "Dies ist lediglich eine Selbsteinschätzung Ihrer Offenheit für Innovationen - es erfolgt keine Bewertung." },
+      description: "Dies ist lediglich eine Selbsteinschätzung Ihrer Offenheit für Innovationen – es erfolgt keine Bewertung." },
 
     // Block 5: Ressourcen & Präferenzen
     { key: "zeitbudget", label: "Zeit pro Woche für KI-Projekte", type: "select",
-      options: [ { value: "unter_2", label: "Unter 2 Stunden" }, { value: "2_5", label: "2-5 Stunden" }, { value: "5_10", label: "5-10 Stunden" }, { value: "ueber_10", label: "Über 10 Stunden" } ],
+      options: [ { value: "unter_2", label: "Unter 2 Stunden" }, { value: "2_5", label: "2–5 Stunden" }, { value: "5_10", label: "5–10 Stunden" }, { value: "ueber_10", label: "Über 10 Stunden" } ],
       description: "Bitte schätzen Sie ehrlich ein, wie viel Zeit Sie pro Woche für KI-Projekte aufbringen können. Wir berücksichtigen das, damit unsere Planung in Ihren Kalender passt." },
     { key: "vorhandene_tools", label: "Bereits genutzte Systeme", type: "checkbox",
       options: [
@@ -276,7 +276,7 @@ function dispatchProgress(step, total) {
         { value: "datenqualitaet_governance", label: "Datenqualität & Governance" }, { value: "automatisierung", label: "Automatisierung & Skripte" },
         { value: "ethik_recht", label: "Ethische & rechtliche Grundlagen" }, { value: "keine", label: "Keine / noch unklar" }
       ],
-      description: "Wir empfehlen ein 2-4-stündiges Starter-Training basierend auf Ihrer Auswahl." },
+      description: "Wir empfehlen ein 2–4-stündiges Starter-Training basierend auf Ihrer Auswahl." },
     { key: "vision_prioritaet", label: "Wichtigster Visions-Aspekt", type: "select",
       options: [
         { value: "gpt_services", label: "GPT-basierte Services" }, { value: "kundenservice", label: "Kundenservice verbessern" },
@@ -288,7 +288,7 @@ function dispatchProgress(step, total) {
     // Block 6: Rechtliches & Förderung
     { key: "datenschutzbeauftragter", label: "Datenschutzbeauftragter vorhanden?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "teilweise", label: "Teilweise (extern/Planung)" } ],
-      description: "Falls Ihr Unternehmen keinen Datenschutzbeauftragten benötigt, wählen Sie bitte "Nein". Wir machen Sie dann darauf aufmerksam, wann ein DSB gegebenenfalls erforderlich ist." },
+      description: "Falls Ihr Unternehmen keinen Datenschutzbeauftragten benötigt, wählen Sie bitte Nein. Wir machen Sie dann darauf aufmerksam, wann ein DSB gegebenenfalls erforderlich ist." },
     { key: "technische_massnahmen", label: "Technische Schutzmaßnahmen", type: "select",
       options: [ { value: "alle", label: "Alle relevanten Maßnahmen" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "keine", label: "Noch keine" } ],
       description: "Bitte schätzen Sie den Status Ihrer technischen Sicherheitsmaßnahmen ehrlich ein. Nur so können wir Ihnen schnell wirkende Verbesserungen vorschlagen." },
@@ -316,18 +316,18 @@ function dispatchProgress(step, total) {
       description: "Diese Information hilft uns, passende Anschluss-Förderprogramme vorzuschlagen." },
     { key: "interesse_foerderung", label: "Interesse an Fördermöglichkeiten", type: "select",
       options: [ { value: "ja", label: "Ja, Programme vorschlagen" }, { value: "nein", label: "Kein Bedarf" }, { value: "unklar", label: "Unklar, bitte beraten" } ],
-      description: "Wenn Sie "Unklar" auswählen, prüfen wir unverbindlich, welche Fördermöglichkeiten für Sie infrage kommen." },
+      description: "Wenn Sie Unklar auswählen, prüfen wir unverbindlich, welche Fördermöglichkeiten für Sie infrage kommen." },
     { key: "erfahrung_beratung", label: "Bisherige Beratung zu Digitalisierung/KI", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "unklar", label: "Unklar" } ],
       description: "Diese Angabe hilft uns, auf bereits erfolgter Beratung aufzubauen." },
     { key: "investitionsbudget", label: "Budget für KI/Digitalisierung nächstes Jahr", type: "select",
-      options: [ { value: "unter_2000", label: "Unter 2.000 €" }, { value: "2000_10000", label: "2.000-10.000 €" }, { value: "10000_50000", label: "10.000-50.000 €" },
+      options: [ { value: "unter_2000", label: "Unter 2.000 €" }, { value: "2000_10000", label: "2.000–10.000 €" }, { value: "10000_50000", label: "10.000–50.000 €" },
         { value: "ueber_50000", label: "Über 50.000 €" }, { value: "unklar", label: "Noch unklar" } ],
       description: "Auch mit einem kleinen Budget ist ein sinnvoller Start möglich. Wir priorisieren unsere Empfehlungen entsprechend Ihrer Angabe." },
     { key: "marktposition", label: "Marktposition", type: "select",
       options: [ { value: "marktfuehrer", label: "Marktführer" }, { value: "oberes_drittel", label: "Oberes Drittel" }, { value: "mittelfeld", label: "Mittelfeld" },
         { value: "nachzuegler", label: "Nachzügler" }, { value: "unsicher", label: "Schwer einzuschätzen" } ],
-      description: "Eine grobe Einschätzung genügt - sie dient nur der Einordnung." },
+      description: "Eine grobe Einschätzung genügt – sie dient nur der Einordnung." },
     { key: "benchmark_wettbewerb", label: "Vergleich mit Wettbewerbern", type: "select",
       options: [ { value: "ja", label: "Ja, regelmäßig" }, { value: "nein", label: "Nein" }, { value: "selten", label: "Selten" } ],
       description: "Hier geht es darum, wie häufig Sie Ihr Unternehmen mit Wettbewerbern vergleichen. Diese Angabe dient lediglich der Einordnung." },
@@ -338,8 +338,8 @@ function dispatchProgress(step, total) {
         { value: "zufall", label: "Zufällig" }, { value: "unbekannt", label: "Keine klare Strategie" }
       ],
       description: "Damit ist gemeint, wie neue Ideen oder Innovationen in Ihrem Unternehmen entstehen. Daraus können wir mögliche Veränderungsansätze ableiten." },
-    { key: "risikofreude", label: "Risikofreude bei Innovation (1-5)", type: "slider", min: 1, max: 5, step: 1,
-      description: "Geben Sie hier einfach Ihr Bauchgefühl an - das hilft uns, ein angemessenes Einführungstempo zu finden." },
+    { key: "risikofreude", label: "Risikofreude bei Innovation (1–5)", type: "slider", min: 1, max: 5, step: 1,
+      description: "Geben Sie hier einfach Ihr Bauchgefühl an – das hilft uns, ein angemessenes Einführungstempo zu finden." },
 
     // Block 7: Datenschutz & Absenden
     { key: "datenschutz", label:
