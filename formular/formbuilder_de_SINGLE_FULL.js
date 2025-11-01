@@ -109,20 +109,20 @@ function dispatchProgress(step, total) {
         { value: "bau", label: "Bauwesen & Architektur" }, { value: "medien", label: "Medien & Kreativwirtschaft" },
         { value: "industrie", label: "Industrie & Produktion" }, { value: "logistik", label: "Transport & Logistik" }
       ],
-      description: "Damit wir branchenspezifische Beispiele, Förderung und Compliance korrekt zuordnen."
+      description: "(Damit wir branchenspezifische Beispiele, Förderung und Compliance korrekt zuordnen.)"
     },
     { key: "unternehmensgroesse", label: "Wie groß ist Ihr Unternehmen?", type: "select",
       options: [
         { value: "solo", label: "1 (Solo-Selbstständig/Freiberuflich)" }, { value: "team", label: "2–10 (Kleines Team)" }, { value: "kmu", label: "11–100 (KMU)" }
       ],
-      description: "Damit Empfehlungen und Förderhöhen realistisch nach Unternehmensgröße skaliert werden."
+      description: "(Damit Empfehlungen und Förderhöhen realistisch nach Unternehmensgröße skaliert werden.)"
     },
     { key: "selbststaendig", label: "Unternehmensform bei 1 Person", type: "select",
       options: [
         { value: "freiberufler", label: "Freiberuflich/Selbstständig" }, { value: "kapitalgesellschaft", label: "1-Personen-Kapitalgesellschaft (GmbH/UG)" },
         { value: "einzelunternehmer", label: "Einzelunternehmer (mit Gewerbe)" }, { value: "sonstiges", label: "Sonstiges" }
       ],
-      description: "Damit Rechtsformabhängigkeiten bei Pflichten, Zuschüssen und Verträgen korrekt berücksichtigt werden.",
+      description: "(Damit Rechtsformabhängigkeiten bei Pflichten, Zuschüssen und Verträgen korrekt berücksichtigt werden.)",
       showIf: function (data) { return data.unternehmensgroesse === "solo"; }
     },
     { key: "bundesland", label: "Bundesland (regionale Fördermöglichkeiten)", type: "select",
@@ -133,11 +133,11 @@ function dispatchProgress(step, total) {
         { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
         { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
       ],
-      description: "Damit regionale Programme, Ansprechpartner und Quoten automatisch berücksichtigt werden."
+      description: "(Damit regionale Programme, Ansprechpartner und Quoten automatisch berücksichtigt werden.)"
     },
     { key: "hauptleistung", label: "Was ist Ihre Hauptdienstleistung oder Ihr wichtigstes Produkt?", type: "textarea",
       placeholder: "z. B. Social-Media-Kampagnen, CNC-Fertigung, Steuerberatung für Startups",
-      description: "Damit Use-Cases und Beispiele präzise auf Ihr Kerngeschäft passen."
+      description: "(Damit Use-Cases und Beispiele präzise auf Ihr Kerngeschäft passen.)"
     },
     { key: "zielgruppen", label: "Welche Zielgruppen bedienen Sie?", type: "checkbox",
       options: [
@@ -146,7 +146,7 @@ function dispatchProgress(step, total) {
         { value: "selbststaendige", label: "Selbstständige/Freiberufler" }, { value: "oeffentliche_hand", label: "Öffentliche Hand" },
         { value: "privatpersonen", label: "Privatpersonen" }, { value: "startups", label: "Startups" }, { value: "andere", label: "Andere" }
       ],
-      description: "Damit Vorschläge auf relevante Kundengruppen und Kaufprozesse abgestimmt sind."
+      description: "(Damit Vorschläge auf relevante Kundengruppen und Kaufprozesse abgestimmt sind.)"
     },
     { key: "jahresumsatz", label: "Jahresumsatz (Schätzung)", type: "select",
       options: [
@@ -154,7 +154,7 @@ function dispatchProgress(step, total) {
         { value: "500k_2m", label: "500.000–2 Mio. €" }, { value: "2m_10m", label: "2–10 Mio. €" },
         { value: "ueber_10m", label: "Über 10 Mio. €" }, { value: "keine_angabe", label: "Keine Angabe" }
       ],
-      description: "Damit Benchmarks, Förderobergrenzen und ROI-Rechnungen belastbar abgeleitet werden."
+      description: "(Damit Benchmarks, Förderobergrenzen und ROI-Rechnungen belastbar abgeleitet werden.)"
     },
     { key: "it_infrastruktur", label: "Wie ist Ihre IT-Infrastruktur organisiert?", type: "select",
       options: [
@@ -162,11 +162,11 @@ function dispatchProgress(step, total) {
         { value: "on_premise", label: "Eigenes Rechenzentrum (On-Premises)" },
         { value: "hybrid", label: "Hybrid (Cloud + eigene Server)" }, { value: "unklar", label: "Unklar / noch offen" }
       ],
-      description: "Damit Integrationsaufwand, Datenschutzanforderungen und Hosting-Optionen realistisch geplant werden."
+      description: "(Damit Integrationsaufwand, Datenschutzanforderungen und Hosting-Optionen realistisch geplant werden.)"
     },
     { key: "interne_ki_kompetenzen", label: "Gibt es ein internes KI-/Digitalisierungsteam?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "in_planung", label: "In Planung" } ],
-      description: "Damit Trainings, Unterstützung und Roadmap auf vorhandene Kompetenzen abgestimmt sind."
+      description: "(Damit Trainings, Unterstützung und Roadmap auf vorhandene Kompetenzen abgestimmt sind.)"
     },
     { key: "datenquellen", label: "Welche Datentypen stehen für KI-Projekte zur Verfügung?", type: "checkbox",
       options: [
@@ -174,21 +174,21 @@ function dispatchProgress(step, total) {
         { value: "produktionsdaten", label: "Produktions-/Betriebsdaten" }, { value: "personaldaten", label: "Personal-/HR-Daten" },
         { value: "marketingdaten", label: "Marketing-/Kampagnendaten" }, { value: "sonstige", label: "Sonstige Datenquellen" }
       ],
-      description: "Damit wir sinnvolle, datengestützte Use-Cases ohne aufwendige Vorprojekte finden."
+      description: "(Damit wir sinnvolle, datengestützte Use-Cases ohne aufwendige Vorprojekte finden.)"
     },
 
     // Block 2: Status Quo
     { key: "digitalisierungsgrad", label: "Wie digital sind Ihre internen Prozesse? (1–10)", type: "slider", min: 1, max: 10, step: 1,
-      description: "Damit wir den Ausgangspunkt und schnelle, realistische Verbesserungen einschätzen können." },
+      description: "(Damit wir den Ausgangspunkt und schnelle, realistische Verbesserungen einschätzen können.)" },
     { key: "prozesse_papierlos", label: "Anteil papierloser Prozesse", type: "select",
       options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
-      description: "Damit Potenziale für Automatisierung und Medienbrüche gezielt adressiert werden." },
+      description: "(Damit Potenziale für Automatisierung und Medienbrüche gezielt adressiert werden.)" },
     { key: "automatisierungsgrad", label: "Automatisierungsgrad", type: "select",
       options: [
         { value: "sehr_niedrig", label: "Sehr niedrig" }, { value: "eher_niedrig", label: "Eher niedrig" },
         { value: "mittel", label: "Mittel" }, { value: "eher_hoch", label: "Eher hoch" }, { value: "sehr_hoch", label: "Sehr hoch" }
       ],
-      description: "Damit Prioritäten für Effizienzgewinne und Risikoabschätzung fundiert gesetzt werden." },
+      description: "(Damit Prioritäten für Effizienzgewinne und Risikoabschätzung fundiert gesetzt werden.)" },
     { key: "ki_einsatz", label: "Wo wird KI bereits eingesetzt?", type: "checkbox",
       options: [
         { value: "chatbots", label: "Chatbots / Kundenservice" }, { value: "marketing", label: "Marketing & Content" },
@@ -196,13 +196,13 @@ function dispatchProgress(step, total) {
         { value: "produktion", label: "Produktion / Logistik" }, { value: "hr", label: "Personalmanagement" },
         { value: "andere", label: "Andere Bereiche" }, { value: "noch_keine", label: "Noch keine Nutzung" }
       ],
-      description: "Damit vorhandene Lösungen berücksichtigt und Doppelarbeiten konsequent vermieden werden." },
+      description: "(Damit vorhandene Lösungen berücksichtigt und Doppelarbeiten konsequent vermieden werden.)" },
     { key: "ki_kompetenz", label: "KI-Kompetenz im Team", type: "select",
       options: [
         { value: "hoch", label: "Hoch" }, { value: "mittel", label: "Mittel" },
         { value: "niedrig", label: "Niedrig" }, { value: "keine", label: "Keine" }
       ],
-      description: "Damit Inhalte, Tempo und Unterstützung zum Teamniveau passen." },
+      description: "(Damit Inhalte, Tempo und Unterstützung zum Teamniveau passen.)" },
 
     // Block 3: Ziele & Use Cases
     { key: "ki_ziele", label: "Ziele mit KI in den nächsten 3–6 Monaten", type: "checkbox",
@@ -212,8 +212,8 @@ function dispatchProgress(step, total) {
         { value: "datenauswertung", label: "Daten besser nutzen" }, { value: "kosten_senken", label: "Kosten senken" },
         { value: "wettbewerbsfaehigkeit", label: "Wettbewerbsfähigkeit" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
-      description: "Damit Maßnahmen auf kurzfristige, messbare Ziele ausgerichtet priorisiert werden." },
-    { key: "ki_projekte", label: "Laufende/geplante KI-Projekte", type: "textarea", placeholder: "z. B. Chatbot, Angebotsautomation, Generatoren…", description: "Damit wir Anschlussfähigkeit, Abhängigkeiten und nächste Schritte sinnvoll planen." },
+      description: "(Damit Maßnahmen auf kurzfristige, messbare Ziele ausgerichtet priorisiert werden.)" },
+    { key: "ki_projekte", label: "Laufende/geplante KI-Projekte", type: "textarea", placeholder: "z. B. Chatbot, Angebotsautomation, Generatoren…", description: "(Damit wir Anschlussfähigkeit, Abhängigkeiten und nächste Schritte sinnvoll planen.)" },
     { key: "anwendungsfaelle", label: "Interessante Anwendungsfälle", type: "checkbox",
       options: [
         { value: "chatbots", label: "Chatbots / FAQ-Automatisierung" }, { value: "content_generation", label: "Content-Generierung" },
@@ -221,131 +221,131 @@ function dispatchProgress(step, total) {
         { value: "prozess_automation", label: "Prozessautomation" }, { value: "personalisierung", label: "Personalisierung" },
         { value: "andere", label: "Andere" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
-      description: "Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen." },
+      description: "(Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen.)" },
     { key: "zeitersparnis_prioritaet", label: "Bereich mit Zeitersparnis-Priorität", type: "textarea",
-      placeholder: "z. B. schnelleres Reporting, personalisierte Angebote, Automatisierung …", description: "Damit wir schnell wirksame Zeithebel identifizieren und zuerst umsetzen." },
+      placeholder: "z. B. schnelleres Reporting, personalisierte Angebote, Automatisierung …", description: "(Damit wir schnell wirksame Zeithebel identifizieren und zuerst umsetzen.)" },
     { key: "pilot_bereich", label: "Bester Bereich für Pilotprojekt", type: "select",
       options: [
         { value: "kundenservice", label: "Kundenservice" }, { value: "marketing", label: "Marketing / Content" },
         { value: "vertrieb", label: "Vertrieb" }, { value: "verwaltung", label: "Verwaltung / Backoffice" },
         { value: "produktion", label: "Produktion / Logistik" }, { value: "andere", label: "Andere" }
       ],
-      description: "Damit das erste Pilotprojekt reibungslos startet und zuverlässig Ergebnisse liefert." },
+      description: "(Damit das erste Pilotprojekt reibungslos startet und zuverlässig Ergebnisse liefert.)" },
     { key: "geschaeftsmodell_evolution", label: "Geschäftsmodell-Idee mit KI", type: "textarea",
-      placeholder: "z. B. KI-gestütztes Portal, datenbasierte Services …", description: "Damit Potenziale für neue Angebote und wiederkehrende Erlöse sichtbar werden." },
+      placeholder: "z. B. KI-gestütztes Portal, datenbasierte Services …", description: "(Damit Potenziale für neue Angebote und wiederkehrende Erlöse sichtbar werden.)" },
     { key: "vision_3_jahre", label: "Vision in 3 Jahren", type: "textarea",
-      placeholder: "z. B. 80 % Automatisierung, verdoppelter Umsatz …", description: "Damit Roadmap und Investitionen auf eine klare, ambitionierte Richtung einzahlen." },
+      placeholder: "z. B. 80 % Automatisierung, verdoppelter Umsatz …", description: "(Damit Roadmap und Investitionen auf eine klare, ambitionierte Richtung einzahlen.)" },
 
-    { key: "strategische_ziele", label: "Konkrete Ziele mit KI", type: "textarea", placeholder: "z. B. Effizienz steigern, neue Produkte, besserer Service", description: "Damit Prioritäten kennzahlenbasiert gesetzt und Fortschritte messbar verfolgt werden." },
+    { key: "strategische_ziele", label: "Konkrete Ziele mit KI", type: "textarea", placeholder: "z. B. Effizienz steigern, neue Produkte, besserer Service", description: "(Damit Prioritäten kennzahlenbasiert gesetzt und Fortschritte messbar verfolgt werden.)" },
     { key: "massnahmen_komplexitaet", label: "Aufwand für die Einführung", type: "select",
       options: [ { value: "niedrig", label: "Niedrig" }, { value: "mittel", label: "Mittel" }, { value: "hoch", label: "Hoch" }, { value: "unklar", label: "Unklar" } ],
-      description: "Damit Umfang, Zeitplan und Ressourcen realistisch aufgesetzt werden." },
+      description: "(Damit Umfang, Zeitplan und Ressourcen realistisch aufgesetzt werden.)" },
     { key: "roadmap_vorhanden", label: "KI-Roadmap/Strategie vorhanden?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "Damit wir vorhandene Pläne nutzen und Lücken gezielt schließen." },
+      description: "(Damit wir vorhandene Pläne nutzen und Lücken gezielt schließen.)" },
     { key: "governance_richtlinien", label: "KI-Governance-Richtlinien vorhanden?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "Damit Verantwortungen, Freigaben und Zugriffsrechte sauber geregelt werden." },
+      description: "(Damit Verantwortungen, Freigaben und Zugriffsrechte sauber geregelt werden.)" },
     { key: "change_management", label: "Veränderungsbereitschaft im Team", type: "select",
       options: [
         { value: "sehr_hoch", label: "Sehr hoch" }, { value: "hoch", label: "Hoch" },
         { value: "mittel", label: "Mittel" }, { value: "niedrig", label: "Niedrig" }, { value: "sehr_niedrig", label: "Sehr niedrig" }
       ],
-      description: "Damit Kommunikation, Training und Tempo zur Veränderungsbereitschaft passen." },
+      description: "(Damit Kommunikation, Training und Tempo zur Veränderungsbereitschaft passen.)" },
 
     // Block 5: Ressourcen & Präferenzen
     { key: "zeitbudget", label: "Zeit pro Woche für KI-Projekte", type: "select",
       options: [ { value: "unter_2", label: "Unter 2 Stunden" }, { value: "2_5", label: "2–5 Stunden" }, { value: "5_10", label: "5–10 Stunden" }, { value: "ueber_10", label: "Über 10 Stunden" } ],
-      description: "Damit Maßnahmenpakete zu Ihrer verfügbaren Zeit realistisch passen." },
+      description: "(Damit Maßnahmenpakete zu Ihrer verfügbaren Zeit realistisch passen.)" },
     { key: "vorhandene_tools", label: "Bereits genutzte Systeme", type: "checkbox",
       options: [
         { value: "crm", label: "CRM-Systeme (HubSpot, Salesforce)" }, { value: "erp", label: "ERP-Systeme (SAP, Odoo)" },
         { value: "projektmanagement", label: "Projektmanagement (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing Automation" },
         { value: "buchhaltung", label: "Buchhaltungssoftware" }, { value: "keine", label: "Keine / andere" }
       ],
-      description: "Damit Integrationen genutzt und unnötige Tool-Dopplungen konsequent vermieden werden." },
+      description: "(Damit Integrationen genutzt und unnötige Tool-Dopplungen konsequent vermieden werden.)" },
     { key: "regulierte_branche", label: "Regulierte Branche", type: "checkbox",
       options: [
         { value: "gesundheit", label: "Gesundheit & Medizin" }, { value: "finanzen", label: "Finanzen & Versicherungen" },
         { value: "oeffentlich", label: "Öffentlicher Sektor" }, { value: "recht", label: "Rechtliche Dienstleistungen" }, { value: "keine", label: "Keine dieser Branchen" }
       ],
-      description: "Damit branchenspezifische Pflichten und Nachweise von Anfang an berücksichtigt werden." },
+      description: "(Damit branchenspezifische Pflichten und Nachweise von Anfang an berücksichtigt werden.)" },
     { key: "trainings_interessen", label: "Interessante KI-Trainingsthemen", type: "checkbox",
       options: [
         { value: "prompt_engineering", label: "Prompt Engineering" }, { value: "llm_basics", label: "LLM-Grundlagen" },
         { value: "datenqualitaet_governance", label: "Datenqualität & Governance" }, { value: "automatisierung", label: "Automatisierung & Skripte" },
         { value: "ethik_recht", label: "Ethische & rechtliche Grundlagen" }, { value: "keine", label: "Keine / noch unklar" }
       ],
-      description: "Damit Trainings passgenau geplant und Lernziele schnell erreicht werden." },
+      description: "(Damit Trainings passgenau geplant und Lernziele schnell erreicht werden.)" },
     { key: "vision_prioritaet", label: "Wichtigster strategischer Hebel", type: "select",
       options: [
         { value: "gpt_services", label: "KI-gestützte Services und Produkte" }, { value: "kundenservice", label: "Optimierung Kundenservice und Support" },
         { value: "datenprodukte", label: "Entwicklung datenbasierter Angebote" }, { value: "prozessautomation", label: "Automatisierung interner Prozesse" },
         { value: "marktfuehrerschaft", label: "Technologieführerschaft im Markt" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
-      description: "Damit Empfehlungen auf den stärksten strategischen Hebel fokussieren." },
+      description: "(Damit Empfehlungen auf den stärksten strategischen Hebel fokussieren.)" },
 
     // Block 6: Rechtliches & Förderung
     { key: "datenschutzbeauftragter", label: "Datenschutzbeauftragter vorhanden?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "teilweise", label: "Teilweise (extern/Planung)" } ],
-      description: "Damit Pflichten korrekt bewertet und Zuständigkeiten rechtssicher geklärt sind." },
+      description: "(Damit Pflichten korrekt bewertet und Zuständigkeiten rechtssicher geklärt sind.)" },
     { key: "technische_massnahmen", label: "Technische Schutzmaßnahmen", type: "select",
       options: [ { value: "alle", label: "Alle relevanten Maßnahmen" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "keine", label: "Noch keine" } ],
-      description: "Damit Sicherheitsniveau, Quick-Wins und Prioritäten fundiert abgeleitet werden." },
+      description: "(Damit Sicherheitsniveau, Quick-Wins und Prioritäten fundiert abgeleitet werden.)" },
     { key: "folgenabschaetzung", label: "Datenschutz-Folgenabschätzung (DSFA)", type: "select",
       options: [ { value: "ja", label: "Ja, durchgeführt" }, { value: "nein", label: "Nein, noch nicht" }, { value: "teilweise", label: "In Planung" } ],
-      description: "Damit mögliche Risiken früh erkannt und erforderliche Prüfungen eingeplant werden." },
+      description: "(Damit mögliche Risiken früh erkannt und erforderliche Prüfungen eingeplant werden.)" },
     { key: "meldewege", label: "Meldewege bei Sicherheitsvorfällen", type: "select",
       options: [ { value: "ja", label: "Ja, klar definiert" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "nein", label: "Nein, noch nicht geregelt" } ],
-      description: "Damit Vorfälle schnell eskaliert und rechtliche Fristen zuverlässig eingehalten werden." },
+      description: "(Damit Vorfälle schnell eskaliert und rechtliche Fristen zuverlässig eingehalten werden.)" },
     { key: "loeschregeln", label: "Richtlinien für Datenlöschung und -anonymisierung", type: "select",
       options: [ { value: "ja", label: "Ja, dokumentiert" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "nein", label: "Nein, noch nicht definiert" } ],
-      description: "Damit Aufbewahrung, Löschung und Anonymisierung nachvollziehbar geregelt sind." },
+      description: "(Damit Aufbewahrung, Löschung und Anonymisierung nachvollziehbar geregelt sind.)" },
     { key: "ai_act_kenntnis", label: "Kenntnis EU AI Act", type: "select",
       options: [ { value: "sehr_gut", label: "Sehr gut" }, { value: "gut", label: "Gut" }, { value: "gehoert", label: "Schon mal gehört" }, { value: "unbekannt", label: "Noch nicht bekannt" } ],
-      description: "Damit Pflichten aus dem EU AI Act angemessen berücksichtigt werden." },
+      description: "(Damit Pflichten aus dem EU AI Act angemessen berücksichtigt werden.)" },
     { key: "ki_hemmnisse", label: "Hemmnisse beim KI-Einsatz", type: "checkbox",
       options: [
         { value: "rechtsunsicherheit", label: "Rechtsunsicherheit" }, { value: "datenschutz", label: "Datenschutz" }, { value: "knowhow", label: "Fehlendes Know-how" },
         { value: "budget", label: "Begrenztes Budget" }, { value: "teamakzeptanz", label: "Teamakzeptanz" }, { value: "zeitmangel", label: "Zeitmangel" },
         { value: "it_integration", label: "IT-Integration" }, { value: "keine", label: "Keine Hemmnisse" }, { value: "andere", label: "Andere" }
       ],
-      description: "Damit Hürden sichtbar werden und wir praktikable Lösungen priorisieren können." },
+      description: "(Damit Hürden sichtbar werden und wir praktikable Lösungen priorisieren können.)" },
     { key: "bisherige_foerdermittel", label: "Bereits Fördermittel erhalten?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" } ],
-      description: "Damit passende Anschluss-Programme und Kombinationsmöglichkeiten früh erkannt werden." },
+      description: "(Damit passende Anschluss-Programme und Kombinationsmöglichkeiten früh erkannt werden.)" },
     { key: "interesse_foerderung", label: "Interesse an Fördermöglichkeiten", type: "select",
       options: [ { value: "ja", label: "Ja, Programme vorschlagen" }, { value: "nein", label: "Kein Bedarf" }, { value: "unklar", label: "Unklar, bitte beraten" } ],
-      description: "Damit wir Förderchancen prüfen und konkrete Optionen transparent vorschlagen." },
+      description: "(Damit wir Förderchancen prüfen und konkrete Optionen transparent vorschlagen.)" },
     { key: "erfahrung_beratung", label: "Bisherige Beratung zu Digitalisierung/KI", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "unklar", label: "Unklar" } ],
-      description: "Damit vorhandenes Vorwissen genutzt und Doppelarbeit vermieden werden." },
+      description: "(Damit vorhandenes Vorwissen genutzt und Doppelarbeit vermieden werden.)" },
     { key: "investitionsbudget", label: "Budget für KI/Digitalisierung nächstes Jahr", type: "select",
       options: [ { value: "unter_2000", label: "Unter 2.000 €" }, { value: "2000_10000", label: "2.000–10.000 €" }, { value: "10000_50000", label: "10.000–50.000 €" },
         { value: "ueber_50000", label: "Über 50.000 €" }, { value: "unklar", label: "Noch unklar" } ],
-      description: "Damit Maßnahmenumfang und Förderquoten finanziell realistisch geplant werden." },
+      description: "(Damit Maßnahmenumfang und Förderquoten finanziell realistisch geplant werden.)" },
     { key: "marktposition", label: "Marktposition", type: "select",
       options: [ { value: "marktfuehrer", label: "Marktführer" }, { value: "oberes_drittel", label: "Oberes Drittel" }, { value: "mittelfeld", label: "Mittelfeld" },
         { value: "nachzuegler", label: "Nachzügler" }, { value: "unsicher", label: "Schwer einzuschätzen" } ],
-      description: "Damit Vergleichswerte, Erwartungen und Wettbewerbsstrategie passend eingeordnet werden." },
+      description: "(Damit Vergleichswerte, Erwartungen und Wettbewerbsstrategie passend eingeordnet werden.)" },
     { key: "benchmark_wettbewerb", label: "Vergleich mit Wettbewerbern", type: "select",
       options: [ { value: "ja", label: "Ja, regelmäßig" }, { value: "nein", label: "Nein" }, { value: "selten", label: "Selten" } ],
-      description: "Damit wir relevante Mitbewerbervergleiche im Report gezielt berücksichtigen." },
+      description: "(Damit wir relevante Mitbewerbervergleiche im Report gezielt berücksichtigen.)" },
     { key: "innovationsprozess", label: "Wie entstehen Innovationen?", type: "select",
       options: [
         { value: "innovationsteam", label: "Innovationsteam" }, { value: "mitarbeitende", label: "Durch Mitarbeitende" },
         { value: "kunden", label: "Mit Kunden" }, { value: "berater", label: "Externe Berater" },
         { value: "zufall", label: "Zufällig" }, { value: "unbekannt", label: "Keine klare Strategie" }
       ],
-      description: "Damit Innovationsquellen verstanden und wirksame Hebel gezielt unterstützt werden." },
+      description: "(Damit Innovationsquellen verstanden und wirksame Hebel gezielt unterstützt werden.)" },
     { key: "risikofreude", label: "Risikofreude bei Innovation (1–5)", type: "slider", min: 1, max: 5, step: 1,
-      description: "Damit das Einführungsrisiko zum gewünschten Tempo und Experimentiergrad passt." },
+      description: "(Damit das Einführungsrisiko zum gewünschten Tempo und Experimentiergrad passt.)" },
 
     // Block 7: Datenschutz & Absenden
     { key: "datenschutz", label:
       "Ich habe die <a href='datenschutz.html' onclick='window.open(this.href, \"DatenschutzPopup\", \"width=600,height=700\"); return false;'>Datenschutzhinweise</a> gelesen und bin einverstanden.",
       type: "privacy",
-      description: "Damit wir Ihre Angaben DSGVO-konform verarbeiten und den Report erstellen."
+      description: "(Damit wir Ihre Angaben DSGVO-konform verarbeiten und den Report erstellen.)"
     }
   ];
 

@@ -109,20 +109,20 @@ function dispatchProgress(step, total) {
         { value: "bau", label: "Construction & Architecture" }, { value: "medien", label: "Media & Creative" },
         { value: "industrie", label: "Industry & Manufacturing" }, { value: "logistik", label: "Transport & Logistics" }
       ],
-      description: "So we match industry-specific examples, funding and compliance correctly."
+      description: "(So we match industry-specific examples, funding and compliance correctly.)"
     },
     { key: "unternehmensgroesse", label: "How large is your company?", type: "select",
       options: [
         { value: "solo", label: "1 (Solo self-employed/freelance)" }, { value: "team", label: "2–10 (Small team)" }, { value: "kmu", label: "11–100 (SME)" }
       ],
-      description: "So recommendations and funding levels scale realistically by company size."
+      description: "(So recommendations and funding levels scale realistically by company size.)"
     },
     { key: "selbststaendig", label: "Entity type for single person", type: "select",
       options: [
         { value: "freiberufler", label: "Freelance/Self-employed" }, { value: "kapitalgesellschaft", label: "Single-owner corporation (GmbH/UG)" },
         { value: "einzelunternehmer", label: "Sole proprietor (trade license)" }, { value: "sonstiges", label: "Other" }
       ],
-      description: "So legal duties, grants and contracts reflect your entity type.",
+      description: "(So legal duties, grants and contracts reflect your entity type.)",
       showIf: function (data) { return data.unternehmensgroesse === "solo"; }
     },
     { key: "bundesland", label: "Federal state (regional funding)", type: "select",
@@ -133,11 +133,11 @@ function dispatchProgress(step, total) {
         { value: "nw", label: "North Rhine-Westphalia" }, { value: "rp", label: "Rhineland-Palatinate" }, { value: "sl", label: "Saarland" },
         { value: "sn", label: "Saxony" }, { value: "st", label: "Saxony-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thuringia" }
       ],
-      description: "So regional programs, contacts and grant rates are applied automatically."
+      description: "(So regional programs, contacts and grant rates are applied automatically.)"
     },
     { key: "hauptleistung", label: "Your core service or key product", type: "textarea",
       placeholder: "e.g., social media campaigns, CNC manufacturing, tax advisory for startups",
-      description: "So use cases and examples align precisely with your core business."
+      description: "(So use cases and examples align precisely with your core business.)"
     },
     { key: "zielgruppen", label: "Which target groups do you serve?", type: "checkbox",
       options: [
@@ -146,7 +146,7 @@ function dispatchProgress(step, total) {
         { value: "selbststaendige", label: "Self-employed/freelancers" }, { value: "oeffentliche_hand", label: "Public sector" },
         { value: "privatpersonen", label: "Private individuals" }, { value: "startups", label: "Startups" }, { value: "andere", label: "Other" }
       ],
-      description: "So proposals match your customer journeys and buying processes."
+      description: "(So proposals match your customer journeys and buying processes.)"
     },
     { key: "jahresumsatz", label: "Annual revenue (estimate)", type: "select",
       options: [
@@ -154,7 +154,7 @@ function dispatchProgress(step, total) {
         { value: "500k_2m", label: "€500,000–€2M" }, { value: "2m_10m", label: "€2M–€10M" },
         { value: "ueber_10m", label: "Over €10M" }, { value: "keine_angabe", label: "Prefer not to say" }
       ],
-      description: "So benchmarks, grant caps and ROI calculations are reliable."
+      description: "(So benchmarks, grant caps and ROI calculations are reliable.)"
     },
     { key: "it_infrastruktur", label: "How is your IT infrastructure organized?", type: "select",
       options: [
@@ -162,11 +162,11 @@ function dispatchProgress(step, total) {
         { value: "on_premise", label: "Own data center (on-premises)" },
         { value: "hybrid", label: "Hybrid (cloud + own servers)" }, { value: "unklar", label: "Unclear / undecided" }
       ],
-      description: "So integration effort, data protection and hosting options are planned realistically."
+      description: "(So integration effort, data protection and hosting options are planned realistically.)"
     },
     { key: "interne_ki_kompetenzen", label: "Do you have an internal AI/digital team?", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "in_planung", label: "Planned" } ],
-      description: "So training, support and roadmap fit your current capabilities."
+      description: "(So training, support and roadmap fit your current capabilities.)"
     },
     { key: "datenquellen", label: "Which data types are available for AI projects?", type: "checkbox",
       options: [
@@ -174,21 +174,21 @@ function dispatchProgress(step, total) {
         { value: "produktionsdaten", label: "Production/operations data" }, { value: "personaldaten", label: "HR data" },
         { value: "marketingdaten", label: "Marketing/campaign data" }, { value: "sonstige", label: "Other data sources" }
       ],
-      description: "So we propose data-driven use cases without heavy upfront projects."
+      description: "(So we propose data-driven use cases without heavy upfront projects.)"
     },
 
     // Block 2: Status Quo
     { key: "digitalisierungsgrad", label: "How digital are your internal processes? (1–10)", type: "slider", min: 1, max: 10, step: 1,
-      description: "So we gauge your starting point and identify quick, realistic gains." },
+      description: "(So we gauge your starting point and identify quick, realistic gains.)" },
     { key: "prozesse_papierlos", label: "Share of paperless processes", type: "select",
       options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
-      description: "So we address automation potential and avoid media breaks deliberately." },
+      description: "(So we address automation potential and avoid media breaks deliberately.)" },
     { key: "automatisierungsgrad", label: "Automation level", type: "select",
       options: [
         { value: "sehr_niedrig", label: "Very low" }, { value: "eher_niedrig", label: "Rather low" },
         { value: "mittel", label: "Medium" }, { value: "eher_hoch", label: "Rather high" }, { value: "sehr_hoch", label: "Very high" }
       ],
-      description: "So we set priorities for efficiency and risk assessment on solid grounds." },
+      description: "(So we set priorities for efficiency and risk assessment on solid grounds.)" },
     { key: "ki_einsatz", label: "Where is AI already used?", type: "checkbox",
       options: [
         { value: "chatbots", label: "Chatbots / customer service" }, { value: "marketing", label: "Marketing & content" },
@@ -196,14 +196,14 @@ function dispatchProgress(step, total) {
         { value: "produktion", label: "Production / logistics" }, { value: "hr", label: "HR management" },
         { value: "andere", label: "Other areas" }, { value: "noch_keine", label: "No usage yet" }
       ],
-      description: "So existing solutions are leveraged and duplicate work is avoided."
+      description: "(So existing solutions are leveraged and duplicate work is avoided.)"
     },
     { key: "ki_kompetenz", label: "AI skill level in the team", type: "select",
       options: [
         { value: "hoch", label: "High" }, { value: "mittel", label: "Medium" },
         { value: "niedrig", label: "Low" }, { value: "keine", label: "None" }
       ],
-      description: "So pace, content and support match your team’s skill level."
+      description: "(So pace, content and support match your team’s skill level.)"
     },
 
     // Block 3: Goals & Use Cases
@@ -214,9 +214,9 @@ function dispatchProgress(step, total) {
         { value: "datenauswertung", label: "Use data better" }, { value: "kosten_senken", label: "Reduce costs" },
         { value: "wettbewerbsfaehigkeit", label: "Competitiveness" }, { value: "keine_angabe", label: "Not sure yet" }
       ],
-      description: "So we prioritize actions toward short-term, measurable outcomes."
+      description: "(So we prioritize actions toward short-term, measurable outcomes.)"
     },
-    { key: "ki_projekte", label: "Ongoing/planned AI projects", type: "textarea", placeholder: "e.g., chatbot, quote automation, generators…", description: "So we plan dependencies and next steps sensibly." },
+    { key: "ki_projekte", label: "Ongoing/planned AI projects", type: "textarea", placeholder: "e.g., chatbot, quote automation, generators…", description: "(So we plan dependencies and next steps sensibly.)" },
     { key: "anwendungsfaelle", label: "Interesting use cases", type: "checkbox",
       options: [
         { value: "chatbots", label: "Chatbots / FAQ automation" }, { value: "content_generation", label: "Content generation" },
@@ -224,59 +224,59 @@ function dispatchProgress(step, total) {
         { value: "prozess_automation", label: "Process automation" }, { value: "personalisierung", label: "Personalization" },
         { value: "andere", label: "Other" }, { value: "keine_angabe", label: "Not sure yet" }
       ],
-      description: "So we pick high-value, low-complexity entry points."
+      description: "(So we pick high-value, low-complexity entry points.)"
     },
     { key: "zeitersparnis_prioritaet", label: "Area with time-saving priority", type: "textarea",
-      placeholder: "e.g., faster reporting, personalized offers, automation…", description: "So we identify the quickest time gains and deliver them first." },
+      placeholder: "e.g., faster reporting, personalized offers, automation…", description: "(So we identify the quickest time gains and deliver them first.)" },
     { key: "pilot_bereich", label: "Best area for a pilot project", type: "select",
       options: [
         { value: "kundenservice", label: "Customer service" }, { value: "marketing", label: "Marketing / content" },
         { value: "vertrieb", label: "Sales" }, { value: "verwaltung", label: "Administration / back office" },
         { value: "produktion", label: "Production / logistics" }, { value: "andere", label: "Other" }
       ],
-      description: "So the first pilot runs smoothly and delivers dependable results."
+      description: "(So the first pilot runs smoothly and delivers dependable results.)"
     },
     { key: "geschaeftsmodell_evolution", label: "Business model idea with AI", type: "textarea",
-      placeholder: "e.g., AI-powered portal, data-based services…", description: "So opportunities for new offerings and recurring revenue become visible." },
+      placeholder: "e.g., AI-powered portal, data-based services…", description: "(So opportunities for new offerings and recurring revenue become visible.)" },
     { key: "vision_3_jahre", label: "Three-year vision", type: "textarea",
-      placeholder: "e.g., 80% automation, doubled revenue…", description: "So roadmap and investments align with a clear, ambitious direction." },
+      placeholder: "e.g., 80% automation, doubled revenue…", description: "(So roadmap and investments align with a clear, ambitious direction.)" },
 
-    { key: "strategische_ziele", label: "Concrete goals with AI", type: "textarea", placeholder: "e.g., boost efficiency, new products, better service", description: "So priorities are metric-driven and progress remains measurable." },
+    { key: "strategische_ziele", label: "Concrete goals with AI", type: "textarea", placeholder: "e.g., boost efficiency, new products, better service", description: "(So priorities are metric-driven and progress remains measurable.)" },
     { key: "massnahmen_komplexitaet", label: "Implementation effort", type: "select",
       options: [ { value: "niedrig", label: "Low" }, { value: "mittel", label: "Medium" }, { value: "hoch", label: "High" }, { value: "unklar", label: "Unclear" } ],
-      description: "So scope, timeline and resources are set realistically." },
+      description: "(So scope, timeline and resources are set realistically.)" },
     { key: "roadmap_vorhanden", label: "AI roadmap/strategy in place?", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "teilweise", label: "Partly" }, { value: "nein", label: "No" } ],
-      description: "So we leverage existing plans and close any gaps efficiently." },
+      description: "(So we leverage existing plans and close any gaps efficiently.)" },
     { key: "governance_richtlinien", label: "AI governance guidelines in place?", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "teilweise", label: "Partly" }, { value: "nein", label: "No" } ],
-      description: "So responsibilities, approvals and access are clearly defined." },
+      description: "(So responsibilities, approvals and access are clearly defined.)" },
     { key: "change_management", label: "Team readiness for change", type: "select",
       options: [
         { value: "sehr_hoch", label: "Very high" }, { value: "hoch", label: "High" },
         { value: "mittel", label: "Medium" }, { value: "niedrig", label: "Low" }, { value: "sehr_niedrig", label: "Very low" }
       ],
-      description: "So communication, training and pace fit your readiness."
+      description: "(So communication, training and pace fit your readiness.)"
     },
 
     // Block 5: Resources & Preferences
     { key: "zeitbudget", label: "Time per week for AI projects", type: "select",
       options: [ { value: "unter_2", label: "Under 2 hours" }, { value: "2_5", label: "2–5 hours" }, { value: "5_10", label: "5–10 hours" }, { value: "ueber_10", label: "Over 10 hours" } ],
-      description: "So action plans realistically fit your available time." },
+      description: "(So action plans realistically fit your available time.)" },
     { key: "vorhandene_tools", label: "Systems already in use", type: "checkbox",
       options: [
         { value: "crm", label: "CRM (HubSpot, Salesforce)" }, { value: "erp", label: "ERP (SAP, Odoo)" },
         { value: "projektmanagement", label: "Project management (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing automation" },
         { value: "buchhaltung", label: "Accounting software" }, { value: "keine", label: "None / other" }
       ],
-      description: "So we use existing integrations and avoid redundant tools."
+      description: "(So we use existing integrations and avoid redundant tools.)"
     },
     { key: "regulierte_branche", label: "Regulated industry", type: "checkbox",
       options: [
         { value: "gesundheit", label: "Healthcare & medicine" }, { value: "finanzen", label: "Finance & insurance" },
         { value: "oeffentlich", label: "Public sector" }, { value: "recht", label: "Legal services" }, { value: "keine", label: "None of these" }
       ],
-      description: "So sector-specific obligations and evidence are covered from day one."
+      description: "(So sector-specific obligations and evidence are covered from day one.)"
     },
     { key: "trainings_interessen", label: "AI training topics of interest", type: "checkbox",
       options: [
@@ -284,7 +284,7 @@ function dispatchProgress(step, total) {
         { value: "datenqualitaet_governance", label: "Data quality & governance" }, { value: "automatisierung", label: "Automation & scripting" },
         { value: "ethik_recht", label: "Ethics & legal basics" }, { value: "keine", label: "None / not sure yet" }
       ],
-      description: "So training plans are tailored and learning goals reached quickly."
+      description: "(So training plans are tailored and learning goals reached quickly.)"
     },
     { key: "vision_prioritaet", label: "Most important strategic lever", type: "select",
       options: [
@@ -292,33 +292,33 @@ function dispatchProgress(step, total) {
         { value: "datenprodukte", label: "Develop data-based offerings" }, { value: "prozessautomation", label: "Automate internal processes" },
         { value: "marktfuehrerschaft", label: "Technology leadership in market" }, { value: "keine_angabe", label: "Not sure yet" }
       ],
-      description: "So recommendations focus on your strongest strategic lever."
+      description: "(So recommendations focus on your strongest strategic lever.)"
     },
 
     // Block 6: Legal & Funding
     { key: "datenschutzbeauftragter", label: "Data protection officer (DPO) available?", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "teilweise", label: "Partly (external/planned)" } ],
-      description: "So obligations are assessed correctly and responsibilities clarified."
+      description: "(So obligations are assessed correctly and responsibilities clarified.)"
     },
     { key: "technische_massnahmen", label: "Technical protection measures", type: "select",
       options: [ { value: "alle", label: "All relevant measures" }, { value: "teilweise", label: "Partly in place" }, { value: "keine", label: "None yet" } ],
-      description: "So security level, quick wins and priorities are derived soundly."
+      description: "(So security level, quick wins and priorities are derived soundly.)"
     },
     { key: "folgenabschaetzung", label: "Data protection impact assessment (DPIA)", type: "select",
       options: [ { value: "ja", label: "Yes, completed" }, { value: "nein", label: "No, not yet" }, { value: "teilweise", label: "In planning" } ],
-      description: "So potential risks are spotted early and required checks scheduled."
+      description: "(So potential risks are spotted early and required checks scheduled.)"
     },
     { key: "meldewege", label: "Incident reporting processes", type: "select",
       options: [ { value: "ja", label: "Yes, clearly defined" }, { value: "teilweise", label: "Partly available" }, { value: "nein", label: "No, not defined yet" } ],
-      description: "So incidents escalate fast and legal deadlines are met."
+      description: "(So incidents escalate fast and legal deadlines are met.)"
     },
     { key: "loeschregeln", label: "Policies for deletion and anonymization", type: "select",
       options: [ { value: "ja", label: "Yes, documented" }, { value: "teilweise", label: "Partly available" }, { value: "nein", label: "No, not defined yet" } ],
-      description: "So retention, deletion and anonymization are traceably governed."
+      description: "(So retention, deletion and anonymization are traceably governed.)"
     },
     { key: "ai_act_kenntnis", label: "EU AI Act awareness", type: "select",
       options: [ { value: "sehr_gut", label: "Very good" }, { value: "gut", label: "Good" }, { value: "gehoert", label: "Heard about it" }, { value: "unbekannt", label: "Not familiar yet" } ],
-      description: "So obligations under the EU AI Act are considered appropriately."
+      description: "(So obligations under the EU AI Act are considered appropriately.)"
     },
     { key: "ki_hemmnisse", label: "Barriers to using AI", type: "checkbox",
       options: [
@@ -326,33 +326,33 @@ function dispatchProgress(step, total) {
         { value: "budget", label: "Limited budget" }, { value: "teamakzeptanz", label: "Team acceptance" }, { value: "zeitmangel", label: "Lack of time" },
         { value: "it_integration", label: "IT integration" }, { value: "keine", label: "No barriers" }, { value: "andere", label: "Other" }
       ],
-      description: "So hurdles are visible and we can prioritize practical solutions."
+      description: "(So hurdles are visible and we can prioritize practical solutions.)"
     },
     { key: "bisherige_foerdermittel", label: "Have you received grants before?", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" } ],
-      description: "So suitable follow-up programs and combinations are identified early."
+      description: "(So suitable follow-up programs and combinations are identified early.)"
     },
     { key: "interesse_foerderung", label: "Interested in funding options?", type: "select",
       options: [ { value: "ja", label: "Yes, suggest programs" }, { value: "nein", label: "No need" }, { value: "unklar", label: "Not sure, please advise" } ],
-      description: "So we assess funding chances and propose transparent options."
+      description: "(So we assess funding chances and propose transparent options.)"
     },
     { key: "erfahrung_beratung", label: "Prior consulting on digitization/AI", type: "select",
       options: [ { value: "ja", label: "Yes" }, { value: "nein", label: "No" }, { value: "unklar", label: "Not sure" } ],
-      description: "So we build on existing knowledge and avoid duplicate work."
+      description: "(So we build on existing knowledge and avoid duplicate work.)"
     },
     { key: "investitionsbudget", label: "Budget for AI/digitization next year", type: "select",
       options: [ { value: "unter_2000", label: "Under €2,000" }, { value: "2000_10000", label: "€2,000–€10,000" }, { value: "10000_50000", label: "€10,000–€50,000" },
         { value: "ueber_50000", label: "Over €50,000" }, { value: "unklar", label: "Not sure yet" } ],
-      description: "So scope and grant ratios are planned realistically."
+      description: "(So scope and grant ratios are planned realistically.)"
     },
     { key: "marktposition", label: "Market position", type: "select",
       options: [ { value: "marktfuehrer", label: "Market leader" }, { value: "oberes_drittel", label: "Top third" }, { value: "mittelfeld", label: "Middle field" },
         { value: "nachzuegler", label: "Laggard" }, { value: "unsicher", label: "Hard to assess" } ],
-      description: "So benchmarks, expectations and strategy are framed appropriately."
+      description: "(So benchmarks, expectations and strategy are framed appropriately.)"
     },
     { key: "benchmark_wettbewerb", label: "Regular competitor benchmarking?", type: "select",
       options: [ { value: "ja", label: "Yes, regularly" }, { value: "nein", label: "No" }, { value: "selten", label: "Rarely" } ],
-      description: "So we include relevant competitor comparisons in your report."
+      description: "(So we include relevant competitor comparisons in your report.)"
     },
     { key: "innovationsprozess", label: "How do innovations emerge?", type: "select",
       options: [
@@ -360,17 +360,17 @@ function dispatchProgress(step, total) {
         { value: "kunden", label: "With customers" }, { value: "berater", label: "External consultants" },
         { value: "zufall", label: "By chance" }, { value: "unbekannt", label: "No clear strategy" }
       ],
-      description: "So we understand innovation sources and reinforce effective levers."
+      description: "(So we understand innovation sources and reinforce effective levers.)"
     },
     { key: "risikofreude", label: "Risk appetite for innovation (1–5)", type: "slider", min: 1, max: 5, step: 1,
-      description: "So delivery risk matches your desired pace and experimentation level."
+      description: "(So delivery risk matches your desired pace and experimentation level.)"
     },
 
     // Block 7: Privacy & Submit
     { key: "datenschutz", label:
       "I have read the <a href='datenschutz.html' onclick='window.open(this.href, \"PrivacyPopup\", \"width=600,height=700\"); return false;'>privacy notice</a> and agree.",
       type: "privacy",
-      description: "So we can process your data lawfully and generate the report."
+      description: "(So we can process your data lawfully and generate the report.)"
     }
   ];
 
@@ -422,7 +422,7 @@ function dispatchProgress(step, total) {
     // autofill & validate
     for (var j=0; j<block.keys.length; j++){
       var field = findField(block.keys[j]); if (!field) continue;
-      if (typeof f.showIf === "function" && !f.showIf(formData)) continue;
+      if (typeof field.showIf === "function" && !field.showIf(formData)) continue;
       fillField(field);
     }
 
