@@ -1,4 +1,4 @@
-/* Prefill/Draft (safe) – keine Server-Drafts mehr; optionales Seeding aus ?b=<id> */
+/* Prefill/Draft (safe) – lädt optional Briefing-Daten aus ?b=<id> */
 (function(){
   "use strict";
   function apiBase(){
