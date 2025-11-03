@@ -1,4 +1,4 @@
-/* Prefill/Draft (safe) – lädt optional Briefing-Daten aus ?b=<id> */
+/* Safe Prefill – optionales Laden eines Briefings (?b=<id>) */
 (function(){
   "use strict";
   function apiBase(){
@@ -7,8 +7,7 @@
       return (meta && meta.content) || (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '/api';
     } catch(_) { return '/api'; }
   }
-  var params = new URLSearchParams(location.search);
-  var bid = params.get('b') || params.get('briefing_id');
+  var bid = (new URLSearchParams(location.search)).get('b') || (new URLSearchParams(location.search)).get('briefing_id');
   if(!bid){ return; }
   try{
     fetch(apiBase() + '/briefings/' + encodeURIComponent(bid), { credentials:'include' })

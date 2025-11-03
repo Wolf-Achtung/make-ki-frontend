@@ -6,10 +6,113 @@
   // --------------------------- Konfiguration ---------------------------
 // --------------------------- Konfiguration ---------------------------
 var LANG = "de";
-var SCHEMA_VERSION = "1.6.1";
+var SCHEMA_VERSION = "1.6.2";
 var STORAGE_PREFIX = "autosave_form_";
 var SUBMIT_PATH = "/briefings/submit";
 
+
+var versionKey = STORAGE_PREFIX + "schema";
+function ensureSchema(){
+  try{
+    var prev = localStorage.getItem(versionKey);
+    if (prev !== SCHEMA_VERSION){
+      localStorage.removeItem(autosaveKey);
+      localStorage.removeItem(stepKey);
+      localStorage.setItem(versionKey, SCHEMA_VERSION);
+      currentBlock = 0;
+    }
+  }catch(_){}
+}
+// --------------------------- Helper-Funktionen ---------------------------
+function findField(k) { for (var i=0; i<fields.length; i++) { if (fields[i].key === k) return fields[i]; } return null; }
+
+function labelOf(k) {
+  var f = findField(k);
+  return f ? (f.label || k) : k;
+}
+
+function renderInput(f) {
+  if (f.type === "select") {
+    var opts = "<option value=''>Bitte wählen...</option>";
+    for (var i=0; i<f.options.length; i++){ opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>"; }
+    return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
+  }
+  if (f.type === "checkbox") {
+    var html = "<div class='checkbox-group'>";
+    for (var j=0; j<f.options.length; j++){
+      html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + "</span></label>";
+    }
+    return html + "</div>";
+  }
+  if (f.type === "textarea") {
+    var ph = f.placeholder || "";
+    return "<textarea id='" + f.key + "' name='" + f.key + "' placeholder='" + ph + "'></textarea>";
+  }
+  if (f.type === "privacy") {
+    return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
+  }
+  if (f.type === "slider") {
+    return "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
+      + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
+  }
+  return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
+}
+
+function fillField(f) {
+  var val = formData[f.key];
+  if (f.type === "select") {
+    var sel = document.getElementById(f.key); if (!sel) return;
+    if (val) sel.value = val;
+  } else if (f.type === "checkbox") {
+    var arr = Array.isArray(val) ? val : [];
+    var boxes = document.querySelectorAll("input[name='" + f.key + "']");
+    for (var i=0; i<boxes.length; i++){ boxes[i].checked = arr.indexOf(boxes[i].value) !== -1; }
+  } else if (f.type === "textarea") {
+    var ta = document.getElementById(f.key); if (ta && val) ta.value = val;
+  } else if (f.type === "privacy") {
+    var cb = document.getElementById(f.key); if (cb) cb.checked = (val === true);
+  } else if (f.type === "slider") {
+    var slider = document.getElementById(f.key);
+    if (slider) {
+      slider.value = val || f.min || 1;
+      updateSliderLabel(f.key, slider.value);
+      slider.addEventListener("input", function(e){ updateSliderLabel(f.key, e.target.value); });
+    }
+  } else {
+    var inp = document.getElementById(f.key); if (inp && val) inp.value = val;
+  }
+}
+
+function collectValue(f) {
+  if (f.type === "select") {
+    var sel = document.getElementById(f.key); return sel ? sel.value : "";
+  } else if (f.type === "checkbox") {
+    var boxes = document.querySelectorAll("input[name='" + f.key + "']:checked"); var arr = [];
+    for (var i=0; i<boxes.length; i++) arr.push(boxes[i].value);
+    return arr;
+  } else if (f.type === "textarea") {
+    var ta = document.getElementById(f.key); return ta ? ta.value : "";
+  } else if (f.type === "privacy") {
+    var cb = document.getElementById(f.key); return cb ? cb.checked : false;
+  } else if (f.type === "slider") {
+    var slider = document.getElementById(f.key); return slider ? slider.value : "";
+  } else {
+    var inp = document.getElementById(f.key); return inp ? inp.value : "";
+  }
+}
+
+function updateSliderLabel(key, val) {
+  var lbl = document.getElementById(key + "_value");
+  if (lbl) lbl.textContent = val;
+}
+
+function clampStep(){
+  try{
+    if (typeof currentBlock !== "number") currentBlock = 0;
+    if (currentBlock < 0 || currentBlock >= blocks.length) currentBlock = 0;
+  }catch(_){ currentBlock = 0; }
+}
+var SUBMIT_IN_FLIGHT = false;
 function getBaseUrl() {
   try {
     var cfg = window.__CONFIG__ || {};
@@ -501,14 +604,15 @@ function dispatchProgress(step, total) {
 
   // --------------------------- Submit ---------------------------
   function submitForm() {
-  if (SUBMIT_IN_FLIGHT) return;
-  // collect all field values
+  if (typeof SUBMIT_IN_FLIGHT !== "undefined" && SUBMIT_IN_FLIGHT) return;
+  // collect all values (only visible fields per block)
   for (var bi=0; bi<blocks.length; bi++) {
     var b = blocks[bi];
     for (var ki=0; ki<b.keys.length; ki++) {
-      var k = b.keys[ki]; var f = findField(k); if (!f) continue;
-      if (typeof f.showIf === "function" && !f.showIf(formData)) continue;
-      if (document.getElementById(f.key)) { formData[k] = collectValue(f); }
+      var k = b.keys[ki];
+      var f = (typeof findField === "function") ? findField(k) : null;
+      if (f && typeof f.showIf === "function" && !f.showIf(formData)) continue;
+      if (document.getElementById(k)) { formData[k] = (typeof collectValue === "function" ? collectValue(f||{key:k,type:'text'}) : (document.getElementById(k).value||'')); }
     }
   }
   saveAutosave();
@@ -526,7 +630,7 @@ function dispatchProgress(step, total) {
       + 'Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail.</div></section>';
   }
 
-  var token = getToken();
+  var token = getToken && getToken();
   if (!token) {
     if (root) root.insertAdjacentHTML("beforeend",
       '<div class="guidance important" role="alert">Ihre Sitzung ist abgelaufen. '
@@ -534,19 +638,18 @@ function dispatchProgress(step, total) {
     return;
   }
 
-  // Governance: keine Namen/Firmennamen übertragen
-  var data = {}; 
-  for (var i=0;i<fields.length;i++){ data[fields[i].key] = formData[fields[i].key]; }
+  var data = {}; for (var i2=0;i2<fields.length;i2++){ data[fields[i2].key] = formData[fields[i2].key]; }
   delete data.unternehmen_name; delete data.firmenname;
 
-  var email = getEmailFromJWT(token);
+  var email = getEmailFromJWT ? getEmailFromJWT(token) : null;
   var payload = { lang: LANG, answers: data, queue_analysis: true };
   if (email) { payload.email = email; }
 
   var url = getBaseUrl() + SUBMIT_PATH;
   var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
 
-  SUBMIT_IN_FLIGHT = true;
+  try { SUBMIT_IN_FLIGHT = true; } catch(_) {}
+
   fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token, "Idempotency-Key": idem },
@@ -555,91 +658,7 @@ function dispatchProgress(step, total) {
     keepalive: true
   }).then(function (res) {
     if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
-  }).catch(function(){}).finally(function(){ SUBMIT_IN_FLIGHT = false; });
-// --------------------------- Helper-Funktionen ---------------------------
-function findField(k) { for (var i=0; i<fields.length; i++) { if (fields[i].key === k) return fields[i]; } return null; }
-
-function labelOf(k) {
-  var f = findField(k);
-  return f ? (f.label || k) : k;
-}
-
-function renderInput(f) {
-  if (f.type === "select") {
-    var opts = "<option value=''>Bitte wählen...</option>";
-    for (var i=0; i<f.options.length; i++){ opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>"; }
-    return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
-  }
-  if (f.type === "checkbox") {
-    var html = "<div class='checkbox-group'>";
-    for (var j=0; j<f.options.length; j++){
-      html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + "</span></label>";
-    }
-    return html + "</div>";
-  }
-  if (f.type === "textarea") {
-    var ph = f.placeholder || "";
-    return "<textarea id='" + f.key + "' name='" + f.key + "' placeholder='" + ph + "'></textarea>";
-  }
-  if (f.type === "privacy") {
-    return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
-  }
-  if (f.type === "slider") {
-    return "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
-      + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
-  }
-  return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
-}
-
-function fillField(f) {
-  var val = formData[f.key];
-  if (f.type === "select") {
-    var sel = document.getElementById(f.key); if (!sel) return;
-    if (val) sel.value = val;
-  } else if (f.type === "checkbox") {
-    var arr = Array.isArray(val) ? val : [];
-    var boxes = document.querySelectorAll("input[name='" + f.key + "']");
-    for (var i=0; i<boxes.length; i++){ boxes[i].checked = arr.indexOf(boxes[i].value) !== -1; }
-  } else if (f.type === "textarea") {
-    var ta = document.getElementById(f.key); if (ta && val) ta.value = val;
-  } else if (f.type === "privacy") {
-    var cb = document.getElementById(f.key); if (cb) cb.checked = (val === true);
-  } else if (f.type === "slider") {
-    var slider = document.getElementById(f.key);
-    if (slider) {
-      slider.value = val || f.min || 1;
-      updateSliderLabel(f.key, slider.value);
-      slider.addEventListener("input", function(e){ updateSliderLabel(f.key, e.target.value); });
-    }
-  } else {
-    var inp = document.getElementById(f.key); if (inp && val) inp.value = val;
-  }
-}
-
-function collectValue(f) {
-  if (f.type === "select") {
-    var sel = document.getElementById(f.key); return sel ? sel.value : "";
-  } else if (f.type === "checkbox") {
-    var boxes = document.querySelectorAll("input[name='" + f.key + "']:checked"); var arr = [];
-    for (var i=0; i<boxes.length; i++) arr.push(boxes[i].value);
-    return arr;
-  } else if (f.type === "textarea") {
-    var ta = document.getElementById(f.key); return ta ? ta.value : "";
-  } else if (f.type === "privacy") {
-    var cb = document.getElementById(f.key); return cb ? cb.checked : false;
-  } else if (f.type === "slider") {
-    var slider = document.getElementById(f.key); return slider ? slider.value : "";
-  } else {
-    var inp = document.getElementById(f.key); return inp ? inp.value : "";
-  }
-}
-
-function updateSliderLabel(key, val) {
-  var lbl = document.getElementById(key + "_value");
-  if (lbl) lbl.textContent = val;
-}
-
-
+  }).catch(function(){}).finally(function(){ try { SUBMIT_IN_FLIGHT = false; } catch(_) {} });
 }
 function clampStep(){
   try{
@@ -665,10 +684,8 @@ var SUBMIT_IN_FLIGHT = false;
   }
 
   // Init
-  window.addEventListener("DOMContentLoaded", function(){
-    loadAutosave(); loadStep();
+  window.addEventListener("DOMContentLoaded", function(){ ensureSchema && ensureSchema(); loadAutosave(); loadStep();
     // Sicherstellen, dass Block 0 keys existieren (Initialvalidierung)
-    var b0 = blocks[0]; for (var i=0;i<b0.keys.length;i++){ var f=findField(b0.keys[i]); if (f && formData[f.key]===undefined) formData[f.key] = ""; }
-    renderStep(); scrollToStepTop(true);
-  });
+    var b0 = blocks[0] || { keys: [] }; for (var i=0; i<b0.keys.length; i++){ var k=b0.keys[i]; if (formData[k]===undefined) formData[k] = ''; }
+    clampStep && clampStep(); renderStep(); scrollToStepTop(true); });
 })();
