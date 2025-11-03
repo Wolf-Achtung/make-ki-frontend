@@ -6,7 +6,7 @@
   // --------------------------- Konfiguration ---------------------------
 // --------------------------- Konfiguration ---------------------------
 var LANG = "de";
-var SCHEMA_VERSION = "1.6.0";
+var SCHEMA_VERSION = "1.6.1";
 var STORAGE_PREFIX = "autosave_form_";
 var SUBMIT_PATH = "/briefings/submit";
 
@@ -556,6 +556,90 @@ function dispatchProgress(step, total) {
   }).then(function (res) {
     if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
   }).catch(function(){}).finally(function(){ SUBMIT_IN_FLIGHT = false; });
+// --------------------------- Helper-Funktionen ---------------------------
+function findField(k) { for (var i=0; i<fields.length; i++) { if (fields[i].key === k) return fields[i]; } return null; }
+
+function labelOf(k) {
+  var f = findField(k);
+  return f ? (f.label || k) : k;
+}
+
+function renderInput(f) {
+  if (f.type === "select") {
+    var opts = "<option value=''>Bitte wählen...</option>";
+    for (var i=0; i<f.options.length; i++){ opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>"; }
+    return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
+  }
+  if (f.type === "checkbox") {
+    var html = "<div class='checkbox-group'>";
+    for (var j=0; j<f.options.length; j++){
+      html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + "</span></label>";
+    }
+    return html + "</div>";
+  }
+  if (f.type === "textarea") {
+    var ph = f.placeholder || "";
+    return "<textarea id='" + f.key + "' name='" + f.key + "' placeholder='" + ph + "'></textarea>";
+  }
+  if (f.type === "privacy") {
+    return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
+  }
+  if (f.type === "slider") {
+    return "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
+      + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
+  }
+  return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
+}
+
+function fillField(f) {
+  var val = formData[f.key];
+  if (f.type === "select") {
+    var sel = document.getElementById(f.key); if (!sel) return;
+    if (val) sel.value = val;
+  } else if (f.type === "checkbox") {
+    var arr = Array.isArray(val) ? val : [];
+    var boxes = document.querySelectorAll("input[name='" + f.key + "']");
+    for (var i=0; i<boxes.length; i++){ boxes[i].checked = arr.indexOf(boxes[i].value) !== -1; }
+  } else if (f.type === "textarea") {
+    var ta = document.getElementById(f.key); if (ta && val) ta.value = val;
+  } else if (f.type === "privacy") {
+    var cb = document.getElementById(f.key); if (cb) cb.checked = (val === true);
+  } else if (f.type === "slider") {
+    var slider = document.getElementById(f.key);
+    if (slider) {
+      slider.value = val || f.min || 1;
+      updateSliderLabel(f.key, slider.value);
+      slider.addEventListener("input", function(e){ updateSliderLabel(f.key, e.target.value); });
+    }
+  } else {
+    var inp = document.getElementById(f.key); if (inp && val) inp.value = val;
+  }
+}
+
+function collectValue(f) {
+  if (f.type === "select") {
+    var sel = document.getElementById(f.key); return sel ? sel.value : "";
+  } else if (f.type === "checkbox") {
+    var boxes = document.querySelectorAll("input[name='" + f.key + "']:checked"); var arr = [];
+    for (var i=0; i<boxes.length; i++) arr.push(boxes[i].value);
+    return arr;
+  } else if (f.type === "textarea") {
+    var ta = document.getElementById(f.key); return ta ? ta.value : "";
+  } else if (f.type === "privacy") {
+    var cb = document.getElementById(f.key); return cb ? cb.checked : false;
+  } else if (f.type === "slider") {
+    var slider = document.getElementById(f.key); return slider ? slider.value : "";
+  } else {
+    var inp = document.getElementById(f.key); return inp ? inp.value : "";
+  }
+}
+
+function updateSliderLabel(key, val) {
+  var lbl = document.getElementById(key + "_value");
+  if (lbl) lbl.textContent = val;
+}
+
+
 }
 function clampStep(){
   try{
@@ -564,6 +648,9 @@ function clampStep(){
   }catch(_){ currentBlock = 0; }
 }
 var SUBMIT_IN_FLIGHT = false;
+  var autosaveKey = STORAGE_PREFIX + "data";
+  var stepKey = STORAGE_PREFIX + "step";
+
 
   var formData = {};
   var currentBlock = 0;
