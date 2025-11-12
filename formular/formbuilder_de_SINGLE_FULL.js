@@ -631,7 +631,7 @@ function dispatchProgress(step, total) {
   }
 
   var token = getToken && getToken();
-  if (!token) {
+  if (!token || String(token).split(".").length !== 3) {
     if (root) root.insertAdjacentHTML("beforeend",
       '<div class="guidance important" role="alert">Ihre Sitzung ist abgelaufen. '
       + '<a href="/login.html">Bitte neu anmelden</a>, wenn Sie eine weitere Analyse durchführen möchten.</div>');
@@ -646,7 +646,7 @@ function dispatchProgress(step, total) {
   if (email) { payload.email = email; }
 
   
-// ensure required top-level fields for backend (also present in answers)
+// ensure required top-level fields for backend + mirror email into answers
 payload.branche = data.branche || payload.branche || "";
 payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
 payload.bundesland = data.bundesland || payload.bundesland || "";
