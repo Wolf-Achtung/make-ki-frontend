@@ -4,157 +4,175 @@
   "use strict";
 
   // --------------------------- Konfiguration ---------------------------
-// --------------------------- Konfiguration ---------------------------
-var LANG = "de";
-var SCHEMA_VERSION = "1.6.2";
-var STORAGE_PREFIX = "autosave_form_";
-var SUBMIT_PATH = "/briefings/submit";
+  var LANG = "de";
+  var SCHEMA_VERSION = "1.6.2";
+  var STORAGE_PREFIX = "autosave_form_";
+  var SUBMIT_PATH = "/briefings/submit";
 
+  // --------------------------- State Variables ---------------------------
+  var autosaveKey = STORAGE_PREFIX + "data";
+  var stepKey = STORAGE_PREFIX + "step";
+  var versionKey = STORAGE_PREFIX + "schema";
+  var formData = {};
+  var currentBlock = 0;
+  var SUBMIT_IN_FLIGHT = false;
 
-var versionKey = STORAGE_PREFIX + "schema";
-function ensureSchema(){
-  try{
-    var prev = localStorage.getItem(versionKey);
-    if (prev !== SCHEMA_VERSION){
-      localStorage.removeItem(autosaveKey);
-      localStorage.removeItem(stepKey);
-      localStorage.setItem(versionKey, SCHEMA_VERSION);
-      currentBlock = 0;
+  // --------------------------- Schema Management ---------------------------
+  function ensureSchema(){
+    try{
+      var prev = localStorage.getItem(versionKey);
+      if (prev !== SCHEMA_VERSION){
+        localStorage.removeItem(autosaveKey);
+        localStorage.removeItem(stepKey);
+        localStorage.setItem(versionKey, SCHEMA_VERSION);
+        currentBlock = 0;
+      }
+    }catch(_){}
+  }
+
+  // --------------------------- Helper-Funktionen ---------------------------
+  function findField(k) { for (var i=0; i<fields.length; i++) { if (fields[i].key === k) return fields[i]; } return null; }
+
+  function labelOf(k) {
+    var f = findField(k);
+    return f ? (f.label || k) : k;
+  }
+
+  function renderInput(f) {
+    if (f.type === "select") {
+      var opts = "<option value=''>Bitte wählen...</option>";
+      for (var i=0; i<f.options.length; i++){ opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>"; }
+      return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
     }
-  }catch(_){}
-}
-// --------------------------- Helper-Funktionen ---------------------------
-function findField(k) { for (var i=0; i<fields.length; i++) { if (fields[i].key === k) return fields[i]; } return null; }
-
-function labelOf(k) {
-  var f = findField(k);
-  return f ? (f.label || k) : k;
-}
-
-function renderInput(f) {
-  if (f.type === "select") {
-    var opts = "<option value=''>Bitte wählen...</option>";
-    for (var i=0; i<f.options.length; i++){ opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>"; }
-    return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
-  }
-  if (f.type === "checkbox") {
-    var html = "<div class='checkbox-group'>";
-    for (var j=0; j<f.options.length; j++){
-      html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + "</span></label>";
+    if (f.type === "checkbox") {
+      var html = "<div class='checkbox-group'>";
+      for (var j=0; j<f.options.length; j++){
+        html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + "</span></label>";
+      }
+      return html + "</div>";
     }
-    return html + "</div>";
-  }
-  if (f.type === "textarea") {
-    var ph = f.placeholder || "";
-    return "<textarea id='" + f.key + "' name='" + f.key + "' placeholder='" + ph + "'></textarea>";
-  }
-  if (f.type === "privacy") {
-    return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
-  }
-  if (f.type === "slider") {
-    return "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
-      + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
-  }
-  return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
-}
-
-function fillField(f) {
-  var val = formData[f.key];
-  if (f.type === "select") {
-    var sel = document.getElementById(f.key); if (!sel) return;
-    if (val) sel.value = val;
-  } else if (f.type === "checkbox") {
-    var arr = Array.isArray(val) ? val : [];
-    var boxes = document.querySelectorAll("input[name='" + f.key + "']");
-    for (var i=0; i<boxes.length; i++){ boxes[i].checked = arr.indexOf(boxes[i].value) !== -1; }
-  } else if (f.type === "textarea") {
-    var ta = document.getElementById(f.key); if (ta && val) ta.value = val;
-  } else if (f.type === "privacy") {
-    var cb = document.getElementById(f.key); if (cb) cb.checked = (val === true);
-  } else if (f.type === "slider") {
-    var slider = document.getElementById(f.key);
-    if (slider) {
-      slider.value = val || f.min || 1;
-      updateSliderLabel(f.key, slider.value);
-      slider.addEventListener("input", function(e){ updateSliderLabel(f.key, e.target.value); });
+    if (f.type === "textarea") {
+      var ph = f.placeholder || "";
+      return "<textarea id='" + f.key + "' name='" + f.key + "' placeholder='" + ph + "'></textarea>";
     }
-  } else {
-    var inp = document.getElementById(f.key); if (inp && val) inp.value = val;
-  }
-}
-
-function collectValue(f) {
-  if (f.type === "select") {
-    var sel = document.getElementById(f.key); return sel ? sel.value : "";
-  } else if (f.type === "checkbox") {
-    var boxes = document.querySelectorAll("input[name='" + f.key + "']:checked"); var arr = [];
-    for (var i=0; i<boxes.length; i++) arr.push(boxes[i].value);
-    return arr;
-  } else if (f.type === "textarea") {
-    var ta = document.getElementById(f.key); return ta ? ta.value : "";
-  } else if (f.type === "privacy") {
-    var cb = document.getElementById(f.key); return cb ? cb.checked : false;
-  } else if (f.type === "slider") {
-    var slider = document.getElementById(f.key); return slider ? slider.value : "";
-  } else {
-    var inp = document.getElementById(f.key); return inp ? inp.value : "";
-  }
-}
-
-function updateSliderLabel(key, val) {
-  var lbl = document.getElementById(key + "_value");
-  if (lbl) lbl.textContent = val;
-}
-
-function clampStep(){
-  try{
-    if (typeof currentBlock !== "number") currentBlock = 0;
-    if (currentBlock < 0 || currentBlock >= blocks.length) currentBlock = 0;
-  }catch(_){ currentBlock = 0; }
-}
-var SUBMIT_IN_FLIGHT = false;
-function getBaseUrl() {
-  try {
-    var cfg = window.__CONFIG__ || {};
-    var v = cfg.API_BASE || '';
-    if (!v) {
-      var meta = document.querySelector('meta[name="api-base"]');
-      v = (meta && meta.content) || (window.API_BASE || '/api');
+    if (f.type === "privacy") {
+      return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
     }
-    return String(v || '/api').replace(/\/+$/, '');
-  } catch (e) { 
-    return '/api'; 
+    if (f.type === "slider") {
+      return "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
+        + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
+    }
+    return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
   }
-}
 
-function getToken() {
-  var keys = ["jwt", "access_token", "id_token", "AUTH_TOKEN", "token"];
-  for (var i = 0; i < keys.length; i++) { 
+  function fillField(f) {
+    var val = formData[f.key];
+    if (f.type === "select") {
+      var sel = document.getElementById(f.key); if (!sel) return;
+      if (val) sel.value = val;
+    } else if (f.type === "checkbox") {
+      var arr = Array.isArray(val) ? val : [];
+      var boxes = document.querySelectorAll("input[name='" + f.key + "']");
+      for (var i=0; i<boxes.length; i++){ boxes[i].checked = arr.indexOf(boxes[i].value) !== -1; }
+    } else if (f.type === "textarea") {
+      var ta = document.getElementById(f.key); if (ta && val) ta.value = val;
+    } else if (f.type === "privacy") {
+      var cb = document.getElementById(f.key); if (cb) cb.checked = (val === true);
+    } else if (f.type === "slider") {
+      var slider = document.getElementById(f.key);
+      if (slider) {
+        slider.value = val || f.min || 1;
+        updateSliderLabel(f.key, slider.value);
+        slider.addEventListener("input", function(e){ updateSliderLabel(f.key, e.target.value); });
+      }
+    } else {
+      var inp = document.getElementById(f.key); if (inp && val) inp.value = val;
+    }
+  }
+
+  function collectValue(f) {
+    if (f.type === "select") {
+      var sel = document.getElementById(f.key); return sel ? sel.value : "";
+    } else if (f.type === "checkbox") {
+      var boxes = document.querySelectorAll("input[name='" + f.key + "']:checked"); var arr = [];
+      for (var i=0; i<boxes.length; i++) arr.push(boxes[i].value);
+      return arr;
+    } else if (f.type === "textarea") {
+      var ta = document.getElementById(f.key); return ta ? ta.value : "";
+    } else if (f.type === "privacy") {
+      var cb = document.getElementById(f.key); return cb ? cb.checked : false;
+    } else if (f.type === "slider") {
+      var slider = document.getElementById(f.key); return slider ? slider.value : "";
+    } else {
+      var inp = document.getElementById(f.key); return inp ? inp.value : "";
+    }
+  }
+
+  function updateSliderLabel(key, val) {
+    var lbl = document.getElementById(key + "_value");
+    if (lbl) lbl.textContent = val;
+  }
+
+  function clampStep(){
+    try{
+      if (typeof currentBlock !== "number") currentBlock = 0;
+      if (currentBlock < 0 || currentBlock >= blocks.length) currentBlock = 0;
+    }catch(_){ currentBlock = 0; }
+  }
+
+  function getBaseUrl() {
+    try {
+      var cfg = window.__CONFIG__ || {};
+      var v = cfg.API_BASE || '';
+      if (!v) {
+        var meta = document.querySelector('meta[name="api-base"]');
+        v = (meta && meta.content) || (window.API_BASE || '/api');
+      }
+      return String(v || '/api').replace(/\/+$/, '');
+    } catch (e) { 
+      return '/api'; 
+    }
+  }
+
+  function getToken() {
+    var keys = ["jwt", "access_token", "id_token", "AUTH_TOKEN", "token"];
+    for (var i = 0; i < keys.length; i++) { 
+      try { 
+        var t = localStorage.getItem(keys[i]); 
+        if (t) return t; 
+      } catch (e) {} 
+    }
+    return null;
+  }
+
+  function getEmailFromJWT(token) {
     try { 
-      var t = localStorage.getItem(keys[i]); 
-      if (t) return t; 
-    } catch (e) {} 
+      if (!token || token.split(".").length !== 3) return null;
+      var payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.email || payload.preferred_username || payload.sub || null;
+    } catch (e) { 
+      return null; 
+    }
   }
-  return null;
-}
 
-function getEmailFromJWT(token) {
-  try { 
-    if (!token || token.split(".").length !== 3) return null;
-    var payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.email || payload.preferred_username || payload.sub || null;
-  } catch (e) { 
-    return null; 
+  function dispatchProgress(step, total) {
+    try { 
+      document.dispatchEvent(new CustomEvent("fb:progress", { 
+        detail: { step: step, total: total } 
+      })); 
+    } catch (_) {}
   }
-}
 
-function dispatchProgress(step, total) {
-  try { 
-    document.dispatchEvent(new CustomEvent("fb:progress", { 
-      detail: { step: step, total: total } 
-    })); 
-  } catch (_) {}
-}
+  // --------------------------- Autosave Functions ---------------------------
+  function saveAutosave() { try { localStorage.setItem(autosaveKey, JSON.stringify(formData)); } catch(_) {} }
+  function loadAutosave() { try { var s = localStorage.getItem(autosaveKey); if (s) formData = JSON.parse(s); } catch(_) {} }
+  function saveStep() { try { localStorage.setItem(stepKey, String(currentBlock)); } catch(_) {} }
+  function loadStep() { try { var s = localStorage.getItem(stepKey); if (s) currentBlock = parseInt(s, 10) || 0; } catch(_) {} }
+  
+  function scrollToStepTop(instant) {
+    var root = document.getElementById("formbuilder");
+    if (root && root.scrollIntoView) root.scrollIntoView({ behavior: instant ? "auto" : "smooth", block: "start" });
+  }
 
   // --------------------------- Styles (inject) ---------------------------
   (function injectCSS(){ try{
@@ -285,142 +303,149 @@ function dispatchProgress(step, total) {
       description: "(Damit wir den Ausgangspunkt und schnelle, realistische Verbesserungen einschätzen können.)" },
     { key: "prozesse_papierlos", label: "Anteil papierloser Prozesse", type: "select",
       options: [ { value: "0-20", label: "0–20%" }, { value: "21-50", label: "21–50%" }, { value: "51-80", label: "51–80%" }, { value: "81-100", label: "81–100%" } ],
-      description: "(Damit Potenziale für Automatisierung und Medienbrüche gezielt adressiert werden.)" },
-    { key: "automatisierungsgrad", label: "Automatisierungsgrad", type: "select",
-      options: [
-        { value: "sehr_niedrig", label: "Sehr niedrig" }, { value: "eher_niedrig", label: "Eher niedrig" },
-        { value: "mittel", label: "Mittel" }, { value: "eher_hoch", label: "Eher hoch" }, { value: "sehr_hoch", label: "Sehr hoch" }
-      ],
-      description: "(Damit Prioritäten für Effizienzgewinne und Risikoabschätzung fundiert gesetzt werden.)" },
-    { key: "ki_einsatz", label: "Wo wird KI bereits eingesetzt?", type: "checkbox",
-      options: [
-        { value: "chatbots", label: "Chatbots / Kundenservice" }, { value: "marketing", label: "Marketing & Content" },
-        { value: "vertrieb", label: "Vertrieb & CRM" }, { value: "datenanalyse", label: "Datenanalyse" },
-        { value: "produktion", label: "Produktion / Logistik" }, { value: "hr", label: "Personalmanagement" },
-        { value: "andere", label: "Andere Bereiche" }, { value: "noch_keine", label: "Noch keine Nutzung" }
-      ],
-      description: "(Damit vorhandene Lösungen berücksichtigt und Doppelarbeiten konsequent vermieden werden.)" },
-    { key: "ki_kompetenz", label: "KI-Kompetenz im Team", type: "select",
-      options: [
-        { value: "hoch", label: "Hoch" }, { value: "mittel", label: "Mittel" },
-        { value: "niedrig", label: "Niedrig" }, { value: "keine", label: "Keine" }
-      ],
-      description: "(Damit Inhalte, Tempo und Unterstützung zum Teamniveau passen.)" },
+      description: "(Damit wir Potenziale bei Dokumenten-Workflows und Archivierung abschätzen können.)" },
+    { key: "automatisierungsgrad", label: "Sind Prozesse automatisiert? (1–5)", type: "slider", min: 1, max: 5, step: 1,
+      description: "(Damit Empfehlungen zum Automatisierungsgrad und niedrig hängenden Früchten angepasst werden.)" },
+    { key: "ki_einsatz", label: "Nutzen Sie aktuell KI-Tools?", type: "select",
+      options: [ { value: "nein", label: "Nein, noch nicht" }, { value: "testing", label: "In Pilotprojekten/Tests" },
+        { value: "vereinzelt", label: "Vereinzelt (z. B. Chatbot)" }, { value: "regelmaessig", label: "Regelmäßig mehrere Tools" } ],
+      description: "(Damit wir den Reifegrad und künftige Schritte konkret abbilden können.)" },
+    { key: "ki_kompetenz", label: "Wie groß ist die interne KI-Kompetenz? (1–5)", type: "slider", min: 1, max: 5, step: 1,
+      description: "(Damit Schulungsaufwand und externe Unterstützung richtig dimensioniert werden.)" },
 
     // Block 3: Ziele & Use Cases
-    { key: "ki_ziele", label: "Ziele mit KI in den nächsten 3–6 Monaten", type: "checkbox",
+    { key: "ki_ziele", label: "Hauptziele des KI-Einsatzes", type: "checkbox",
       options: [
-        { value: "effizienz", label: "Effizienz steigern" }, { value: "automatisierung", label: "Automatisierung" },
-        { value: "neue_produkte", label: "Neue Produkte/Services" }, { value: "kundenservice", label: "Kundenservice verbessern" },
-        { value: "datenauswertung", label: "Daten besser nutzen" }, { value: "kosten_senken", label: "Kosten senken" },
-        { value: "wettbewerbsfaehigkeit", label: "Wettbewerbsfähigkeit" }, { value: "keine_angabe", label: "Noch unklar" }
+        { value: "effizienz", label: "Effizienz & Produktivität steigern" }, { value: "kosten", label: "Kosten senken" },
+        { value: "qualitaet", label: "Qualität verbessern" }, { value: "innovation", label: "Innovation fördern" },
+        { value: "kundenerlebnis", label: "Kundenerlebnis optimieren" }, { value: "neue_dienste", label: "Neue Dienste/Produkte" },
+        { value: "compliance", label: "Compliance & Sicherheit" }
       ],
-      description: "(Damit Maßnahmen auf kurzfristige, messbare Ziele ausgerichtet priorisiert werden.)" },
-    { key: "ki_projekte", label: "Laufende/geplante KI-Projekte", type: "textarea", placeholder: "z. B. Chatbot, Angebotsautomation, Generatoren…", description: "(Damit wir Anschlussfähigkeit, Abhängigkeiten und nächste Schritte sinnvoll planen.)" },
-    { key: "anwendungsfaelle", label: "Interessante Anwendungsfälle", type: "checkbox",
+      description: "(Damit Empfehlungen auf Ihre strategischen Prioritäten zugeschnitten werden.)" },
+    { key: "ki_projekte", label: "Schon geplante KI-Projekte?", type: "textarea",
+      placeholder: "z. B. Automatisierung Rechnungsprüfung, Personalisierung Newsletter",
+      description: "(Damit wir Synergien aufzeigen und hilfreiche Komplementär-Maßnahmen finden.)" },
+    { key: "anwendungsfaelle", label: "Interessanteste KI-Anwendungsfälle", type: "checkbox",
       options: [
-        { value: "chatbots", label: "Chatbots / FAQ-Automatisierung" }, { value: "content_generation", label: "Content-Generierung" },
-        { value: "datenanalyse", label: "Datenanalyse & Reporting" }, { value: "dokumentation", label: "Dokumentation & Wissen" },
-        { value: "prozess_automation", label: "Prozessautomation" }, { value: "personalisierung", label: "Personalisierung" },
-        { value: "andere", label: "Andere" }, { value: "keine_angabe", label: "Noch unklar" }
+        { value: "texterstellung", label: "Texterstellung / Content-Generierung" }, { value: "marketing", label: "Marketing-Kampagnen" },
+        { value: "kundenservice", label: "Kundenservice / Chatbots" }, { value: "datenanalyse", label: "Datenanalyse / Dashboards" },
+        { value: "automatisierung", label: "Prozessautomatisierung" }, { value: "predictive", label: "Predictive Analytics / Vorhersagen" },
+        { value: "bild", label: "Bild-/Video-Verarbeitung" }, { value: "personalisierung", label: "Personalisierung" }
       ],
-      description: "(Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen.)" },
-    { key: "zeitersparnis_prioritaet", label: "Bereich mit Zeitersparnis-Priorität", type: "textarea",
-      placeholder: "z. B. schnelleres Reporting, personalisierte Angebote, Automatisierung …", description: "(Damit wir schnell wirksame Zeithebel identifizieren und zuerst umsetzen.)" },
-    { key: "pilot_bereich", label: "Bester Bereich für Pilotprojekt", type: "select",
+      description: "(Damit gezielte Use-Cases und ROI-Beispiele aus Ihrer Wunschliste hervorgehen.)" },
+    { key: "zeitersparnis_prioritaet", label: "Wo ist Zeitersparnis am dringendsten?", type: "textarea",
+      placeholder: "z. B. Angebotserstellung, Kundentermine, Reporting",
+      description: "(Damit Quick Wins sofort priorisiert und Zeitgewinne realistisch beziffert werden.)" },
+    { key: "pilot_bereich", label: "Pilotbereich für erste KI-Initiative", type: "select",
       options: [
-        { value: "kundenservice", label: "Kundenservice" }, { value: "marketing", label: "Marketing / Content" },
-        { value: "vertrieb", label: "Vertrieb" }, { value: "verwaltung", label: "Verwaltung / Backoffice" },
-        { value: "produktion", label: "Produktion / Logistik" }, { value: "andere", label: "Andere" }
+        { value: "marketing", label: "Marketing" }, { value: "vertrieb", label: "Vertrieb" }, { value: "service", label: "Kundenservice" },
+        { value: "ops", label: "Operations / Produktion" }, { value: "verwaltung", label: "Verwaltung / Backoffice" },
+        { value: "hr", label: "Personal / HR" }, { value: "noch_unklar", label: "Noch unklar" }
       ],
-      description: "(Damit das erste Pilotprojekt reibungslos startet und zuverlässig Ergebnisse liefert.)" },
-    { key: "geschaeftsmodell_evolution", label: "Geschäftsmodell-Idee mit KI", type: "textarea",
-      placeholder: "z. B. KI-gestütztes Portal, datenbasierte Services …", description: "(Damit Potenziale für neue Angebote und wiederkehrende Erlöse sichtbar werden.)" },
-    { key: "vision_3_jahre", label: "Vision in 3 Jahren", type: "textarea",
-      placeholder: "z. B. 80 % Automatisierung, verdoppelter Umsatz …", description: "(Damit Roadmap und Investitionen auf eine klare, ambitionierte Richtung einzahlen.)" },
+      description: "(Damit wir gezielt Pilotprojekte mit schnellem ROI vorschlagen können.)" },
+    { key: "geschaeftsmodell_evolution", label: "Wie stark soll KI Ihr Geschäftsmodell verändern?", type: "select",
+      options: [
+        { value: "unterstuetzend", label: "Nur unterstützend (bisherige Prozesse verbessern)" },
+        { value: "moderat", label: "Moderater Wandel (neue Features, Angebote)" },
+        { value: "transformativ", label: "Transformativ (neue Geschäftsmodelle)" }
+      ],
+      description: "(Damit Ambitionslevel, Investitionen und strategische Stoßrichtung richtig justiert werden.)" },
+    { key: "vision_3_jahre", label: "Wo sehen Sie sich in 3 Jahren mit KI?", type: "textarea",
+      placeholder: "z. B. 80% automatisierte Angebote, eigene KI-gestützte Plattform",
+      description: "(Damit eine realistische Roadmap mit messbaren Meilensteinen entworfen werden kann.)" },
 
-    { key: "strategische_ziele", label: "Konkrete Ziele mit KI", type: "textarea", placeholder: "z. B. Effizienz steigern, neue Produkte, besserer Service", description: "(Damit Prioritäten kennzahlenbasiert gesetzt und Fortschritte messbar verfolgt werden.)" },
-    { key: "massnahmen_komplexitaet", label: "Aufwand für die Einführung", type: "select",
-      options: [ { value: "niedrig", label: "Niedrig" }, { value: "mittel", label: "Mittel" }, { value: "hoch", label: "Hoch" }, { value: "unklar", label: "Unklar" } ],
-      description: "(Damit Umfang, Zeitplan und Ressourcen realistisch aufgesetzt werden.)" },
-    { key: "roadmap_vorhanden", label: "KI-Roadmap/Strategie vorhanden?", type: "select",
-      options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "(Damit wir vorhandene Pläne nutzen und Lücken gezielt schließen.)" },
-    { key: "governance_richtlinien", label: "KI-Governance-Richtlinien vorhanden?", type: "select",
-      options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
-      description: "(Damit Verantwortungen, Freigaben und Zugriffsrechte sauber geregelt werden.)" },
-    { key: "change_management", label: "Veränderungsbereitschaft im Team", type: "select",
+    // Block 4: Strategie & Governance
+    { key: "strategische_ziele", label: "Strategische Unternehmensziele (nächste 1–3 Jahre)", type: "checkbox",
       options: [
-        { value: "sehr_hoch", label: "Sehr hoch" }, { value: "hoch", label: "Hoch" },
-        { value: "mittel", label: "Mittel" }, { value: "niedrig", label: "Niedrig" }, { value: "sehr_niedrig", label: "Sehr niedrig" }
+        { value: "wachstum", label: "Umsatzwachstum" }, { value: "margen", label: "Marge steigern" },
+        { value: "skalierung", label: "Skalierung" }, { value: "expansion", label: "Neue Märkte/Produkte" },
+        { value: "nachhaltigkeit", label: "Nachhaltigkeit" }, { value: "digitalisierung", label: "Digitale Transformation" }
       ],
-      description: "(Damit Kommunikation, Training und Tempo zur Veränderungsbereitschaft passen.)" },
+      description: "(Damit KI-Maßnahmen auf Unternehmensziele ausgerichtet und strategisch eingebunden werden.)" },
+    { key: "massnahmen_komplexitaet", label: "Bevorzugte Komplexität bei Maßnahmen", type: "select",
+      options: [
+        { value: "einfach", label: "Einfach & pragmatisch (Quick Wins)" },
+        { value: "mittel", label: "Mittlere Komplexität (mehrmonatige Projekte)" },
+        { value: "hoch", label: "Hohe Komplexität (langfristige Transformation)" }
+      ],
+      description: "(Damit Maßnahmen zu Risikoappetit und Projekterfahrung passen.)" },
+    { key: "roadmap_vorhanden", label: "Existiert eine Digitalisierungs-Roadmap?", type: "select",
+      options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Ansatzweise" }, { value: "nein", label: "Nein" } ],
+      description: "(Damit wir vorhandene Planung integrieren oder bei Bedarf eine passende Roadmap mitliefern.)" },
+    { key: "governance_richtlinien", label: "Gibt es Richtlinien zum KI-Einsatz?", type: "select",
+      options: [ { value: "ja", label: "Ja, etabliert" }, { value: "in_planung", label: "In Planung" }, { value: "nein", label: "Nein" } ],
+      description: "(Damit wir die Governance-Bedarfe und Dringlichkeit einschätzen können.)" },
+    { key: "change_management", label: "Mitarbeiter im Veränderungsprozess", type: "select",
+      options: [
+        { value: "offen", label: "Sehr offen & engagiert" }, { value: "neutral", label: "Neutral / abwartend" },
+        { value: "skeptisch", label: "Skeptisch / zögerlich" }, { value: "unklar", label: "Noch unklar" }
+      ],
+      description: "(Damit Change-Maßnahmen und Kommunikation adäquat geplant werden können.)" },
 
     // Block 5: Ressourcen & Präferenzen
-    { key: "zeitbudget", label: "Zeit pro Woche für KI-Projekte", type: "select",
-      options: [ { value: "unter_2", label: "Unter 2 Stunden" }, { value: "2_5", label: "2–5 Stunden" }, { value: "5_10", label: "5–10 Stunden" }, { value: "ueber_10", label: "Über 10 Stunden" } ],
-      description: "(Damit Maßnahmenpakete zu Ihrer verfügbaren Zeit realistisch passen.)" },
-    { key: "vorhandene_tools", label: "Bereits genutzte Systeme", type: "checkbox",
+    { key: "zeitbudget", label: "Verfügbare Zeit für KI-Einführung (pro Woche)", type: "select",
+      options: [ { value: "1-5h", label: "1–5 Stunden" }, { value: "5-10h", label: "5–10 Stunden" }, { value: "10plus", label: "Über 10 Stunden" } ],
+      description: "(Damit Maßnahmen-Tempo und Unterstützungsbedarf realistisch geplant werden.)" },
+    { key: "vorhandene_tools", label: "Welche Software nutzen Sie bereits?", type: "checkbox",
       options: [
-        { value: "crm", label: "CRM-Systeme (HubSpot, Salesforce)" }, { value: "erp", label: "ERP-Systeme (SAP, Odoo)" },
-        { value: "projektmanagement", label: "Projektmanagement (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing Automation" },
-        { value: "buchhaltung", label: "Buchhaltungssoftware" }, { value: "keine", label: "Keine / andere" }
+        { value: "crm", label: "CRM (z. B. HubSpot, Salesforce)" }, { value: "erp", label: "ERP (z. B. SAP, Lexware)" },
+        { value: "marketing", label: "Marketing-Automation" }, { value: "analytics", label: "Analytics (z. B. Google Analytics)" },
+        { value: "projektmanagement", label: "Projektmanagement (z. B. Asana)" }, { value: "sonstige", label: "Sonstige" }
       ],
-      description: "(Damit Integrationen genutzt und unnötige Tool-Dopplungen konsequent vermieden werden.)" },
-    { key: "regulierte_branche", label: "Regulierte Branche", type: "checkbox",
+      description: "(Damit Integrationsaufwand, Synergien und Tool-Stack-Empfehlungen präzise kalkuliert werden.)" },
+    { key: "regulierte_branche", label: "Regulierte Branche (Finanzen, Gesundheit, etc.)?", type: "select",
+      options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" } ],
+      description: "(Damit Compliance-Anforderungen und Auditbedarf korrekt berücksichtigt werden.)" },
+    { key: "trainings_interessen", label: "Interessante Trainingsthemen", type: "checkbox",
       options: [
-        { value: "gesundheit", label: "Gesundheit & Medizin" }, { value: "finanzen", label: "Finanzen & Versicherungen" },
-        { value: "oeffentlich", label: "Öffentlicher Sektor" }, { value: "recht", label: "Rechtliche Dienstleistungen" }, { value: "keine", label: "Keine dieser Branchen" }
+        { value: "basics", label: "KI-Grundlagen für alle" }, { value: "prompt", label: "Prompt Engineering" },
+        { value: "datenschutz", label: "Datenschutz & Ethik" }, { value: "tools", label: "Tool-Nutzung (ChatGPT, Midjourney, etc.)" },
+        { value: "integration", label: "Integration & Automatisierung" }
       ],
-      description: "(Damit branchenspezifische Pflichten und Nachweise von Anfang an berücksichtigt werden.)" },
-    { key: "trainings_interessen", label: "Interessante KI-Trainingsthemen", type: "checkbox",
+      description: "(Damit Weiterbildungsmaßnahmen exakt auf Wissenslücken und Interessen abgestimmt werden.)" },
+    { key: "vision_prioritaet", label: "Was ist Ihnen bei KI-Lösungen am wichtigsten?", type: "select",
       options: [
-        { value: "prompt_engineering", label: "Prompt Engineering" }, { value: "llm_basics", label: "LLM-Grundlagen" },
-        { value: "datenqualitaet_governance", label: "Datenqualität & Governance" }, { value: "automatisierung", label: "Automatisierung & Skripte" },
-        { value: "ethik_recht", label: "Ethische & rechtliche Grundlagen" }, { value: "keine", label: "Keine / noch unklar" }
+        { value: "schnell", label: "Schnelle Umsetzung" }, { value: "kosten", label: "Kosteneffizienz" },
+        { value: "qualitaet", label: "Qualität & Präzision" }, { value: "flexibilitaet", label: "Flexibilität & Skalierbarkeit" }
       ],
-      description: "(Damit Trainings passgenau geplant und Lernziele schnell erreicht werden.)" },
-    { key: "vision_prioritaet", label: "Wichtigster strategischer Hebel", type: "select",
-      options: [
-        { value: "gpt_services", label: "KI-gestützte Services und Produkte" }, { value: "kundenservice", label: "Optimierung Kundenservice und Support" },
-        { value: "datenprodukte", label: "Entwicklung datenbasierter Angebote" }, { value: "prozessautomation", label: "Automatisierung interner Prozesse" },
-        { value: "marktfuehrerschaft", label: "Technologieführerschaft im Markt" }, { value: "keine_angabe", label: "Noch unklar" }
-      ],
-      description: "(Damit Empfehlungen auf den stärksten strategischen Hebel fokussieren.)" },
+      description: "(Damit Empfehlungen zu Präferenzen bei Zeit, Budget und Risiko optimiert werden.)" },
 
     // Block 6: Rechtliches & Förderung
     { key: "datenschutzbeauftragter", label: "Datenschutzbeauftragter vorhanden?", type: "select",
-      options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "teilweise", label: "Teilweise (extern/Planung)" } ],
-      description: "(Damit Pflichten korrekt bewertet und Zuständigkeiten rechtssicher geklärt sind.)" },
-    { key: "technische_massnahmen", label: "Technische Schutzmaßnahmen", type: "select",
-      options: [ { value: "alle", label: "Alle relevanten Maßnahmen" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "keine", label: "Noch keine" } ],
-      description: "(Damit Sicherheitsniveau, Quick-Wins und Prioritäten fundiert abgeleitet werden.)" },
-    { key: "folgenabschaetzung", label: "Datenschutz-Folgenabschätzung (DSFA)", type: "select",
-      options: [ { value: "ja", label: "Ja, durchgeführt" }, { value: "nein", label: "Nein, noch nicht" }, { value: "teilweise", label: "In Planung" } ],
-      description: "(Damit mögliche Risiken früh erkannt und erforderliche Prüfungen eingeplant werden.)" },
-    { key: "meldewege", label: "Meldewege bei Sicherheitsvorfällen", type: "select",
-      options: [ { value: "ja", label: "Ja, klar definiert" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "nein", label: "Nein, noch nicht geregelt" } ],
-      description: "(Damit Vorfälle schnell eskaliert und rechtliche Fristen zuverlässig eingehalten werden.)" },
-    { key: "loeschregeln", label: "Richtlinien für Datenlöschung und -anonymisierung", type: "select",
-      options: [ { value: "ja", label: "Ja, dokumentiert" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "nein", label: "Nein, noch nicht definiert" } ],
-      description: "(Damit Aufbewahrung, Löschung und Anonymisierung nachvollziehbar geregelt sind.)" },
-    { key: "ai_act_kenntnis", label: "Kenntnis EU AI Act", type: "select",
-      options: [ { value: "sehr_gut", label: "Sehr gut" }, { value: "gut", label: "Gut" }, { value: "gehoert", label: "Schon mal gehört" }, { value: "unbekannt", label: "Noch nicht bekannt" } ],
-      description: "(Damit Pflichten aus dem EU AI Act angemessen berücksichtigt werden.)" },
-    { key: "ki_hemmnisse", label: "Hemmnisse beim KI-Einsatz", type: "checkbox",
-      options: [
-        { value: "rechtsunsicherheit", label: "Rechtsunsicherheit" }, { value: "datenschutz", label: "Datenschutz" }, { value: "knowhow", label: "Fehlendes Know-how" },
-        { value: "budget", label: "Begrenztes Budget" }, { value: "teamakzeptanz", label: "Teamakzeptanz" }, { value: "zeitmangel", label: "Zeitmangel" },
-        { value: "it_integration", label: "IT-Integration" }, { value: "keine", label: "Keine Hemmnisse" }, { value: "andere", label: "Andere" }
-      ],
-      description: "(Damit Hürden sichtbar werden und wir praktikable Lösungen priorisieren können.)" },
-    { key: "bisherige_foerdermittel", label: "Bereits Fördermittel erhalten?", type: "select",
+      options: [ { value: "ja", label: "Ja, intern" }, { value: "extern", label: "Ja, extern" }, { value: "nein", label: "Nein" } ],
+      description: "(Damit DSGVO-Pflichten und Beratungsbedarfe richtig adressiert werden.)" },
+    { key: "technische_massnahmen", label: "Technische & organisatorische Maßnahmen (TOM) dokumentiert?", type: "select",
+      options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
+      description: "(Damit wir DSGVO-Gap-Analyse und nötige Maßnahmen aufzeigen können.)" },
+    { key: "folgenabschaetzung", label: "Datenschutz-Folgenabschätzung (DSFA) durchgeführt?", type: "select",
+      options: [ { value: "ja", label: "Ja" }, { value: "in_planung", label: "In Planung" }, { value: "nein", label: "Nein" } ],
+      description: "(Damit Hochrisiko-KI-Anwendungen rechtssicher bewertet werden.)" },
+    { key: "meldewege", label: "Meldewege bei Datenpannen klar?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" } ],
-      description: "(Damit passende Anschluss-Programme und Kombinationsmöglichkeiten früh erkannt werden.)" },
-    { key: "interesse_foerderung", label: "Interesse an Fördermöglichkeiten", type: "select",
-      options: [ { value: "ja", label: "Ja, Programme vorschlagen" }, { value: "nein", label: "Kein Bedarf" }, { value: "unklar", label: "Unklar, bitte beraten" } ],
-      description: "(Damit wir Förderchancen prüfen und konkrete Optionen transparent vorschlagen.)" },
-    { key: "erfahrung_beratung", label: "Bisherige Beratung zu Digitalisierung/KI", type: "select",
+      description: "(Damit DSGVO-Krisenmanagement und Notfallpläne bei Bedarf ergänzt werden.)" },
+    { key: "loeschregeln", label: "Löschregeln für Personendaten definiert?", type: "select",
+      options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
+      description: "(Damit wir unzureichende Löschkonzepte identifizieren und korrigieren können.)" },
+    { key: "ai_act_kenntnis", label: "Kenntnis EU AI Act?", type: "select",
+      options: [ { value: "ja", label: "Ja, vertraut" }, { value: "grob", label: "Grob bekannt" }, { value: "nein", label: "Nein" } ],
+      description: "(Damit Wissenslücken geschlossen und AI-Act-Pflichten verständlich vermittelt werden.)" },
+    { key: "ki_hemmnisse", label: "Größte Hindernisse beim KI-Einsatz", type: "checkbox",
+      options: [
+        { value: "budget", label: "Budget / Kosten" }, { value: "knowhow", label: "Fehlendes Know-how" },
+        { value: "daten", label: "Datenqualität / -verfügbarkeit" }, { value: "regulierung", label: "Rechtliche Unsicherheiten" },
+        { value: "akzeptanz", label: "Akzeptanz im Team" }, { value: "zeit", label: "Zeit / Kapazitäten" }
+      ],
+      description: "(Damit Barrieren adressiert und pragmatische Lösungen aufgezeigt werden.)" },
+    { key: "bisherige_foerdermittel", label: "Bereits Fördermittel genutzt?", type: "select",
+      options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "unklar", label: "Unklar" } ],
+      description: "(Damit vorhandenes Vorwissen genutzt und Doppelarbeit vermieden werden.)" },
+    { key: "interesse_foerderung", label: "Interesse an Förderprogrammen", type: "select",
+      options: [
+        { value: "hoch", label: "Hoch (bitte konkrete Infos)" }, { value: "mittel", label: "Mittel (grobe Übersicht reicht)" },
+        { value: "gering", label: "Gering (nur bei hoher Relevanz)" }
+      ],
+      description: "(Damit Detailtiefe bei Förderinformationen optimal dosiert wird.)" },
+    { key: "erfahrung_beratung", label: "Erfahrungen mit externer Beratung", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "unklar", label: "Unklar" } ],
       description: "(Damit vorhandenes Vorwissen genutzt und Doppelarbeit vermieden werden.)" },
     { key: "investitionsbudget", label: "Budget für KI/Digitalisierung nächstes Jahr", type: "select",
@@ -604,106 +629,102 @@ function dispatchProgress(step, total) {
 
   // --------------------------- Submit ---------------------------
   function submitForm() {
-  if (typeof SUBMIT_IN_FLIGHT !== "undefined" && SUBMIT_IN_FLIGHT) return;
-  // collect all values (only visible fields per block)
-  for (var bi=0; bi<blocks.length; bi++) {
-    var b = blocks[bi];
-    for (var ki=0; ki<b.keys.length; ki++) {
-      var k = b.keys[ki];
-      var f = (typeof findField === "function") ? findField(k) : null;
-      if (f && typeof f.showIf === "function" && !f.showIf(formData)) continue;
-      if (document.getElementById(k)) { formData[k] = (typeof collectValue === "function" ? collectValue(f||{key:k,type:'text'}) : (document.getElementById(k).value||'')); }
+    if (SUBMIT_IN_FLIGHT) return;
+    
+    // collect all values (only visible fields per block)
+    for (var bi=0; bi<blocks.length; bi++) {
+      var b = blocks[bi];
+      for (var ki=0; ki<b.keys.length; ki++) {
+        var k = b.keys[ki];
+        var f = findField(k);
+        if (f && typeof f.showIf === "function" && !f.showIf(formData)) continue;
+        if (document.getElementById(k)) { 
+          formData[k] = collectValue(f || {key:k, type:'text'}); 
+        }
+      }
     }
-  }
-  saveAutosave();
+    saveAutosave();
 
-  if (formData.datenschutz !== true) {
-    var msg = document.getElementById("fb-msg");
-    if (msg) { msg.textContent = "Bitte bestätigen Sie die Datenschutzhinweise."; msg.setAttribute("role","alert"); }
-    return;
-  }
+    if (formData.datenschutz !== true) {
+      var msg = document.getElementById("fb-msg");
+      if (msg) { msg.textContent = "Bitte bestätigen Sie die Datenschutzhinweise."; msg.setAttribute("role","alert"); }
+      return;
+    }
 
-  var root = document.getElementById("formbuilder");
-  if (root) {
-    root.innerHTML = '<section class="fb-section"><h2>Vielen Dank für Ihre Angaben!</h2>'
-      + '<div class="guidance">Ihre KI-Analyse wird jetzt erstellt. '
-      + 'Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail.</div></section>';
-  }
-
-  var token = getToken && getToken();
-  if (!token || String(token).split(".").length !== 3) {
-    if (root) root.insertAdjacentHTML("beforeend",
-      '<div class="guidance important" role="alert">Ihre Sitzung ist abgelaufen. '
-      + '<a href="/login.html">Bitte neu anmelden</a>, wenn Sie eine weitere Analyse durchführen möchten.</div>');
-    return;
-  }
-
-  var data = {}; for (var i2=0;i2<fields.length;i2++){ data[fields[i2].key] = formData[fields[i2].key]; }
-  delete data.unternehmen_name; delete data.firmenname;
-
-  var email = getEmailFromJWT ? getEmailFromJWT(token) : null;
-  var payload = { lang: LANG, answers: data, queue_analysis: true };
-  if (email) { payload.email = email; }
-
-  
-
-// ensure required top-level fields for backend + mirror email into answers
-payload.branche = data.branche || payload.branche || "";
-payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
-payload.bundesland = data.bundesland || payload.bundesland || "";
-payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
-if (email && payload.answers && typeof payload.answers === "object") {
-  payload.answers.email = email;
-}
-// ensure required top-level fields for backend (also present in answers)
-payload.branche = data.branche || payload.branche || "";
-payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
-payload.bundesland = data.bundesland || payload.bundesland || "";
-payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
-if (email && payload.answers && typeof payload.answers === "object") {
-  payload.answers.email = email;
-}
-var url = getBaseUrl() + SUBMIT_PATH;
-  var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
-
-  try { SUBMIT_IN_FLIGHT = true; } catch(_) {}
-
-  fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token, "Idempotency-Key": idem },
-    body: JSON.stringify(payload),
-    credentials: "include",
-    keepalive: true
-  }).then(function (res) {
-    if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
-  }).catch(function(){}).finally(function(){ try { SUBMIT_IN_FLIGHT = false; } catch(_) {} });
-}
-function clampStep(){
-  try{
-    if (typeof currentBlock !== "number") currentBlock = 0;
-    if (currentBlock < 0 || currentBlock >= blocks.length) currentBlock = 0;
-  }catch(_){ currentBlock = 0; }
-}
-var SUBMIT_IN_FLIGHT = false;
-  var autosaveKey = STORAGE_PREFIX + "data";
-  var stepKey = STORAGE_PREFIX + "step";
-
-
-  var formData = {};
-  var currentBlock = 0;
-
-  function saveAutosave() { try { localStorage.setItem(autosaveKey, JSON.stringify(formData)); } catch(_) {} }
-  function loadAutosave() { try { var s = localStorage.getItem(autosaveKey); if (s) formData = JSON.parse(s); } catch(_) {} }
-  function saveStep() { try { localStorage.setItem(stepKey, String(currentBlock)); } catch(_) {} }
-  function loadStep() { try { var s = localStorage.getItem(stepKey); if (s) currentBlock = parseInt(s, 10) || 0; } catch(_) {} }
-  function scrollToStepTop(instant) {
     var root = document.getElementById("formbuilder");
-    if (root && root.scrollIntoView) root.scrollIntoView({ behavior: instant ? "auto" : "smooth", block: "start" });
+    if (root) {
+      root.innerHTML = '<section class="fb-section"><h2>Vielen Dank für Ihre Angaben!</h2>'
+        + '<div class="guidance">Ihre KI-Analyse wird jetzt erstellt. '
+        + 'Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail.</div></section>';
+    }
+
+    var token = getToken();
+    if (!token || String(token).split(".").length !== 3) {
+      if (root) root.insertAdjacentHTML("beforeend",
+        '<div class="guidance important" role="alert">Ihre Sitzung ist abgelaufen. '
+        + '<a href="/login.html">Bitte neu anmelden</a>, wenn Sie eine weitere Analyse durchführen möchten.</div>');
+      return;
+    }
+
+    var data = {}; 
+    for (var i2=0; i2<fields.length; i2++){ 
+      data[fields[i2].key] = formData[fields[i2].key]; 
+    }
+    delete data.unternehmen_name; 
+    delete data.firmenname;
+
+    var email = getEmailFromJWT(token);
+    var payload = { lang: LANG, answers: data, queue_analysis: true };
+    if (email) { payload.email = email; }
+
+    // ensure required top-level fields for backend + mirror email into answers
+    payload.branche = data.branche || payload.branche || "";
+    payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
+    payload.bundesland = data.bundesland || payload.bundesland || "";
+    payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
+    if (email && payload.answers && typeof payload.answers === "object") {
+      payload.answers.email = email;
+    }
+
+    var url = getBaseUrl() + SUBMIT_PATH;
+    var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
+
+    SUBMIT_IN_FLIGHT = true;
+
+    fetch(url, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json", 
+        "Authorization": "Bearer " + token, 
+        "Idempotency-Key": idem 
+      },
+      body: JSON.stringify(payload),
+      credentials: "include",
+      keepalive: true
+    }).then(function (res) {
+      if (res && res.status === 401) { 
+        try { localStorage.removeItem("jwt"); } catch (e) {} 
+      }
+    }).catch(function(){}).finally(function(){ 
+      SUBMIT_IN_FLIGHT = false; 
+    });
   }
 
-  // Init
-  window.addEventListener("DOMContentLoaded", function(){ ensureSchema && ensureSchema(); loadAutosave(); loadStep();
+  // --------------------------- Init ---------------------------
+  window.addEventListener("DOMContentLoaded", function(){ 
+    ensureSchema(); 
+    loadAutosave(); 
+    loadStep();
+    
     // Sicherstellen, dass Block 0 keys existieren (Initialvalidierung)
-    var b0 = blocks[0] || { keys: [] }; for (var i=0; i<b0.keys.length; i++){ var k=b0.keys[i]; if (formData[k]===undefined) formData[k] = ''; }
-    clampStep && clampStep(); renderStep(); scrollToStepTop(true); });
+    var b0 = blocks[0] || { keys: [] }; 
+    for (var i=0; i<b0.keys.length; i++){ 
+      var k=b0.keys[i]; 
+      if (formData[k]===undefined) formData[k] = ''; 
+    }
+    
+    clampStep(); 
+    renderStep(); 
+    scrollToStepTop(true); 
+  });
 })();
