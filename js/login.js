@@ -109,7 +109,7 @@
           }
           if(res.status === 429 && data && data.error === 'rate_limited'){
             var secs = Number(data.retry_after_sec || 300);
-            setText('err','Zu viele Versuche. Bitte in ' + minutes(secs) + ' Minuten erneut versuchen.', true);
+            setText('err','Zu viele Versuche. Bitte in ' + minutes(secs) + ' Minuten erneut versuchen.', true);
             warn('Zu viele Versuche. Bitte später erneut versuchen.');
             return;
           }
@@ -175,7 +175,7 @@
           }
           if(res.status === 429 && data && data.error === 'rate_limited'){
             var secs = Number(data.retry_after_sec || 300);
-            setText('err','Zu viele Versuche. Bitte in ' + minutes(secs) + ' Minuten erneut versuchen.', true);
+            setText('err','Zu viele Versuche. Bitte in ' + minutes(secs) + ' Minuten erneut versuchen.', true);
             warn('Zu viele Versuche. Bitte später erneut versuchen.');
             return;
           }
@@ -190,7 +190,15 @@
             return;
           }
 
-          // success – cookie is set by backend
+          // success – store access token and redirect
+          if(data && data.access_token){
+            try{
+              localStorage.setItem('access_token', data.access_token);
+              localStorage.setItem('ki_user_email', email);
+            }catch(e){
+              console.error('Failed to store token:', e);
+            }
+          }
           setText('msg','Erfolg. Weiterleitung …',false);
           ok('Anmeldung erfolgreich.');
           window.location.href = '/formular/index.html';
