@@ -51,9 +51,20 @@
   }
 
   function tryMount(scope){
+    // Try the exported initFormBuilder function first
+    if (typeof window.initFormBuilder === 'function'){
+      try{
+        window.initFormBuilder();
+        setStatus('');
+        return;
+      }
+      catch(e){ return showErr(e); }
+    }
+
+    // Fallback: try other known initializers
     const rootSel = window.__FORM_CTX__.root;
     const cands = [
-      'renderForm','renderFormBuilder','initForm','initFormBuilder','startForm','bootstrapForm','mountForm'
+      'renderForm','renderFormBuilder','initForm','startForm','bootstrapForm','mountForm'
     ];
     for (const name of cands){
       const fn = scope && scope[name];
