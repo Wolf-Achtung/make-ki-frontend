@@ -13,13 +13,33 @@
   function getToken(){ try { return localStorage.getItem('jwt') || ''; } catch(_) { return ''; } }
   function rid(){ return 'f-' + Math.random().toString(16).slice(2) + Date.now().toString(16); }
 
+  function isTokenExpired(token){
+    if (!token) return true;
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return true;
+      const payload = JSON.parse(atob(parts[1]));
+      if (!payload.exp) return false; // No expiry = treat as valid
+      const now = Math.floor(Date.now() / 1000);
+      return payload.exp < now;
+    } catch(_) {
+      return true; // If we can't decode, treat as expired
+    }
+  }
+
   async function request(path, opts){
     const url = API_BASE + (String(path||'').startsWith('/') ? path : '/' + String(path||''));
     const headers = Object.assign(
       { 'Accept':'application/json','Content-Type': 'application/json','X-Client': 'ki-readiness-frontend','X-Req-Id': rid() },
       (opts && opts.headers) || {}
     );
-    const t = getToken(); if (t) headers['Authorization'] = 'Bearer ' + t;
+    const t = getToken();
+    // Check if token is expired before making request
+    if (t && isTokenExpired(t)) {
+      try { localStorage.removeItem('jwt'); } catch(_){}
+      throw new Error('Token expired');
+    }
+    if (t) headers['Authorization'] = 'Bearer ' + t;
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), (opts && opts.timeout) || 25000);
@@ -46,5 +66,5 @@
   function put(path, body){ return request(path, { method:'PUT', body: JSON.stringify(body || {}) }); }
   function del(path){ return request(path, { method:'DELETE' }); }
 
-  window.API = { request, get, post, put, del, getToken };
+  window.API = { request, get, post, put, del, getToken, isTokenExpired };
 })();

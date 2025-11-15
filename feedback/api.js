@@ -17,7 +17,7 @@
   async function jsonFetch(url, options={}) {
     const cfg = Object.assign({
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'omit',
+      credentials: 'include',
       method: 'GET'
     }, options);
     const resp = await fetch(url, cfg);

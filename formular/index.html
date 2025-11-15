@@ -40,11 +40,25 @@
   </main>
 
   <script>
-    // JWT-Guard: wenn kein Token vorhanden -> zurück zum Login
+    // JWT-Guard: wenn kein Token vorhanden oder abgelaufen -> zurück zum Login
     (function(){
+      function isTokenExpired(token){
+        if (!token) return true;
+        try {
+          var parts = token.split('.');
+          if (parts.length !== 3) return true;
+          var payload = JSON.parse(atob(parts[1]));
+          if (!payload.exp) return false;
+          var now = Math.floor(Date.now() / 1000);
+          return payload.exp < now;
+        } catch(_) {
+          return true;
+        }
+      }
       try {
         var t = localStorage.getItem('jwt');
-        if (!t) {
+        if (!t || isTokenExpired(t)) {
+          try { localStorage.removeItem('jwt'); } catch(_){}
           document.getElementById('guard').hidden = false;
           location.href = '/login.html';
         }

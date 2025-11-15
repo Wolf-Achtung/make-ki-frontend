@@ -11,10 +11,25 @@
     setStatus('');
   }
 
+  function isTokenExpired(token){
+    if (!token) return true;
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return true;
+      const payload = JSON.parse(atob(parts[1]));
+      if (!payload.exp) return false; // No expiry = treat as valid
+      const now = Math.floor(Date.now() / 1000);
+      return payload.exp < now;
+    } catch(_) {
+      return true; // If we can't decode, treat as expired
+    }
+  }
+
   // JWT-Guard
   const token = localStorage.getItem('jwt');
-  if (!token){
-    guardEl.textContent = 'Sie sind nicht eingeloggt. Bitte zurück zum Login.';
+  if (!token || isTokenExpired(token)){
+    guardEl.textContent = !token ? 'Sie sind nicht eingeloggt. Bitte zurück zum Login.' : 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.';
+    try { localStorage.removeItem('jwt'); } catch(_){}
     location.href = '/login.html';
     return;
   } else {

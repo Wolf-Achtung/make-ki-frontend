@@ -186,8 +186,23 @@
       try {
         const token = localStorage.getItem('jwt');
         if (token) {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          userEmail = payload.email || payload.sub || "";
+          // Check if token is expired
+          try {
+            const parts = token.split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(atob(parts[1]));
+              const now = Math.floor(Date.now() / 1000);
+              if (payload.exp && payload.exp < now) {
+                // Token expired, remove it
+                localStorage.removeItem('jwt');
+                userEmail = "";
+              } else {
+                userEmail = payload.email || payload.sub || "";
+              }
+            }
+          } catch (_) {
+            userEmail = "";
+          }
         }
       } catch (err) {
         userEmail = "";
