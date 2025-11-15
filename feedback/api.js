@@ -4,11 +4,12 @@
   'use strict';
 
   function resolveBaseUrl() {
-    const meta = document.querySelector('meta[name="backend-url"]');
+    const meta = document.querySelector('meta[name="backend-url"]') || document.querySelector('meta[name="api-base"]');
     const fromMeta = meta && meta.content ? meta.content : null;
     const fromWindow = (typeof window !== 'undefined' && window.__BACKEND_URL__) ? window.__BACKEND_URL__ : null;
-    const fallback = 'https://sublime-consideration-production.up.railway.app';
-    const decided = (fromWindow || fromMeta || fallback).trim().replace(/\/$/, '');
+    const fromAppConfig = (typeof window !== 'undefined' && window.APP_CONFIG && window.APP_CONFIG.API_BASE) ? window.APP_CONFIG.API_BASE : null;
+    const fallback = 'https://api-ki-backend-neu-production.up.railway.app/api';
+    const decided = (fromAppConfig || fromWindow || fromMeta || fallback).trim().replace(/\/$/, '');
     return decided;
   }
 

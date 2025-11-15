@@ -130,7 +130,7 @@
   document.getElementById("btn-de").addEventListener("click", () => setLang("de"));
   document.getElementById("btn-en").addEventListener("click", () => setLang("en"));
 
-  const API_BASE = window.ENV_BACKEND || 'https://sublime-consideration-production.up.railway.app';
+  const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.ENV_BACKEND || 'https://api-ki-backend-neu-production.up.railway.app/api';
   const form = document.getElementById("feedback-form");
   const statusEl = document.getElementById("status");
 
