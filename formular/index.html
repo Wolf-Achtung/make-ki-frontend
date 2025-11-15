@@ -23,6 +23,7 @@
     .noscript { padding:12px 14px; border-radius:10px; background:#fff3cd; color:#7c5300; border:1px solid #ffe69c; }
   </style>
   <script src="/js/config.js"></script>
+  <script src="/js/auth.js"></script>
 </head>
 <body>
   <main class="wrap">
@@ -40,11 +41,10 @@
   </main>
 
   <script>
-    // JWT-Guard: wenn kein Token vorhanden -> zurück zum Login
+    // Auth-Guard: check for auth cookie (quick check)
     (function(){
       try {
-        var t = localStorage.getItem('jwt');
-        if (!t) {
+        if (window.AUTH && !window.AUTH.hasAuthCookie()) {
           document.getElementById('guard').hidden = false;
           location.href = '/login.html';
         }
@@ -62,7 +62,7 @@
   <!-- Prefill/Autosync (Draft) – muss VOR dem Formbuilder geladen werden -->
   <script src="/formular/prefill.js"></script>
 
-  <!-- Der Formbuilder initialisiert sich selbst nach DOMContentLoaded und rendert in #formbuilder -->
-  <script src="/formular/formbuilder_de_SINGLE_FULL.js" defer></script>
+  <!-- Boot script to load the formbuilder with auth checking -->
+  <script src="/formular/boot.js"></script>
 </body>
 </html>

@@ -190,10 +190,7 @@
             return;
           }
 
-          // success – optional token
-          if(data && data.token){
-            try{ localStorage.setItem('jwt', data.token); }catch(_){}
-          }
+          // success – cookie is set by backend
           setText('msg','Erfolg. Weiterleitung …',false);
           ok('Anmeldung erfolgreich.');
           window.location.href = '/formular/index.html';

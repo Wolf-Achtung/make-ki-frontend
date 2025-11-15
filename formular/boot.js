@@ -11,9 +11,9 @@
     setStatus('');
   }
 
-  // JWT-Guard
-  const token = localStorage.getItem('jwt');
-  if (!token){
+  // Auth-Guard: check for auth cookie (quick check)
+  // Note: Proper validation happens server-side on API calls
+  if (window.AUTH && !window.AUTH.hasAuthCookie()){
     guardEl.textContent = 'Sie sind nicht eingeloggt. Bitte zurück zum Login.';
     location.href = '/login.html';
     return;
@@ -23,7 +23,7 @@
 
   // API-Basis
   const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '/api';
-  window.__FORM_CTX__ = { token, API_BASE, root: '#form-root' };
+  window.__FORM_CTX__ = { API_BASE, root: '#form-root' };
 
   // Versuch: Modul-Import zuerst (falls ESM), sonst Fallback auf klassisches Script
   async function loadBuilder(){

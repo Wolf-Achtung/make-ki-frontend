@@ -144,14 +144,9 @@ function getBaseUrl() {
   }
 }
 
+// DEPRECATED: Token is now managed via httpOnly cookies
+// This function is kept for backwards compatibility but returns null
 function getToken() {
-  var keys = ["jwt", "access_token", "id_token", "AUTH_TOKEN", "token"];
-  for (var i = 0; i < keys.length; i++) { 
-    try { 
-      var t = localStorage.getItem(keys[i]); 
-      if (t) return t; 
-    } catch (e) {} 
-  }
   return null;
 }
 
@@ -647,18 +642,11 @@ function dispatchProgress(step, total) {
       + 'Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail.</div></section>';
   }
 
-  var token = getToken && getToken();
-  if (!token || String(token).split(".").length !== 3) {
-    if (root) root.insertAdjacentHTML("beforeend",
-      '<div class="guidance important" role="alert">Ihre Sitzung ist abgelaufen. '
-      + '<a href="/login.html">Bitte neu anmelden</a>, wenn Sie eine weitere Analyse durchführen möchten.</div>');
-    return;
-  }
-
+  // Auth is now handled via httpOnly cookies - no client-side token needed
   var data = {}; for (var i2=0;i2<fields.length;i2++){ data[fields[i2].key] = formData[fields[i2].key]; }
   delete data.unternehmen_name; delete data.firmenname;
 
-  var email = getEmailFromJWT ? getEmailFromJWT(token) : null;
+  var email = null; // Email will be provided by backend from cookie session
   var payload = { lang: LANG, answers: data, queue_analysis: true };
   if (email) { payload.email = email; }
 
@@ -687,12 +675,15 @@ var url = getBaseUrl() + SUBMIT_PATH;
 
   fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token, "Idempotency-Key": idem },
+    headers: { "Content-Type": "application/json", "Idempotency-Key": idem },
     body: JSON.stringify(payload),
     credentials: "include",
     keepalive: true
   }).then(function (res) {
-    if (res && res.status === 401) { try { localStorage.removeItem("jwt"); } catch (e) {} }
+    if (res && res.status === 401) {
+      // Redirect to login on auth failure
+      window.location.href = '/login.html';
+    }
   }).catch(function(){}).finally(function(){ try { SUBMIT_IN_FLIGHT = false; } catch(_) {} });
 }
 function clampStep(){
@@ -728,13 +719,7 @@ var SUBMIT_IN_FLIGHT = false;
 
 function robustSubmitForm(){
   try{
-    var token = (typeof getToken === "function") ? getToken() : (localStorage.getItem("jwt") || "");
-    if(!token || (String(token).split(".").length !== 3)){
-      console.warn("No/invalid JWT token for submit");
-      var root = document.getElementById("formbuilder");
-      if(root){ root.insertAdjacentHTML("beforeend", '<div class="guidance important" role="alert">Ihre Sitzung ist abgelaufen. <a href="/login.html">Bitte neu anmelden</a>.</div>'); }
-      return;
-    }
+    // Auth is now handled via httpOnly cookies - no client-side token validation needed
     // collect form data from known fields list if present, else from all inputs
     var data = (typeof formData !== "undefined" && formData) ? Object.assign({}, formData) : {};
     try{
