@@ -6,11 +6,9 @@
 
   function qs(k, d){ var u=new URL(location.href); return u.searchParams.get(k) || d; }
   function apiBase(){ var m=document.querySelector('meta[name="api-base"]'); return (m && m.content) || '/api'; }
-  function token(){ try{ return localStorage.getItem('jwt') || ''; }catch(_){ return ''; } }
   async function api(path, opts){
     var headers = Object.assign({ 'Content-Type': 'application/json' }, (opts && opts.headers)||{});
-    var t = token(); if (t) headers.Authorization = 'Bearer ' + t;
-    var res = await fetch(apiBase() + path, Object.assign({}, opts, { headers }));
+    var res = await fetch(apiBase() + path, Object.assign({ credentials: 'include' }, opts, { headers }));
     var ct = res.headers.get('content-type') || '';
     var data = ct.includes('application/json') ? await res.json() : await res.text();
     if (!res.ok) throw new Error((data && data.detail) || res.statusText);
@@ -81,7 +79,7 @@
       document.getElementById('ov-analysis').textContent = latest.analysis.id + ' (' + fmtDate(latest.analysis.created_at) + ')';
       try{
         var html = await fetch(apiBase() + '/admin/analyses/' + latest.analysis.id + '/html', {
-          headers: (token()? {Authorization:'Bearer '+token()} : {})
+          credentials: 'include'
         }).then(function(r){ return r.text(); });
         iframe.srcdoc = SANITIZE ? sanitizeHTML(html) : html;
       }catch(e){
@@ -130,7 +128,13 @@
   }
 
   // --- Wire up page actions ---
-  document.getElementById('logout').addEventListener('click', function(){ localStorage.removeItem('jwt'); location.href='/login.html'; });
+  document.getElementById('logout').addEventListener('click', function(){
+    if (window.API && window.API.logout) {
+      window.API.logout();
+    } else {
+      location.href='/login.html';
+    }
+  });
 
   function onRerun(){
     var btn = document.getElementById('btn-rerun');
@@ -153,7 +157,7 @@
   }
 
   // Guard & init
-  if (!token()) { location.href='/login.html'; return; }
+  if (window.AUTH && !window.AUTH.hasAuthCookie()) { location.href='/login.html'; return; }
   (function init(){
     // Tabs + Load
     document.querySelectorAll('.tab').forEach(function(b){

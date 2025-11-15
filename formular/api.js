@@ -8,14 +8,9 @@
   async function jsonFetch(url, options){
     const cfg = Object.assign({
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'omit',
+      credentials: 'include',
       method: 'GET'
     }, options);
-    // auth token if present
-    try {
-      const t = localStorage.getItem('auth_token') || localStorage.getItem('jwt') || localStorage.getItem('token');
-      if (t && !cfg.headers.Authorization) cfg.headers.Authorization = 'Bearer ' + t;
-    } catch(_){}
     const resp = await fetch(url, cfg);
     const ct = resp.headers.get('content-type') || '';
     let payload = null;
