@@ -709,12 +709,33 @@ var SUBMIT_IN_FLIGHT = false;
     if (root && root.scrollIntoView) root.scrollIntoView({ behavior: instant ? "auto" : "smooth", block: "start" });
   }
 
-  // Init
-  window.addEventListener("DOMContentLoaded", function(){ ensureSchema && ensureSchema(); loadAutosave(); loadStep();
+  // Init function
+  function doInit(){
+    ensureSchema && ensureSchema();
+    loadAutosave();
+    loadStep();
     // Sicherstellen, dass Block 0 keys existieren (Initialvalidierung)
-    var b0 = blocks[0] || { keys: [] }; for (var i=0; i<b0.keys.length; i++){ var k=b0.keys[i]; if (formData[k]===undefined) formData[k] = ''; }
-    clampStep && clampStep(); renderStep(); scrollToStepTop(true); });
-})();
+    var b0 = blocks[0] || { keys: [] };
+    for (var i=0; i<b0.keys.length; i++){
+      var k = b0.keys[i];
+      if (formData[k]===undefined) formData[k] = '';
+    }
+    clampStep && clampStep();
+    renderStep();
+    scrollToStepTop(true);
+  }
+
+  // Auto-init on DOMContentLoaded OR if already loaded
+  if (document.readyState === 'loading') {
+    window.addEventListener("DOMContentLoaded", doInit);
+  } else {
+    // DOM already loaded, init immediately
+    doInit();
+  }
+
+  // Export init function for manual initialization
+  window.initFormBuilder = doInit;
+})();;
 
 
 function robustSubmitForm(){
@@ -768,6 +789,12 @@ function robustSubmitForm(){
     // Build URL
     var url = (typeof getBaseUrl === "function" ? getBaseUrl() : "") + "/briefings/submit";
     var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
+
+    // Get token from localStorage
+    var token = "";
+    try {
+      token = localStorage.getItem('access_token') || "";
+    } catch(_) {}
 
     fetch(url, {
       method: "POST",
