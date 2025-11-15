@@ -41,8 +41,25 @@
   </table>
 
   <script>
+    function isTokenExpired(token){
+      if (!token) return true;
+      try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return true;
+        const payload = JSON.parse(atob(parts[1]));
+        if (!payload.exp) return false;
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp < now;
+      } catch(_) {
+        return true;
+      }
+    }
+
     const token = localStorage.getItem("jwt");
-    if (!token) window.location.href = "/login.html";
+    if (!token || isTokenExpired(token)) {
+      try { localStorage.removeItem('jwt'); } catch(_){}
+      window.location.href = "/login.html";
+    }
 
     async function loadStats() {
       const start = document.getElementById("start").value;
@@ -56,6 +73,11 @@
       const res = await fetch(url, {
         headers: { "Authorization": `Bearer ${token}` }
       });
+      if (res.status === 401) {
+        try { localStorage.removeItem('jwt'); } catch(_){}
+        window.location.href = "/login.html";
+        return;
+      }
       if (!res.ok) return alert("Nicht berechtigt oder Serverfehler.");
       const data = await res.json();
       const tbody = document.querySelector("#stats-table tbody");
@@ -72,6 +94,11 @@
       const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/feedback-logs", {
         headers: { "Authorization": `Bearer ${token}` }
       });
+      if (res.status === 401) {
+        try { localStorage.removeItem('jwt'); } catch(_){}
+        window.location.href = "/login.html";
+        return;
+      }
       if (!res.ok) return console.error("Fehler beim Laden der Feedback-Logs");
       const data = await res.json();
       const tbody = document.querySelector("#feedback-table tbody");
@@ -84,7 +111,7 @@
       `).join("");
     }
 
-    function exportCSV() {
+    async function exportCSV() {
       const start = document.getElementById("start").value;
       const end = document.getElementById("end").value;
       let url = "https://make-ki-backend-neu-production.up.railway.app/api/export-logs";
@@ -92,11 +119,60 @@
       if (start) params.push(`start=${start}`);
       if (end) params.push(`end=${end}`);
       if (params.length) url += "?" + params.join("&");
-      window.open(url + `&token=${token}`, "_blank");
+
+      try {
+        const res = await fetch(url, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.status === 401) {
+          try { localStorage.removeItem('jwt'); } catch(_){}
+          window.location.href = "/login.html";
+          return;
+        }
+        if (!res.ok) {
+          alert("Export fehlgeschlagen: " + res.status);
+          return;
+        }
+        const blob = await res.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'export-logs.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+      } catch(err) {
+        alert("Export fehlgeschlagen: " + err.message);
+      }
     }
 
-    function exportFeedbackCSV() {
-      window.open(`https://make-ki-backend-neu-production.up.railway.app/api/export-feedback?token=${token}`, "_blank");
+    async function exportFeedbackCSV() {
+      try {
+        const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/api/export-feedback", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.status === 401) {
+          try { localStorage.removeItem('jwt'); } catch(_){}
+          window.location.href = "/login.html";
+          return;
+        }
+        if (!res.ok) {
+          alert("Export fehlgeschlagen: " + res.status);
+          return;
+        }
+        const blob = await res.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'export-feedback.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+      } catch(err) {
+        alert("Export fehlgeschlagen: " + err.message);
+      }
     }
 
   </script>

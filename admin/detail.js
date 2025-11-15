@@ -7,13 +7,40 @@
   function qs(k, d){ var u=new URL(location.href); return u.searchParams.get(k) || d; }
   function apiBase(){ var m=document.querySelector('meta[name="api-base"]'); return (m && m.content) || '/api'; }
   function token(){ try{ return localStorage.getItem('jwt') || ''; }catch(_){ return ''; } }
+
+  function isTokenExpired(t){
+    if (!t) return true;
+    try {
+      var parts = t.split('.');
+      if (parts.length !== 3) return true;
+      var payload = JSON.parse(atob(parts[1]));
+      if (!payload.exp) return false;
+      var now = Math.floor(Date.now() / 1000);
+      return payload.exp < now;
+    } catch(_) {
+      return true;
+    }
+  }
+
   async function api(path, opts){
     var headers = Object.assign({ 'Content-Type': 'application/json' }, (opts && opts.headers)||{});
-    var t = token(); if (t) headers.Authorization = 'Bearer ' + t;
+    var t = token();
+    if (t && isTokenExpired(t)) {
+      try { localStorage.removeItem('jwt'); } catch(_){}
+      location.href = '/login.html';
+      throw new Error('Token expired');
+    }
+    if (t) headers.Authorization = 'Bearer ' + t;
     var res = await fetch(apiBase() + path, Object.assign({}, opts, { headers }));
     var ct = res.headers.get('content-type') || '';
     var data = ct.includes('application/json') ? await res.json() : await res.text();
-    if (!res.ok) throw new Error((data && data.detail) || res.statusText);
+    if (!res.ok) {
+      if (res.status === 401) {
+        try { localStorage.removeItem('jwt'); } catch(_){}
+        location.href = '/login.html';
+      }
+      throw new Error((data && data.detail) || res.statusText);
+    }
     return data;
   }
   function fmtDate(x){ if (!x) return '–'; try{ return new Date(x).toLocaleString('de-DE'); }catch(_){ return x; } }
@@ -153,7 +180,12 @@
   }
 
   // Guard & init
-  if (!token()) { location.href='/login.html'; return; }
+  var t = token();
+  if (!t || isTokenExpired(t)) {
+    try { localStorage.removeItem('jwt'); } catch(_){}
+    location.href='/login.html';
+    return;
+  }
   (function init(){
     // Tabs + Load
     document.querySelectorAll('.tab').forEach(function(b){
