@@ -13,20 +13,40 @@
   }
 
   /**
+   * Get authorization headers (Bearer token from localStorage)
+   */
+  function getAuthHeaders(){
+    var headers = {};
+    try {
+      var token = localStorage.getItem('access_token');
+      if (token) {
+        headers['Authorization'] = 'Bearer ' + token;
+      }
+    } catch(_) {}
+    return headers;
+  }
+
+  /**
    * Check if user is authenticated by calling /api/auth/me
    * Returns Promise<{isAuthenticated: boolean, user: object|null}>
    */
   async function checkAuth(){
     try {
+      var headers = Object.assign({ 'Accept': 'application/json' }, getAuthHeaders());
       const response = await fetch(apiBase() + '/auth/me', {
         method: 'GET',
         credentials: 'include',
-        headers: { 'Accept': 'application/json' }
+        headers: headers
       });
 
       if (response.ok) {
         const userData = await response.json();
         return { isAuthenticated: true, user: userData };
+      }
+
+      // Clear token on auth failure
+      if (response.status === 401) {
+        try { localStorage.removeItem('access_token'); } catch(_) {}
       }
       return { isAuthenticated: false, user: null };
     } catch (error) {
@@ -41,10 +61,15 @@
    */
   async function logout(){
     try {
+      // Clear local token first
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('ki_user_email');
+
+      var headers = Object.assign({ 'Content-Type': 'application/json' }, getAuthHeaders());
       await fetch(apiBase() + '/auth/logout', {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
+        headers: headers
       });
     } catch (error) {
       console.error('Logout failed:', error);
@@ -67,12 +92,17 @@
   }
 
   /**
-   * Synchronous guard using presence of any auth cookie
-   * Note: This is less secure but faster for initial page load checks
+   * Synchronous guard using presence of token or auth cookie
+   * Note: This is a quick check for initial page load
    * Use requireAuth() for proper server-side validation
    */
   function hasAuthCookie(){
     try {
+      // Check for token in localStorage first
+      if (localStorage.getItem('access_token')) {
+        return true;
+      }
+      // Fallback to cookie check
       return document.cookie.split(';').some(function(item){
         return item.trim().startsWith('auth_token=');
       });
@@ -81,5 +111,5 @@
     }
   }
 
-  window.AUTH = { checkAuth, logout, requireAuth, hasAuthCookie };
+  window.AUTH = { checkAuth, logout, requireAuth, hasAuthCookie, getAuthHeaders };
 })();

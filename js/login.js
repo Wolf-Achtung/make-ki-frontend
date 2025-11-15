@@ -190,7 +190,15 @@
             return;
           }
 
-          // success – cookie is set by backend
+          // success – store access token and redirect
+          if(data && data.access_token){
+            try{
+              localStorage.setItem('access_token', data.access_token);
+              localStorage.setItem('ki_user_email', email);
+            }catch(e){
+              console.error('Failed to store token:', e);
+            }
+          }
           setText('msg','Erfolg. Weiterleitung …',false);
           ok('Anmeldung erfolgreich.');
           window.location.href = '/formular/index.html';
