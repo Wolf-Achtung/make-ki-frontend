@@ -16,11 +16,27 @@
   const BASE = resolveBaseUrl();
 
   async function jsonFetch(url, options={}) {
+    // Add authorization header if token exists
+    var authHeaders = {};
+    try {
+      var token = localStorage.getItem('access_token');
+      if (token) {
+        authHeaders['Authorization'] = 'Bearer ' + token;
+      }
+    } catch(_) {}
+
+    const baseHeaders = Object.assign({ 'Content-Type': 'application/json' }, authHeaders);
     const cfg = Object.assign({
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'omit',
+      headers: baseHeaders,
+      credentials: 'include',
       method: 'GET'
     }, options);
+
+    // Merge headers if options already contains headers
+    if (options && options.headers) {
+      cfg.headers = Object.assign({}, baseHeaders, options.headers);
+    }
+
     const resp = await fetch(url, cfg);
     const ct = resp.headers.get('content-type') || '';
     let payload = null;
@@ -29,6 +45,18 @@
     } else {
       try { payload = await resp.text(); } catch (_e) { payload = null; }
     }
+
+    // Handle 401 - clear token and redirect to login
+    if (resp.status === 401) {
+      try {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('ki_user_email');
+      } catch(_) {}
+      global.location.href = '/login.html';
+      const err = new Error('Unauthorized - redirecting to login');
+      err.status = 401; err.payload = payload; throw err;
+    }
+
     if (!resp.ok) {
       const err = new Error('HTTP ' + resp.status);
       err.status = resp.status;
