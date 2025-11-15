@@ -1,6 +1,7 @@
 /**
- * API helper (Gold-Standard+) – timeout, 401 auto-logout, JSON default.
- * Exposes: API.request(path, opts), API.get/post/put/del, API.getToken()
+ * API helper (Gold-Standard+) – timeout, JSON default.
+ * Uses httpOnly cookies for authentication.
+ * Exposes: API.request(path, opts), API.get/post/put/del, API.checkAuth(), API.logout()
  */
 (function(){
   "use strict";
@@ -10,7 +11,6 @@
   const BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || (window.__CONFIG__ && window.__CONFIG__.API_BASE) || '/api';
   const API_BASE = normBase(BASE);
 
-  function getToken(){ try { return localStorage.getItem('jwt') || ''; } catch(_) { return ''; } }
   function rid(){ return 'f-' + Math.random().toString(16).slice(2) + Date.now().toString(16); }
 
   async function request(path, opts){
@@ -19,7 +19,6 @@
       { 'Accept':'application/json','Content-Type': 'application/json','X-Client': 'ki-readiness-frontend','X-Req-Id': rid() },
       (opts && opts.headers) || {}
     );
-    const t = getToken(); if (t) headers['Authorization'] = 'Bearer ' + t;
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), (opts && opts.timeout) || 25000);
@@ -34,11 +33,29 @@
     }
 
     if (!res.ok){
-      if (res.status === 401){ try{ localStorage.removeItem('jwt'); }catch(_){} }
       const msg = (data && (data.detail || data.message || data.error)) || res.statusText || 'Request failed';
       throw new Error(msg);
     }
     return data;
+  }
+
+  // Check authentication status via /api/auth/me
+  async function checkAuth(){
+    try {
+      const data = await request('/auth/me', { method: 'GET' });
+      return { isAuthenticated: true, user: data };
+    } catch (error) {
+      return { isAuthenticated: false, user: null };
+    }
+  }
+
+  async function logout(){
+    try {
+      await request('/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+    window.location.href = '/login.html';
   }
 
   function get(path){ return request(path, { method:'GET' }); }
@@ -46,5 +63,5 @@
   function put(path, body){ return request(path, { method:'PUT', body: JSON.stringify(body || {}) }); }
   function del(path){ return request(path, { method:'DELETE' }); }
 
-  window.API = { request, get, post, put, del, getToken };
+  window.API = { request, get, post, put, del, checkAuth, logout };
 })();
