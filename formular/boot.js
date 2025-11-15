@@ -3,10 +3,18 @@
   const statusEl = document.getElementById('status');
   const errEl = document.getElementById('errlog');
   const guardEl = document.getElementById('guard');
-  function setStatus(t){ statusEl.textContent = t || ''; }
+
+  function setStatus(t){
+    if (statusEl) statusEl.textContent = t || '';
+    console.log('[Formbuilder]', t);
+  }
+
   function showErr(e){
     const msg = (e && (e.stack || e.message || String(e))) || 'Unbekannter Fehler';
-    errEl.style.display = 'block'; errEl.textContent = msg;
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.textContent = msg;
+    }
     console.error('[Formbuilder]', e);
     setStatus('');
   }
@@ -14,16 +22,16 @@
   // Auth-Guard: check for auth cookie (quick check)
   // Note: Proper validation happens server-side on API calls
   if (window.AUTH && !window.AUTH.hasAuthCookie()){
-    guardEl.textContent = 'Sie sind nicht eingeloggt. Bitte zurück zum Login.';
+    if (guardEl) guardEl.textContent = 'Sie sind nicht eingeloggt. Bitte zurück zum Login.';
     location.href = '/login.html';
     return;
   } else {
-    guardEl.textContent = ' ';
+    if (guardEl) guardEl.textContent = ' ';
   }
 
   // API-Basis
   const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '/api';
-  window.__FORM_CTX__ = { API_BASE, root: '#form-root' };
+  window.__FORM_CTX__ = { API_BASE, root: '#formbuilder' };
 
   // Versuch: Modul-Import zuerst (falls ESM), sonst Fallback auf klassisches Script
   async function loadBuilder(){
