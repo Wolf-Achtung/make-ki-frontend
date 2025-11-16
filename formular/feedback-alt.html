@@ -140,6 +140,7 @@ document.getElementById('feedback-form').addEventListener('submit', async functi
   const token = localStorage.getItem("jwt");
   const res = await fetch('https://make-ki-backend-neu-production.up.railway.app/feedback', {
     method: "POST",
+    credentials: 'include',
     headers: {
       "Content-Type": "application/json",
       ...(token ? { "Authorization": "Bearer " + token } : {})
