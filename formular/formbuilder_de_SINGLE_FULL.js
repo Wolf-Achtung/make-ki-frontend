@@ -1,4 +1,3 @@
-
 // --- injected helpers (idempotent) ---
 function _collectLabelFor(fieldKey, value){
   try{
@@ -21,152 +20,160 @@ function _collectLabelFor(fieldKey, value){
   "use strict";
 
   // --------------------------- Konfiguration ---------------------------
-// --------------------------- Konfiguration ---------------------------
-var LANG = "de";
-var SCHEMA_VERSION = "1.6.2";
-var STORAGE_PREFIX = "autosave_form_";
-var SUBMIT_PATH = "/briefings/submit";
+  var LANG = "de";
+  var SCHEMA_VERSION = "1.6.2";
+  var STORAGE_PREFIX = "autosave_form_";
+  var SUBMIT_PATH = "/briefings/submit";
 
+  var versionKey = STORAGE_PREFIX + "schema";
+  function ensureSchema(){
+    try{
+      var prev = localStorage.getItem(versionKey);
+      if (prev !== SCHEMA_VERSION){
+        localStorage.removeItem(autosaveKey);
+        localStorage.removeItem(stepKey);
+        localStorage.setItem(versionKey, SCHEMA_VERSION);
+        currentBlock = 0;
+      }
+    }catch(_){}
+  }
 
-var versionKey = STORAGE_PREFIX + "schema";
-function ensureSchema(){
-  try{
-    var prev = localStorage.getItem(versionKey);
-    if (prev !== SCHEMA_VERSION){
-      localStorage.removeItem(autosaveKey);
-      localStorage.removeItem(stepKey);
-      localStorage.setItem(versionKey, SCHEMA_VERSION);
-      currentBlock = 0;
+  // --------------------------- Helper-Funktionen ---------------------------
+  function findField(k) {
+    for (var i=0; i<fields.length; i++) {
+      if (fields[i].key === k) return fields[i];
     }
-  }catch(_){}
-}
-// --------------------------- Helper-Funktionen ---------------------------
-function findField(k) { for (var i=0; i<fields.length; i++) { if (fields[i].key === k) return fields[i]; } return null; }
-
-function labelOf(k) {
-  var f = findField(k);
-  return f ? (f.label || k) : k;
-}
-
-function renderInput(f) {
-  if (f.type === "select") {
-    var opts = "<option value=''>Bitte wählen...</option>";
-    for (var i=0; i<f.options.length; i++){ opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>"; }
-    return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
+    return null;
   }
-  if (f.type === "checkbox") {
-    var html = "<div class='checkbox-group'>";
-    for (var j=0; j<f.options.length; j++){
-      html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + "</span></label>";
+
+  function labelOf(k) {
+    var f = findField(k);
+    return f ? (f.label || k) : k;
+  }
+
+  function renderInput(f) {
+    if (f.type === "select") {
+      var opts = "<option value=''>Bitte wählen...</option>";
+      for (var i=0; i<f.options.length; i++){
+        opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>";
+      }
+      return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
     }
-    return html + "</div>";
-  }
-  if (f.type === "textarea") {
-    var ph = f.placeholder || "";
-    return "<textarea id='" + f.key + "' name='" + f.key + "' placeholder='" + ph + "'></textarea>";
-  }
-  if (f.type === "privacy") {
-    return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
-  }
-  if (f.type === "slider") {
-    return "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
-      + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
-  }
-  return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
-}
-
-function fillField(f) {
-  var val = formData[f.key];
-  if (f.type === "select") {
-    var sel = document.getElementById(f.key); if (!sel) return;
-    if (val) sel.value = val;
-  } else if (f.type === "checkbox") {
-    var arr = Array.isArray(val) ? val : [];
-    var boxes = document.querySelectorAll("input[name='" + f.key + "']");
-    for (var i=0; i<boxes.length; i++){ boxes[i].checked = arr.indexOf(boxes[i].value) !== -1; }
-  } else if (f.type === "textarea") {
-    var ta = document.getElementById(f.key); if (ta && val) ta.value = val;
-  } else if (f.type === "privacy") {
-    var cb = document.getElementById(f.key); if (cb) cb.checked = (val === true);
-  } else if (f.type === "slider") {
-    var slider = document.getElementById(f.key);
-    if (slider) {
-      slider.value = val || f.min || 1;
-      updateSliderLabel(f.key, slider.value);
-      slider.addEventListener("input", function(e){ updateSliderLabel(f.key, e.target.value); });
+    if (f.type === "checkbox") {
+      var html = "<div class='checkbox-group'>";
+      for (var j=0; j<f.options.length; j++){
+        html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + "</span></label>";
+      }
+      return html + "</div>";
     }
-  } else {
-    var inp = document.getElementById(f.key); if (inp && val) inp.value = val;
-  }
-}
-
-function collectValue(f) {
-  if (f.type === "select") {
-    var sel = document.getElementById(f.key); return sel ? sel.value : "";
-  } else if (f.type === "checkbox") {
-    var boxes = document.querySelectorAll("input[name='" + f.key + "']:checked"); var arr = [];
-    for (var i=0; i<boxes.length; i++) arr.push(boxes[i].value);
-    return arr;
-  } else if (f.type === "textarea") {
-    var ta = document.getElementById(f.key); return ta ? ta.value : "";
-  } else if (f.type === "privacy") {
-    var cb = document.getElementById(f.key); return cb ? cb.checked : false;
-  } else if (f.type === "slider") {
-    var slider = document.getElementById(f.key); return slider ? slider.value : "";
-  } else {
-    var inp = document.getElementById(f.key); return inp ? inp.value : "";
-  }
-}
-
-function updateSliderLabel(key, val) {
-  var lbl = document.getElementById(key + "_value");
-  if (lbl) lbl.textContent = val;
-}
-
-function clampStep(){
-  try{
-    if (typeof currentBlock !== "number") currentBlock = 0;
-    if (currentBlock < 0 || currentBlock >= blocks.length) currentBlock = 0;
-  }catch(_){ currentBlock = 0; }
-}
-var SUBMIT_IN_FLIGHT = false;
-function getBaseUrl() {
-  try {
-    var cfg = window.__CONFIG__ || {};
-    var v = cfg.API_BASE || '';
-    if (!v) {
-      var meta = document.querySelector('meta[name="api-base"]');
-      v = (meta && meta.content) || (window.API_BASE || '/api');
+    if (f.type === "textarea") {
+      var ph = f.placeholder || "";
+      return "<textarea id='" + f.key + "' name='" + f.key + "' placeholder='" + ph + "'></textarea>";
     }
-    return String(v || '/api').replace(/\/+$/, '');
-  } catch (e) { 
-    return '/api'; 
+    if (f.type === "privacy") {
+      return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
+    }
+    if (f.type === "slider") {
+      return "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
+        + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
+    }
+    return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
   }
-}
 
-// DEPRECATED: Token is now managed via httpOnly cookies
-// This function is kept for backwards compatibility but returns null
-function getToken() {
-  return null;
-}
-
-function getEmailFromJWT(token) {
-  try { 
-    if (!token || token.split(".").length !== 3) return null;
-    var payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.email || payload.preferred_username || payload.sub || null;
-  } catch (e) { 
-    return null; 
+  function fillField(f) {
+    var val = formData[f.key];
+    if (f.type === "select") {
+      var sel = document.getElementById(f.key); if (!sel) return;
+      if (val) sel.value = val;
+    } else if (f.type === "checkbox") {
+      var arr = Array.isArray(val) ? val : [];
+      var boxes = document.querySelectorAll("input[name='" + f.key + "']");
+      for (var i=0; i<boxes.length; i++){ boxes[i].checked = arr.indexOf(boxes[i].value) !== -1; }
+    } else if (f.type === "textarea") {
+      var ta = document.getElementById(f.key); if (ta && val) ta.value = val;
+    } else if (f.type === "privacy") {
+      var cb = document.getElementById(f.key); if (cb) cb.checked = (val === true);
+    } else if (f.type === "slider") {
+      var slider = document.getElementById(f.key);
+      if (slider) {
+        slider.value = val || f.min || 1;
+        updateSliderLabel(f.key, slider.value);
+        slider.addEventListener("input", function(e){ updateSliderLabel(f.key, e.target.value); });
+      }
+    } else {
+      var inp = document.getElementById(f.key); if (inp && val) inp.value = val;
+    }
   }
-}
 
-function dispatchProgress(step, total) {
-  try { 
-    document.dispatchEvent(new CustomEvent("fb:progress", { 
-      detail: { step: step, total: total } 
-    })); 
-  } catch (_) {}
-}
+  function collectValue(f) {
+    if (f.type === "select") {
+      var sel = document.getElementById(f.key); return sel ? sel.value : "";
+    } else if (f.type === "checkbox") {
+      var boxes = document.querySelectorAll("input[name='" + f.key + "']:checked"); var arr = [];
+      for (var i=0; i<boxes.length; i++) arr.push(boxes[i].value);
+      return arr;
+    } else if (f.type === "textarea") {
+      var ta = document.getElementById(f.key); return ta ? ta.value : "";
+    } else if (f.type === "privacy") {
+      var cb = document.getElementById(f.key); return cb ? cb.checked : false;
+    } else if (f.type === "slider") {
+      var slider = document.getElementById(f.key); return slider ? slider.value : "";
+    } else {
+      var inp = document.getElementById(f.key); return inp ? inp.value : "";
+    }
+  }
+
+  function updateSliderLabel(key, val) {
+    var lbl = document.getElementById(key + "_value");
+    if (lbl) lbl.textContent = val;
+  }
+
+  function clampStep(){
+    try{
+      if (typeof currentBlock !== "number") currentBlock = 0;
+      if (currentBlock < 0 || currentBlock >= blocks.length) currentBlock = 0;
+    }catch(_){ currentBlock = 0; }
+  }
+
+  var SUBMIT_IN_FLIGHT = false;
+
+  function getBaseUrl() {
+    try {
+      var cfg = window.__CONFIG__ || {};
+      var v = cfg.API_BASE || '';
+      if (!v) {
+        var meta = document.querySelector('meta[name="api-base"]');
+        v = (meta && meta.content) || (window.API_BASE || '/api');
+      }
+      return String(v || '/api').replace(/\/+$/, '');
+    } catch (e) {
+      return '/api';
+    }
+  }
+
+  // DEPRECATED: Token is now managed via httpOnly cookies
+  // This function is kept for backwards compatibility but returns null
+  function getToken() {
+    return null;
+  }
+
+  function getEmailFromJWT(token) {
+    try {
+      if (!token || token.split(".").length !== 3) return null;
+      var payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.email || payload.preferred_username || payload.sub || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function dispatchProgress(step, total) {
+    try {
+      document.dispatchEvent(new CustomEvent("fb:progress", {
+        detail: { step: step, total: total }
+      }));
+    } catch (_) {}
+  }
 
   // --------------------------- Styles (inject) ---------------------------
   (function injectCSS(){ try{
@@ -180,18 +187,18 @@ function dispatchProgress(step, total) {
       + ".form-group>label{display:block;font-weight:600;color:#1e3a5f;margin-bottom:8px}"
       + ".guidance{font-size:15px;color:#475569;margin:8px 0 12px;background:#f0f9ff;padding:12px;border-radius:10px;border-left:3px solid #dbeafe}"
       + ".guidance.important{background:#fef3c7;border-left-color:#f59e0b;color:#92400e}"
-      + "select,textarea,input[type=text],input[type=range]{width:100%;border:2px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:16px;background:#fff;transition:all .3s ease;font-family:inherit}"
+      + "select,textarea,input[type=text],input[type=range]{width:100%;border:2px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:16px;background:#fff;transition:all .3s.ease;font-family:inherit}"
       + "select:hover,textarea:hover,input[type=text]:hover{border-color:#cbd5e1}"
       + "select:focus,textarea:focus,input[type=text]:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}"
       + "textarea{min-height:120px;resize:vertical}"
       + ".checkbox-group{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:8px}"
-      + ".checkbox-label{display:flex;gap:12px;align-items:flex-start;padding:12px;background:#f0f9ff;border:2px solid transparent;border-radius:12px;cursor:pointer;transition:all .3s ease}"
+      + ".checkbox-label{display:flex;gap:12px;align-items:flex-start;padding:12px;background:#f0f9ff;border:2px solid.transparent;border-radius:12px;cursor:pointer;transition:all .3s.ease}"
       + ".checkbox-label:hover{background:#e0f2fe;border-color:#dbeafe}"
       + ".checkbox-label input{margin-top:4px;width:18px;height:18px;cursor:pointer}"
       + ".invalid{border-color:#ef4444!important;background:#fef2f2!important}"
       + ".invalid-group{box-shadow:0 0 0 3px rgba(239,68,68,.2);border-radius:12px}"
       + ".form-nav{position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-top:24px;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.05)}"
-      + ".btn{border:0;border-radius:12px;padding:12px 22px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s ease}"
+      + ".btn{border:0;border-radius:12px;padding:12px 22px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s.ease}"
       + ".btn-primary{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff}"
       + ".btn-secondary{background:#fff;color:#1e293b;border:2px solid #cbd5e1}"
       + ".btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,.3)}"
@@ -475,10 +482,12 @@ function dispatchProgress(step, total) {
   ];
 
   // --------------------------- Render ---------------------------
-  function renderStep(){ var root = document.getElementById("formbuilder");
+  function renderStep(){
+    var root = document.getElementById("formbuilder");
     if (!root) return;
 
-     clampStep(); var block = blocks[currentBlock];
+    clampStep();
+    var block = blocks[currentBlock];
     var html = "<section class='fb-section'><div class='fb-head'>"
       + "<span class='fb-step'>Schritt " + (currentBlock + 1) + "/" + blocks.length + "</span>"
       + "<h2 class='fb-title'>" + block.title + "</h2></div>"
@@ -518,14 +527,18 @@ function dispatchProgress(step, total) {
     // listener
     var prev = document.getElementById("btn-prev");
     if (prev) prev.addEventListener("click", function () {
-      if (currentBlock > 0) { currentBlock--; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); }
+      if (currentBlock > 0) {
+        currentBlock--; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true);
+      }
     });
 
     var next = document.getElementById("btn-next");
     if (next) {
       next.addEventListener("click", function () {
         var missing = validateCurrentBlock(true); if (missing.length) return;
-        if (currentBlock < blocks.length - 1) { currentBlock++; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true); }
+        if (currentBlock < blocks.length - 1) {
+          currentBlock++; saveStep(); renderStep(); updateProgress(); scrollToStepTop(true);
+        }
       });
       next.disabled = validateCurrentBlock(false).length > 0;
     }
@@ -616,86 +629,79 @@ function dispatchProgress(step, total) {
 
   // --------------------------- Submit ---------------------------
   function submitForm() {
-  if (typeof SUBMIT_IN_FLIGHT !== "undefined" && SUBMIT_IN_FLIGHT) return;
-  // collect all values (only visible fields per block)
-  for (var bi=0; bi<blocks.length; bi++) {
-    var b = blocks[bi];
-    for (var ki=0; ki<b.keys.length; ki++) {
-      var k = b.keys[ki];
-      var f = (typeof findField === "function") ? findField(k) : null;
-      if (f && typeof f.showIf === "function" && !f.showIf(formData)) continue;
-      if (document.getElementById(k)) { formData[k] = (typeof collectValue === "function" ? collectValue(f||{key:k,type:'text'}) : (document.getElementById(k).value||'')); }
+    if (typeof SUBMIT_IN_FLIGHT !== "undefined" && SUBMIT_IN_FLIGHT) return;
+
+    // collect all values (only visible fields per block)
+    for (var bi=0; bi<blocks.length; bi++) {
+      var b = blocks[bi];
+      for (var ki=0; ki<b.keys.length; ki++) {
+        var k = b.keys[ki];
+        var f = (typeof findField === "function") ? findField(k) : null;
+        if (f && typeof f.showIf === "function" && !f.showIf(formData)) continue;
+        if (document.getElementById(k)) {
+          formData[k] = (typeof collectValue === "function"
+                         ? collectValue(f || {key:k,type:"text"})
+                         : (document.getElementById(k).value || ""));
+        }
+      }
     }
-  }
-  saveAutosave();
+    saveAutosave();
 
-  if (formData.datenschutz !== true) {
-    var msg = document.getElementById("fb-msg");
-    if (msg) { msg.textContent = "Bitte bestätigen Sie die Datenschutzhinweise."; msg.setAttribute("role","alert"); }
-    return;
-  }
-
-  var root = document.getElementById("formbuilder");
-  if (root) {
-    root.innerHTML = '<section class="fb-section"><h2>Vielen Dank für Ihre Angaben!</h2>'
-      + '<div class="guidance">Ihre KI-Analyse wird jetzt erstellt. '
-      + 'Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail.</div></section>';
-  }
-
-  // Auth is now handled via httpOnly cookies - no client-side token needed
-  var data = {}; for (var i2=0;i2<fields.length;i2++){ data[fields[i2].key] = formData[fields[i2].key]; }
-  delete data.unternehmen_name; delete data.firmenname;
-
-  var email = null; // Email will be provided by backend from cookie session
-  var payload = { lang: LANG, answers: data, queue_analysis: true };
-  if (email) { payload.email = email; }
-
-  
-
-// ensure required top-level fields for backend + mirror email into answers
-payload.branche = data.branche || payload.branche || "";
-payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
-payload.bundesland = data.bundesland || payload.bundesland || "";
-payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
-if (email && payload.answers && typeof payload.answers === "object") {
-  payload.answers.email = email;
-}
-// ensure required top-level fields for backend (also present in answers)
-payload.branche = data.branche || payload.branche || "";
-payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
-payload.bundesland = data.bundesland || payload.bundesland || "";
-payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
-if (email && payload.answers && typeof payload.answers === "object") {
-  payload.answers.email = email;
-}
-var url = getBaseUrl() + SUBMIT_PATH;
-  var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
-
-  try { SUBMIT_IN_FLIGHT = true; } catch(_) {}
-
-  fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Idempotency-Key": idem },
-    body: JSON.stringify(payload),
-    credentials: "include",
-    keepalive: true
-  }).then(function (res) {
-    if (res && res.status === 401) {
-      // Redirect to login on auth failure
-      window.location.href = '/login.html';
+    if (formData.datenschutz !== true) {
+      var msg = document.getElementById("fb-msg");
+      if (msg) { msg.textContent = "Bitte bestätigen Sie die Datenschutzhinweise."; msg.setAttribute("role","alert"); }
+      return;
     }
-  }).catch(function(){}).finally(function(){ try { SUBMIT_IN_FLIGHT = false; } catch(_) {} });
-}
-function clampStep(){
-  try{
-    if (typeof currentBlock !== "number") currentBlock = 0;
-    if (currentBlock < 0 || currentBlock >= blocks.length) currentBlock = 0;
-  }catch(_){ currentBlock = 0; }
-}
-var SUBMIT_IN_FLIGHT = false;
+
+    var root = document.getElementById("formbuilder");
+    if (root) {
+      root.innerHTML = '<section class="fb-section"><h2>Vielen Dank für Ihre Angaben!</h2>'
+        + '<div class="guidance">Ihre KI-Analyse wird jetzt erstellt. '
+        + 'Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail.</div></section>';
+    }
+
+    // Auth is now handled via httpOnly cookies - no client-side token needed
+    var data = {};
+    for (var i2=0;i2<fields.length;i2++){
+      data[fields[i2].key] = formData[fields[i2].key];
+    }
+    delete data.unternehmen_name;
+    delete data.firmenname;
+
+    var email = null; // Email will be provided by backend from cookie session
+    var payload = { lang: LANG, answers: data, queue_analysis: true };
+    if (email) { payload.email = email; }
+
+    // ensure required top-level fields for backend (auch in answers gespiegelt)
+    payload.branche = data.branche || payload.branche || "";
+    payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
+    payload.bundesland = data.bundesland || payload.bundesland || "";
+    payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
+    if (email && payload.answers && typeof payload.answers === "object") {
+      payload.answers.email = email;
+    }
+
+    var url = getBaseUrl() + SUBMIT_PATH;
+    var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
+
+    try { SUBMIT_IN_FLIGHT = true; } catch(_) {}
+
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Idempotency-Key": idem },
+      body: JSON.stringify(payload),
+      credentials: "include",
+      keepalive: true
+    }).then(function (res) {
+      if (res && res.status === 401) {
+        // Redirect to login on auth failure
+        window.location.href = '/login.html';
+      }
+    }).catch(function(){}).finally(function(){ try { SUBMIT_IN_FLIGHT = false; } catch(_) {} });
+  }
+
   var autosaveKey = STORAGE_PREFIX + "data";
   var stepKey = STORAGE_PREFIX + "step";
-
 
   var formData = {};
   var currentBlock = 0;
@@ -753,22 +759,30 @@ function robustSubmitForm(){
               if(el.type === "checkbox"){
                 // gather named checkboxes
                 var nodes = document.querySelectorAll("input[name='"+k+"']:checked");
-                var arr = []; nodes.forEach(n => arr.push(n.value)); data[k] = arr;
+                var arr = []; nodes.forEach(function(n){ arr.push(n.value); }); data[k] = arr;
               }else{
                 data[k] = el.value;
               }
             }
           }else{
-            // maybe checkbox group without id
-            var nodes = document.querySelectorAll("input[name='"+k+"']:checked");
-            if(nodes && nodes.length){ var arr=[]; nodes.forEach(n=>arr.push(n.value)); data[k]=arr; }
+            // maybe checkbox group ohne id
+            var nodes2 = document.querySelectorAll("input[name='"+k+"']:checked");
+            if(nodes2 && nodes2.length){ var arr2=[]; nodes2.forEach(function(n){arr2.push(n.value);}); data[k]=arr2; }
           }
         }
       }
     }catch(e){ console.warn("collect values fallback:", e); }
-    // ensure email included
+
+    // ensure email included (legacy - Token kann leer sein)
+    var token = "";
+    try {
+      token = localStorage.getItem('access_token') || "";
+    } catch(_){}
     try{
-      if(typeof getEmailFromJWT === "function"){ var em = getEmailFromJWT(token); if(em){ if(!data.email){ data.email = em; } } }
+      if(typeof getEmailFromJWT === "function"){
+        var em = getEmailFromJWT(token);
+        if(em && !data.email){ data.email = em; }
+      }
     }catch(_){}
 
     // Top-level payload
@@ -789,12 +803,6 @@ function robustSubmitForm(){
     // Build URL
     var url = (typeof getBaseUrl === "function" ? getBaseUrl() : "") + "/briefings/submit";
     var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
-
-    // Get token from localStorage
-    var token = "";
-    try {
-      token = localStorage.getItem('access_token') || "";
-    } catch(_) {}
 
     fetch(url, {
       method: "POST",
@@ -820,5 +828,10 @@ function robustSubmitForm(){
 // if submitForm exists, wrap it to call robust implementation as well
 try{
   var _origSubmit = (typeof submitForm === "function") ? submitForm : null;
-  submitForm = function(){ try{ if(_origSubmit){ _origSubmit.apply(null, arguments); } }catch(_){ } robustSubmitForm(); };
-}catch(_){ submitForm = robustSubmitForm; }
+  submitForm = function(){
+    try{ if(_origSubmit){ _origSubmit.apply(null, arguments); } }catch(_){ }
+    robustSubmitForm();
+  };
+}catch(_){
+  submitForm = robustSubmitForm;
+}
