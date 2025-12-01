@@ -4,241 +4,335 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Feedback zum KI-Checkup-Report</title>
+  <script src="../js/config.js"></script>
   <style>
-    :root{--brand:#1c3763;--bg:#f7fbff;--bd:#dfe9f4;--muted:#5a6b83}
-    body{max-width:820px;margin:2rem auto;padding:1rem;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    header{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.5rem}
-    h1{color:var(--brand);margin:0}
-    .lang{display:flex;gap:.4rem}
-    .lang button{border:1px solid var(--bd);background:#fff;border-radius:8px;padding:.35rem .6rem;cursor:pointer}
-    .lang button.active{background:var(--brand);color:#fff;border-color:var(--brand)}
-    p.lead{color:var(--muted);margin:.35rem 0 1.25rem}
-    .card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:1.25rem;margin:1rem 0}
-    label{display:block;font-weight:600;margin:.75rem 0 .35rem}
-    select,textarea,input[type="text"],input[type="email"]{
-      width:100%;padding:.65rem .7rem;border:2px solid var(--bd);border-radius:8px;background:#fff
+    :root{ --brand:#1c3763; --bg:#f7fbff; --bd:#dfe9f4; --muted:#5a6b83; --accent:#2563eb; }
+    body{ max-width:820px; margin:2rem auto; padding:1rem; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); }
+    header{ display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:.5rem; }
+    h1{ color:var(--brand); margin:0; font-size:1.6rem; }
+    .lang{ display:flex; gap:.4rem; }
+    .lang button{ border:1px solid var(--bd); background:#fff; border-radius:8px; padding:.35rem .6rem; cursor:pointer; }
+    .lang button.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
+    p.lead{ color:var(--muted); margin:.35rem 0 1.25rem; }
+    .card{ background:#fff; border:1px solid var(--bd); border-radius:12px; padding:1.25rem; margin:1rem 0; }
+    .card h2{ font-size:1.1rem; color:var(--brand); margin:0 0 .75rem; padding-bottom:.5rem; border-bottom:2px solid var(--bd); }
+    .card h2 .step{ background:var(--accent); color:#fff; padding:.2rem .5rem; border-radius:6px; font-size:.85rem; margin-right:.5rem; }
+    label{ display:block; font-weight:600; margin:.75rem 0 .35rem; color:#1e293b; }
+    select, textarea, input[type="text"], input[type="email"] {
+      width:100%; padding:.65rem .7rem; border:2px solid var(--bd); border-radius:8px; background:#fff; font-size:1rem;
     }
-    textarea{min-height:110px;resize:vertical}
-    .muted{color:var(--muted);font-size:.9rem}
-    .counter{font-size:.8rem;color:var(--muted);text-align:right;margin-top:.25rem}
-    button{margin-top:1.2rem;padding:.85rem 1.25rem;font-size:1rem;background:var(--brand);color:#fff;border:none;border-radius:8px;cursor:pointer}
-    button:hover{filter:brightness(1.05)}
-    .req::after{content:" *";color:#c00;font-weight:700}
-    .note{font-size:.85rem;color:var(--muted);margin-top:.25rem}
+    select:focus, textarea:focus, input:focus { outline:none; border-color:var(--accent); }
+    textarea{ min-height:90px; resize:vertical; }
+    .muted{ color:var(--muted); font-size:.9rem; }
+    .counter{ font-size:.8rem; color:var(--muted); text-align:right; margin-top:.25rem; }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    @media(max-width:600px){ .row{ grid-template-columns:1fr; } }
+    button[type="submit"]{ margin-top:1.2rem; padding:.85rem 1.5rem; font-size:1rem; background:var(--accent); color:#fff; border:none; border-radius:8px; cursor:pointer; width:100%; }
+    button[type="submit"]:hover{ filter:brightness(1.1); }
+    .req::after{ content:" *"; color:#c00; font-weight:700; }
+    .note{ font-size:.85rem; color:var(--muted); margin-top:.25rem; }
+    .invalid{ border-color:#ef4444!important; background:#fef2f2!important; }
+    .success-box{ background:#ecfdf5; border:2px solid #10b981; border-radius:12px; padding:1.5rem; text-align:center; }
+    .success-box h3{ color:#047857; margin:0 0 .5rem; }
+    .radio-group{ display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.35rem; }
+    .radio-group label{ display:flex; align-items:center; gap:.4rem; font-weight:400; padding:.5rem .75rem; background:#f8fafc; border:2px solid var(--bd); border-radius:8px; cursor:pointer; }
+    .radio-group label:hover{ background:#f0f9ff; border-color:#93c5fd; }
+    .radio-group input[type="radio"]{ margin:0; }
+    .radio-group input[type="radio"]:checked + span{ font-weight:600; }
+    .scale-row{ display:flex; justify-content:space-between; gap:.25rem; margin-top:.35rem; }
+    .scale-row label{ flex:1; text-align:center; padding:.6rem .25rem; background:#f8fafc; border:2px solid var(--bd); border-radius:8px; cursor:pointer; font-weight:400; font-size:.9rem; }
+    .scale-row label:hover{ background:#f0f9ff; border-color:#93c5fd; }
+    .scale-row input[type="radio"]{ display:none; }
+    .scale-row input[type="radio"]:checked + span{ font-weight:700; color:var(--accent); }
+    .scale-row label:has(input:checked){ background:#dbeafe; border-color:var(--accent); }
+    .scale-labels{ display:flex; justify-content:space-between; font-size:.8rem; color:var(--muted); margin-top:.25rem; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>Feedback zum KI-Checkup-Report</h1>
+  <h1>Feedback zum KI-Checkup</h1>
   <div class="lang">
     <span class="muted">Sprache</span>
     <button type="button" id="btn-de" class="active">DE</button>
     <button type="button" id="btn-en">EN</button>
   </div>
 </header>
-<p class="lead">2 Minuten. Hilft uns, Sprache, Lesefluss und Handlungsempfehlungen weiter zu verbessern.</p>
+<p class="lead">Ca. 3–5 Minuten. Ihr Feedback hilft uns, den KI-Checkup gezielt zu verbessern.</p>
 
-<form id="feedback-form" class="card" novalidate>
-  <!-- Hidden (vom JWT/URL befüllt) -->
+<form id="feedback-form" novalidate>
+  <!-- Hidden fields -->
   <input type="hidden" name="email" id="feedback-email"/>
   <input type="hidden" name="variant" id="variant"/>
   <input type="hidden" name="report_version" id="report_version"/>
   <input type="hidden" name="lang_ui" id="lang_ui" value="de"/>
   <input type="hidden" name="timestamp" id="timestamp"/>
 
-  <label for="hilfe" class="req">Wie hilfreich war der KI-Checkup insgesamt?</label>
-  <select name="hilfe" id="hilfe" required>
-    <option value="">Bitte wählen</option>
-    <option>Gar nicht hilfreich</option>
-    <option>Eher wenig hilfreich</option>
-    <option>Teils/teils</option>
-    <option>Ziemlich hilfreich</option>
-    <option>Sehr hilfreich</option>
-  </select>
+  <!-- Block A: Metadaten zum Test -->
+  <div class="card">
+    <h2><span class="step">A</span>Über Sie & Ihren Test</h2>
 
-  <label for="verstaendlich1" class="req">Wie verständlich sind Analyse & Auswertung?</label>
-  <select name="verstaendlich_analyse" id="verstaendlich1" required>
-    <option value="">Bitte wählen</option>
-    <option>Überhaupt nicht verständlich</option>
-    <option>Eher schwer verständlich</option>
-    <option>Teils verständlich, teils nicht</option>
-    <option>Größtenteils verständlich</option>
-    <option>Sehr verständlich</option>
-  </select>
+    <div class="row">
+      <div>
+        <label for="company_size_feedback" class="req">Unternehmensgröße</label>
+        <select name="company_size_feedback" id="company_size_feedback" required>
+          <option value="">Bitte wählen</option>
+          <option value="solo">Solo-Selbstständig / Freiberuflich</option>
+          <option value="small_team">Kleines Team (2–10)</option>
+          <option value="kmu">KMU (11–100)</option>
+          <option value="larger">Größer (100+)</option>
+        </select>
+      </div>
+      <div>
+        <label for="branch_feedback" class="req">Branche</label>
+        <select name="branch_feedback" id="branch_feedback" required>
+          <option value="">Bitte wählen</option>
+          <option value="beratung">Beratung & Dienstleistungen</option>
+          <option value="it">IT & Software</option>
+          <option value="marketing">Marketing & Kreativ</option>
+          <option value="handel">Handel & E-Commerce</option>
+          <option value="gesundheit">Gesundheit & Pflege</option>
+          <option value="bildung">Bildung & Coaching</option>
+          <option value="industrie">Industrie & Produktion</option>
+          <option value="sonstige">Sonstige</option>
+        </select>
+      </div>
+    </div>
 
-  <label for="verstaendlich2" class="req">Sind die Handlungsempfehlungen klar formuliert?</label>
-  <select name="verstaendlich_empfehlung" id="verstaendlich2" required>
-    <option value="">Bitte wählen</option>
-    <option>Überhaupt nicht klar</option>
-    <option>Teilweise unklar</option>
-    <option>Teils klar, teils unklar</option>
-    <option>Größtenteils klar</option>
-    <option>Sehr klar und verständlich</option>
-  </select>
+    <label for="test_reference">Testprofil / Report-Referenz (optional)</label>
+    <input type="text" name="test_reference" id="test_reference" placeholder="z. B. Testnummer, Report-ID oder eigene Bezeichnung …" maxlength="100"/>
+    <p class="note">Falls Sie mehrere Tests durchgeführt haben oder uns den Report zuordnen möchten.</p>
+  </div>
 
-  <label for="vertrauen" class="req">Wie seriös und vertrauenswürdig wirkt der Report?</label>
-  <select name="vertrauen" id="vertrauen" required>
-    <option value="">Bitte wählen</option>
-    <option>Überhaupt nicht seriös</option>
-    <option>Eher wenig seriös</option>
-    <option>Mittelmäßig seriös</option>
-    <option>Ziemlich seriös</option>
-    <option>Sehr seriös und vertrauenswürdig</option>
-  </select>
+  <!-- Block B: Fragebogen & UX -->
+  <div class="card">
+    <h2><span class="step">B</span>Fragebogen-Erlebnis</h2>
 
-  <label for="dauer" class="req">Wie fandest du den Umfang?</label>
-  <select name="dauer" id="dauer" required>
-    <option value="">Bitte wählen</option>
-    <option>Okay so</option>
-    <option>Etwas lang, aber noch akzeptabel</option>
-    <option>Viel zu lang</option>
-  </select>
+    <label class="req">Wie verständlich waren die Fragen im Fragebogen?</label>
+    <div class="scale-row">
+      <label><input type="radio" name="ux_clarity_rating" value="1" required/><span>1</span></label>
+      <label><input type="radio" name="ux_clarity_rating" value="2"/><span>2</span></label>
+      <label><input type="radio" name="ux_clarity_rating" value="3"/><span>3</span></label>
+      <label><input type="radio" name="ux_clarity_rating" value="4"/><span>4</span></label>
+      <label><input type="radio" name="ux_clarity_rating" value="5"/><span>5</span></label>
+    </div>
+    <div class="scale-labels"><span>Unklar</span><span>Sehr klar</span></div>
 
-  <label for="serio">Was würde dein Vertrauen zusätzlich stärken?</label>
-  <textarea name="serio" id="serio" maxlength="1500" placeholder="z. B. mehr Quellenangaben, Benchmarks, Beispiele …"></textarea>
-  <div class="counter" data-for="serio"></div>
+    <label class="req">Wie empfanden Sie Länge und Aufwand des Fragebogens?</label>
+    <div class="scale-row">
+      <label><input type="radio" name="ux_effort_rating" value="1" required/><span>1</span></label>
+      <label><input type="radio" name="ux_effort_rating" value="2"/><span>2</span></label>
+      <label><input type="radio" name="ux_effort_rating" value="3"/><span>3</span></label>
+      <label><input type="radio" name="ux_effort_rating" value="4"/><span>4</span></label>
+      <label><input type="radio" name="ux_effort_rating" value="5"/><span>5</span></label>
+    </div>
+    <div class="scale-labels"><span>Zu lang</span><span>Genau richtig</span></div>
 
-  <label for="textstellen">Gab es Textstellen, die zu kompliziert, zu lang oder unklar waren?</label>
-  <textarea name="textstellen" id="textstellen" maxlength="1500" placeholder="Bitte kurz zitieren oder beschreiben, was genau unklar war …"></textarea>
-  <div class="counter" data-for="textstellen"></div>
+    <label>Waren die Pflichtfelder angemessen?</label>
+    <div class="radio-group">
+      <label><input type="radio" name="ux_required_fields" value="ja"/><span>Ja, passend</span></label>
+      <label><input type="radio" name="ux_required_fields" value="zu_viele"/><span>Zu viele Pflichtfelder</span></label>
+      <label><input type="radio" name="ux_required_fields" value="zu_wenige"/><span>Zu wenige Pflichtfelder</span></label>
+    </div>
 
-  <label for="unsicher">Wo wünschst du dir zusätzliche Erklärungen oder Zwischenfragen?</label>
-  <textarea name="unsicher" id="unsicher" maxlength="1500" placeholder="z. B. bei der Förderlogik, Roadmap, Tools …"></textarea>
-  <div class="counter" data-for="unsicher"></div>
+    <label for="ux_comment">Was war beim Ausfüllen besonders positiv oder nervig?</label>
+    <textarea name="ux_comment" id="ux_comment" maxlength="1000" placeholder="z. B. bestimmte Fragen unklar, Auswahl-Optionen gefehlt, Eingabe war einfach …"></textarea>
+    <div class="counter" data-for="ux_comment"></div>
+  </div>
 
-  <label for="features">Welche zusätzlichen Inhalte wären hilfreich (Tabellen, Diagramme, Beispiele …)?</label>
-  <textarea name="features" id="features" maxlength="1500" placeholder="Deine Ideen – gerne konkret (wo, was, wozu)"></textarea>
-  <div class="counter" data-for="features"></div>
+  <!-- Block C: Qualität des Reports -->
+  <div class="card">
+    <h2><span class="step">C</span>Qualität des Reports</h2>
 
-  <label for="freitext">Sonst noch Feedback, Ideen oder Vorschläge?</label>
-  <textarea name="freitext" id="freitext" maxlength="1500" placeholder="Alles, was dir noch wichtig ist …"></textarea>
-  <div class="counter" data-for="freitext"></div>
+    <label class="req">Wie relevant waren die Empfehlungen für Ihr Unternehmen?</label>
+    <div class="scale-row">
+      <label><input type="radio" name="report_relevance_rating" value="1" required/><span>1</span></label>
+      <label><input type="radio" name="report_relevance_rating" value="2"/><span>2</span></label>
+      <label><input type="radio" name="report_relevance_rating" value="3"/><span>3</span></label>
+      <label><input type="radio" name="report_relevance_rating" value="4"/><span>4</span></label>
+      <label><input type="radio" name="report_relevance_rating" value="5"/><span>5</span></label>
+    </div>
+    <div class="scale-labels"><span>Nicht relevant</span><span>Sehr relevant</span></div>
+
+    <label class="req">Haben Sie Ihre Ziele und Pain Points im Report wiedererkannt?</label>
+    <div class="scale-row">
+      <label><input type="radio" name="report_goals_visible" value="1" required/><span>1</span></label>
+      <label><input type="radio" name="report_goals_visible" value="2"/><span>2</span></label>
+      <label><input type="radio" name="report_goals_visible" value="3"/><span>3</span></label>
+      <label><input type="radio" name="report_goals_visible" value="4"/><span>4</span></label>
+      <label><input type="radio" name="report_goals_visible" value="5"/><span>5</span></label>
+    </div>
+    <div class="scale-labels"><span>Gar nicht</span><span>Sehr gut</span></div>
+
+    <label>Wurden Ihre No-Gos / Leitplanken berücksichtigt?</label>
+    <div class="radio-group">
+      <label><input type="radio" name="report_guardrails_used" value="ja"/><span>Ja</span></label>
+      <label><input type="radio" name="report_guardrails_used" value="nein"/><span>Nein</span></label>
+      <label><input type="radio" name="report_guardrails_used" value="nicht_angegeben"/><span>Hatte keine angegeben</span></label>
+    </div>
+
+    <label for="report_comment" class="req">Was war der stärkste / schwächste Moment im Report?</label>
+    <textarea name="report_comment" id="report_comment" maxlength="1000" placeholder="z. B. Quick-Wins waren sehr konkret, Förder-Infos zu allgemein, Roadmap hat geholfen …" required></textarea>
+    <div class="counter" data-for="report_comment"></div>
+  </div>
+
+  <!-- Block D: Gesamteindruck -->
+  <div class="card">
+    <h2><span class="step">D</span>Gesamteindruck</h2>
+
+    <label class="req">Wie hilfreich war der KI-Checkup insgesamt für Ihr Unternehmen?</label>
+    <div class="scale-row">
+      <label><input type="radio" name="overall_helpfulness_score" value="1" required/><span>1</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="2"/><span>2</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="3"/><span>3</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="4"/><span>4</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="5"/><span>5</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="6"/><span>6</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="7"/><span>7</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="8"/><span>8</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="9"/><span>9</span></label>
+      <label><input type="radio" name="overall_helpfulness_score" value="10"/><span>10</span></label>
+    </div>
+    <div class="scale-labels"><span>Nicht hilfreich</span><span>Sehr hilfreich</span></div>
+
+    <label for="payment_willingness">Würden Sie für einen solchen Report bezahlen? Wenn ja: grobe Preisvorstellung?</label>
+    <input type="text" name="payment_willingness" id="payment_willingness" placeholder="z. B. 'Nein', '50–100 €', 'Ja, wenn detaillierter' …" maxlength="200"/>
+    <p class="note">Optional – hilft uns bei der Einschätzung des Nutzwerts.</p>
+
+    <label for="final_comment">Noch etwas, das Sie uns mitteilen möchten?</label>
+    <textarea name="final_comment" id="final_comment" maxlength="1000" placeholder="Ideen, Kritik, Lob – alles willkommen …"></textarea>
+    <div class="counter" data-for="final_comment"></div>
+  </div>
 
   <p id="status" class="muted" aria-live="polite" style="margin-top:.6rem"></p>
   <button type="submit">Feedback absenden</button>
 </form>
 
-<script>
-/* ====== Sprachumschaltung (Lang button) ====== */
-function setLang(lang){
-  document.documentElement.dataset.lang = lang;
-  document.getElementById("lang_ui").value = lang;
-  document.getElementById("btn-de").classList.toggle("active", lang === "de");
-  document.getElementById("btn-en").classList.toggle("active", lang === "en");
-}
-document.getElementById("btn-de").addEventListener("click", ()=> setLang("de"));
-document.getElementById("btn-en").addEventListener("click", ()=> setLang("en"));
-</script>
+<div id="success-message" class="card success-box" style="display:none;">
+  <h3>Vielen Dank für Ihr Feedback!</h3>
+  <p>Ihre Rückmeldung wurde übermittelt und hilft uns, den KI-Checkup weiter zu verbessern.</p>
+</div>
 
 <script>
-/* ====== Reihenfolge best → worst für alle Selects (DE/EN) ====== */
-(function () {
-  const ORDER = {
-    de: {
-      hilfe: ["Sehr hilfreich","Ziemlich hilfreich","Teils/teils","Eher wenig hilfreich","Gar nicht hilfreich"],
-      verstaendlich1: ["Sehr verständlich","Größtenteils verständlich","Teils verständlich, teils nicht","Eher schwer verständlich","Überhaupt nicht verständlich"],
-      verstaendlich2: ["Sehr klar und verständlich","Größtenteils klar","Teils klar, teils unklar","Teilweise unklar","Überhaupt nicht klar"],
-      vertrauen: ["Sehr seriös und vertrauenswürdig","Ziemlich seriös","Mittelmäßig seriös","Eher wenig seriös","Überhaupt nicht seriös"],
-      dauer: ["Okay so","Etwas lang, aber noch akzeptabel","Viel zu lang"]
-    },
-    en: {
-      hilfe: ["Very helpful","Quite helpful","So-so","Rather unhelpful","Not helpful at all"],
-      verstaendlich1: ["Very understandable","Mostly understandable","Partly understandable","Rather hard to understand","Not understandable at all"],
-      verstaendlich2: ["Very clear and understandable","Mostly clear","Partly clear, partly unclear","Partly unclear","Not clear at all"],
-      vertrauen: ["Very credible & trustworthy","Quite credible","Moderately credible","Rather not credible","Not credible at all"],
-      dauer: ["Fine as is","A bit long but still OK","Far too long"]
-    }
-  };
+(function(){
+  function setLang(lang) {
+    document.documentElement.dataset.lang = lang;
+    document.getElementById("lang_ui").value = lang;
+    document.getElementById("btn-de").classList.toggle("active", lang === "de");
+    document.getElementById("btn-en").classList.toggle("active", lang === "en");
+  }
+  document.getElementById("btn-de").addEventListener("click", () => setLang("de"));
+  document.getElementById("btn-en").addEventListener("click", () => setLang("en"));
 
-  function reorderSelect(id, orderedLabels){
-    const sel = document.getElementById(id);
-    if(!sel || !orderedLabels) return;
-    const opts = Array.from(sel.options);
-    const placeholder = opts.find(o => o.value === "" || /Bitte wählen|Please choose/i.test(o.text));
-    const rest = opts.filter(o => o !== placeholder);
-    const byText = Object.fromEntries(rest.map(o => [o.text.trim(), o]));
-    sel.innerHTML = "";
-    if (placeholder) sel.appendChild(placeholder);
-    orderedLabels.forEach(lbl => { if (byText[lbl]) sel.appendChild(byText[lbl]); });
-    rest.forEach(o => { if (!orderedLabels.includes(o.text.trim())) sel.appendChild(o); });
+  const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || window.ENV_BACKEND || 'https://api-ki-backend-neu-production.up.railway.app/api';
+  const form = document.getElementById("feedback-form");
+  const statusEl = document.getElementById("status");
+  const successBox = document.getElementById("success-message");
+
+  // Validation
+  function validateForm() {
+    let valid = true;
+    const requiredFields = [
+      'company_size_feedback', 'branch_feedback',
+      'ux_clarity_rating', 'ux_effort_rating',
+      'report_relevance_rating', 'report_goals_visible', 'report_comment',
+      'overall_helpfulness_score'
+    ];
+
+    // Reset invalid states
+    form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+
+    requiredFields.forEach(name => {
+      const el = form.querySelector(`[name="${name}"]`);
+      if (!el) return;
+
+      let hasValue = false;
+      if (el.type === 'radio') {
+        hasValue = form.querySelector(`[name="${name}"]:checked`) !== null;
+      } else {
+        hasValue = el.value.trim() !== '';
+      }
+
+      if (!hasValue) {
+        valid = false;
+        if (el.type === 'radio') {
+          const container = el.closest('.scale-row') || el.closest('.radio-group');
+          if (container) container.classList.add('invalid');
+        } else {
+          el.classList.add('invalid');
+        }
+      }
+    });
+
+    return valid;
   }
 
-  function applyOrder(){
-    const uiLang = (document.documentElement.dataset.lang || document.documentElement.lang || "de").toLowerCase().startsWith("en") ? "en" : "de";
-    const L = ORDER[uiLang] || ORDER.de;
-    ["hilfe","verstaendlich1","verstaendlich2","vertrauen","dauer"].forEach(id => reorderSelect(id, L[id]));
-  }
-  document.addEventListener("DOMContentLoaded", applyOrder);
-  document.getElementById("btn-de").addEventListener("click", () => setTimeout(applyOrder, 0));
-  document.getElementById("btn-en").addEventListener("click", () => setTimeout(applyOrder, 0));
-})();
-</script>
-
-<script>
-/* ====== Form-Submit immer via fetch → Railway ====== */
-(function () {
-  const API_BASE = "https://make-ki-backend-neu-production.up.railway.app";
-
-  function getEmailFromJWT(t){
-    try{ const p = JSON.parse(atob(t.split(".")[1])); return p.email || p.sub || null; }catch(e){ return null; }
-  }
-
-  // Prefill hidden fields (variant/report version/timestamp/email)
-  document.addEventListener("DOMContentLoaded", () => {
-    const qp = new URLSearchParams(location.search);
-    const v  = qp.get("variant");
-    const rv = qp.get("report_version") || qp.get("version") || qp.get("rv");
-    if (v)  document.getElementById("variant").value = v;
-    if (rv) document.getElementById("report_version").value = rv;
-    document.getElementById("timestamp").value = new Date().toISOString();
-    const t = localStorage.getItem("jwt"); const e = t ? getEmailFromJWT(t) : null;
-    if (e) document.getElementById("feedback-email").value = e;
-  });
-
-  async function onSubmit(e){
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const form = e.currentTarget;
+
+    if (!validateForm()) {
+      statusEl.textContent = "Bitte füllen Sie die markierten Pflichtfelder aus.";
+      const firstInvalid = form.querySelector('.invalid');
+      if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
     const data = Object.fromEntries(new FormData(form).entries());
     if (!data.timestamp) data.timestamp = new Date().toISOString();
 
-    try{
+    try {
+      statusEl.textContent = "Wird gesendet …";
       const res = await fetch(`${API_BASE}/feedback`, {
         method: "POST",
         mode: "cors",
+        credentials: "include",
         headers: {
-          "Content-Type":"application/json",
-          ...(localStorage.getItem("jwt") ? { "Authorization": "Bearer "+localStorage.getItem("jwt") } : {})
+          "Content-Type": "application/json",
+          ...(localStorage.getItem("jwt") ? { "Authorization": "Bearer " + localStorage.getItem("jwt") } : {})
         },
         body: JSON.stringify(data)
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      document.getElementById("status").textContent = "✅ Danke! Feedback gesendet.";
-    }catch(err){
-      console.error("Feedback POST failed:", err);
-      document.getElementById("status").textContent = "❗ Senden fehlgeschlagen – bitte später nochmal.";
-    }
-  }
 
-  window.addEventListener("DOMContentLoaded", () => {
-    const f = document.getElementById("feedback-form");
-    if (f){
-      f.setAttribute("action", "#");
-      f.addEventListener("submit", onSubmit);
+      // Show success message
+      form.style.display = 'none';
+      successBox.style.display = 'block';
+      successBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) {
+      console.error("Feedback POST failed:", err);
+      statusEl.textContent = "❗ Senden fehlgeschlagen – bitte später nochmal versuchen.";
     }
   });
+
+  // Prefill from URL/JWT
+  const qp = new URLSearchParams(location.search);
+  const v = qp.get("variant");
+  const rv = qp.get("report_version") || qp.get("version") || qp.get("rv");
+  if (v) document.getElementById("variant").value = v;
+  if (rv) document.getElementById("report_version").value = rv;
+  document.getElementById("timestamp").value = new Date().toISOString();
+
+  try {
+    const t = localStorage.getItem("jwt");
+    if (t && t.split(".").length === 3) {
+      const payload = JSON.parse(atob(t.split(".")[1]));
+      const email = payload.email || payload.sub || null;
+      if (email) document.getElementById("feedback-email").value = email;
+    }
+  } catch(e) {}
 })();
 </script>
 
 <script>
-/* ====== Zeichenzähler für Freitextfelder ====== */
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".counter").forEach(c => {
     const id = c.getAttribute("data-for");
     const el = document.getElementById(id);
-    const max = Number(el.getAttribute("maxlength") || 1500);
+    if (!el) return;
+    const max = Number(el.getAttribute("maxlength") || 1000);
     const upd = () => c.textContent = `${el.value.length}/${max}`;
-    el.addEventListener("input", upd); upd();
+    el.addEventListener("input", upd);
+    upd();
   });
 });
 </script>
