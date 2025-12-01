@@ -23,7 +23,7 @@
       width:100%; padding:.65rem .7rem; border:2px solid var(--bd); border-radius:8px; background:#fff; font-size:1rem;
     }
     select:focus, textarea:focus, input:focus { outline:none; border-color:var(--accent); }
-    textarea{ min-height:90px; resize:vertical; }
+    textarea{ min-height:70px; resize:vertical; }
     .muted{ color:var(--muted); font-size:.9rem; }
     .counter{ font-size:.8rem; color:var(--muted); text-align:right; margin-top:.25rem; }
     .row{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
@@ -40,6 +40,7 @@
     .radio-group label:hover{ background:#f0f9ff; border-color:#93c5fd; }
     .radio-group input[type="radio"]{ margin:0; }
     .radio-group input[type="radio"]:checked + span{ font-weight:600; }
+    .radio-group label:has(input:checked){ background:#dbeafe; border-color:var(--accent); }
     .scale-row{ display:flex; justify-content:space-between; gap:.25rem; margin-top:.35rem; }
     .scale-row label{ flex:1; text-align:center; padding:.6rem .25rem; background:#f8fafc; border:2px solid var(--bd); border-radius:8px; cursor:pointer; font-weight:400; font-size:.9rem; }
     .scale-row label:hover{ background:#f0f9ff; border-color:#93c5fd; }
@@ -47,6 +48,11 @@
     .scale-row input[type="radio"]:checked + span{ font-weight:700; color:var(--accent); }
     .scale-row label:has(input:checked){ background:#dbeafe; border-color:var(--accent); }
     .scale-labels{ display:flex; justify-content:space-between; font-size:.8rem; color:var(--muted); margin-top:.25rem; }
+    .checkbox-group{ display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.35rem; }
+    .checkbox-group label{ display:flex; align-items:center; gap:.4rem; font-weight:400; padding:.5rem .75rem; background:#f8fafc; border:2px solid var(--bd); border-radius:8px; cursor:pointer; }
+    .checkbox-group label:hover{ background:#f0f9ff; border-color:#93c5fd; }
+    .checkbox-group input[type="checkbox"]{ margin:0; }
+    .checkbox-group label:has(input:checked){ background:#dbeafe; border-color:var(--accent); }
   </style>
 </head>
 <body>
@@ -59,7 +65,7 @@
     <button type="button" id="btn-en">EN</button>
   </div>
 </header>
-<p class="lead">Ca. 3–5 Minuten. Ihr Feedback hilft uns, den KI-Checkup gezielt zu verbessern.</p>
+<p class="lead">Ca. 2–3 Minuten. Schnelles Klick-Feedback – hilft uns enorm!</p>
 
 <form id="feedback-form" novalidate>
   <!-- Hidden fields -->
@@ -75,14 +81,13 @@
 
     <div class="row">
       <div>
-        <label for="company_size_feedback" class="req">Unternehmensgröße</label>
-        <select name="company_size_feedback" id="company_size_feedback" required>
-          <option value="">Bitte wählen</option>
-          <option value="solo">Solo-Selbstständig / Freiberuflich</option>
-          <option value="small_team">Kleines Team (2–10)</option>
-          <option value="kmu">KMU (11–100)</option>
-          <option value="larger">Größer (100+)</option>
-        </select>
+        <label class="req">Unternehmensgröße</label>
+        <div class="radio-group">
+          <label><input type="radio" name="company_size_feedback" value="solo" required/><span>Solo / Freiberuflich</span></label>
+          <label><input type="radio" name="company_size_feedback" value="small_team"/><span>Kleines Team (2–10)</span></label>
+          <label><input type="radio" name="company_size_feedback" value="kmu"/><span>KMU (11–100)</span></label>
+          <label><input type="radio" name="company_size_feedback" value="larger"/><span>Größer (100+)</span></label>
+        </div>
       </div>
       <div>
         <label for="branch_feedback" class="req">Branche</label>
@@ -90,26 +95,23 @@
           <option value="">Bitte wählen</option>
           <option value="beratung">Beratung & Dienstleistungen</option>
           <option value="it">IT & Software</option>
-          <option value="marketing">Marketing & Kreativ</option>
-          <option value="handel">Handel & E-Commerce</option>
-          <option value="gesundheit">Gesundheit & Pflege</option>
-          <option value="bildung">Bildung & Coaching</option>
-          <option value="industrie">Industrie & Produktion</option>
+          <option value="medien">Medien & Kreativwirtschaft</option>
+          <option value="handel">Handel / E-Commerce</option>
+          <option value="industrie">Industrie / Produktion</option>
           <option value="sonstige">Sonstige</option>
         </select>
       </div>
     </div>
 
     <label for="test_reference">Testprofil / Report-Referenz (optional)</label>
-    <input type="text" name="test_reference" id="test_reference" placeholder="z. B. Testnummer, Report-ID oder eigene Bezeichnung …" maxlength="100"/>
-    <p class="note">Falls Sie mehrere Tests durchgeführt haben oder uns den Report zuordnen möchten.</p>
+    <input type="text" name="test_reference" id="test_reference" placeholder="z. B. Testnummer, Report-ID …" maxlength="100"/>
   </div>
 
   <!-- Block B: Fragebogen & UX -->
   <div class="card">
     <h2><span class="step">B</span>Fragebogen-Erlebnis</h2>
 
-    <label class="req">Wie verständlich waren die Fragen im Fragebogen?</label>
+    <label class="req">Wie verständlich waren die Fragen?</label>
     <div class="scale-row">
       <label><input type="radio" name="ux_clarity_rating" value="1" required/><span>1</span></label>
       <label><input type="radio" name="ux_clarity_rating" value="2"/><span>2</span></label>
@@ -119,7 +121,7 @@
     </div>
     <div class="scale-labels"><span>Unklar</span><span>Sehr klar</span></div>
 
-    <label class="req">Wie empfanden Sie Länge und Aufwand des Fragebogens?</label>
+    <label class="req">Wie hoch war der Aufwand insgesamt?</label>
     <div class="scale-row">
       <label><input type="radio" name="ux_effort_rating" value="1" required/><span>1</span></label>
       <label><input type="radio" name="ux_effort_rating" value="2"/><span>2</span></label>
@@ -127,25 +129,25 @@
       <label><input type="radio" name="ux_effort_rating" value="4"/><span>4</span></label>
       <label><input type="radio" name="ux_effort_rating" value="5"/><span>5</span></label>
     </div>
-    <div class="scale-labels"><span>Zu lang</span><span>Genau richtig</span></div>
+    <div class="scale-labels"><span>Zu hoch</span><span>Angemessen</span></div>
 
-    <label>Waren die Pflichtfelder angemessen?</label>
+    <label class="req">Pflichtfelder-Umfang</label>
     <div class="radio-group">
-      <label><input type="radio" name="ux_required_fields" value="ja"/><span>Ja, passend</span></label>
-      <label><input type="radio" name="ux_required_fields" value="zu_viele"/><span>Zu viele Pflichtfelder</span></label>
-      <label><input type="radio" name="ux_required_fields" value="zu_wenige"/><span>Zu wenige Pflichtfelder</span></label>
+      <label><input type="radio" name="ux_required_fields" value="ok" required/><span>Passend</span></label>
+      <label><input type="radio" name="ux_required_fields" value="too_many"/><span>Zu viele</span></label>
+      <label><input type="radio" name="ux_required_fields" value="too_few"/><span>Zu wenige</span></label>
+      <label><input type="radio" name="ux_required_fields" value="unsure"/><span>Kann ich nicht beurteilen</span></label>
     </div>
 
-    <label for="ux_comment">Was war beim Ausfüllen besonders positiv oder nervig?</label>
-    <textarea name="ux_comment" id="ux_comment" maxlength="1000" placeholder="z. B. bestimmte Fragen unklar, Auswahl-Optionen gefehlt, Eingabe war einfach …"></textarea>
-    <div class="counter" data-for="ux_comment"></div>
+    <label for="ux_comment">Kurze Ergänzung zum Fragebogen? (optional)</label>
+    <textarea name="ux_comment" id="ux_comment" maxlength="500" placeholder="Falls Ihnen etwas aufgefallen ist …"></textarea>
   </div>
 
   <!-- Block C: Qualität des Reports -->
   <div class="card">
     <h2><span class="step">C</span>Qualität des Reports</h2>
 
-    <label class="req">Wie relevant waren die Empfehlungen für Ihr Unternehmen?</label>
+    <label class="req">Wie relevant waren die Empfehlungen?</label>
     <div class="scale-row">
       <label><input type="radio" name="report_relevance_rating" value="1" required/><span>1</span></label>
       <label><input type="radio" name="report_relevance_rating" value="2"/><span>2</span></label>
@@ -155,7 +157,7 @@
     </div>
     <div class="scale-labels"><span>Nicht relevant</span><span>Sehr relevant</span></div>
 
-    <label class="req">Haben Sie Ihre Ziele und Pain Points im Report wiedererkannt?</label>
+    <label class="req">Haben Sie Ihre Ziele im Report wiedererkannt?</label>
     <div class="scale-row">
       <label><input type="radio" name="report_goals_visible" value="1" required/><span>1</span></label>
       <label><input type="radio" name="report_goals_visible" value="2"/><span>2</span></label>
@@ -165,23 +167,32 @@
     </div>
     <div class="scale-labels"><span>Gar nicht</span><span>Sehr gut</span></div>
 
-    <label>Wurden Ihre No-Gos / Leitplanken berücksichtigt?</label>
+    <label class="req">Wurden Ihre Leitplanken / No-Gos berücksichtigt?</label>
     <div class="radio-group">
-      <label><input type="radio" name="report_guardrails_used" value="ja"/><span>Ja</span></label>
-      <label><input type="radio" name="report_guardrails_used" value="nein"/><span>Nein</span></label>
-      <label><input type="radio" name="report_guardrails_used" value="nicht_angegeben"/><span>Hatte keine angegeben</span></label>
+      <label><input type="radio" name="report_guardrails_used" value="yes" required/><span>Ja, berücksichtigt</span></label>
+      <label><input type="radio" name="report_guardrails_used" value="no"/><span>Nein, ignoriert</span></label>
+      <label><input type="radio" name="report_guardrails_used" value="not_used"/><span>Hatte keine angegeben</span></label>
     </div>
 
-    <label for="report_comment" class="req">Was war der stärkste / schwächste Moment im Report?</label>
-    <textarea name="report_comment" id="report_comment" maxlength="1000" placeholder="z. B. Quick-Wins waren sehr konkret, Förder-Infos zu allgemein, Roadmap hat geholfen …" required></textarea>
-    <div class="counter" data-for="report_comment"></div>
+    <label>Was war besonders hilfreich? (Mehrfachauswahl)</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="report_helpful_sections" value="quick_wins"/><span>Quick Wins</span></label>
+      <label><input type="checkbox" name="report_helpful_sections" value="roadmap"/><span>Roadmap</span></label>
+      <label><input type="checkbox" name="report_helpful_sections" value="compliance"/><span>Risiko & Compliance</span></label>
+      <label><input type="checkbox" name="report_helpful_sections" value="funding"/><span>Fördermöglichkeiten</span></label>
+      <label><input type="checkbox" name="report_helpful_sections" value="summary"/><span>Zusammenfassung</span></label>
+      <label><input type="checkbox" name="report_helpful_sections" value="other"/><span>Sonstiges</span></label>
+    </div>
+
+    <label for="report_comment">Ergänzung zur Report-Qualität? (optional)</label>
+    <textarea name="report_comment" id="report_comment" maxlength="500" placeholder="Was war stark, was verbesserungswürdig?"></textarea>
   </div>
 
   <!-- Block D: Gesamteindruck -->
   <div class="card">
     <h2><span class="step">D</span>Gesamteindruck</h2>
 
-    <label class="req">Wie hilfreich war der KI-Checkup insgesamt für Ihr Unternehmen?</label>
+    <label class="req">Wie hilfreich war der KI-Checkup insgesamt?</label>
     <div class="scale-row">
       <label><input type="radio" name="overall_helpfulness_score" value="1" required/><span>1</span></label>
       <label><input type="radio" name="overall_helpfulness_score" value="2"/><span>2</span></label>
@@ -196,13 +207,16 @@
     </div>
     <div class="scale-labels"><span>Nicht hilfreich</span><span>Sehr hilfreich</span></div>
 
-    <label for="payment_willingness">Würden Sie für einen solchen Report bezahlen? Wenn ja: grobe Preisvorstellung?</label>
-    <input type="text" name="payment_willingness" id="payment_willingness" placeholder="z. B. 'Nein', '50–100 €', 'Ja, wenn detaillierter' …" maxlength="200"/>
-    <p class="note">Optional – hilft uns bei der Einschätzung des Nutzwerts.</p>
+    <label>Würden Sie für so einen Report bezahlen? (optional)</label>
+    <div class="radio-group">
+      <label><input type="radio" name="payment_willingness" value="no"/><span>Nein</span></label>
+      <label><input type="radio" name="payment_willingness" value="lt_100"/><span>Bis ca. 100 €</span></label>
+      <label><input type="radio" name="payment_willingness" value="100_250"/><span>100–250 €</span></label>
+      <label><input type="radio" name="payment_willingness" value="gt_250"/><span>Mehr als 250 €</span></label>
+    </div>
 
-    <label for="final_comment">Noch etwas, das Sie uns mitteilen möchten?</label>
-    <textarea name="final_comment" id="final_comment" maxlength="1000" placeholder="Ideen, Kritik, Lob – alles willkommen …"></textarea>
-    <div class="counter" data-for="final_comment"></div>
+    <label for="final_comment">Sonstige Anmerkungen? (optional)</label>
+    <textarea name="final_comment" id="final_comment" maxlength="500" placeholder="Ideen, Kritik, Lob – alles willkommen …"></textarea>
   </div>
 
   <p id="status" class="muted" aria-live="polite" style="margin-top:.6rem"></p>
@@ -235,8 +249,8 @@
     let valid = true;
     const requiredFields = [
       'company_size_feedback', 'branch_feedback',
-      'ux_clarity_rating', 'ux_effort_rating',
-      'report_relevance_rating', 'report_goals_visible', 'report_comment',
+      'ux_clarity_rating', 'ux_effort_rating', 'ux_required_fields',
+      'report_relevance_rating', 'report_goals_visible', 'report_guardrails_used',
       'overall_helpfulness_score'
     ];
 
@@ -278,7 +292,23 @@
       return;
     }
 
-    const data = Object.fromEntries(new FormData(form).entries());
+    // Collect form data including checkbox arrays
+    const formData = new FormData(form);
+    const data = {};
+
+    formData.forEach((value, key) => {
+      if (data[key]) {
+        // Handle multiple values (checkboxes)
+        if (Array.isArray(data[key])) {
+          data[key].push(value);
+        } else {
+          data[key] = [data[key], value];
+        }
+      } else {
+        data[key] = value;
+      }
+    });
+
     if (!data.timestamp) data.timestamp = new Date().toISOString();
 
     try {
@@ -322,20 +352,6 @@
     }
   } catch(e) {}
 })();
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".counter").forEach(c => {
-    const id = c.getAttribute("data-for");
-    const el = document.getElementById(id);
-    if (!el) return;
-    const max = Number(el.getAttribute("maxlength") || 1000);
-    const upd = () => c.textContent = `${el.value.length}/${max}`;
-    el.addEventListener("input", upd);
-    upd();
-  });
-});
 </script>
 
 </body>
