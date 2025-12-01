@@ -359,6 +359,9 @@ function _collectLabelFor(fieldKey, value){
       placeholder: "In wenigen Sätzen: Wie soll sich Ihre tägliche Arbeit und die Zusammenarbeit mit Kunden in 2–3 Jahren anfühlen?", description: "(Damit wir Ihre mittel- bis langfristige Vision verstehen und zeigen können, wie KI Schritt für Schritt dorthin führen kann.)" },
 
     { key: "strategische_ziele", label: "Was soll KI in den nächsten 6–12 Monaten konkret für Sie verbessern?", type: "textarea", placeholder: "Stichworte reichen: z. B. weniger Routinearbeit, mehr Leads, schnellere Angebote, stabilere Prozesse …", description: "(Damit wir Ihre KI-Strategie konsequent an Ihren Unternehmenszielen ausrichten können – statt nur nice-to-have-Projekte zu starten.)" },
+    { key: "ki_guardrails", label: "Gibt es No-Gos oder sensible Themen beim Einsatz von KI?", type: "textarea",
+      placeholder: "z. B. keine Kommunikation zu Personalabbau, vorsichtiger Umgang mit Betriebsrat/Team, keine Gesundheitsprognosen, besondere Datenschutzanforderungen …",
+      description: "(Damit wir Empfehlungen und Formulierungen so steuern können, dass sie zu Ihren Werten, Ihrer Kultur und rechtlichen Anforderungen passen.)" },
     { key: "massnahmen_komplexitaet", label: "Aufwand für die Einführung", type: "select",
       options: [ { value: "niedrig", label: "Niedrig" }, { value: "mittel", label: "Mittel" }, { value: "hoch", label: "Hoch" }, { value: "unklar", label: "Unklar" } ],
       description: "(Damit Umfang, Zeitplan und Ressourcen realistisch aufgesetzt werden.)" },
@@ -475,7 +478,7 @@ function _collectLabelFor(fieldKey, value){
     { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
     { title: "Ziele & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
-    { title: "Strategie & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
+    { title: "Strategie & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
     { title: "Ressourcen & Präferenzen", intro: BLOCK_INTRO[4], keys: ["zeitbudget", "vorhandene_tools", "regulierte_branche", "trainings_interessen", "vision_prioritaet"] },
     { title: "Rechtliches & Förderung", intro: BLOCK_INTRO[5], keys: ["datenschutzbeauftragter", "technische_massnahmen", "folgenabschaetzung", "meldewege", "loeschregeln", "ai_act_kenntnis", "ki_hemmnisse", "bisherige_foerdermittel", "interesse_foerderung", "erfahrung_beratung", "investitionsbudget", "marktposition", "benchmark_wettbewerb", "innovationsprozess", "risikofreude"] },
     { title: "Datenschutz & Absenden", intro: BLOCK_INTRO[6], keys: ["datenschutz"] }
