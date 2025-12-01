@@ -258,8 +258,8 @@ function _collectLabelFor(fieldKey, value){
       description: "(Damit regionale Programme, Ansprechpartner und Quoten automatisch berücksichtigt werden.)"
     },
     { key: "hauptleistung", label: "Was ist Ihre Hauptdienstleistung oder Ihr wichtigstes Produkt?", type: "textarea",
-      placeholder: "Beschreiben Sie kurz, was Sie anbieten und wodurch Sie sich abheben.",
-      description: "(Damit wir Ihre Wertschöpfung verstehen und KI-Potenziale entlang Ihrer Hauptleistungen konkret und praxisnah identifizieren können.)"
+      placeholder: "In 2–3 Sätzen oder Stichpunkten: Was bieten Sie an – und was unterscheidet Sie von anderen?",
+      description: "(Damit wir Ihre Wertschöpfung verstehen und KI-Potenziale entlang Ihrer Hauptleistungen konkret und praxisnah identifizieren können. Stichworte reichen.)"
     },
     { key: "zielgruppen", label: "Welche Zielgruppen bedienen Sie?", type: "checkbox",
       options: [
@@ -335,7 +335,7 @@ function _collectLabelFor(fieldKey, value){
         { value: "wettbewerbsfaehigkeit", label: "Wettbewerbsfähigkeit" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
       description: "(Damit Maßnahmen auf kurzfristige, messbare Ziele ausgerichtet priorisiert werden.)" },
-    { key: "ki_projekte", label: "Laufende/geplante KI-Projekte", type: "textarea", placeholder: "z. B. internes Pilotprojekt, geplante Einführung eines KI-Assistenten, Zusammenarbeit mit externen Partnern …", description: "(Damit wir Doppelarbeit vermeiden, Synergien nutzen und Ihre bestehenden Initiativen in die Gesamtstrategie einbetten können.)" },
+    { key: "ki_projekte", label: "Gibt es bereits Tests, Tools oder Projekte mit KI (auch informell)?", type: "textarea", placeholder: "z. B. ChatGPT-Nutzung im Team, interne Pilotprojekte, Tools von Dienstleistern, Experimente mit Automatisierung …", description: "(Damit wir Doppelarbeit vermeiden, Synergien mit bestehenden Initiativen nutzen und Ihr aktuelles KI-Engagement passend einordnen können.)" },
     { key: "anwendungsfaelle", label: "Interessante Anwendungsfälle", type: "checkbox",
       options: [
         { value: "chatbots", label: "Chatbots / FAQ-Automatisierung" }, { value: "content_generation", label: "Content-Generierung" },
@@ -344,8 +344,8 @@ function _collectLabelFor(fieldKey, value){
         { value: "andere", label: "Andere" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
       description: "(Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen.)" },
-    { key: "zeitersparnis_prioritaet", label: "Bereich mit Zeitersparnis-Priorität", type: "textarea",
-      placeholder: "z. B. schnelleres Reporting, personalisierte Angebote, Automatisierung …", description: "(Damit wir schnell wirksame Zeithebel identifizieren und zuerst umsetzen.)" },
+    { key: "zeitersparnis_prioritaet", label: "Wo frisst heute am meisten Zeit oder Nerven?", type: "textarea",
+      placeholder: "Bitte konkrete Tätigkeiten/Prozesse nennen, z. B. Angebotserstellung, E‑Mails, Abrechnung, Dokumentation …", description: "(Damit wir sehr konkrete Quick-Win-Empfehlungen zur Entlastung ableiten können – mit spürbarer Zeitersparnis im Alltag.)" },
     { key: "pilot_bereich", label: "Bester Bereich für Pilotprojekt", type: "select",
       options: [
         { value: "kundenservice", label: "Kundenservice" }, { value: "marketing", label: "Marketing / Content" },
@@ -353,12 +353,12 @@ function _collectLabelFor(fieldKey, value){
         { value: "produktion", label: "Produktion / Logistik" }, { value: "andere", label: "Andere" }
       ],
       description: "(Damit das erste Pilotprojekt reibungslos startet und zuverlässig Ergebnisse liefert.)" },
-    { key: "geschaeftsmodell_evolution", label: "Geschäftsmodell-Idee mit KI", type: "textarea",
-      placeholder: "z. B. neue digitale Produkte, Services, Beratungsangebote, datengetriebene Zusatzleistungen …", description: "(Damit wir das Potenzial für echte Business-Innovation neben der reinen Effizienzsteigerung erkennen und adressieren können.)" },
-    { key: "vision_3_jahre", label: "Vision in 3 Jahren", type: "textarea",
-      placeholder: "Beschreiben Sie in wenigen Sätzen, wie Sie arbeiten, welche Kunden Sie erreichen und was sich verändert haben soll.", description: "(Damit wir Ihre langfristige Vision verstehen und prüfen können, wie KI gezielt dazu beitragen kann, diese Zukunft zu erreichen.)" },
+    { key: "geschaeftsmodell_evolution", label: "Haben Sie Ideen, wie KI Ihr Geschäftsmodell verändern oder ergänzen könnte?", type: "textarea",
+      placeholder: "z. B. neue digitale Produkte, Services, Beratungsangebote, datengetriebene Zusatzleistungen …", description: "(Damit wir Potenziale für echte Business-Innovation neben der reinen Effizienzsteigerung erkennen und im Report sichtbar machen.)" },
+    { key: "vision_3_jahre", label: "Wie soll Ihr Unternehmen in 2–3 Jahren mit KI arbeiten?", type: "textarea",
+      placeholder: "In wenigen Sätzen: Wie soll sich Ihre tägliche Arbeit und die Zusammenarbeit mit Kunden in 2–3 Jahren anfühlen?", description: "(Damit wir Ihre mittel- bis langfristige Vision verstehen und zeigen können, wie KI Schritt für Schritt dorthin führen kann.)" },
 
-    { key: "strategische_ziele", label: "Konkrete Ziele mit KI", type: "textarea", placeholder: "z. B. Umsatzwachstum, Skalierung, Internationalisierung, Qualitätssteigerung, Entlastung von Schlüsselpersonen …", description: "(Damit wir Ihre KI-Strategie konsequent an Ihren Unternehmenszielen ausrichten können – statt nur nice-to-have-Projekte zu starten.)" },
+    { key: "strategische_ziele", label: "Was soll KI in den nächsten 6–12 Monaten konkret für Sie verbessern?", type: "textarea", placeholder: "Stichworte reichen: z. B. weniger Routinearbeit, mehr Leads, schnellere Angebote, stabilere Prozesse …", description: "(Damit wir Ihre KI-Strategie konsequent an Ihren Unternehmenszielen ausrichten können – statt nur nice-to-have-Projekte zu starten.)" },
     { key: "massnahmen_komplexitaet", label: "Aufwand für die Einführung", type: "select",
       options: [ { value: "niedrig", label: "Niedrig" }, { value: "mittel", label: "Mittel" }, { value: "hoch", label: "Hoch" }, { value: "unklar", label: "Unklar" } ],
       description: "(Damit Umfang, Zeitplan und Ressourcen realistisch aufgesetzt werden.)" },
