@@ -594,7 +594,8 @@ function _collectLabelFor(fieldKey, value){
     var optional = {
       "jahresumsatz":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
-      "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0
+      "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0,
+      "ki_projekte":1,"geschaeftsmodell_evolution":1,"vision_3_jahre":1,"ki_guardrails":1
     };
     var missing = [];
     var block = blocks[currentBlock];
