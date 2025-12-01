@@ -1203,7 +1203,7 @@ function renderForm() {
   // Step-Indikator
   const stepsNav = $("#step-indicators");
   if (stepsNav) {
-    stepsNalinnerHTML = "";
+    stepsNav.innerHTML = "";
     fields.forEach((b, idx) => {
       const li = document.createElement("li");
       li.className = "fb-step-indicator";
@@ -1328,3 +1328,6 @@ function initFormBuilder() {
     initFormBuilder();
   }
 })();
+
+// Export für boot.js Kompatibilität
+window.initFormBuilder = initFormBuilder;
