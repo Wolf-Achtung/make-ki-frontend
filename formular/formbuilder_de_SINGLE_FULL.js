@@ -1329,5 +1329,7 @@ function initFormBuilder() {
   }
 })();
 
-// Export für boot.js Kompatibilität
+// Export für boot.js Kompatibilität (erwartet render/init/start)
 window.initFormBuilder = initFormBuilder;
+window.init = initFormBuilder;
+window.render = initFormBuilder;
