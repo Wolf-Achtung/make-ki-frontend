@@ -21,7 +21,7 @@ function _collectLabelFor(fieldKey, value){
 
   // --------------------------- Konfiguration ---------------------------
   var LANG = "de";
-  var SCHEMA_VERSION = "1.6.2";
+  var SCHEMA_VERSION = "1.7.0";
   var STORAGE_PREFIX = "autosave_form_";
   var SUBMIT_PATH = "/briefings/submit";
 
