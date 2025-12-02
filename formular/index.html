@@ -21,6 +21,12 @@
     #formbuilder { min-height: 420px; }
     .notice { color:#58728a; margin:8px 0 14px 0; }
     .noscript { padding:12px 14px; border-radius:10px; background:#fff3cd; color:#7c5300; border:1px solid #ffe69c; }
+    /* Language Switch */
+    .lang-switch { display:flex; justify-content:flex-end; gap:8px; align-items:center; font-size:14px; margin-bottom:8px; }
+    .lang-link { text-decoration:none; color:#2563eb; font-weight:500; }
+    .lang-link:hover { text-decoration:underline; }
+    .lang-active { font-weight:700; text-decoration:underline; }
+    .lang-separator { color:#64748b; }
   </style>
   <script src="/js/config.js"></script>
   <script src="/js/auth.js"></script>
@@ -28,6 +34,11 @@
 <body>
   <main class="wrap">
     <div class="card">
+      <div class="lang-switch">
+        <a href="index.html?lang=de" class="lang-link lang-active">DE</a>
+        <span class="lang-separator">|</span>
+        <a href="index_en.html?lang=en" class="lang-link">EN</a>
+      </div>
       <div class="head">
         <h1 class="headline">Fragebogen</h1>
         <span class="progress" id="fb-progress" aria-live="polite"></span>
@@ -64,5 +75,20 @@
 
   <!-- Boot script to load the formbuilder with auth checking -->
   <script src="/formular/boot.js"></script>
+
+  <!-- Language redirect: ?lang=en → EN page -->
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var lang = (params.get('lang') || 'de').toLowerCase();
+        if (lang === 'en') {
+          window.location.href = 'index_en.html?lang=en';
+        }
+      } catch (e) {
+        console.warn('Lang switch (DE) failed:', e);
+      }
+    })();
+  </script>
 </body>
 </html>
