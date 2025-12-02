@@ -12,16 +12,42 @@
     body { font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif; background:var(--bg); color:var(--fg); margin:0; line-height:1.5; }
     main { max-width:960px; margin:0 auto; padding:2rem; }
     .muted { color:var(--muted); }
+    /* Language Switch */
+    .lang-switch { display:flex; justify-content:flex-end; gap:8px; align-items:center; font-size:14px; margin-bottom:8px; }
+    .lang-link { text-decoration:none; color:#2563eb; font-weight:500; }
+    .lang-link:hover { text-decoration:underline; }
+    .lang-active { font-weight:700; text-decoration:underline; }
+    .lang-separator { color:#64748b; }
   </style>
   <script src="../config.js"></script>
   <script src="../js/api.js" defer></script>
 </head>
 <body>
 <main>
+  <div class="lang-switch">
+    <a href="index.html?lang=de" class="lang-link">DE</a>
+    <span class="lang-separator">|</span>
+    <a href="index_en.html?lang=en" class="lang-link lang-active">EN</a>
+  </div>
   <h1>Questionnaire</h1>
   <p class="muted">Processing happens in the background; the result will appear automatically.</p>
   <div id="formbuilder"></div>
 </main>
 <script src="formbuilder_en_SINGLE_FULL.js"></script>
+
+<!-- Language redirect: ?lang=de → DE page -->
+<script>
+  (function() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var lang = (params.get('lang') || 'en').toLowerCase();
+      if (lang === 'de') {
+        window.location.href = 'index.html?lang=de';
+      }
+    } catch (e) {
+      console.warn('Lang switch (EN) failed:', e);
+    }
+  })();
+</script>
 </body>
 </html>
