@@ -74,8 +74,13 @@ function _collectLabelFor(fieldKey, value){
       return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
     }
     if (f.type === "slider") {
-      return "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
+      var sliderHtml = "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
         + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
+      // Add endpoint labels for specific sliders
+      if (f.key === "digitalisierungsgrad" || f.key === "risikofreude") {
+        sliderHtml += "<div class='slider-labels'><span>Niedrig</span><span>Hoch</span></div>";
+      }
+      return sliderHtml;
     }
     return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
   }
@@ -205,7 +210,8 @@ function _collectLabelFor(fieldKey, value){
       + ".btn-secondary:hover{background:#f0f9ff;border-color:#2563eb}"
       + ".mr-auto{margin-right:auto}"
       + ".slider-container{display:flex;align-items:center;gap:12px}"
-      + ".slider-value-label{min-width:48px;padding:8px 12px;background:#dbeafe;border-radius:8px;font-weight:600;color:#1e3a5f;text-align:center}";
+      + ".slider-value-label{min-width:48px;padding:8px 12px;background:#dbeafe;border-radius:8px;font-weight:600;color:#1e3a5f;text-align:center}"
+      + ".slider-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:13px;color:#475569}";
     var s=document.createElement("style"); s.type="text/css"; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
   }catch(_){}})();
 
@@ -216,7 +222,8 @@ function _collectLabelFor(fieldKey, value){
     "Ziele & wichtigste Anwendungsfälle: Was soll KI ganz konkret leisten? Wir fokussieren umsetzbare Maßnahmen mit sichtbarem Nutzen.",
     "Strategie & Governance: einfache, tragfähige Leitplanken für nachhaltigen KI-Einsatz ohne Bürokratie-Overhead.",
     "Ressourcen & Präferenzen (Zeit, Tool-Landschaft). Wir passen Empfehlungen an Machbarkeit, Budget und Tempo an.",
-    "Rechtliches & Förderung: DSGVO, EU AI Act & Fördermöglichkeiten – verständlich erklärt, mit klaren To-dos.",
+    "Rechtliches & Compliance: Prüfen Sie bitte kurz Ihr aktuelles Datenschutzniveau und bestehende Pflichten.",
+    "Förderungen und Investitionsrahmen: Wir prüfen für Sie relevante Programme und realistische Schritte.",
     "Datenschutz & Absenden: Einwilligung bestätigen und den personalisierten Report starten."
   ];
 
@@ -345,7 +352,7 @@ function _collectLabelFor(fieldKey, value){
       ],
       description: "(Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen.)" },
     { key: "zeitersparnis_prioritaet", label: "Wo frisst heute am meisten Zeit oder Nerven?", type: "textarea",
-      placeholder: "Bitte konkrete Tätigkeiten/Prozesse nennen, z. B. Angebotserstellung, E‑Mails, Abrechnung, Dokumentation …", description: "(Damit wir sehr konkrete Quick-Win-Empfehlungen zur Entlastung ableiten können – mit spürbarer Zeitersparnis im Alltag.)" },
+      placeholder: "In welchen Bereichen verlieren Sie heute am meisten Zeit? (z. B. E-Mails, Angebote, Dokumentation)", description: "(Damit wir sehr konkrete Quick-Win-Empfehlungen zur Entlastung ableiten können – mit spürbarer Zeitersparnis im Alltag.)" },
     { key: "pilot_bereich", label: "Bester Bereich für Pilotprojekt", type: "select",
       options: [
         { value: "kundenservice", label: "Kundenservice" }, { value: "marketing", label: "Marketing / Content" },
@@ -356,9 +363,9 @@ function _collectLabelFor(fieldKey, value){
     { key: "geschaeftsmodell_evolution", label: "Haben Sie Ideen, wie KI Ihr Geschäftsmodell verändern oder ergänzen könnte?", type: "textarea",
       placeholder: "z. B. neue digitale Produkte, Services, Beratungsangebote, datengetriebene Zusatzleistungen …", description: "(Damit wir Potenziale für echte Business-Innovation neben der reinen Effizienzsteigerung erkennen und im Report sichtbar machen.)" },
     { key: "vision_3_jahre", label: "Wie soll Ihr Unternehmen in 2–3 Jahren mit KI arbeiten?", type: "textarea",
-      placeholder: "In wenigen Sätzen: Wie soll sich Ihre tägliche Arbeit und die Zusammenarbeit mit Kunden in 2–3 Jahren anfühlen?", description: "(Damit wir Ihre mittel- bis langfristige Vision verstehen und zeigen können, wie KI Schritt für Schritt dorthin führen kann.)" },
+      placeholder: "Wie soll Ihr Unternehmen in 2–3 Jahren arbeiten? Kurzbeschreibung.", description: "(Damit wir Ihre mittel- bis langfristige Vision verstehen und zeigen können, wie KI Schritt für Schritt dorthin führen kann.)" },
 
-    { key: "strategische_ziele", label: "Was soll KI in den nächsten 6–12 Monaten konkret für Sie verbessern?", type: "textarea", placeholder: "Stichworte reichen: z. B. weniger Routinearbeit, mehr Leads, schnellere Angebote, stabilere Prozesse …", description: "(Damit wir Ihre KI-Strategie konsequent an Ihren Unternehmenszielen ausrichten können – statt nur nice-to-have-Projekte zu starten.)" },
+    { key: "strategische_ziele", label: "Was soll KI in den nächsten 6–12 Monaten konkret für Sie verbessern?", type: "textarea", placeholder: "Was soll KI in den nächsten 6–12 Monaten verbessern? (Stichworte reichen)", description: "(Damit wir Ihre KI-Strategie konsequent an Ihren Unternehmenszielen ausrichten können – statt nur nice-to-have-Projekte zu starten.)" },
     { key: "ki_guardrails", label: "Gibt es No-Gos oder sensible Themen beim Einsatz von KI?", type: "textarea",
       placeholder: "z. B. keine Kommunikation zu Personalabbau, vorsichtiger Umgang mit Betriebsrat/Team, keine Gesundheitsprognosen, besondere Datenschutzanforderungen …",
       description: "(Damit wir Empfehlungen und Formulierungen so steuern können, dass sie zu Ihren Werten, Ihrer Kultur und rechtlichen Anforderungen passen.)" },
@@ -394,7 +401,7 @@ function _collectLabelFor(fieldKey, value){
         { value: "gesundheit", label: "Gesundheit & Medizin" }, { value: "finanzen", label: "Finanzen & Versicherungen" },
         { value: "oeffentlich", label: "Öffentlicher Sektor" }, { value: "recht", label: "Rechtliche Dienstleistungen" }, { value: "keine", label: "Keine dieser Branchen" }
       ],
-      description: "(Damit branchenspezifische Pflichten und Nachweise von Anfang an berücksichtigt werden.)" },
+      description: "(Einige KI-Anwendungen unterliegen strengen gesetzlichen Vorgaben. Bitte auswählen, falls relevant.)" },
     { key: "trainings_interessen", label: "Interessante KI-Trainingsthemen", type: "checkbox",
       options: [
         { value: "prompt_engineering", label: "Prompt Engineering" }, { value: "llm_basics", label: "LLM-Grundlagen" },
@@ -419,16 +426,16 @@ function _collectLabelFor(fieldKey, value){
       description: "(Damit Sicherheitsniveau, Quick-Wins und Prioritäten fundiert abgeleitet werden.)" },
     { key: "folgenabschaetzung", label: "Datenschutz-Folgenabschätzung (DSFA)", type: "select",
       options: [ { value: "ja", label: "Ja, durchgeführt" }, { value: "nein", label: "Nein, noch nicht" }, { value: "teilweise", label: "In Planung" } ],
-      description: "(Damit mögliche Risiken früh erkannt und erforderliche Prüfungen eingeplant werden.)" },
+      description: "(Wird benötigt, wenn personenbezogene Daten mit höherem Risiko verarbeitet werden.)" },
     { key: "meldewege", label: "Meldewege bei Sicherheitsvorfällen", type: "select",
       options: [ { value: "ja", label: "Ja, klar definiert" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "nein", label: "Nein, noch nicht geregelt" } ],
       description: "(Damit Vorfälle schnell eskaliert und rechtliche Fristen zuverlässig eingehalten werden.)" },
     { key: "loeschregeln", label: "Richtlinien für Datenlöschung und -anonymisierung", type: "select",
       options: [ { value: "ja", label: "Ja, dokumentiert" }, { value: "teilweise", label: "Teilweise vorhanden" }, { value: "nein", label: "Nein, noch nicht definiert" } ],
       description: "(Damit Aufbewahrung, Löschung und Anonymisierung nachvollziehbar geregelt sind.)" },
-    { key: "ai_act_kenntnis", label: "Kenntnis EU AI Act", type: "select",
+    { key: "ai_act_kenntnis", label: "Kenntnisse zum EU AI Act", type: "select",
       options: [ { value: "sehr_gut", label: "Sehr gut" }, { value: "gut", label: "Gut" }, { value: "gehoert", label: "Schon mal gehört" }, { value: "unbekannt", label: "Noch nicht bekannt" } ],
-      description: "(Damit Pflichten aus dem EU AI Act angemessen berücksichtigt werden.)" },
+      description: "(Einschätzung, wie vertraut Sie mit dem kommenden EU-Gesetz zur Regulierung von KI sind.)" },
     { key: "ki_hemmnisse", label: "Hemmnisse beim KI-Einsatz", type: "checkbox",
       options: [
         { value: "rechtsunsicherheit", label: "Rechtsunsicherheit" }, { value: "datenschutz", label: "Datenschutz" }, { value: "knowhow", label: "Fehlendes Know-how" },
@@ -480,8 +487,9 @@ function _collectLabelFor(fieldKey, value){
     { title: "Ziele & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategie & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
     { title: "Ressourcen & Präferenzen", intro: BLOCK_INTRO[4], keys: ["zeitbudget", "vorhandene_tools", "regulierte_branche", "trainings_interessen", "vision_prioritaet"] },
-    { title: "Rechtliches & Förderung", intro: BLOCK_INTRO[5], keys: ["datenschutzbeauftragter", "technische_massnahmen", "folgenabschaetzung", "meldewege", "loeschregeln", "ai_act_kenntnis", "ki_hemmnisse", "bisherige_foerdermittel", "interesse_foerderung", "erfahrung_beratung", "investitionsbudget", "marktposition", "benchmark_wettbewerb", "innovationsprozess", "risikofreude"] },
-    { title: "Datenschutz & Absenden", intro: BLOCK_INTRO[6], keys: ["datenschutz"] }
+    { title: "Rechtliches & Compliance", intro: BLOCK_INTRO[5], keys: ["datenschutzbeauftragter", "technische_massnahmen", "folgenabschaetzung", "meldewege", "loeschregeln", "ai_act_kenntnis", "ki_hemmnisse"] },
+    { title: "Förderung & Investition", intro: BLOCK_INTRO[6], keys: ["bisherige_foerdermittel", "interesse_foerderung", "erfahrung_beratung", "investitionsbudget", "marktposition", "benchmark_wettbewerb", "innovationsprozess", "risikofreude"] },
+    { title: "Datenschutz & Absenden", intro: BLOCK_INTRO[7], keys: ["datenschutz"] }
   ];
 
   // --------------------------- Render ---------------------------
@@ -502,6 +510,10 @@ function _collectLabelFor(fieldKey, value){
 
       html += "<div class='form-group' data-key='" + k + "'><label for='" + f.key + "'>" + f.label + "</label>";
       if (f.description) html += "<div class='guidance'>" + f.description + "</div>";
+      // Add guidance for required checkbox groups
+      if (f.type === "checkbox" && (f.key === "zielgruppen" || f.key === "ki_ziele" || f.key === "anwendungsfaelle")) {
+        html += "<div class='guidance important'>Bitte mindestens eine Option auswählen.</div>";
+      }
       html += renderInput(f) + "</div>";
     }
 
