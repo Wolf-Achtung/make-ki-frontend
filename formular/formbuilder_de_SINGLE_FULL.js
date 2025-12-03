@@ -203,7 +203,7 @@ function _collectLabelFor(fieldKey, value){
       + ".invalid{border-color:#ef4444!important;background:#fef2f2!important}"
       + ".invalid-group{box-shadow:0 0 0 3px rgba(239,68,68,.2);border-radius:12px}"
       + ".form-nav{position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-top:24px;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.05)}"
-      + ".btn{border:0;border-radius:12px;padding:12px 22px;font-size:16px;font-weight:600;cursor:pointer;transition:all .25s.ease}"
+      + ".btn{border:0;border-radius:12px;padding:12px 22px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.25s ease}"
       + ".btn-primary{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff}"
       + ".btn-secondary{background:#fff;color:#1e293b;border:2px solid #cbd5e1}"
       + ".btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,.3)}"
