@@ -18,9 +18,13 @@
     .lang-link:hover { text-decoration:underline; }
     .lang-active { font-weight:700; text-decoration:underline; }
     .lang-separator { color:#64748b; }
+    /* Header & Progress */
+    .head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .headline { font-size:1.8rem; font-weight:700; color:#0d2b4a; margin:0; }
+    .progress { font-size:0.95rem; color:#35597a; background:#e7f0fb; padding:6px 12px; border-radius:999px; }
   </style>
   <script src="../config.js"></script>
-  <script src="../js/api.js" defer></script>
+  <script src="../js/auth.js"></script>
 </head>
 <body>
 <main>
@@ -29,10 +33,31 @@
     <span class="lang-separator">|</span>
     <a href="index_en.html?lang=en" class="lang-link lang-active">EN</a>
   </div>
-  <h1>Questionnaire</h1>
-  <p class="muted">Processing happens in the background; the result will appear automatically.</p>
+  <div class="head">
+    <h1 class="headline">Questionnaire</h1>
+    <span class="progress" id="fb-progress" aria-live="polite"></span>
+  </div>
   <div id="formbuilder"></div>
 </main>
+
+<script>
+  // Auth-Guard: check for auth cookie (quick check)
+  (function(){
+    try {
+      if (window.AUTH && !window.AUTH.hasAuthCookie()) {
+        location.href = '/login.html';
+      }
+    } catch(_) {}
+  })();
+
+  // Progress display from formbuilder (formbuilder_en_SINGLE_FULL.js dispatches fb:progress)
+  document.addEventListener('fb:progress', function(e){
+    var el = document.getElementById('fb-progress');
+    if (!el || !e || !e.detail) return;
+    el.textContent = 'Step ' + e.detail.step + ' / ' + e.detail.total;
+  });
+</script>
+
 <script src="formbuilder_en_SINGLE_FULL.js"></script>
 
 <!-- Language redirect: ?lang=de → DE page -->
