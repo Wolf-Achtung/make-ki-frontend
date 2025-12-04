@@ -10,61 +10,188 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:#f7f9fb; color:#0d2b4a; line-height:1.6; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:2rem 1.5rem; }
 
-    .login-container { max-width:480px; width:100%; margin:0 auto; padding-top:1rem; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: #f7f9fb;
+      color: #0d2b4a;
+      line-height: 1.6;
+      padding: 3rem 2rem;
+    }
 
-    .logo-header { text-align:center; margin-bottom:2rem; }
-    .logo-header img { height:56px; width:auto; }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      margin: 0 auto;
+    }
 
-    .login-card { background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(13,43,74,0.08); border:1px solid #e8eef4; padding:2.5rem 2rem; }
+    .content-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(13,43,74,0.08);
+      border: 1px solid #e8eef4;
+      padding: 2.5rem 2.5rem 2rem;
+    }
 
-    h1{ font-family:'Share Tech Mono', monospace; font-size:1.85rem; color:#1e3a5f; font-weight:400; margin:0 0 .6rem 0; text-align:center; }
-    .subtitle{ color:#2d4a63; margin-bottom:1.5rem; font-size:1rem; text-align:center; }
+    h1 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 2.2rem;
+      color: #1e3a5f;
+      font-weight: 400;
+      margin: 0 0 0.75rem 0;
+      line-height: 1.3;
+    }
 
-    label{ display:block; font-weight:600; color:#1e3a5f; margin:1.25rem 0 .5rem; }
-    input[type="email"], input[type="text"]{ width:100%; font-size:1rem; padding:.9rem 1rem; border-radius:8px; border:2px solid #d4e3f0; background:#f7f9fb; outline:none; transition:.2s; }
-    input:focus{ border-color:#1e3a5f; background:#fff; }
-    .button{ background:#0d4a73; color:#fff; border:none; padding:.9rem 2.2rem; font-size:1rem; font-weight:500; border-radius:50px; cursor:pointer; transition:.2s; box-shadow:0 2px 8px rgba(13,74,115,.25); margin-top:1.25rem; width:100%; }
-    .button:hover{ background:#0a3d5f; transform:translateY(-2px); box-shadow:0 4px 12px rgba(13,74,115,.35); }
-    .button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+    .lead {
+      font-size: 1.05rem;
+      color: #2d4a63;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
 
-    #code-area{ margin-top:1rem; }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin: 1.25rem 0 0.5rem;
+    }
+
+    input[type="email"], input[type="text"] {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      border: 2px solid #d4e3f0;
+      background: #f7f9fb;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #1e3a5f;
+      background: #fff;
+    }
+
+    .button {
+      background: #0d4a73;
+      color: #fff;
+      border: none;
+      padding: 0.9rem 2.2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(13,74,115,0.25);
+      margin-top: 1.5rem;
+      display: inline-block;
+      text-decoration: none;
+    }
+
+    .button:hover {
+      background: #0a3d5f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(13,74,115,0.35);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #code-area { margin-top: 1rem; }
+
+    /* Hilfe-Box */
+    .help {
+      margin-top: 2rem;
+      background: #f7f9fb;
+      border: 1px solid #d4e3f0;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .help h2 {
+      font-size: 1rem;
+      margin-bottom: 0.65rem;
+      color: #1e3a5f;
+      font-weight: 600;
+    }
+
+    .help ul { margin-left: 1.2rem; }
+
+    .help li {
+      margin: 0.5rem 0;
+      font-size: 0.95rem;
+      color: #2d4a63;
+    }
+
+    .help code {
+      background: #eef5ff;
+      padding: 0.15rem 0.4rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Logo Footer */
+    .logo-footer {
+      text-align: center;
+      margin-top: 2.5rem;
+    }
+
+    .logo-footer img {
+      width: 160px;
+      height: auto;
+      opacity: 0.9;
+    }
 
     /* Toasts */
-    .toast-stack{ position:fixed; right:20px; bottom:24px; display:flex; flex-direction:column; gap:10px; z-index:9999; }
-    .toast{ min-width:260px; max-width:520px; padding:.85rem 1rem; border-radius:10px; color:#0b1f33; box-shadow:0 10px 24px rgba(0,0,0,.12); border:1px solid rgba(0,0,0,.06); background:#f0f7ff; display:flex; gap:.75rem; align-items:flex-start; }
-    .toast .title{ font-weight:700; margin-bottom:.15rem; }
-    .toast.success{ background:#ecfdf5; border-color:#d1fae5; color:#064e3b; }
-    .toast.warning{ background:#fffbeb; border-color:#fde68a; color:#92400e; }
-    .toast.error{ background:#fef2f2; border-color:#fecaca; color:#7f1d1d; }
-    .toast .close{ margin-left:auto; cursor:pointer; font-weight:700; opacity:.6; }
-    .toast .close:hover{ opacity:1; }
+    .toast-stack {
+      position: fixed;
+      right: 20px;
+      bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+    }
 
-    /* Hilfe‑Box */
-    .help{ margin-top:2rem; background:#f7f9fb; border:1px solid #d4e3f0; border-radius:10px; padding:1.25rem 1.5rem; }
-    .help h2{ font-size:1rem; margin-bottom:.65rem; color:#1e3a5f; font-weight:600; }
-    .help ul{ margin-left:1.2rem; }
-    .help li{ margin:.5rem 0; font-size:.95rem; color:#2d4a63; }
-    .help code{ background:#eef5ff; padding:.15rem .4rem; border-radius:6px; font-size:.9rem; }
+    .toast {
+      min-width: 260px;
+      max-width: 520px;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      color: #0b1f33;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+      border: 1px solid rgba(0,0,0,0.06);
+      background: #f0f7ff;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
 
-    @media (max-width:640px){
-      body { padding:1.5rem 1rem; }
-      .login-card { padding:2rem 1.5rem; }
-      h1{ font-size:1.5rem; }
-      .toast-stack{ right:12px; left:12px; bottom:12px; }
+    .toast .title { font-weight: 700; margin-bottom: 0.15rem; }
+    .toast.success { background: #ecfdf5; border-color: #d1fae5; color: #064e3b; }
+    .toast.warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    .toast.error { background: #fef2f2; border-color: #fecaca; color: #7f1d1d; }
+    .toast .close { margin-left: auto; cursor: pointer; font-weight: 700; opacity: 0.6; }
+    .toast .close:hover { opacity: 1; }
+
+    @media (max-width: 640px) {
+      body { padding: 1.5rem 1rem; }
+      .content-card { padding: 2rem 1.5rem 1.5rem; }
+      h1 { font-size: 1.75rem; }
+      .button { width: 100%; text-align: center; }
+      .toast-stack { right: 12px; left: 12px; bottom: 12px; }
+      .logo-footer img { width: 140px; }
     }
   </style>
 </head>
 <body>
-<div class="login-container">
-  <div class="logo-header">
-    <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.style.display='none'">
-  </div>
-
-  <div class="login-card">
+<div class="container">
+  <div class="content-card">
     <h1>Login</h1>
-    <p class="subtitle">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
+    <p class="lead">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
 
     <form id="login-form" novalidate>
       <label for="email">E‑Mail</label>
@@ -79,8 +206,8 @@
       </div>
 
       <!-- Barrierefreie Fallback-Nachrichten -->
-      <p id="msg" class="subtitle" role="status" aria-live="polite"></p>
-      <p id="err" class="subtitle" role="alert" style="color:#b91c1c"></p>
+      <p id="msg" class="lead" role="status" aria-live="polite" style="margin-top:1rem;margin-bottom:0"></p>
+      <p id="err" class="lead" role="alert" style="color:#b91c1c;margin-top:0.5rem;margin-bottom:0"></p>
     </form>
 
     <!-- Hilfe bei Problemen -->
@@ -93,6 +220,10 @@
         <li>Datenschutz-Hinweis: Ihr Login‑Code ist nur kurz gültig und wird nach Nutzung ungültig.</li>
       </ul>
     </div>
+  </div>
+
+  <div class="logo-footer">
+    <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.style.display='none'">
   </div>
 </div>
 
