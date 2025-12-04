@@ -8,9 +8,9 @@
   <link rel="preload" href="config.js" as="script">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-    
+
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       background: #ffffff;
@@ -18,7 +18,7 @@
       line-height: 1.6;
       padding: 3rem 2rem;
     }
-    
+
     .container {
       max-width: 1100px;
       width: 100%;
@@ -26,28 +26,31 @@
       display: flex;
       flex-direction: column;
     }
-    
+
     .content-wrapper {
       display: flex;
       gap: 3rem;
       align-items: flex-start;
       padding-top: 2rem;
     }
-    
+
     .left-column {
-      flex: 0 0 380px;
+      flex: 0 0 260px;
+      padding-top: 0.5rem;
     }
-    
+
     .right-column {
       flex: 1;
     }
-    
+
     .left-column img {
       width: 100%;
+      max-width: 220px;
       height: auto;
-      border-radius: 12px;
+      border-radius: 10px;
+      opacity: 0.85;
     }
-    
+
     h1 {
       font-family: 'Share Tech Mono', monospace;
       font-size: 2.5rem;
@@ -57,35 +60,35 @@
       margin-bottom: 1.5rem;
       line-height: 1.3;
     }
-    
+
     .lead {
       font-size: 1.05rem;
       color: #2d4a63;
       margin-bottom: 1.5rem;
       line-height: 1.6;
     }
-    
+
     .lead strong {
       color: #1e3a5f;
       font-weight: 600;
     }
-    
+
     .features-list {
       list-style: none;
       margin: 1.5rem 0;
     }
-    
+
     .features-list li {
       padding: 0.4rem 0;
       color: #2d4a63;
       font-size: 1rem;
     }
-    
+
     .features-list li strong {
       color: #1e3a5f;
       font-weight: 600;
     }
-    
+
     .badges-bottom {
       display: flex;
       gap: 2.5rem;
@@ -94,34 +97,34 @@
       margin: 3rem 0 2rem;
       flex-wrap: wrap;
     }
-    
+
     .badges-bottom img {
       height: 65px;
       opacity: 0.9;
       transition: opacity 0.2s;
     }
-    
+
     .badges-bottom img:hover {
       opacity: 1;
     }
-    
+
     .cta-section {
       text-align: left;
       margin: 2rem 0;
     }
-    
+
     .cta-section h2 {
       font-size: 1.6rem;
       color: #08385d;
       margin-bottom: 0.5rem;
     }
-    
+
     .cta-section p {
       color: #3b566d;
       font-size: 1rem;
       margin-bottom: 1.5rem;
     }
-    
+
     .button {
       background: #0d4a73;
       color: #fff;
@@ -136,34 +139,34 @@
       transition: all 0.2s ease;
       box-shadow: 0 2px 8px rgba(13, 74, 115, 0.25);
     }
-    
+
     .button:hover {
       background: #0a3d5f;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(13, 74, 115, 0.35);
     }
-    
+
     .button-group {
       display: flex;
       gap: 1rem;
       justify-content: flex-start;
       flex-wrap: wrap;
     }
-    
+
     .button.secondary {
       background: #fff;
       color: #08385d;
       border: 2px solid #08385d;
     }
-    
+
     .button.secondary:hover {
       background: #f7f9fb;
     }
-    
+
     .testimonials-section {
       margin: 2rem 0 1rem;
     }
-    
+
     .testimonials-section h2 {
       font-size: 1.6rem;
       color: #1e3a5f;
@@ -171,14 +174,14 @@
       text-align: left;
       margin-bottom: 1.5rem;
     }
-    
+
     .testimonial-slider {
       position: relative;
       height: 70px;
       overflow: hidden;
       text-align: left;
     }
-    
+
     .testimonial {
       position: absolute;
       top: 50%;
@@ -191,32 +194,40 @@
       font-size: 1.05rem;
       font-style: italic;
     }
-    
+
     .testimonial.show {
       opacity: 1;
     }
-    
+
     @media (max-width: 968px) {
       .content-wrapper {
         flex-direction: column;
         gap: 2rem;
       }
-      
+
       .left-column {
         flex: 0 0 auto;
-        max-width: 380px;
+        max-width: 200px;
       }
-      
+
+      .left-column img {
+        max-width: 180px;
+      }
+
       h1 {
         font-size: 2rem;
       }
     }
-    
+
     @media (max-width: 640px) {
+      .left-column {
+        display: none;
+      }
+
       h1 {
         font-size: 1.75rem;
       }
-      
+
       .button {
         padding: 0.9rem 2rem;
         font-size: 1rem;
@@ -227,32 +238,32 @@
 <body>
 
 <div class="container">
-  
+
   <div class="content-wrapper">
     <div class="left-column">
       <img src="badges/ki-building.webp" alt="KI-Sicherheit Illustration" onerror="this.style.display='none'">
     </div>
-    
+
     <div class="right-column">
       <h1>Zertifiziert. Dokumentiert. KI‑konform.</h1>
-      
+
       <p class="lead">
         Der <strong>KI‑Check‑Report</strong> liefert Ihrem Unternehmen eine strukturierte Einschätzung Ihres aktuellen und möglichen künftigen KI‑Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.
       </p>
-      
+
       <ul class="features-list">
         <li><strong>✓ DSGVO- & EU AI Act‑konform</strong></li>
         <li><strong>✓ mit detaillierter Risikoanalyse</strong></li>
         <li><strong>✓ mit konkreten Empfehlungen & Tools</strong></li>
         <li><strong>✓ TÜV‑zertifizierte KI-Beratung</strong></li>
       </ul>
-      
+
       <section class="cta-section">
         <div class="button-group">
           <a id="ctaLogin" href="login.html" class="button">Jetzt KI-Check starten</a>
         </div>
       </section>
-      
+
       <section class="testimonials-section">
         <h2>Ihre konkreten Vorteile:</h2>
         <div class="testimonial-slider">
@@ -265,7 +276,7 @@
           <div class="testimonial">„Strukturiert, verständlich, umsetzbar."</div>
         </div>
       </section>
-      
+
       <section class="badges-bottom">
         <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
         <img src="badges/dsgvo.svg" alt="DSGVO konform">
@@ -274,7 +285,7 @@
       </section>
     </div>
   </div>
-  
+
 </div>
 
 <script src="config.js"></script>

@@ -10,17 +10,22 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:#fff; color:#0d2b4a; line-height:1.6; padding:3rem 2rem; }
-    .login-container { max-width:1100px; margin:0 auto; display:flex; gap:3rem; align-items:flex-start; padding-top:2rem; }
-    .login-image { flex:0 0 380px; } .login-image img{ width:100%; height:auto; border-radius:12px; }
-    .login-form-wrapper{ flex:1; max-width:520px; }
-    h1{ font-family:'Share Tech Mono', monospace; font-size:2.5rem; color:#1e3a5f; font-weight:400; margin:0 0 .8rem 0; }
-    .subtitle{ color:#2d4a63; margin-bottom:1.2rem; font-size:1.05rem; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:#f7f9fb; color:#0d2b4a; line-height:1.6; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:2rem 1.5rem; }
 
-    label{ display:block; font-weight:600; color:#1e3a5f; margin:.9rem 0 .5rem; }
+    .login-container { max-width:480px; width:100%; margin:0 auto; padding-top:1rem; }
+
+    .logo-header { text-align:center; margin-bottom:2rem; }
+    .logo-header img { height:56px; width:auto; }
+
+    .login-card { background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(13,43,74,0.08); border:1px solid #e8eef4; padding:2.5rem 2rem; }
+
+    h1{ font-family:'Share Tech Mono', monospace; font-size:1.85rem; color:#1e3a5f; font-weight:400; margin:0 0 .6rem 0; text-align:center; }
+    .subtitle{ color:#2d4a63; margin-bottom:1.5rem; font-size:1rem; text-align:center; }
+
+    label{ display:block; font-weight:600; color:#1e3a5f; margin:1.25rem 0 .5rem; }
     input[type="email"], input[type="text"]{ width:100%; font-size:1rem; padding:.9rem 1rem; border-radius:8px; border:2px solid #d4e3f0; background:#f7f9fb; outline:none; transition:.2s; }
     input:focus{ border-color:#1e3a5f; background:#fff; }
-    .button{ background:#0d4a73; color:#fff; border:none; padding:.9rem 2.2rem; font-size:1rem; font-weight:500; border-radius:50px; cursor:pointer; transition:.2s; box-shadow:0 2px 8px rgba(13,74,115,.25); margin-top:1rem; }
+    .button{ background:#0d4a73; color:#fff; border:none; padding:.9rem 2.2rem; font-size:1rem; font-weight:500; border-radius:50px; cursor:pointer; transition:.2s; box-shadow:0 2px 8px rgba(13,74,115,.25); margin-top:1.25rem; width:100%; }
     .button:hover{ background:#0a3d5f; transform:translateY(-2px); box-shadow:0 4px 12px rgba(13,74,115,.35); }
     .button:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
@@ -37,31 +42,27 @@
     .toast .close:hover{ opacity:1; }
 
     /* Hilfe‑Box */
-    .help{ margin-top:2rem; background:#f7f9fb; border:2px solid #d4e3f0; border-radius:10px; padding:1rem 1.2rem; }
-    .help h2{ font-size:1.1rem; margin-bottom:.5rem; color:#1e3a5f; }
+    .help{ margin-top:2rem; background:#f7f9fb; border:1px solid #d4e3f0; border-radius:10px; padding:1.25rem 1.5rem; }
+    .help h2{ font-size:1rem; margin-bottom:.65rem; color:#1e3a5f; font-weight:600; }
     .help ul{ margin-left:1.2rem; }
-    .help li{ margin:.4rem 0; }
-    .help code{ background:#eef5ff; padding:.1rem .35rem; border-radius:6px; }
+    .help li{ margin:.5rem 0; font-size:.95rem; color:#2d4a63; }
+    .help code{ background:#eef5ff; padding:.15rem .4rem; border-radius:6px; font-size:.9rem; }
 
-    @media (max-width:968px){
-      .login-container{ flex-direction:column; gap:2rem; }
-      .login-image{ flex:0 0 auto; max-width:380px; }
-      h1{ font-size:2rem; }
-    }
     @media (max-width:640px){
-      h1{ font-size:1.75rem; }
-      .button{ width:100%; }
+      body { padding:1.5rem 1rem; }
+      .login-card { padding:2rem 1.5rem; }
+      h1{ font-size:1.5rem; }
       .toast-stack{ right:12px; left:12px; bottom:12px; }
     }
   </style>
 </head>
 <body>
 <div class="login-container">
-  <div class="login-image">
-    <img src="badges/ki-robot.webp" alt="KI‑Readiness Illustration" onerror="this.style.display='none'">
+  <div class="logo-header">
+    <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.style.display='none'">
   </div>
 
-  <div class="login-form-wrapper">
+  <div class="login-card">
     <h1>Login</h1>
     <p class="subtitle">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
 
