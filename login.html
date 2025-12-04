@@ -31,7 +31,7 @@
       box-shadow: 0 2px 12px rgba(13,43,74,0.08);
       border: 1px solid #e8eef4;
       padding: 2.5rem 2.5rem 2rem;
-      min-height: 420px;
+      min-height: 520px;
     }
 
     h1 {
@@ -134,29 +134,30 @@
       font-size: 0.9rem;
     }
 
-    /* Unified Badge Footer */
-    .badge-footer {
+    /* Badge Row inside Card */
+    .badge-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 1.25rem;
       margin-top: 2.5rem;
       padding-top: 1.5rem;
+      border-top: 1px solid #e8eef4;
     }
 
-    .badge-footer img {
-      height: 50px;
+    .badge-row img {
+      height: 42px;
       opacity: 0.85;
       transition: opacity 0.2s;
     }
 
-    .badge-footer img:hover {
+    .badge-row img:hover {
       opacity: 1;
     }
 
-    .badge-footer .main-logo {
-      height: 44px;
+    .badge-row .main-logo {
+      height: 38px;
     }
 
     /* Toasts */
@@ -193,13 +194,13 @@
 
     @media (max-width: 640px) {
       body { padding: 1.5rem 1rem; }
-      .content-card { padding: 2rem 1.5rem 1.5rem; min-height: 380px; }
+      .content-card { padding: 2rem 1.5rem 1.5rem; min-height: 480px; }
       h1 { font-size: 1.75rem; }
       .button { width: 100%; text-align: center; }
       .toast-stack { right: 12px; left: 12px; bottom: 12px; }
-      .badge-footer { gap: 1rem; }
-      .badge-footer img { height: 40px; }
-      .badge-footer .main-logo { height: 36px; }
+      .badge-row { gap: 0.85rem; }
+      .badge-row img { height: 34px; }
+      .badge-row .main-logo { height: 30px; }
     }
   </style>
 </head>
@@ -236,14 +237,14 @@
         <li>Datenschutz-Hinweis: Ihr Login‑Code ist nur kurz gültig und wird nach Nutzung ungültig.</li>
       </ul>
     </div>
-  </div>
 
-  <div class="badge-footer">
-    <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
-    <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
-    <img src="badges/dsgvo.svg" alt="DSGVO konform">
-    <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-    <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
+    <div class="badge-row">
+      <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
+      <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
+      <img src="badges/dsgvo.svg" alt="DSGVO konform">
+      <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+      <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
+    </div>
   </div>
 </div>
 
