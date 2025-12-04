@@ -31,6 +31,7 @@
       box-shadow: 0 2px 12px rgba(13,43,74,0.08);
       border: 1px solid #e8eef4;
       padding: 2.5rem 2.5rem 2rem;
+      min-height: 420px;
     }
 
     h1 {
@@ -131,45 +132,39 @@
       opacity: 1;
     }
 
-    .badges-section {
+    /* Unified Badge Footer */
+    .badge-footer {
       display: flex;
-      gap: 1.5rem;
-      align-items: center;
-      justify-content: flex-start;
-      margin-top: 2.5rem;
       flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
     }
 
-    .badges-section img {
-      height: 55px;
-      opacity: 0.9;
+    .badge-footer img {
+      height: 50px;
+      opacity: 0.85;
       transition: opacity 0.2s;
     }
 
-    .badges-section img:hover {
+    .badge-footer img:hover {
       opacity: 1;
     }
 
-    /* Logo Footer */
-    .logo-footer {
-      text-align: center;
-      margin-top: 2.5rem;
-    }
-
-    .logo-footer img {
-      width: 160px;
-      height: auto;
-      opacity: 0.9;
+    .badge-footer .main-logo {
+      height: 44px;
     }
 
     @media (max-width: 640px) {
       body { padding: 1.5rem 1rem; }
-      .content-card { padding: 2rem 1.5rem 1.5rem; }
+      .content-card { padding: 2rem 1.5rem 1.5rem; min-height: 380px; }
       h1 { font-size: 1.75rem; }
       .button { width: 100%; text-align: center; }
-      .badges-section { gap: 1rem; }
-      .badges-section img { height: 45px; }
-      .logo-footer img { width: 140px; }
+      .badge-footer { gap: 1rem; }
+      .badge-footer img { height: 40px; }
+      .badge-footer .main-logo { height: 36px; }
     }
   </style>
 </head>
@@ -206,17 +201,14 @@
         <div class="testimonial">„Strukturiert, verständlich, umsetzbar."</div>
       </div>
     </section>
-
-    <section class="badges-section">
-      <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
-      <img src="badges/dsgvo.svg" alt="DSGVO konform">
-      <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-      <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
-    </section>
   </div>
 
-  <div class="logo-footer">
-    <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.style.display='none'">
+  <div class="badge-footer">
+    <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
+    <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
+    <img src="badges/dsgvo.svg" alt="DSGVO konform">
+    <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+    <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
   </div>
 </div>
 
