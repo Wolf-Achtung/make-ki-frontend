@@ -9,155 +9,265 @@
   <link rel="icon" href="/favicon.ico">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --color-bg-start: #f0f5fa;
+      --color-bg-end: #e8f0f8;
+      --color-card: #ffffff;
+      --color-primary: #0f4c75;
+      --color-primary-dark: #0a3a5c;
+      --color-primary-glow: rgba(15, 76, 117, 0.35);
+      --color-text: #1b3a4b;
+      --color-text-muted: #4a6572;
+      --color-border: #dbe5ed;
+      --color-badge-bg: #f8fafc;
+      --color-input-bg: #f8fafc;
+      --color-info-bg: #eff6ff;
+      --color-info-border: #dbeafe;
+      --color-info-text: #1e40af;
+      --radius-card: 20px;
+      --radius-button: 12px;
+      --radius-input: 10px;
+      --radius-badge: 10px;
+      --shadow-card: 0 8px 32px rgba(15, 60, 90, 0.08), 0 2px 8px rgba(15, 60, 90, 0.04);
+      --shadow-button: 0 4px 14px var(--color-primary-glow);
+      --shadow-button-hover: 0 6px 20px var(--color-primary-glow);
+    }
 
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: #f7f9fb;
-      color: #0d2b4a;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
+      min-height: 100vh;
+      color: var(--color-text);
       line-height: 1.6;
-      padding: 3rem 2rem;
+      padding: 3rem 1.5rem;
     }
 
     .container {
-      max-width: 600px;
+      max-width: 580px;
       width: 100%;
       margin: 0 auto;
     }
 
+    /* Eyebrow Label */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--color-badge-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 50px;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.5rem;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
     .content-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(13,43,74,0.08);
-      border: 1px solid #e8eef4;
+      background: var(--color-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
       padding: 2.5rem 2.5rem 2rem;
-      min-height: 520px;
     }
 
     h1 {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 2.2rem;
-      color: #1e3a5f;
-      font-weight: 400;
-      margin: 0 0 0.75rem 0;
-      line-height: 1.3;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0 0 0.5rem 0;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
     }
 
     .lead {
-      font-size: 1.05rem;
-      color: #2d4a63;
+      font-size: 1rem;
+      color: var(--color-text-muted);
       margin-bottom: 1.5rem;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     label {
       display: block;
       font-weight: 600;
-      color: #1e3a5f;
+      font-size: 0.9rem;
+      color: var(--color-text);
       margin: 1.25rem 0 0.5rem;
     }
 
     input[type="email"], input[type="text"] {
       width: 100%;
+      font-family: inherit;
       font-size: 1rem;
       padding: 0.9rem 1rem;
-      border-radius: 8px;
-      border: 2px solid #d4e3f0;
-      background: #f7f9fb;
+      border-radius: var(--radius-input);
+      border: 1.5px solid var(--color-border);
+      background: var(--color-input-bg);
+      color: var(--color-text);
       outline: none;
-      transition: 0.2s;
+      transition: all 0.2s ease;
     }
 
-    input:focus {
-      border-color: #1e3a5f;
+    input[type="email"]:focus, input[type="text"]:focus {
+      border-color: var(--color-primary);
       background: #fff;
+      box-shadow: 0 0 0 3px rgba(15, 76, 117, 0.1);
+    }
+
+    input::placeholder {
+      color: #94a3b8;
     }
 
     .button {
-      background: #0d4a73;
+      background: var(--color-primary);
       color: #fff;
       border: none;
-      padding: 0.9rem 2.2rem;
+      padding: 1rem 2rem;
+      font-family: inherit;
       font-size: 1rem;
-      font-weight: 500;
-      border-radius: 50px;
+      font-weight: 600;
+      border-radius: var(--radius-button);
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(13,74,115,0.25);
-      margin-top: 1.5rem;
-      display: inline-block;
       text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-button);
+      margin-top: 1.5rem;
     }
 
     .button:hover {
-      background: #0a3d5f;
+      background: var(--color-primary-dark);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(13,74,115,0.35);
+      box-shadow: var(--shadow-button-hover);
     }
 
     .button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
     }
 
-    #code-area { margin-top: 1rem; }
+    #code-area { margin-top: 0.5rem; }
 
-    /* Hilfe-Box */
+    /* Info/Help Box */
     .help {
       margin-top: 2rem;
-      background: #f7f9fb;
-      border: 1px solid #d4e3f0;
-      border-radius: 10px;
+      background: var(--color-info-bg);
+      border: 1px solid var(--color-info-border);
+      border-radius: var(--radius-input);
       padding: 1.25rem 1.5rem;
+      position: relative;
+    }
+
+    .help::before {
+      content: 'ℹ';
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      font-size: 1rem;
+      opacity: 0.7;
     }
 
     .help h2 {
-      font-size: 1rem;
+      font-size: 0.9rem;
       margin-bottom: 0.65rem;
-      color: #1e3a5f;
+      margin-left: 1.5rem;
+      color: var(--color-info-text);
       font-weight: 600;
     }
 
-    .help ul { margin-left: 1.2rem; }
+    .help ul {
+      margin-left: 2.75rem;
+      padding-left: 0;
+    }
 
     .help li {
       margin: 0.5rem 0;
-      font-size: 0.95rem;
-      color: #2d4a63;
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    .help li strong {
+      color: var(--color-text);
+      font-weight: 600;
     }
 
     .help code {
-      background: #eef5ff;
+      background: #e0e7ff;
+      color: var(--color-info-text);
       padding: 0.15rem 0.4rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
     }
 
-    /* Badge Row inside Card */
+    .help a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .help a:hover {
+      text-decoration: underline;
+    }
+
+    /* Badge Row - Pill Style */
     .badge-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 1.25rem;
-      margin-top: 2.5rem;
+      gap: 0.75rem;
+      margin-top: 2rem;
       padding-top: 1.5rem;
-      border-top: 1px solid #e8eef4;
+      border-top: 1px solid var(--color-border);
     }
 
-    .badge-row img {
-      height: 42px;
-      opacity: 0.85;
-      transition: opacity 0.2s;
+    .badge-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-badge-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-badge);
+      padding: 0.5rem 0.85rem;
+      transition: all 0.2s;
     }
 
-    .badge-row img:hover {
-      opacity: 1;
+    .badge-pill:hover {
+      border-color: #c5d5e4;
+      background: #fff;
     }
 
-    .badge-row .main-logo {
-      height: 38px;
+    .badge-pill img {
+      height: 28px;
+      width: auto;
+      opacity: 0.9;
+    }
+
+    .badge-pill.main-logo img {
+      height: 24px;
     }
 
     /* Toasts */
@@ -172,40 +282,46 @@
     }
 
     .toast {
-      min-width: 260px;
-      max-width: 520px;
-      padding: 0.85rem 1rem;
-      border-radius: 10px;
-      color: #0b1f33;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-      border: 1px solid rgba(0,0,0,0.06);
-      background: #f0f7ff;
+      min-width: 280px;
+      max-width: 420px;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-input);
+      color: var(--color-text);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border: 1px solid var(--color-border);
+      background: #fff;
       display: flex;
       gap: 0.75rem;
       align-items: flex-start;
     }
 
-    .toast .title { font-weight: 700; margin-bottom: 0.15rem; }
-    .toast.success { background: #ecfdf5; border-color: #d1fae5; color: #064e3b; }
-    .toast.warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
-    .toast.error { background: #fef2f2; border-color: #fecaca; color: #7f1d1d; }
-    .toast .close { margin-left: auto; cursor: pointer; font-weight: 700; opacity: 0.6; }
+    .toast .title { font-weight: 600; margin-bottom: 0.15rem; }
+    .toast.success { background: #ecfdf5; border-color: #a7f3d0; }
+    .toast.warning { background: #fffbeb; border-color: #fde68a; }
+    .toast.error { background: #fef2f2; border-color: #fecaca; }
+    .toast .close { margin-left: auto; cursor: pointer; font-weight: 700; opacity: 0.5; }
     .toast .close:hover { opacity: 1; }
 
     @media (max-width: 640px) {
       body { padding: 1.5rem 1rem; }
-      .content-card { padding: 2rem 1.5rem 1.5rem; min-height: 480px; }
-      h1 { font-size: 1.75rem; }
-      .button { width: 100%; text-align: center; }
+      .content-card { padding: 2rem 1.5rem 1.5rem; border-radius: 16px; }
+      h1 { font-size: 1.65rem; }
+      .button { width: 100%; }
       .toast-stack { right: 12px; left: 12px; bottom: 12px; }
-      .badge-row { gap: 0.85rem; }
-      .badge-row img { height: 34px; }
-      .badge-row .main-logo { height: 30px; }
+      .badge-row { gap: 0.5rem; }
+      .badge-pill { padding: 0.4rem 0.65rem; }
+      .badge-pill img { height: 24px; }
+      .badge-pill.main-logo img { height: 20px; }
+      .help::before { display: none; }
+      .help h2 { margin-left: 0; }
+      .help ul { margin-left: 1.25rem; }
     }
   </style>
 </head>
 <body>
 <div class="container">
+  <div class="eyebrow">KI-Sicherheit.jetzt</div>
+
   <div class="content-card">
     <h1>Login</h1>
     <p class="lead">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
@@ -224,7 +340,7 @@
 
       <!-- Barrierefreie Fallback-Nachrichten -->
       <p id="msg" class="lead" role="status" aria-live="polite" style="margin-top:1rem;margin-bottom:0"></p>
-      <p id="err" class="lead" role="alert" style="color:#b91c1c;margin-top:0.5rem;margin-bottom:0"></p>
+      <p id="err" class="lead" role="alert" style="color:#dc2626;margin-top:0.5rem;margin-bottom:0"></p>
     </form>
 
     <!-- Hilfe bei Problemen -->
@@ -239,11 +355,21 @@
     </div>
 
     <div class="badge-row">
-      <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
-      <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
-      <img src="badges/dsgvo.svg" alt="DSGVO konform">
-      <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-      <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
+      <div class="badge-pill main-logo">
+        <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
+      </div>
+      <div class="badge-pill">
+        <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
+      </div>
+      <div class="badge-pill">
+        <img src="badges/dsgvo.svg" alt="DSGVO konform">
+      </div>
+      <div class="badge-pill">
+        <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+      </div>
+      <div class="badge-pill">
+        <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
+      </div>
     </div>
   </div>
 </div>
