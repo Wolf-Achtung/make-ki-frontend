@@ -7,13 +7,15 @@
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <title>Questionnaire – AI Status Report</title>
   <style>
-    /* App Header (E-Mail-Design) */
-    .app-header { width:100%; background:#0f4f85; color:#fff; }
-    .app-header-inner { max-width:960px; margin:0 auto; padding:14px 20px; font-size:24px; font-weight:700; text-align:center; }
+    /* Card-based layout (Email-Design) */
     :root { --bg:#f7f9fb; --fg:#0d2b4a; --muted:#6b7280; }
     * { box-sizing:border-box; }
-    body { font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif; background:var(--bg); color:var(--fg); margin:0; line-height:1.5; }
-    main { max-width:960px; margin:0 auto; padding:2rem; }
+    body { font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,sans-serif; background:var(--bg); color:var(--fg); margin:0; line-height:1.5; padding:2rem; }
+    .app-shell { max-width:960px; margin:0 auto; }
+    .auth-card { border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(13,43,74,0.08); border:1px solid #e0e7f0; background:#ffffff; }
+    .auth-card-header { background:#1a5f87; color:#ffffff; padding:20px; text-align:center; }
+    .auth-card-title { font-family:'Share Tech Mono', monospace; font-size:1.6rem; margin:0; font-weight:400; }
+    .auth-card-body { padding:30px 32px 26px; }
     .muted { color:var(--muted); }
     /* Language Switch */
     .lang-switch { display:flex; justify-content:flex-end; gap:8px; align-items:center; font-size:14px; margin-bottom:8px; }
@@ -30,22 +32,25 @@
   <script src="/js/auth.js"></script>
 </head>
 <body>
-<header class="app-header">
-  <div class="app-header-inner">KI-Sicherheit.jetzt</div>
-</header>
-
-<main>
-  <div class="lang-switch">
-    <a href="index.html?lang=de" class="lang-link">DE</a>
-    <span class="lang-separator">|</span>
-    <a href="index_en.html?lang=en" class="lang-link lang-active">EN</a>
-  </div>
-  <div class="head">
-    <h1 class="headline">Questionnaire</h1>
-    <span class="progress" id="fb-progress" aria-live="polite"></span>
-  </div>
-  <div id="formbuilder"></div>
-</main>
+<div class="app-shell">
+  <div class="auth-card">
+    <header class="auth-card-header">
+      <h1 class="auth-card-title">KI-Sicherheit.jetzt</h1>
+    </header>
+    <div class="auth-card-body">
+      <div class="lang-switch">
+        <a href="index.html?lang=de" class="lang-link">DE</a>
+        <span class="lang-separator">|</span>
+        <a href="index_en.html?lang=en" class="lang-link lang-active">EN</a>
+      </div>
+      <div class="head">
+        <h1 class="headline">Questionnaire</h1>
+        <span class="progress" id="fb-progress" aria-live="polite"></span>
+      </div>
+      <div id="formbuilder"></div>
+    </div><!-- /.auth-card-body -->
+  </div><!-- /.auth-card -->
+</div><!-- /.app-shell -->
 
 <script>
   // Auth-Guard: check for auth cookie (quick check)

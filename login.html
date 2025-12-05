@@ -11,42 +11,44 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-    /* App Header (E-Mail-Design) */
-    .app-header {
-      width: 100%;
-      background: #0f4f85;
-      color: #fff;
-    }
-    .app-header-inner {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      font-size: 24px;
-      font-weight: 700;
-      text-align: center;
-    }
-
+    /* Card-based layout (Email-Design) */
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       background: #f7f9fb;
       color: #0d2b4a;
       line-height: 1.6;
-      padding: 3rem 2rem;
+      padding: 2rem;
     }
 
-    .container {
+    .app-shell {
       max-width: 600px;
-      width: 100%;
       margin: 0 auto;
     }
 
-    .content-card {
-      background: #fff;
-      border-radius: 12px;
+    .auth-card {
+      border-radius: 10px;
+      overflow: hidden;
       box-shadow: 0 2px 12px rgba(13,43,74,0.08);
-      border: 1px solid #e8eef4;
+      border: 1px solid #e0e7f0;
+      background: #ffffff;
+    }
+
+    .auth-card-header {
+      background: #1a5f87;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .auth-card-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.6rem;
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .auth-card-body {
       padding: 2.5rem 2.5rem 2rem;
-      min-height: 520px;
     }
 
     h1 {
@@ -223,12 +225,12 @@
   </style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="app-header-inner">KI-Sicherheit.jetzt</div>
-  </header>
-
-  <div class="container">
-    <div class="content-card">
+<div class="app-shell">
+  <div class="auth-card">
+    <header class="auth-card-header">
+      <h1 class="auth-card-title">KI-Sicherheit.jetzt</h1>
+    </header>
+    <div class="auth-card-body">
       <h1>Login</h1>
       <p class="lead">Bitte E-Mail angeben. Sie erhalten einen 6-stelligen Code (Magic-Link).</p>
 
@@ -267,10 +269,11 @@
         <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
         <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025">
       </div>
-    </div>
-  </div>
+    </div><!-- /.auth-card-body -->
+  </div><!-- /.auth-card -->
+</div><!-- /.app-shell -->
 
-  <!-- Toast-Container -->
+<!-- Toast-Container -->
   <div id="toasts" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
 
   <script src="/js/config.js"></script>
