@@ -3,13 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — KI‑Readiness</title>
-  <!-- Passe hier den API‑Pfad an, falls nötig -->
+  <title>Login — KI-Readiness</title>
+  <!-- Passe hier den API-Pfad an, falls nötig -->
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <link rel="icon" href="/favicon.ico">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    /* App Header (E-Mail-Design) */
+    .app-header {
+      width: 100%;
+      background: #0f4f85;
+      color: #fff;
+    }
+    .app-header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+    }
 
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -57,7 +72,8 @@
       margin: 1.25rem 0 0.5rem;
     }
 
-    input[type="email"], input[type="text"] {
+    input[type="email"],
+    input[type="text"] {
       width: 100%;
       font-size: 1rem;
       padding: 0.9rem 1rem;
@@ -101,7 +117,9 @@
       transform: none;
     }
 
-    #code-area { margin-top: 1rem; }
+    #code-area {
+      margin-top: 1rem;
+    }
 
     /* Hilfe-Box */
     .help {
@@ -205,53 +223,57 @@
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="content-card">
-    <h1>Login</h1>
-    <p class="lead">Bitte E‑Mail angeben. Sie erhalten einen 6‑stelligen Code (Magic‑Link).</p>
+  <header class="app-header">
+    <div class="app-header-inner">KI-Sicherheit.jetzt</div>
+  </header>
 
-    <form id="login-form" novalidate>
-      <label for="email">E‑Mail</label>
-      <input type="email" id="email" name="email" placeholder="ihr.name@firma.de" autocomplete="email" required>
+  <div class="container">
+    <div class="content-card">
+      <h1>Login</h1>
+      <p class="lead">Bitte E-Mail angeben. Sie erhalten einen 6-stelligen Code (Magic-Link).</p>
 
-      <button type="button" class="button" id="btn-request">Code anfordern</button>
+      <form id="login-form" novalidate>
+        <label for="email">E-Mail</label>
+        <input type="email" id="email" name="email" placeholder="ihr.name@firma.de" autocomplete="email" required>
 
-      <div id="code-area" style="display:none">
-        <label for="code">Code</label>
-        <input type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
-        <button type="button" class="button" id="btn-login">Einloggen</button>
+        <button type="button" class="button" id="btn-request">Code anfordern</button>
+
+        <div id="code-area" style="display:none">
+          <label for="code">Code</label>
+          <input type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
+          <button type="button" class="button" id="btn-login">Einloggen</button>
+        </div>
+
+        <!-- Barrierefreie Fallback-Nachrichten -->
+        <p id="msg" class="lead" role="status" aria-live="polite" style="margin-top:1rem;margin-bottom:0"></p>
+        <p id="err" class="lead" role="alert" style="color:#b91c1c;margin-top:0.5rem;margin-bottom:0"></p>
+      </form>
+
+      <!-- Hilfe bei Problemen -->
+      <div class="help" aria-labelledby="help-title">
+        <h2 id="help-title">Hilfe bei Problemen</h2>
+        <ul>
+          <li>Kein Code erhalten? Prüfen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu <strong>2 Minuten</strong>.</li>
+          <li>Erneut senden: Klicken Sie einfach nochmal auf <em>Code anfordern</em>. Zu viele Versuche führen zu einer kurzen Sperre.</li>
+          <li>E-Mail nicht freigeschaltet? Dann sehen Sie die Meldung <code>E-Mail ist nicht freigeschaltet</code>. Kontakt: <a href="mailto:support@ki-sicherheit.jetzt">support@ki-sicherheit.jetzt</a>.</li>
+          <li>Datenschutz-Hinweis: Ihr Login-Code ist nur kurz gültig und wird nach Nutzung ungültig.</li>
+        </ul>
       </div>
 
-      <!-- Barrierefreie Fallback-Nachrichten -->
-      <p id="msg" class="lead" role="status" aria-live="polite" style="margin-top:1rem;margin-bottom:0"></p>
-      <p id="err" class="lead" role="alert" style="color:#b91c1c;margin-top:0.5rem;margin-bottom:0"></p>
-    </form>
-
-    <!-- Hilfe bei Problemen -->
-    <div class="help" aria-labelledby="help-title">
-      <h2 id="help-title">Hilfe bei Problemen</h2>
-      <ul>
-        <li>Kein Code erhalten? Prüfen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu <strong>2 Minuten</strong>.</li>
-        <li>Erneut senden: Klicken Sie einfach nochmal auf <em>Code anfordern</em>. Zu viele Versuche führen zu einer kurzen Sperre.</li>
-        <li>E‑Mail nicht freigeschaltet? Dann sehen Sie die Meldung <code>E‑Mail ist nicht freigeschaltet</code>. Kontakt: <a href="mailto:support@ki-sicherheit.jetzt">support@ki-sicherheit.jetzt</a>.</li>
-        <li>Datenschutz-Hinweis: Ihr Login‑Code ist nur kurz gültig und wird nach Nutzung ungültig.</li>
-      </ul>
-    </div>
-
-    <div class="badge-row">
-      <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
-      <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
-      <img src="badges/dsgvo.svg" alt="DSGVO konform">
-      <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-      <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
+      <div class="badge-row">
+        <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
+        <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
+        <img src="badges/dsgvo.svg" alt="DSGVO konform">
+        <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+        <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025">
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Toast-Container -->
-<div id="toasts" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+  <!-- Toast-Container -->
+  <div id="toasts" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
 
-<script src="/js/config.js"></script>
-<script src="/js/login.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/login.js"></script>
 </body>
 </html>

@@ -12,6 +12,9 @@
   <!-- (optional) Formular-spezifische Styles, falls vorhanden -->
   <link rel="stylesheet" href="/formular/formular.css">
   <style>
+    /* App Header (E-Mail-Design) */
+    .app-header { width:100%; background:#0f4f85; color:#fff; }
+    .app-header-inner { max-width:960px; margin:0 auto; padding:14px 20px; font-size:24px; font-weight:700; text-align:center; }
     /* Seitenlayout passend zu styles.css (hell, großzügig) */
     .wrap { max-width: 1100px; margin: 0 auto; padding: 5vh 2vw; }
     .card { background:#fff; border-radius:16px; padding:20px 20px; box-shadow:0 6px 30px #18324a16; border:1px solid #e6edf3; }
@@ -32,6 +35,10 @@
   <script src="/js/auth.js"></script>
 </head>
 <body>
+  <header class="app-header">
+    <div class="app-header-inner">KI-Sicherheit.jetzt</div>
+  </header>
+
   <main class="wrap">
     <div class="card">
       <div class="lang-switch">
