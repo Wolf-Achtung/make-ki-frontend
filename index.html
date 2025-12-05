@@ -13,10 +13,10 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* ══════════════════════════════════════════════════════════════
-       PREMIUM DESIGN SYSTEM – Colors & Variables
+       PREMIUM DESIGN SYSTEM – 1:1 Report-Style
     ══════════════════════════════════════════════════════════════ */
     :root {
-      /* Navy Palette */
+      /* Navy Palette (identisch mit Report) */
       --navy-900: #0a1628;
       --navy-800: #0e1e36;
       --navy-700: #132744;
@@ -28,7 +28,8 @@
       --navy-100: #c5ddf0;
       --navy-50: #e8f2fa;
 
-      /* Warmtone Accent */
+      /* Warmtone Accent (Report-Gold) */
+      --warm-600: #a68921;
       --warm-500: #c9a227;
       --warm-400: #d4b33d;
       --warm-300: #e0c65a;
@@ -44,10 +45,10 @@
       --border-light: #e2e8f0;
       --border-medium: #cbd5e1;
 
-      /* Shadows */
-      --shadow-sm: 0 1px 2px rgba(14,21,37,0.04);
-      --shadow-md: 0 4px 12px rgba(14,21,37,0.08);
-      --shadow-lg: 0 8px 24px rgba(14,21,37,0.12);
+      /* Shadows (Report-Style: rgba(0,0,0,0.07)) */
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.07);
 
       /* Transitions */
       --transition-fast: 0.15s ease;
@@ -70,7 +71,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       BASE STYLES
+       BASE STYLES (Report-identisch)
     ══════════════════════════════════════════════════════════════ */
     html { scroll-behavior: smooth; }
 
@@ -90,102 +91,116 @@
       }
     }
 
-    /* Dot Matrix Background (Report-Style) */
+    /* Dot Matrix Background (Report-Dichte: 24px) */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.06) 1px, transparent 0);
-      background-size: 20px 20px;
+      background-size: 24px 24px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Soft Gradient Blob (Warmtone) */
+    /* Warmtone Blobs (Report-Position & Blur) */
     body::after {
       content: '';
       position: fixed;
-      top: -20%;
-      right: -10%;
-      width: 50vw;
-      height: 50vw;
-      background: radial-gradient(circle, rgba(201,162,39,0.05) 0%, transparent 70%);
+      top: -15%;
+      right: -5%;
+      width: 45vw;
+      height: 45vw;
+      background: radial-gradient(circle, rgba(201,162,39,0.06) 0%, transparent 65%);
       pointer-events: none;
       z-index: 0;
+      filter: blur(40px);
+    }
+
+    /* Second Warmtone Blob (bottom-left) */
+    .warmtone-blob-secondary {
+      position: fixed;
+      bottom: -10%;
+      left: -5%;
+      width: 35vw;
+      height: 35vw;
+      background: radial-gradient(circle, rgba(201,162,39,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(50px);
     }
 
     /* ══════════════════════════════════════════════════════════════
-       LAYOUT
+       LAYOUT (zentriert wie Report)
     ══════════════════════════════════════════════════════════════ */
     .container {
-      max-width: 620px;
+      max-width: 580px;
       width: 100%;
       margin: 0 auto;
       position: relative;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     /* ══════════════════════════════════════════════════════════════
-       EYEBROW LABEL
+       EYEBROW BADGE (Report-Hero-Badge Style - Gold)
     ══════════════════════════════════════════════════════════════ */
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
+      background: linear-gradient(135deg, var(--warm-100) 0%, #fff9e6 100%);
+      border: 1px solid var(--warm-200);
       border-radius: 50px;
-      padding: 0.45rem 1.1rem;
+      padding: 0.5rem 1.15rem;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.85rem;
-      font-weight: 400;
-      color: var(--navy-600);
-      letter-spacing: 0.02em;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #7a6012;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
       margin-bottom: 1.5rem;
       box-shadow: var(--shadow-sm);
     }
 
     .eyebrow::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background: #10b981;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      content: '●';
+      font-size: 0.5rem;
+      color: var(--warm-500);
     }
 
     @media (prefers-color-scheme: dark) {
       .eyebrow {
-        background: var(--navy-800);
-        border-color: var(--navy-600);
-        color: var(--navy-200);
+        background: linear-gradient(135deg, rgba(201,162,39,0.15) 0%, rgba(201,162,39,0.08) 100%);
+        border-color: rgba(201,162,39,0.3);
+        color: var(--warm-300);
       }
     }
 
     /* ══════════════════════════════════════════════════════════════
-       PREMIUM CARD
+       PREMIUM CARD (Report-identisch: 14px, shadow rgba(0,0,0,0.07))
     ══════════════════════════════════════════════════════════════ */
     .content-card {
       background: var(--bg-card);
       border-radius: 14px;
       border: 1px solid var(--border-light);
       box-shadow: var(--shadow-lg);
-      padding: 2.5rem;
+      padding: 2.25rem 2.25rem 2rem;
+      width: 100%;
     }
 
+    /* ══════════════════════════════════════════════════════════════
+       TYPOGRAPHY (Report-Hero-Style)
+    ══════════════════════════════════════════════════════════════ */
     h1 {
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: 2.1rem;
+      font-size: 2.15rem;
       font-weight: 700;
-      color: var(--navy-800);
-      margin: 0 0 1.25rem 0;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
+      color: var(--navy-900);
+      margin: 0 0 1rem 0;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -195,8 +210,8 @@
     .lead {
       font-size: 1rem;
       color: var(--text-secondary);
-      margin-bottom: 1.75rem;
-      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      line-height: 1.65;
     }
 
     .lead strong {
@@ -205,30 +220,44 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       FEATURES LIST
+       FEATURES LIST (Report-Checkmark Style: Navy)
     ══════════════════════════════════════════════════════════════ */
     .features-list {
       list-style: none;
-      margin: 0 0 2rem 0;
+      margin: 0 0 1.75rem 0;
       display: flex;
       flex-direction: column;
-      gap: 0.7rem;
+      gap: 0.6rem;
     }
 
     .features-list li {
       display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
+      align-items: center;
+      gap: 0.7rem;
       color: var(--text-secondary);
       font-size: 0.95rem;
     }
 
     .features-list li::before {
       content: '✓';
-      color: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      background: var(--navy-50);
+      color: var(--navy-600);
       font-weight: 700;
-      font-size: 1rem;
-      line-height: 1.5;
+      font-size: 0.75rem;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .features-list li::before {
+        background: rgba(42,106,158,0.2);
+        color: var(--navy-300);
+      }
     }
 
     .features-list li strong {
@@ -237,10 +266,10 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       CTA BUTTON (Premium Navy Style)
+       CTA BUTTON (Report-Hero Style: gradient + inner glow + scale)
     ══════════════════════════════════════════════════════════════ */
     .cta-section {
-      margin: 2rem 0 0;
+      margin: 1.75rem 0 0;
     }
 
     .button {
@@ -256,58 +285,82 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
       transition: all var(--transition-base);
-      box-shadow: 0 4px 14px rgba(19,39,68,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow:
+        0 4px 14px rgba(19,39,68,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.1);
       position: relative;
       overflow: hidden;
     }
 
+    /* Inner Glow */
     .button::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
       pointer-events: none;
     }
 
     .button:hover {
       background: linear-gradient(135deg, var(--navy-600) 0%, var(--navy-700) 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(19,39,68,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 6px 20px rgba(19,39,68,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    .button:active {
+      transform: translateY(0) scale(1);
     }
 
     .button::after {
       content: '→';
-      font-size: 1.1rem;
-      transition: transform 0.2s;
+      font-size: 1.15rem;
+      transition: transform 0.2s ease;
     }
 
     .button:hover::after {
-      transform: translateX(3px);
+      transform: translateX(4px);
     }
 
     /* ══════════════════════════════════════════════════════════════
-       TESTIMONIALS
+       TESTIMONIALS (Report-Deluxe Style: Serif, warm-cream bg)
     ══════════════════════════════════════════════════════════════ */
     .testimonials-section {
-      margin-top: 2.5rem;
-      padding-top: 1.75rem;
-      border-top: 1px solid var(--border-light);
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #fdfcfa 0%, var(--warm-100) 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(201,162,39,0.15);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .testimonials-section {
+        background: linear-gradient(135deg, rgba(201,162,39,0.06) 0%, rgba(201,162,39,0.02) 100%);
+        border-color: rgba(201,162,39,0.15);
+      }
     }
 
     .testimonials-section h2 {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      font-size: 0.75rem;
+      color: var(--warm-600);
       font-weight: 600;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.65rem;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .testimonials-section h2 {
+        color: var(--warm-400);
+      }
     }
 
     .testimonial-slider {
       position: relative;
-      height: 48px;
+      height: 44px;
       overflow: hidden;
     }
 
@@ -319,8 +372,9 @@
       width: 100%;
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
+      font-family: 'Playfair Display', Georgia, serif;
       color: var(--text-primary);
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-style: italic;
       line-height: 1.5;
     }
@@ -330,91 +384,92 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       LOGO BAR (Report-Style with Larger Logos)
+       LOGO BAR (Report-Style: pill containers, 44-48px logos)
     ══════════════════════════════════════════════════════════════ */
-    .badge-row {
+    .logo-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      margin-top: 2rem;
+      gap: 0.85rem;
+      margin-top: 1.75rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--border-light);
     }
 
-    .badge-pill {
+    .logo-pill {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--bg-page);
+      background: var(--bg-card);
       border: 1px solid var(--border-light);
       border-radius: 10px;
-      padding: 0.6rem 1rem;
+      padding: 0.65rem 1rem;
       transition: var(--transition-fast);
     }
 
-    .badge-pill:hover {
+    .logo-pill:hover {
       border-color: var(--border-medium);
-      background: var(--bg-card);
+      background: var(--bg-page);
+      transform: translateY(-1px);
     }
 
-    .badge-pill img {
+    .logo-pill img {
       height: 44px;
       width: auto;
-      opacity: 0.9;
+      opacity: 0.88;
       transition: var(--transition-fast);
     }
 
-    .badge-pill:hover img {
+    .logo-pill:hover img {
       opacity: 1;
     }
 
-    .badge-pill.main-logo img {
+    .logo-pill.main-logo img {
       height: 40px;
     }
 
     @media (prefers-color-scheme: dark) {
-      .badge-pill {
-        background: rgba(14,30,54,0.4);
+      .logo-pill {
+        background: rgba(14,30,54,0.5);
         border-color: var(--border-medium);
       }
-      .badge-pill:hover {
-        background: rgba(14,30,54,0.6);
+      .logo-pill:hover {
+        background: rgba(14,30,54,0.7);
       }
-      .badge-pill img {
-        filter: brightness(0.95);
+      .logo-pill img {
+        filter: brightness(0.92);
       }
-      .badge-pill:hover img {
+      .logo-pill:hover img {
         filter: brightness(1);
       }
     }
 
     /* ══════════════════════════════════════════════════════════════
-       RESPONSIVE
+       RESPONSIVE (Report-aligned breakpoints)
     ══════════════════════════════════════════════════════════════ */
     @media (max-width: 768px) {
       body { padding: 2rem 1rem; }
 
       .content-card {
-        padding: 2rem 1.75rem;
+        padding: 2rem 1.5rem 1.75rem;
       }
 
-      h1 { font-size: 1.75rem; }
+      h1 { font-size: 1.85rem; }
 
       .button { width: 100%; padding: 1rem 1.5rem; }
 
-      .badge-row {
-        gap: 0.75rem;
+      .logo-bar {
+        gap: 0.65rem;
         padding-top: 1.25rem;
       }
 
-      .badge-pill {
+      .logo-pill {
         padding: 0.5rem 0.75rem;
       }
 
-      .badge-pill img { height: 36px; }
-      .badge-pill.main-logo img { height: 32px; }
+      .logo-pill img { height: 40px; }
+      .logo-pill.main-logo img { height: 36px; }
     }
 
     @media (max-width: 480px) {
@@ -425,14 +480,21 @@
         border-radius: 12px;
       }
 
-      h1 { font-size: 1.5rem; }
+      h1 { font-size: 1.6rem; }
 
-      .badge-pill img { height: 32px; }
-      .badge-pill.main-logo img { height: 28px; }
+      .testimonials-section {
+        padding: 1.25rem;
+      }
+
+      .logo-pill img { height: 36px; }
+      .logo-pill.main-logo img { height: 32px; }
     }
   </style>
 </head>
 <body>
+
+<!-- Secondary Warmtone Blob -->
+<div class="warmtone-blob-secondary"></div>
 
 <div class="container">
   <div class="eyebrow">KI-Sicherheit.jetzt</div>
@@ -468,20 +530,20 @@
       </div>
     </section>
 
-    <div class="badge-row">
-      <div class="badge-pill main-logo">
+    <div class="logo-bar">
+      <div class="logo-pill main-logo">
         <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
       </div>
-      <div class="badge-pill">
+      <div class="logo-pill">
         <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert" onerror="this.parentElement.style.display='none'">
       </div>
-      <div class="badge-pill">
+      <div class="logo-pill">
         <img src="badges/dsgvo.svg" alt="DSGVO konform" onerror="this.parentElement.style.display='none'">
       </div>
-      <div class="badge-pill">
+      <div class="logo-pill">
         <img src="badges/eu-ai.svg" alt="EU AI Act Ready" onerror="this.parentElement.style.display='none'">
       </div>
-      <div class="badge-pill">
+      <div class="logo-pill">
         <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025" onerror="this.parentElement.style.display='none'">
       </div>
     </div>
