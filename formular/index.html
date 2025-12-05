@@ -77,25 +77,31 @@
 
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg-page);
+      background: linear-gradient(135deg, #f0f5fa 0%, #faf8f5 50%, #f5f8fc 100%);
       color: var(--text-primary);
       line-height: 1.6;
       min-height: 100vh;
       position: relative;
     }
 
-    /* Dot Matrix Background */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, var(--navy-900) 0%, #0c1a2e 50%, var(--navy-900) 100%);
+      }
+    }
+
+    /* Dot Matrix Background (Report-Style) */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.06) 1px, transparent 0);
-      background-size: 24px 24px;
+      background-size: 20px 20px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Soft Gradient Blob */
+    /* Soft Gradient Blob (Warmtone) */
     body::after {
       content: '';
       position: fixed;

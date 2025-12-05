@@ -77,25 +77,31 @@
 
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg-page);
+      background: linear-gradient(135deg, #f0f5fa 0%, #faf8f5 50%, #f5f8fc 100%);
       color: var(--text-primary);
       line-height: 1.6;
       min-height: 100vh;
       position: relative;
     }
 
-    /* Dot Matrix Background Pattern */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, var(--navy-900) 0%, #0c1a2e 50%, var(--navy-900) 100%);
+      }
+    }
+
+    /* Dot Matrix Background Pattern (Report-Style) */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.08) 1px, transparent 0);
-      background-size: 24px 24px;
+      background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.06) 1px, transparent 0);
+      background-size: 20px 20px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Soft Gradient Blobs */
+    /* Soft Gradient Blobs (Warmtone) */
     body::after {
       content: '';
       position: fixed;
@@ -103,7 +109,7 @@
       right: -10%;
       width: 50vw;
       height: 50vw;
-      background: radial-gradient(circle, rgba(201,162,39,0.06) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(201,162,39,0.05) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
     }
@@ -308,102 +314,153 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       HELP BOX
+       HELP BOX (Report Info-Box Style)
     ══════════════════════════════════════════════════════════════ */
     .help-box {
       margin-top: 1.75rem;
       padding: 1.25rem 1.5rem;
-      background: var(--bg-page);
-      border: 1px solid var(--border-light);
+      background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+      border: 1px solid #dbeafe;
       border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
     @media (prefers-color-scheme: dark) {
       .help-box {
-        background: rgba(14,30,54,0.5);
-        border-color: var(--border-medium);
+        background: linear-gradient(135deg, rgba(30,64,175,0.12) 0%, rgba(37,99,235,0.08) 100%);
+        border-color: rgba(59,130,246,0.25);
       }
     }
 
     .help-box h2 {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      color: var(--text-primary);
+      color: #1e40af;
       margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .help-box h2::before {
+      content: 'ℹ';
+      font-size: 1rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .help-box h2 {
+        color: #93c5fd;
+      }
     }
 
     .help-box ul {
       margin: 0;
-      padding-left: 1.25rem;
+      padding-left: 1.5rem;
     }
 
     .help-box li {
       font-size: 0.875rem;
-      color: var(--text-secondary);
+      color: #1e3a5f;
       margin: 0.5rem 0;
-      line-height: 1.5;
+      line-height: 1.55;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .help-box li {
+        color: var(--text-secondary);
+      }
     }
 
     .help-box code {
-      background: rgba(42,106,158,0.1);
+      background: #e0e7ff;
       padding: 0.15rem 0.4rem;
       border-radius: 4px;
       font-size: 0.8rem;
-      color: var(--navy-600);
+      color: #3730a3;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
     }
 
     @media (prefers-color-scheme: dark) {
       .help-box code {
-        background: rgba(74,140,196,0.2);
-        color: var(--navy-200);
+        background: rgba(99,102,241,0.2);
+        color: #a5b4fc;
       }
     }
 
     .help-box a {
-      color: var(--navy-400);
+      color: #2563eb;
       text-decoration: none;
+      font-weight: 500;
     }
 
     .help-box a:hover {
       text-decoration: underline;
     }
 
+    @media (prefers-color-scheme: dark) {
+      .help-box a {
+        color: #60a5fa;
+      }
+    }
+
     /* ══════════════════════════════════════════════════════════════
-       LOGO BAR (Premium Footer Style)
+       LOGO BAR (Report-Style with Larger Logos)
     ══════════════════════════════════════════════════════════════ */
     .logo-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 1rem;
       margin-top: 2rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--border-light);
     }
 
-    .logo-bar img {
-      height: 36px;
-      opacity: 0.75;
+    .logo-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-page);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
       transition: var(--transition-fast);
-      filter: grayscale(20%);
     }
 
-    .logo-bar img:hover {
+    .logo-pill:hover {
+      border-color: var(--border-medium);
+      background: var(--bg-card);
+    }
+
+    .logo-pill img {
+      height: 44px;
+      width: auto;
+      opacity: 0.9;
+      transition: var(--transition-fast);
+    }
+
+    .logo-pill:hover img {
       opacity: 1;
-      filter: grayscale(0%);
     }
 
-    .logo-bar .main-logo {
-      height: 32px;
+    .logo-pill.main-logo img {
+      height: 40px;
     }
 
     @media (prefers-color-scheme: dark) {
-      .logo-bar img {
-        filter: grayscale(30%) brightness(0.9);
+      .logo-pill {
+        background: rgba(14,30,54,0.4);
+        border-color: var(--border-medium);
       }
-      .logo-bar img:hover {
-        filter: grayscale(0%) brightness(1);
+      .logo-pill:hover {
+        background: rgba(14,30,54,0.6);
+      }
+      .logo-pill img {
+        filter: brightness(0.95);
+      }
+      .logo-pill:hover img {
+        filter: brightness(1);
       }
     }
 
@@ -504,12 +561,16 @@
       .btn-primary { padding: 1rem 1.5rem; }
 
       .logo-bar {
-        gap: 1rem;
+        gap: 0.75rem;
         padding-top: 1.25rem;
       }
 
-      .logo-bar img { height: 28px; }
-      .logo-bar .main-logo { height: 26px; }
+      .logo-pill {
+        padding: 0.5rem 0.75rem;
+      }
+
+      .logo-pill img { height: 36px; }
+      .logo-pill.main-logo img { height: 32px; }
 
       .toast-stack {
         right: 12px;
@@ -573,13 +634,23 @@
           </ul>
         </div>
 
-        <!-- Logo Bar -->
+        <!-- Logo Bar (Report-Style Pill Layout) -->
         <div class="logo-bar">
-          <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
-          <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert" onerror="this.style.display='none'">
-          <img src="badges/dsgvo.svg" alt="DSGVO konform" onerror="this.style.display='none'">
-          <img src="badges/eu-ai.svg" alt="EU AI Act Ready" onerror="this.style.display='none'">
-          <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025" onerror="this.style.display='none'">
+          <div class="logo-pill main-logo">
+            <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="logo-pill">
+            <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="logo-pill">
+            <img src="badges/dsgvo.svg" alt="DSGVO konform" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="logo-pill">
+            <img src="badges/eu-ai.svg" alt="EU AI Act Ready" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="logo-pill">
+            <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025" onerror="this.parentElement.style.display='none'">
+          </div>
         </div>
       </div>
     </div>
