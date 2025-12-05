@@ -4,183 +4,450 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login — KI-Readiness</title>
-  <!-- Passe hier den API-Pfad an, falls nötig -->
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Card-based layout (Email-Design) */
+    /* ══════════════════════════════════════════════════════════════
+       PREMIUM DESIGN SYSTEM – Colors & Variables
+    ══════════════════════════════════════════════════════════════ */
+    :root {
+      /* Navy Palette */
+      --navy-900: #0a1628;
+      --navy-800: #0e1e36;
+      --navy-700: #132744;
+      --navy-600: #1a3a5c;
+      --navy-500: #1e4a6f;
+      --navy-400: #2a6a9e;
+      --navy-300: #4a8cc4;
+      --navy-200: #7eb3dc;
+      --navy-100: #c5ddf0;
+      --navy-50: #e8f2fa;
+
+      /* Warmtone Accent */
+      --warm-500: #c9a227;
+      --warm-400: #d4b33d;
+      --warm-300: #e0c65a;
+      --warm-200: #f0dfa0;
+      --warm-100: #faf4dc;
+
+      /* Semantic */
+      --text-primary: #0e1525;
+      --text-secondary: #3d4f63;
+      --text-muted: #6b7a8c;
+      --bg-page: #f8fafb;
+      --bg-card: #ffffff;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(14,21,37,0.04);
+      --shadow-md: 0 4px 12px rgba(14,21,37,0.08);
+      --shadow-lg: 0 8px 24px rgba(14,21,37,0.12);
+      --shadow-xl: 0 16px 48px rgba(14,21,37,0.16);
+
+      /* Transitions */
+      --transition-fast: 0.15s ease;
+      --transition-base: 0.25s ease;
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text-primary: #e8eef6;
+        --text-secondary: #a8b5c4;
+        --text-muted: #6b7a8c;
+        --bg-page: #0a1628;
+        --bg-card: #0e1e36;
+        --border-light: #1f3350;
+        --border-medium: #2a4a6a;
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+        --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       BASE STYLES
+    ══════════════════════════════════════════════════════════════ */
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: #f7f9fb;
-      color: #0d2b4a;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
       line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Dot Matrix Background Pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.08) 1px, transparent 0);
+      background-size: 24px 24px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Soft Gradient Blobs */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      right: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(201,162,39,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════════════════════════ */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       padding: 2rem;
     }
 
     .app-shell {
-      max-width: 600px;
-      margin: 0 auto;
+      max-width: 520px;
+      width: 100%;
+      margin: auto;
     }
 
-    .auth-card {
-      border-radius: 10px;
+    /* ══════════════════════════════════════════════════════════════
+       PREMIUM CARD
+    ══════════════════════════════════════════════════════════════ */
+    .premium-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-lg);
       overflow: hidden;
-      box-shadow: 0 2px 12px rgba(13,43,74,0.08);
-      border: 1px solid #e0e7f0;
-      background: #ffffff;
     }
 
-    .auth-card-header {
-      background: #1a5f87;
-      color: #ffffff;
-      padding: 20px;
+    .card-header {
+      background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 100%);
+      padding: 1.75rem 2rem;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .auth-card-title {
+    /* Header Dot Pattern */
+    .card-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+      background-size: 16px 16px;
+      pointer-events: none;
+    }
+
+    .brand-title {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #ffffff;
       margin: 0;
-      font-weight: 400;
+      position: relative;
+      letter-spacing: 0.5px;
     }
 
-    .auth-card-body {
-      padding: 2.5rem 2.5rem 2rem;
+    .card-body {
+      padding: 2rem 2rem 1.75rem;
     }
 
-    h1 {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 2.2rem;
-      color: #1e3a5f;
-      font-weight: 400;
-      margin: 0 0 0.75rem 0;
-      line-height: 1.3;
-    }
-
-    .lead {
-      font-size: 1.05rem;
-      color: #2d4a63;
+    /* ══════════════════════════════════════════════════════════════
+       WARMTONE BADGE
+    ══════════════════════════════════════════════════════════════ */
+    .trust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--warm-100) 0%, #fff9e6 100%);
+      border: 1px solid var(--warm-200);
+      border-radius: 50px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #7a6012;
       margin-bottom: 1.5rem;
+    }
+
+    .trust-badge svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--warm-500);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       TYPOGRAPHY
+    ══════════════════════════════════════════════════════════════ */
+    .page-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--navy-800);
+      margin: 0 0 0.5rem 0;
+      line-height: 1.25;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .page-title { color: var(--navy-100); }
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.75rem;
       line-height: 1.6;
     }
 
-    label {
+    /* ══════════════════════════════════════════════════════════════
+       FORM ELEMENTS
+    ══════════════════════════════════════════════════════════════ */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
       display: block;
+      font-size: 0.9rem;
       font-weight: 600;
-      color: #1e3a5f;
-      margin: 1.25rem 0 0.5rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
     }
 
-    input[type="email"],
-    input[type="text"] {
+    .form-input {
       width: 100%;
+      font-family: inherit;
       font-size: 1rem;
-      padding: 0.9rem 1rem;
-      border-radius: 8px;
-      border: 2px solid #d4e3f0;
-      background: #f7f9fb;
+      padding: 0.875rem 1rem;
+      border-radius: 10px;
+      border: 2px solid var(--border-light);
+      background: var(--bg-page);
+      color: var(--text-primary);
       outline: none;
-      transition: 0.2s;
+      transition: var(--transition-fast);
     }
 
-    input:focus {
-      border-color: #1e3a5f;
-      background: #fff;
+    .form-input::placeholder {
+      color: var(--text-muted);
     }
 
-    .button {
-      background: #0d4a73;
-      color: #fff;
-      border: none;
-      padding: 0.9rem 2.2rem;
+    .form-input:focus {
+      border-color: var(--navy-400);
+      background: var(--bg-card);
+      box-shadow: 0 0 0 3px rgba(42,106,158,0.12);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .form-input {
+        background: var(--navy-900);
+        border-color: var(--border-medium);
+      }
+      .form-input:focus {
+        border-color: var(--navy-400);
+        background: var(--navy-800);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       PREMIUM CTA BUTTON
+    ══════════════════════════════════════════════════════════════ */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      font-family: inherit;
       font-size: 1rem;
-      font-weight: 500;
+      font-weight: 600;
+      padding: 0.95rem 1.75rem;
+      border: none;
       border-radius: 50px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(13,74,115,0.25);
-      margin-top: 1.5rem;
-      display: inline-block;
-      text-decoration: none;
+      transition: var(--transition-base);
+      background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-800) 100%);
+      color: #ffffff;
+      box-shadow:
+        0 2px 8px rgba(14,30,54,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+      margin-top: 0.75rem;
     }
 
-    .button:hover {
-      background: #0a3d5f;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(13,74,115,0.35);
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--navy-600) 0%, var(--navy-700) 100%);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 6px 20px rgba(14,30,54,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.15);
     }
 
-    .button:disabled {
+    .btn-primary:active {
+      transform: translateY(0) scale(1);
+    }
+
+    .btn-primary:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
     }
 
-    #code-area {
-      margin-top: 1rem;
-    }
-
-    /* Hilfe-Box */
-    .help {
-      margin-top: 2rem;
-      background: #f7f9fb;
-      border: 1px solid #d4e3f0;
-      border-radius: 10px;
+    /* ══════════════════════════════════════════════════════════════
+       HELP BOX
+    ══════════════════════════════════════════════════════════════ */
+    .help-box {
+      margin-top: 1.75rem;
       padding: 1.25rem 1.5rem;
+      background: var(--bg-page);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
     }
 
-    .help h2 {
-      font-size: 1rem;
-      margin-bottom: 0.65rem;
-      color: #1e3a5f;
-      font-weight: 600;
+    @media (prefers-color-scheme: dark) {
+      .help-box {
+        background: rgba(14,30,54,0.5);
+        border-color: var(--border-medium);
+      }
     }
 
-    .help ul { margin-left: 1.2rem; }
-
-    .help li {
-      margin: 0.5rem 0;
+    .help-box h2 {
       font-size: 0.95rem;
-      color: #2d4a63;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
     }
 
-    .help code {
-      background: #eef5ff;
+    .help-box ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .help-box li {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin: 0.5rem 0;
+      line-height: 1.5;
+    }
+
+    .help-box code {
+      background: rgba(42,106,158,0.1);
       padding: 0.15rem 0.4rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--navy-600);
     }
 
-    /* Badge Row inside Card */
-    .badge-row {
+    @media (prefers-color-scheme: dark) {
+      .help-box code {
+        background: rgba(74,140,196,0.2);
+        color: var(--navy-200);
+      }
+    }
+
+    .help-box a {
+      color: var(--navy-400);
+      text-decoration: none;
+    }
+
+    .help-box a:hover {
+      text-decoration: underline;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       LOGO BAR (Premium Footer Style)
+    ══════════════════════════════════════════════════════════════ */
+    .logo-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 1.25rem;
-      margin-top: 2.5rem;
+      gap: 1.5rem;
+      margin-top: 2rem;
       padding-top: 1.5rem;
-      border-top: 1px solid #e8eef4;
+      border-top: 1px solid var(--border-light);
     }
 
-    .badge-row img {
-      height: 42px;
-      opacity: 0.85;
-      transition: opacity 0.2s;
+    .logo-bar img {
+      height: 36px;
+      opacity: 0.75;
+      transition: var(--transition-fast);
+      filter: grayscale(20%);
     }
 
-    .badge-row img:hover {
+    .logo-bar img:hover {
       opacity: 1;
+      filter: grayscale(0%);
     }
 
-    .badge-row .main-logo {
-      height: 38px;
+    .logo-bar .main-logo {
+      height: 32px;
     }
 
-    /* Toasts */
+    @media (prefers-color-scheme: dark) {
+      .logo-bar img {
+        filter: grayscale(30%) brightness(0.9);
+      }
+      .logo-bar img:hover {
+        filter: grayscale(0%) brightness(1);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       MESSAGES & FEEDBACK
+    ══════════════════════════════════════════════════════════════ */
+    .message {
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .message.visible { display: block; }
+
+    .message.success {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .message.success {
+        background: rgba(16,185,129,0.15);
+        border-color: rgba(16,185,129,0.3);
+        color: #6ee7b7;
+      }
+      .message.error {
+        background: rgba(239,68,68,0.15);
+        border-color: rgba(239,68,68,0.3);
+        color: #fca5a5;
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       TOASTS
+    ══════════════════════════════════════════════════════════════ */
     .toast-stack {
       position: fixed;
       right: 20px;
@@ -192,91 +459,137 @@
     }
 
     .toast {
-      min-width: 260px;
-      max-width: 520px;
-      padding: 0.85rem 1rem;
-      border-radius: 10px;
-      color: #0b1f33;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-      border: 1px solid rgba(0,0,0,0.06);
-      background: #f0f7ff;
+      min-width: 280px;
+      max-width: 400px;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
       display: flex;
       gap: 0.75rem;
       align-items: flex-start;
+      animation: slideIn 0.3s ease;
     }
 
-    .toast .title { font-weight: 700; margin-bottom: 0.15rem; }
-    .toast.success { background: #ecfdf5; border-color: #d1fae5; color: #064e3b; }
-    .toast.warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
-    .toast.error { background: #fef2f2; border-color: #fecaca; color: #7f1d1d; }
-    .toast .close { margin-left: auto; cursor: pointer; font-weight: 700; opacity: 0.6; }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .toast .title { font-weight: 600; margin-bottom: 0.25rem; }
+    .toast.success { border-left: 4px solid #10b981; }
+    .toast.warning { border-left: 4px solid #f59e0b; }
+    .toast.error { border-left: 4px solid #ef4444; }
+    .toast .close {
+      margin-left: auto;
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+      opacity: 0.5;
+      transition: var(--transition-fast);
+    }
     .toast .close:hover { opacity: 1; }
 
+    /* ══════════════════════════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════════════════════════ */
     @media (max-width: 640px) {
-      body { padding: 1.5rem 1rem; }
-      .content-card { padding: 2rem 1.5rem 1.5rem; min-height: 480px; }
-      h1 { font-size: 1.75rem; }
-      .button { width: 100%; text-align: center; }
-      .toast-stack { right: 12px; left: 12px; bottom: 12px; }
-      .badge-row { gap: 0.85rem; }
-      .badge-row img { height: 34px; }
-      .badge-row .main-logo { height: 30px; }
+      .page-wrapper { padding: 1rem; }
+
+      .card-body { padding: 1.5rem; }
+
+      .page-title { font-size: 1.5rem; }
+
+      .btn-primary { padding: 1rem 1.5rem; }
+
+      .logo-bar {
+        gap: 1rem;
+        padding-top: 1.25rem;
+      }
+
+      .logo-bar img { height: 28px; }
+      .logo-bar .main-logo { height: 26px; }
+
+      .toast-stack {
+        right: 12px;
+        left: 12px;
+        bottom: 12px;
+      }
+
+      .toast {
+        min-width: auto;
+        max-width: none;
+      }
     }
   </style>
 </head>
 <body>
-<div class="app-shell">
-  <div class="auth-card">
-    <header class="auth-card-header">
-      <h1 class="auth-card-title">KI-Sicherheit.jetzt</h1>
-    </header>
-    <div class="auth-card-body">
-      <h1>Login</h1>
-      <p class="lead">Bitte E-Mail angeben. Sie erhalten einen 6-stelligen Code (Magic-Link).</p>
-
-      <form id="login-form" novalidate>
-        <label for="email">E-Mail</label>
-        <input type="email" id="email" name="email" placeholder="ihr.name@firma.de" autocomplete="email" required>
-
-        <button type="button" class="button" id="btn-request">Code anfordern</button>
-
-        <div id="code-area" style="display:none">
-          <label for="code">Code</label>
-          <input type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
-          <button type="button" class="button" id="btn-login">Einloggen</button>
+<div class="page-wrapper">
+  <div class="app-shell">
+    <div class="premium-card">
+      <header class="card-header">
+        <h1 class="brand-title">KI-Sicherheit.jetzt</h1>
+      </header>
+      <div class="card-body">
+        <!-- Trust Badge -->
+        <div class="trust-badge">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+          TÜV-zertifiziert · steuerlich absetzbar
         </div>
 
-        <!-- Barrierefreie Fallback-Nachrichten -->
-        <p id="msg" class="lead" role="status" aria-live="polite" style="margin-top:1rem;margin-bottom:0"></p>
-        <p id="err" class="lead" role="alert" style="color:#b91c1c;margin-top:0.5rem;margin-bottom:0"></p>
-      </form>
+        <h2 class="page-title">Willkommen zurück</h2>
+        <p class="page-subtitle">Melden Sie sich mit Ihrer E-Mail an. Sie erhalten einen sicheren 6-stelligen Code.</p>
 
-      <!-- Hilfe bei Problemen -->
-      <div class="help" aria-labelledby="help-title">
-        <h2 id="help-title">Hilfe bei Problemen</h2>
-        <ul>
-          <li>Kein Code erhalten? Prüfen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu <strong>2 Minuten</strong>.</li>
-          <li>Erneut senden: Klicken Sie einfach nochmal auf <em>Code anfordern</em>. Zu viele Versuche führen zu einer kurzen Sperre.</li>
-          <li>E-Mail nicht freigeschaltet? Dann sehen Sie die Meldung <code>E-Mail ist nicht freigeschaltet</code>. Kontakt: <a href="mailto:support@ki-sicherheit.jetzt">support@ki-sicherheit.jetzt</a>.</li>
-          <li>Datenschutz-Hinweis: Ihr Login-Code ist nur kurz gültig und wird nach Nutzung ungültig.</li>
-        </ul>
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="email">E-Mail-Adresse</label>
+            <input type="email" id="email" name="email" class="form-input" placeholder="ihre.email@firma.de" autocomplete="email" required>
+          </div>
+
+          <button type="button" class="btn-primary" id="btn-request">
+            Code anfordern
+          </button>
+
+          <div id="code-area" style="display:none">
+            <div class="form-group" style="margin-top:1.25rem">
+              <label class="form-label" for="code">Bestätigungscode</label>
+              <input type="text" id="code" name="code" class="form-input" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
+            </div>
+            <button type="button" class="btn-primary" id="btn-login">Einloggen</button>
+          </div>
+
+          <p id="msg" class="message" role="status" aria-live="polite"></p>
+          <p id="err" class="message error" role="alert"></p>
+        </form>
+
+        <!-- Help Box -->
+        <div class="help-box" aria-labelledby="help-title">
+          <h2 id="help-title">Hilfe bei Problemen</h2>
+          <ul>
+            <li>Kein Code? Prüfen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu 2 Minuten.</li>
+            <li>Erneut senden: Klicken Sie nochmal auf <em>Code anfordern</em>.</li>
+            <li>E-Mail nicht freigeschaltet? Kontakt: <a href="mailto:support@ki-sicherheit.jetzt">support@ki-sicherheit.jetzt</a></li>
+          </ul>
+        </div>
+
+        <!-- Logo Bar -->
+        <div class="logo-bar">
+          <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
+          <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert" onerror="this.style.display='none'">
+          <img src="badges/dsgvo.svg" alt="DSGVO konform" onerror="this.style.display='none'">
+          <img src="badges/eu-ai.svg" alt="EU AI Act Ready" onerror="this.style.display='none'">
+          <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025" onerror="this.style.display='none'">
+        </div>
       </div>
+    </div>
+  </div>
+</div>
 
-      <div class="badge-row">
-        <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" class="main-logo" onerror="this.style.display='none'">
-        <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
-        <img src="badges/dsgvo.svg" alt="DSGVO konform">
-        <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-        <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025">
-      </div>
-    </div><!-- /.auth-card-body -->
-  </div><!-- /.auth-card -->
-</div><!-- /.app-shell -->
+<!-- Toast Container -->
+<div id="toasts" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
 
-<!-- Toast-Container -->
-  <div id="toasts" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
-
-  <script src="/js/config.js"></script>
-  <script src="/js/login.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/login.js"></script>
 </body>
 </html>

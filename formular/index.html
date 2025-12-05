@@ -4,101 +4,385 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fragebogen – KI-Readiness</title>
-  <!-- API-Basis zur Railway-Instanz -->
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <link rel="icon" href="/favicon.ico">
-  <!-- Corporate Styles -->
-  <link rel="stylesheet" href="/styles.css">
-  <!-- (optional) Formular-spezifische Styles, falls vorhanden -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/formular/formular.css">
   <style>
-    /* Card-based layout (Email-Design) */
-    body { background:#f7f9fb; }
-    .app-shell { max-width:960px; margin:0 auto; padding:2rem; }
-    .auth-card { border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(13,43,74,0.08); border:1px solid #e0e7f0; background:#ffffff; }
-    .auth-card-header { background:#1a5f87; color:#ffffff; padding:20px; text-align:center; }
-    .auth-card-title { font-family:'Share Tech Mono', monospace; font-size:1.6rem; margin:0; font-weight:400; }
-    .auth-card-body { padding:30px 32px 26px; }
-    /* Fragebogen-spezifisch */
-    .head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
-    .headline { font-family:'Share Tech Mono', monospace; color:#224664; font-size:1.8rem; margin:0; }
-    .progress { font-size:0.95rem; color:#35597a; background:#e7f0fb; padding:6px 12px; border-radius:999px; }
-    #formbuilder { min-height: 420px; }
-    .notice { color:#58728a; margin:8px 0 14px 0; }
-    .noscript { padding:12px 14px; border-radius:10px; background:#fff3cd; color:#7c5300; border:1px solid #ffe69c; }
-    /* Language Switch */
-    .lang-switch { display:flex; justify-content:flex-end; gap:8px; align-items:center; font-size:14px; margin-bottom:8px; }
-    .lang-link { text-decoration:none; color:#2563eb; font-weight:500; }
-    .lang-link:hover { text-decoration:underline; }
-    .lang-active { font-weight:700; text-decoration:underline; }
-    .lang-separator { color:#64748b; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ══════════════════════════════════════════════════════════════
+       PREMIUM DESIGN SYSTEM – Colors & Variables
+    ══════════════════════════════════════════════════════════════ */
+    :root {
+      /* Navy Palette */
+      --navy-900: #0a1628;
+      --navy-800: #0e1e36;
+      --navy-700: #132744;
+      --navy-600: #1a3a5c;
+      --navy-500: #1e4a6f;
+      --navy-400: #2a6a9e;
+      --navy-300: #4a8cc4;
+      --navy-200: #7eb3dc;
+      --navy-100: #c5ddf0;
+      --navy-50: #e8f2fa;
+
+      /* Warmtone Accent */
+      --warm-500: #c9a227;
+      --warm-400: #d4b33d;
+      --warm-300: #e0c65a;
+      --warm-200: #f0dfa0;
+      --warm-100: #faf4dc;
+
+      /* Semantic */
+      --text-primary: #0e1525;
+      --text-secondary: #3d4f63;
+      --text-muted: #6b7a8c;
+      --bg-page: #f8fafb;
+      --bg-card: #ffffff;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(14,21,37,0.04);
+      --shadow-md: 0 4px 12px rgba(14,21,37,0.08);
+      --shadow-lg: 0 8px 24px rgba(14,21,37,0.12);
+
+      /* Transitions */
+      --transition-fast: 0.15s ease;
+      --transition-base: 0.25s ease;
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text-primary: #e8eef6;
+        --text-secondary: #a8b5c4;
+        --text-muted: #6b7a8c;
+        --bg-page: #0a1628;
+        --bg-card: #0e1e36;
+        --border-light: #1f3350;
+        --border-medium: #2a4a6a;
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+        --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       BASE STYLES
+    ══════════════════════════════════════════════════════════════ */
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Dot Matrix Background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.06) 1px, transparent 0);
+      background-size: 24px 24px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Soft Gradient Blob */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      right: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(201,162,39,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════════════════════════ */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .app-shell {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       PREMIUM CARD
+    ══════════════════════════════════════════════════════════════ */
+    .premium-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 100%);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Header Dot Pattern */
+    .card-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+      background-size: 16px 16px;
+      pointer-events: none;
+    }
+
+    .brand-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: #ffffff;
+      margin: 0;
+      position: relative;
+      letter-spacing: 0.5px;
+    }
+
+    .card-body {
+      padding: 1.75rem 2rem 2rem;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       LANGUAGE SWITCH
+    ══════════════════════════════════════════════════════════════ */
+    .lang-switch {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .lang-link {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--navy-400);
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: var(--transition-fast);
+    }
+
+    .lang-link:hover {
+      background: var(--navy-50);
+      color: var(--navy-600);
+    }
+
+    .lang-link.lang-active {
+      font-weight: 700;
+      color: var(--navy-700);
+      background: var(--navy-50);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .lang-link:hover {
+        background: var(--navy-800);
+        color: var(--navy-200);
+      }
+      .lang-link.lang-active {
+        color: var(--navy-100);
+        background: var(--navy-700);
+      }
+    }
+
+    .lang-separator {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       PAGE HEADER
+    ══════════════════════════════════════════════════════════════ */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--navy-800);
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .page-title { color: var(--navy-100); }
+    }
+
+    .progress-badge {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--navy-600);
+      background: var(--navy-50);
+      padding: 0.4rem 0.9rem;
+      border-radius: 50px;
+      border: 1px solid var(--navy-100);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .progress-badge {
+        color: var(--navy-200);
+        background: var(--navy-800);
+        border-color: var(--navy-600);
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       NOTICES
+    ══════════════════════════════════════════════════════════════ */
+    .notice {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 0.5rem 0 1rem 0;
+    }
+
+    .noscript {
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      font-size: 0.9rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .noscript {
+        background: rgba(245,158,11,0.15);
+        border-color: rgba(245,158,11,0.3);
+        color: #fbbf24;
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       FORMBUILDER CONTAINER
+    ══════════════════════════════════════════════════════════════ */
+    #formbuilder {
+      min-height: 420px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .page-wrapper { padding: 1rem; }
+
+      .card-body { padding: 1.25rem 1.5rem 1.5rem; }
+
+      .page-title { font-size: 1.4rem; }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card-header { padding: 1.25rem 1rem; }
+      .brand-title { font-size: 1.2rem; }
+      .card-body { padding: 1rem 1.25rem 1.25rem; }
+    }
   </style>
   <script src="/js/config.js"></script>
   <script src="/js/auth.js"></script>
 </head>
 <body>
-<div class="app-shell">
-  <div class="auth-card">
-    <header class="auth-card-header">
-      <h1 class="auth-card-title">KI-Sicherheit.jetzt</h1>
-    </header>
-    <div class="auth-card-body">
-      <div class="lang-switch">
-        <a href="index.html?lang=de" class="lang-link lang-active">DE</a>
-        <span class="lang-separator">|</span>
-        <a href="index_en.html?lang=en" class="lang-link">EN</a>
+<div class="page-wrapper">
+  <div class="app-shell">
+    <div class="premium-card">
+      <header class="card-header">
+        <h1 class="brand-title">KI-Sicherheit.jetzt</h1>
+      </header>
+      <div class="card-body">
+        <div class="lang-switch">
+          <a href="index.html?lang=de" class="lang-link lang-active">DE</a>
+          <span class="lang-separator">|</span>
+          <a href="index_en.html?lang=en" class="lang-link">EN</a>
+        </div>
+
+        <div class="page-header">
+          <h2 class="page-title">Fragebogen</h2>
+          <span class="progress-badge" id="fb-progress" aria-live="polite"></span>
+        </div>
+
+        <p class="notice" id="guard" hidden>Bitte zuerst einloggen.</p>
+        <noscript><p class="noscript">Bitte JavaScript aktivieren – der Fragebogen benötigt JavaScript.</p></noscript>
+
+        <!-- Formbuilder Container -->
+        <div id="formbuilder"></div>
       </div>
-      <div class="head">
-        <h1 class="headline">Fragebogen</h1>
-        <span class="progress" id="fb-progress" aria-live="polite"></span>
-      </div>
-      <p class="notice" id="guard" hidden>Bitte zuerst einloggen.</p>
-      <noscript><p class="noscript">Bitte JavaScript aktivieren – der Fragebogen benötigt JavaScript.</p></noscript>
+    </div>
+  </div>
+</div>
 
-      <!-- WICHTIG: Der Formbuilder erwartet genau dieses Element -->
-      <div id="formbuilder"></div>
-    </div><!-- /.auth-card-body -->
-  </div><!-- /.auth-card -->
-</div><!-- /.app-shell -->
-
-  <script>
-    // Auth-Guard: check for auth cookie (quick check)
-    (function(){
-      try {
-        if (window.AUTH && !window.AUTH.hasAuthCookie()) {
-          document.getElementById('guard').hidden = false;
-          location.href = '/login.html';
-        }
-      } catch(_) {}
-    })();
-
-    // Fortschritt aus dem Formbuilder anzeigen (formbuilder_de_SINGLE_FULL.js dispatcht fb:progress)
-    document.addEventListener('fb:progress', function(e){
-      var el = document.getElementById('fb-progress');
-      if (!el || !e || !e.detail) return;
-      el.textContent = 'Schritt ' + e.detail.step + ' / ' + e.detail.total;
-    });
-  </script>
-
-  <!-- Prefill/Autosync (Draft) – muss VOR dem Formbuilder geladen werden -->
-  <script src="/formular/prefill.js"></script>
-
-  <!-- Boot script to load the formbuilder with auth checking -->
-  <script src="/formular/boot.js"></script>
-
-  <!-- Language redirect: ?lang=en → EN page -->
-  <script>
-    (function() {
-      try {
-        var params = new URLSearchParams(window.location.search);
-        var lang = (params.get('lang') || 'de').toLowerCase();
-        if (lang === 'en') {
-          window.location.href = 'index_en.html?lang=en';
-        }
-      } catch (e) {
-        console.warn('Lang switch (DE) failed:', e);
+<script>
+  // Auth-Guard: check for auth cookie (quick check)
+  (function(){
+    try {
+      if (window.AUTH && !window.AUTH.hasAuthCookie()) {
+        document.getElementById('guard').hidden = false;
+        location.href = '/login.html';
       }
-    })();
-  </script>
+    } catch(_) {}
+  })();
+
+  // Progress display from formbuilder
+  document.addEventListener('fb:progress', function(e){
+    var el = document.getElementById('fb-progress');
+    if (!el || !e || !e.detail) return;
+    el.textContent = 'Schritt ' + e.detail.step + ' / ' + e.detail.total;
+  });
+</script>
+
+<!-- Prefill/Autosync -->
+<script src="/formular/prefill.js"></script>
+
+<!-- Boot script -->
+<script src="/formular/boot.js"></script>
+
+<!-- Language redirect: ?lang=en → EN page -->
+<script>
+  (function() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var lang = (params.get('lang') || 'de').toLowerCase();
+      if (lang === 'en') {
+        window.location.href = 'index_en.html?lang=en';
+      }
+    } catch (e) {
+      console.warn('Lang switch (DE) failed:', e);
+    }
+  })();
+</script>
 </body>
 </html>
