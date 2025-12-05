@@ -13,10 +13,10 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* ══════════════════════════════════════════════════════════════
-       PREMIUM DESIGN SYSTEM – Colors & Variables
+       PREMIUM DESIGN SYSTEM – 1:1 Report-Style
     ══════════════════════════════════════════════════════════════ */
     :root {
-      /* Navy Palette */
+      /* Navy Palette (identisch mit Report) */
       --navy-900: #0a1628;
       --navy-800: #0e1e36;
       --navy-700: #132744;
@@ -28,7 +28,8 @@
       --navy-100: #c5ddf0;
       --navy-50: #e8f2fa;
 
-      /* Warmtone Accent */
+      /* Warmtone Accent (Report-Gold) */
+      --warm-600: #a68921;
       --warm-500: #c9a227;
       --warm-400: #d4b33d;
       --warm-300: #e0c65a;
@@ -44,11 +45,11 @@
       --border-light: #e2e8f0;
       --border-medium: #cbd5e1;
 
-      /* Shadows */
-      --shadow-sm: 0 1px 2px rgba(14,21,37,0.04);
-      --shadow-md: 0 4px 12px rgba(14,21,37,0.08);
-      --shadow-lg: 0 8px 24px rgba(14,21,37,0.12);
-      --shadow-xl: 0 16px 48px rgba(14,21,37,0.16);
+      /* Shadows (Report-Style: rgba(0,0,0,0.07)) */
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.07);
+      --shadow-xl: 0 16px 48px rgba(0,0,0,0.1);
 
       /* Transitions */
       --transition-fast: 0.15s ease;
@@ -71,7 +72,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       BASE STYLES
+       BASE STYLES (Report-identisch)
     ══════════════════════════════════════════════════════════════ */
     html { scroll-behavior: smooth; }
 
@@ -90,32 +91,46 @@
       }
     }
 
-    /* Dot Matrix Background Pattern (Report-Style) */
+    /* Dot Matrix Background (Report-Dichte: 24px) */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.06) 1px, transparent 0);
-      background-size: 20px 20px;
+      background-size: 24px 24px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Soft Gradient Blobs (Warmtone) */
+    /* Warmtone Blob (Report-Position & Blur) */
     body::after {
       content: '';
       position: fixed;
-      top: -20%;
-      right: -10%;
-      width: 50vw;
-      height: 50vw;
-      background: radial-gradient(circle, rgba(201,162,39,0.05) 0%, transparent 70%);
+      top: -15%;
+      right: -5%;
+      width: 45vw;
+      height: 45vw;
+      background: radial-gradient(circle, rgba(201,162,39,0.06) 0%, transparent 65%);
       pointer-events: none;
       z-index: 0;
+      filter: blur(40px);
+    }
+
+    /* Secondary Warmtone Blob */
+    .warmtone-blob-secondary {
+      position: fixed;
+      bottom: -10%;
+      left: -5%;
+      width: 35vw;
+      height: 35vw;
+      background: radial-gradient(circle, rgba(201,162,39,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(50px);
     }
 
     /* ══════════════════════════════════════════════════════════════
-       LAYOUT
+       LAYOUT (zentriert)
     ══════════════════════════════════════════════════════════════ */
     .page-wrapper {
       position: relative;
@@ -133,7 +148,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       PREMIUM CARD
+       PREMIUM CARD (Report-identisch: 14px, shadow rgba(0,0,0,0.07))
     ══════════════════════════════════════════════════════════════ */
     .premium-card {
       background: var(--bg-card);
@@ -151,12 +166,12 @@
       overflow: hidden;
     }
 
-    /* Header Dot Pattern */
+    /* Header Dot Pattern (subtiler, Report-Style) */
     .card-header::before {
       content: '';
       position: absolute;
       inset: 0;
-      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
       background-size: 16px 16px;
       pointer-events: none;
     }
@@ -176,38 +191,49 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       WARMTONE BADGE
+       TRUST BADGE (Report-Gold Style - goldener, weichere Border)
     ══════════════════════════════════════════════════════════════ */
     .trust-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.45rem;
       background: linear-gradient(135deg, var(--warm-100) 0%, #fff9e6 100%);
-      border: 1px solid var(--warm-200);
+      border: 1px solid rgba(201,162,39,0.25);
       border-radius: 50px;
-      padding: 0.5rem 1rem;
-      font-size: 0.8rem;
+      padding: 0.45rem 0.95rem;
+      font-size: 0.78rem;
       font-weight: 500;
       color: #7a6012;
       margin-bottom: 1.5rem;
     }
 
     .trust-badge svg {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       fill: var(--warm-500);
     }
 
+    @media (prefers-color-scheme: dark) {
+      .trust-badge {
+        background: linear-gradient(135deg, rgba(201,162,39,0.15) 0%, rgba(201,162,39,0.08) 100%);
+        border-color: rgba(201,162,39,0.3);
+        color: var(--warm-300);
+      }
+      .trust-badge svg {
+        fill: var(--warm-400);
+      }
+    }
+
     /* ══════════════════════════════════════════════════════════════
-       TYPOGRAPHY
+       TYPOGRAPHY (Report-Style)
     ══════════════════════════════════════════════════════════════ */
     .page-title {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: 1.85rem;
       font-weight: 700;
-      color: var(--navy-800);
+      color: var(--navy-900);
       margin: 0 0 0.5rem 0;
-      line-height: 1.25;
+      line-height: 1.2;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -222,7 +248,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       FORM ELEMENTS
+       FORM ELEMENTS (Report-Style: off-white bg, 10px radius, 2px border)
     ══════════════════════════════════════════════════════════════ */
     .form-group {
       margin-bottom: 1.25rem;
@@ -243,7 +269,7 @@
       padding: 0.875rem 1rem;
       border-radius: 10px;
       border: 2px solid var(--border-light);
-      background: var(--bg-page);
+      background: #fafbfc;
       color: var(--text-primary);
       outline: none;
       transition: var(--transition-fast);
@@ -256,7 +282,7 @@
     .form-input:focus {
       border-color: var(--navy-400);
       background: var(--bg-card);
-      box-shadow: 0 0 0 3px rgba(42,106,158,0.12);
+      box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
     }
 
     @media (prefers-color-scheme: dark) {
@@ -271,7 +297,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       PREMIUM CTA BUTTON
+       PREMIUM CTA BUTTON (Report-Style: gradient + inner glow + scale)
     ══════════════════════════════════════════════════════════════ */
     .btn-primary {
       display: inline-flex;
@@ -284,15 +310,26 @@
       font-weight: 600;
       padding: 0.95rem 1.75rem;
       border: none;
-      border-radius: 50px;
+      border-radius: 10px;
       cursor: pointer;
       transition: var(--transition-base);
       background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-800) 100%);
       color: #ffffff;
       box-shadow:
-        0 2px 8px rgba(14,30,54,0.25),
+        0 4px 14px rgba(14,30,54,0.25),
         inset 0 1px 0 rgba(255,255,255,0.1);
       margin-top: 0.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Inner Glow */
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 50%);
+      pointer-events: none;
     }
 
     .btn-primary:hover {
@@ -314,55 +351,59 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       HELP BOX (Report Info-Box Style)
+       HELP BOX (Report Info-Box Style - subtiler)
     ══════════════════════════════════════════════════════════════ */
     .help-box {
       margin-top: 1.75rem;
-      padding: 1.25rem 1.5rem;
-      background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
-      border: 1px solid #dbeafe;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      padding: 1.1rem 1.25rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
 
     @media (prefers-color-scheme: dark) {
       .help-box {
-        background: linear-gradient(135deg, rgba(30,64,175,0.12) 0%, rgba(37,99,235,0.08) 100%);
-        border-color: rgba(59,130,246,0.25);
+        background: linear-gradient(135deg, rgba(30,64,175,0.08) 0%, rgba(37,99,235,0.04) 100%);
+        border-color: rgba(59,130,246,0.2);
       }
     }
 
     .help-box h2 {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      color: #1e40af;
-      margin-bottom: 0.75rem;
+      color: var(--navy-700);
+      margin-bottom: 0.6rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
 
     .help-box h2::before {
       content: 'ℹ';
-      font-size: 1rem;
+      font-size: 0.9rem;
+      color: var(--navy-500);
     }
 
     @media (prefers-color-scheme: dark) {
       .help-box h2 {
-        color: #93c5fd;
+        color: var(--navy-200);
+      }
+      .help-box h2::before {
+        color: var(--navy-300);
       }
     }
 
     .help-box ul {
       margin: 0;
-      padding-left: 1.5rem;
+      padding-left: 1.25rem;
     }
 
     .help-box li {
-      font-size: 0.875rem;
-      color: #1e3a5f;
-      margin: 0.5rem 0;
-      line-height: 1.55;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin: 0.35rem 0;
+      line-height: 1.5;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -372,23 +413,23 @@
     }
 
     .help-box code {
-      background: #e0e7ff;
-      padding: 0.15rem 0.4rem;
+      background: #e8eef4;
+      padding: 0.1rem 0.35rem;
       border-radius: 4px;
-      font-size: 0.8rem;
-      color: #3730a3;
+      font-size: 0.78rem;
+      color: var(--navy-700);
       font-family: 'SF Mono', Monaco, Consolas, monospace;
     }
 
     @media (prefers-color-scheme: dark) {
       .help-box code {
-        background: rgba(99,102,241,0.2);
-        color: #a5b4fc;
+        background: rgba(99,102,241,0.15);
+        color: var(--navy-200);
       }
     }
 
     .help-box a {
-      color: #2563eb;
+      color: var(--navy-500);
       text-decoration: none;
       font-weight: 500;
     }
@@ -399,20 +440,20 @@
 
     @media (prefers-color-scheme: dark) {
       .help-box a {
-        color: #60a5fa;
+        color: var(--navy-300);
       }
     }
 
     /* ══════════════════════════════════════════════════════════════
-       LOGO BAR (Report-Style with Larger Logos)
+       LOGO BAR (Report-Style: pill containers, 44-48px logos)
     ══════════════════════════════════════════════════════════════ */
     .logo-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      margin-top: 2rem;
+      gap: 0.85rem;
+      margin-top: 1.75rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--border-light);
     }
@@ -421,22 +462,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--bg-page);
+      background: var(--bg-card);
       border: 1px solid var(--border-light);
       border-radius: 10px;
-      padding: 0.6rem 1rem;
+      padding: 0.65rem 1rem;
       transition: var(--transition-fast);
     }
 
     .logo-pill:hover {
       border-color: var(--border-medium);
-      background: var(--bg-card);
+      background: var(--bg-page);
+      transform: translateY(-1px);
     }
 
     .logo-pill img {
       height: 44px;
       width: auto;
-      opacity: 0.9;
+      opacity: 0.88;
       transition: var(--transition-fast);
     }
 
@@ -450,14 +492,14 @@
 
     @media (prefers-color-scheme: dark) {
       .logo-pill {
-        background: rgba(14,30,54,0.4);
+        background: rgba(14,30,54,0.5);
         border-color: var(--border-medium);
       }
       .logo-pill:hover {
-        background: rgba(14,30,54,0.6);
+        background: rgba(14,30,54,0.7);
       }
       .logo-pill img {
-        filter: brightness(0.95);
+        filter: brightness(0.92);
       }
       .logo-pill:hover img {
         filter: brightness(1);
@@ -561,7 +603,7 @@
       .btn-primary { padding: 1rem 1.5rem; }
 
       .logo-bar {
-        gap: 0.75rem;
+        gap: 0.65rem;
         padding-top: 1.25rem;
       }
 
@@ -569,8 +611,8 @@
         padding: 0.5rem 0.75rem;
       }
 
-      .logo-pill img { height: 36px; }
-      .logo-pill.main-logo img { height: 32px; }
+      .logo-pill img { height: 40px; }
+      .logo-pill.main-logo img { height: 36px; }
 
       .toast-stack {
         right: 12px;
@@ -583,9 +625,17 @@
         max-width: none;
       }
     }
+
+    @media (max-width: 480px) {
+      .logo-pill img { height: 36px; }
+      .logo-pill.main-logo img { height: 32px; }
+    }
   </style>
 </head>
 <body>
+<!-- Secondary Warmtone Blob -->
+<div class="warmtone-blob-secondary"></div>
+
 <div class="page-wrapper">
   <div class="app-shell">
     <div class="premium-card">
@@ -593,7 +643,7 @@
         <h1 class="brand-title">KI-Sicherheit.jetzt</h1>
       </header>
       <div class="card-body">
-        <!-- Trust Badge -->
+        <!-- Trust Badge (Report-Gold Style) -->
         <div class="trust-badge">
           <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
           TÜV-zertifiziert · steuerlich absetzbar
@@ -624,7 +674,7 @@
           <p id="err" class="message error" role="alert"></p>
         </form>
 
-        <!-- Help Box -->
+        <!-- Help Box (Report Info-Box Style) -->
         <div class="help-box" aria-labelledby="help-title">
           <h2 id="help-title">Hilfe bei Problemen</h2>
           <ul>
