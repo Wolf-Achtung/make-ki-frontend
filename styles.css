@@ -102,9 +102,20 @@ body.mk-background::after {
   z-index: 1;
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 2rem;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* Tax/Note hint */
+.mk-note {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--mk-text-secondary);
+  opacity: 0.85;
 }
 
 /* Shared Card */
