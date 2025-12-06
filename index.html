@@ -5,11 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KI-Check Pro — KI-Sicherheit.jetzt</title>
   <meta name="description" content="KI-Status-Report: DSGVO-konform, EU AI Act ready — jetzt Voll-Check starten.">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="preload" href="config.js" as="script">
   <style>
+    /*
+     * ========================================
+     * DESIGN SYSTEM – KI-Sicherheit.jetzt
+     * Source of Truth for index.html & login.html
+     * ========================================
+     */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      /* Navy & Warm Palette */
+      --color-navy: #0d2b4a;
+      --color-navy-light: #1a4a6e;
+      --color-navy-dark: #091d32;
+      --color-warm: #f5f0e8;
+      --color-warm-light: #faf8f4;
+      --color-accent: #c9a227;
+      --color-accent-light: #e8c94b;
+
+      /* Functional Colors */
       --color-bg-start: #f0f5fa;
       --color-bg-end: #e8f0f8;
       --color-card: #ffffff;
@@ -20,110 +40,195 @@
       --color-text-muted: #4a6572;
       --color-border: #dbe5ed;
       --color-badge-bg: #f8fafc;
-      --radius-card: 20px;
-      --radius-button: 12px;
-      --radius-badge: 10px;
-      --shadow-card: 0 8px 32px rgba(15, 60, 90, 0.08), 0 2px 8px rgba(15, 60, 90, 0.04);
+      --color-input-bg: #f8fafc;
+      --color-info-bg: #eff6ff;
+      --color-info-border: #dbeafe;
+      --color-info-text: #1e40af;
+      --color-success: #10b981;
+
+      /* Spacing & Radius */
+      --radius-card: 16px;
+      --radius-button: 10px;
+      --radius-input: 8px;
+      --radius-badge: 8px;
+
+      /* Shadows */
+      --shadow-card: 0 8px 32px rgba(13, 43, 74, 0.10), 0 2px 8px rgba(13, 43, 74, 0.05);
       --shadow-button: 0 4px 14px var(--color-primary-glow);
       --shadow-button-hover: 0 6px 20px var(--color-primary-glow);
+
+      /* Typography */
+      --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-mono: 'Share Tech Mono', 'SF Mono', Monaco, Consolas, monospace;
     }
 
+    /* Background with Dot Matrix */
     body {
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
+      font-family: var(--font-sans);
+      background: linear-gradient(145deg, var(--color-bg-start) 0%, var(--color-bg-end) 50%, var(--color-warm-light) 100%);
       min-height: 100vh;
       color: var(--color-text);
       line-height: 1.6;
-      padding: 3rem 1.5rem;
+      position: relative;
     }
 
-    .container {
-      max-width: 580px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    /* Eyebrow Label */
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--color-badge-bg);
-      border: 1px solid var(--color-border);
-      border-radius: 50px;
-      padding: 0.4rem 1rem;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--color-primary);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 1.5rem;
-    }
-
-    .eyebrow::before {
+    body::before {
       content: '';
-      width: 8px;
-      height: 8px;
-      background: #10b981;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(13, 43, 74, 0.03) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -30%;
+      right: -20%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(ellipse, rgba(201, 162, 39, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .content-card {
+    /* Layout Wrapper */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      padding: 2.5rem 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-shell {
+      max-width: 520px;
+      width: 100%;
+    }
+
+    /* Premium Card */
+    .premium-card {
       background: var(--color-card);
       border-radius: var(--radius-card);
       box-shadow: var(--shadow-card);
-      padding: 2.5rem 2.5rem 2rem;
+      overflow: hidden;
+      border: 1px solid rgba(13, 43, 74, 0.06);
     }
 
-    h1 {
-      font-size: 2rem;
+    /* Card Header */
+    .card-header {
+      background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-light) 100%);
+      padding: 1.25rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 16px 16px;
+      pointer-events: none;
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Trust Badge */
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      background: var(--color-warm);
+      font-size: 0.78rem;
+      color: var(--color-navy);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .trust-badge::before {
+      content: '✓';
+      color: var(--color-success);
       font-weight: 700;
-      color: var(--color-text);
-      margin: 0 0 1rem 0;
-      line-height: 1.25;
-      letter-spacing: -0.02em;
     }
 
-    .lead {
+    /* Card Body */
+    .card-body {
+      padding: 2rem 2rem 1.75rem;
+    }
+
+    /* Page Title */
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0 0 0.75rem 0;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+
+    /* Subtitle / Lead */
+    .page-subtitle {
       font-size: 1rem;
       color: var(--color-text-muted);
-      margin-bottom: 1.75rem;
-      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      line-height: 1.65;
     }
 
-    .lead strong {
+    .page-subtitle strong {
       color: var(--color-text);
       font-weight: 600;
     }
 
+    /* Features List */
     .features-list {
       list-style: none;
-      margin: 0 0 2rem 0;
+      margin: 0 0 1.75rem 0;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      gap: 0.55rem;
     }
 
     .features-list li {
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
+      gap: 0.65rem;
       color: var(--color-text-muted);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+      line-height: 1.5;
     }
 
     .features-list li::before {
       content: '✓';
-      color: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-success);
       font-weight: 700;
-      font-size: 1rem;
-      line-height: 1.5;
+      font-size: 0.75rem;
+      border-radius: 50%;
+      margin-top: 1px;
     }
 
     .features-list li strong {
@@ -131,16 +236,19 @@
       font-weight: 600;
     }
 
+    /* CTA Section */
     .cta-section {
-      margin: 2rem 0 0;
+      margin: 1.75rem 0 0;
     }
 
-    .button {
+    /* Primary Button */
+    .btn-primary {
       background: var(--color-primary);
       color: #fff;
       border: none;
-      padding: 1rem 2rem;
-      font-size: 1rem;
+      padding: 0.9rem 1.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
       font-weight: 600;
       border-radius: var(--radius-button);
       cursor: pointer;
@@ -153,40 +261,41 @@
       box-shadow: var(--shadow-button);
     }
 
-    .button:hover {
+    .btn-primary:hover {
       background: var(--color-primary-dark);
       transform: translateY(-2px);
       box-shadow: var(--shadow-button-hover);
     }
 
-    .button::after {
+    .btn-primary::after {
       content: '→';
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       transition: transform 0.2s;
     }
 
-    .button:hover::after {
+    .btn-primary:hover::after {
       transform: translateX(3px);
     }
 
+    /* Testimonials Section */
     .testimonials-section {
-      margin-top: 2.5rem;
-      padding-top: 1.75rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
       border-top: 1px solid var(--color-border);
     }
 
     .testimonials-section h2 {
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       color: var(--color-text-muted);
       font-weight: 600;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.65rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
 
     .testimonial-slider {
       position: relative;
-      height: 48px;
+      height: 44px;
       overflow: hidden;
     }
 
@@ -199,116 +308,154 @@
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
       color: var(--color-text);
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-style: italic;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
     .testimonial.show {
       opacity: 1;
     }
 
-    /* Badge Row - Pill Style */
-    .badge-row {
+    /* Logo Bar */
+    .logo-bar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 0.75rem;
-      margin-top: 2rem;
+      gap: 0.6rem;
+      margin-top: 1.75rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--color-border);
     }
 
-    .badge-pill {
+    .logo-pill {
       display: flex;
       align-items: center;
       justify-content: center;
       background: var(--color-badge-bg);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-badge);
-      padding: 0.5rem 0.85rem;
+      padding: 0.45rem 0.75rem;
       transition: all 0.2s;
     }
 
-    .badge-pill:hover {
+    .logo-pill:hover {
       border-color: #c5d5e4;
       background: #fff;
     }
 
-    .badge-pill img {
-      height: 28px;
+    .logo-pill img {
+      height: 44px;
       width: auto;
-      opacity: 0.9;
+      opacity: 0.92;
     }
 
-    .badge-pill.main-logo img {
-      height: 24px;
+    .logo-pill.main-logo img {
+      height: 40px;
     }
 
+    /* Responsive */
     @media (max-width: 640px) {
-      body { padding: 1.5rem 1rem; }
-      .content-card { padding: 2rem 1.5rem 1.5rem; border-radius: 16px; }
-      h1 { font-size: 1.65rem; }
-      .button { width: 100%; }
-      .badge-row { gap: 0.5rem; }
-      .badge-pill { padding: 0.4rem 0.65rem; }
-      .badge-pill img { height: 24px; }
-      .badge-pill.main-logo img { height: 20px; }
+      .page-wrapper { padding: 1.25rem 1rem; }
+      .card-header { padding: 1rem 1.5rem; }
+      .brand-title { font-size: 1.15rem; }
+      .card-body { padding: 1.5rem 1.5rem 1.25rem; }
+      .page-title { font-size: 1.5rem; }
+      .btn-primary { width: 100%; }
+      .logo-bar { gap: 0.4rem; }
+      .logo-pill { padding: 0.35rem 0.55rem; }
+      .logo-pill img { height: 36px; }
+      .logo-pill.main-logo img { height: 32px; }
+    }
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg-start: #0f1a24;
+        --color-bg-end: #162231;
+        --color-card: #1c2a3a;
+        --color-text: #e8ecf0;
+        --color-text-muted: #94a3b8;
+        --color-border: #2d3f52;
+        --color-badge-bg: #1e2d3d;
+        --color-input-bg: #1e2d3d;
+        --color-info-bg: #1e2d3d;
+        --color-info-border: #2d4055;
+        --color-warm: #1e2d3d;
+        --color-warm-light: #162231;
+      }
+      .card-header {
+        background: linear-gradient(135deg, #0a1929 0%, #0d2b4a 100%);
+      }
+      .trust-badge {
+        background: var(--color-navy-dark);
+        color: #e8ecf0;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="eyebrow">KI-Sicherheit.jetzt</div>
+<div class="page-wrapper">
+  <div class="app-shell">
+    <div class="premium-card">
+      <header class="card-header">
+        <h1 class="brand-title">KI-Sicherheit.jetzt</h1>
+      </header>
 
-  <div class="content-card">
-    <h1>Zertifiziert.<br>Dokumentiert.<br>KI‑konform.</h1>
-
-    <p class="lead">
-      Der <strong>KI‑Check‑Report</strong> liefert Ihrem Unternehmen eine strukturierte Einschätzung Ihres aktuellen und möglichen künftigen KI‑Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.
-    </p>
-
-    <ul class="features-list">
-      <li><strong>DSGVO- & EU AI Act‑konform</strong></li>
-      <li><strong>mit detaillierter Risikoanalyse</strong></li>
-      <li><strong>mit konkreten Empfehlungen & Tools</strong></li>
-      <li><strong>TÜV‑zertifizierte KI-Beratung</strong></li>
-    </ul>
-
-    <section class="cta-section">
-      <a id="ctaLogin" href="login.html" class="button">Jetzt KI-Check starten</a>
-    </section>
-
-    <section class="testimonials-section">
-      <h2>Das sagen unsere Kunden</h2>
-      <div class="testimonial-slider">
-        <div class="testimonial show">„Endlich konkrete Maßnahmen statt nur Theorie."</div>
-        <div class="testimonial">„Perfekt für die Investor-Kommunikation."</div>
-        <div class="testimonial">„EU AI Act? Jetzt weiß ich, wo ich stehe."</div>
-        <div class="testimonial">„Schneller Check, klare Handlungsempfehlungen."</div>
-        <div class="testimonial">„Spart mir Stunden bei der Risikoanalyse."</div>
-        <div class="testimonial">„Zeigt sofort die DSGVO-Lücken auf."</div>
-        <div class="testimonial">„Strukturiert, verständlich, umsetzbar."</div>
+      <div class="trust-badge">
+        TÜV-zertifiziert · steuerlich absetzbar
       </div>
-    </section>
 
-    <div class="badge-row">
-      <div class="badge-pill main-logo">
-        <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
-      </div>
-      <div class="badge-pill">
-        <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
-      </div>
-      <div class="badge-pill">
-        <img src="badges/dsgvo.svg" alt="DSGVO konform">
-      </div>
-      <div class="badge-pill">
-        <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
-      </div>
-      <div class="badge-pill">
-        <img src="badges/ki-ready-2025.webp" alt="KI‑Ready 2025">
+      <div class="card-body">
+        <h2 class="page-title">Zertifiziert.<br>Dokumentiert.<br>KI-konform.</h2>
+
+        <p class="page-subtitle">
+          Der <strong>KI-Check-Report</strong> liefert Ihrem Unternehmen eine strukturierte Einschaetzung Ihres aktuellen und moeglichen kuenftigen KI-Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.
+        </p>
+
+        <ul class="features-list">
+          <li><strong>DSGVO- & EU AI Act-konform</strong></li>
+          <li><strong>mit detaillierter Risikoanalyse</strong></li>
+          <li><strong>mit konkreten Empfehlungen & Tools</strong></li>
+          <li><strong>TÜV-zertifizierte KI-Beratung</strong></li>
+        </ul>
+
+        <section class="cta-section">
+          <a id="ctaLogin" href="login.html" class="btn-primary">Jetzt KI-Check starten</a>
+        </section>
+
+        <section class="testimonials-section">
+          <h2>Das sagen unsere Kunden</h2>
+          <div class="testimonial-slider">
+            <div class="testimonial show">„Endlich konkrete Massnahmen statt nur Theorie."</div>
+            <div class="testimonial">„Perfekt fuer die Investor-Kommunikation."</div>
+            <div class="testimonial">„EU AI Act? Jetzt weiss ich, wo ich stehe."</div>
+            <div class="testimonial">„Schneller Check, klare Handlungsempfehlungen."</div>
+            <div class="testimonial">„Spart mir Stunden bei der Risikoanalyse."</div>
+            <div class="testimonial">„Zeigt sofort die DSGVO-Luecken auf."</div>
+            <div class="testimonial">„Strukturiert, verstaendlich, umsetzbar."</div>
+          </div>
+        </section>
+
+        <div class="logo-bar">
+          <div class="logo-pill main-logo">
+            <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div class="logo-pill">
+            <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
+          </div>
+          <div class="logo-pill">
+            <img src="badges/dsgvo.svg" alt="DSGVO konform">
+          </div>
+          <div class="logo-pill">
+            <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+          </div>
+          <div class="logo-pill">
+            <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025">
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -325,22 +472,6 @@ function showTestimonial(){
 }
 showTestimonial();
 setInterval(showTestimonial, 4000);
-
-// Optional: Demo-Link
-(function(){
-  const DEMO_OK = !!(window.__CONFIG__ && window.__CONFIG__.BACKEND_BASE_URL);
-  const demo = document.getElementById('ctaDemo');
-  if(!DEMO_OK){ demo.style.display = 'none'; return; }
-  demo.addEventListener('click', async (e) => {
-    e.preventDefault();
-    const url = (window.__CONFIG__.BACKEND_BASE_URL || '').replace(/\/$/, '') + '/healthz';
-    try{
-      const r = await fetch(url, { mode:'cors' });
-      const ok = r.ok ? '✅ erreichbar' : '⚠️ nicht erreichbar';
-      alert('Backend‑Status: ' + ok);
-    }catch(_){ alert('Backend‑Status: ⚠️ nicht erreichbar'); }
-  });
-})();
 </script>
 
 </body>
