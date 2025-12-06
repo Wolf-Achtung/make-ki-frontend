@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
   <link rel="preload" href="config.js" as="script">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -453,7 +454,7 @@
     }
   </style>
 </head>
-<body>
+<body class="mk-background">
 
 <div class="warmtone-blob-secondary"></div>
 
@@ -489,23 +490,55 @@
         <div class="testimonial">„Zeigt sofort die DSGVO-Lücken auf.“</div>
         <div class="testimonial">„Strukturiert, verständlich, umsetzbar.“</div>
       </div>
-    </section>
 
-    <div class="logo-bar">
-      <div class="logo-pill main-logo">
-        <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
-      </div>
-      <div class="logo-pill">
-        <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert" onerror="this.parentElement.style.display='none'">
-      </div>
-      <div class="logo-pill">
-        <img src="badges/dsgvo.svg" alt="DSGVO konform" onerror="this.parentElement.style.display='none'">
-      </div>
-      <div class="logo-pill">
-        <img src="badges/eu-ai.svg" alt="EU AI Act Ready" onerror="this.parentElement.style.display='none'">
-      </div>
-      <div class="logo-pill">
-        <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025" onerror="this.parentElement.style.display='none'">
+      <h1>Zertifiziert.<br>Dokumentiert.<br>KI-konform.</h1>
+
+      <p class="mk-subtitle">
+        Der <strong>KI-Check-Report</strong> liefert Ihrem Unternehmen eine strukturierte Einschätzung Ihres aktuellen und möglichen künftigen KI-Einsatzes – rechtlich, datenschutzkonform und steuerlich dokumentierbar.
+      </p>
+
+      <ul class="mk-features-list">
+        <li><strong>DSGVO- & EU AI Act-konform</strong></li>
+        <li><strong>mit detaillierter Risikoanalyse</strong></li>
+        <li><strong>mit konkreten Empfehlungen & Tools</strong></li>
+        <li><strong>TÜV-zertifizierte KI-Beratung</strong></li>
+      </ul>
+
+      <a id="ctaLogin" href="login.html" class="mk-btn-primary">
+        Jetzt KI-Check starten <span class="arrow">→</span>
+      </a>
+
+      <!-- Testimonials -->
+      <section class="mk-testimonials">
+        <h3>Das sagen unsere Kunden</h3>
+        <div class="mk-testimonial-slider">
+          <div class="mk-testimonial show">„Endlich konkrete Maßnahmen statt nur Theorie."</div>
+          <div class="mk-testimonial">„Perfekt für die Investor-Kommunikation."</div>
+          <div class="mk-testimonial">„EU AI Act? Jetzt weiß ich, wo ich stehe."</div>
+          <div class="mk-testimonial">„Schneller Check, klare Handlungsempfehlungen."</div>
+          <div class="mk-testimonial">„Spart mir Stunden bei der Risikoanalyse."</div>
+          <div class="mk-testimonial">„Zeigt sofort die DSGVO-Lücken auf."</div>
+          <div class="mk-testimonial">„Strukturiert, verständlich, umsetzbar."</div>
+        </div>
+      </section>
+
+      <!-- Logo Bar -->
+      <div class="mk-logo-bar">
+        <div class="mk-logo-pill main-logo">
+          <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
+        </div>
+        <div class="mk-logo-pill">
+          <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert" onerror="this.parentElement.style.display='none'">
+        </div>
+        <div class="mk-logo-pill">
+          <img src="badges/dsgvo.svg" alt="DSGVO konform" onerror="this.parentElement.style.display='none'">
+        </div>
+        <div class="mk-logo-pill">
+          <img src="badges/eu-ai.svg" alt="EU AI Act Ready" onerror="this.parentElement.style.display='none'">
+        </div>
+        <div class="mk-logo-pill">
+          <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025" onerror="this.parentElement.style.display='none'">
+        </div>
       </div>
     </div>
   </div>
@@ -514,7 +547,7 @@
 <script src="config.js"></script>
 <script>
 // Testimonials Rotation
-const testimonials = document.querySelectorAll('.testimonial');
+const testimonials = document.querySelectorAll('.mk-testimonial');
 let idx = 0;
 function showTestimonial(){
   testimonials.forEach((t,i)=>t.classList.toggle('show', i===idx));

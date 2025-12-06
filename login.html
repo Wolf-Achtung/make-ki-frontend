@@ -601,43 +601,55 @@
 <body>
 <div class="warmtone-blob-secondary"></div>
 
-<div class="page-wrapper">
-  <div class="app-shell">
-    <div class="premium-card">
-      <header class="card-header">
-        <h1 class="brand-title">KI-Sicherheit.jetzt</h1>
-      </header>
-      <div class="card-body">
-        <!-- Trust Badge (Report-Gold Style) -->
-        <div class="trust-badge">
-          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-          TÜV-zertifiziert · steuerlich absetzbar
+<!-- Secondary Warmtone Blob -->
+<div class="mk-warmblob-secondary"></div>
+
+<div class="mk-page-wrapper">
+  <div class="mk-card">
+    <header class="mk-card-header">
+      <h1 class="mk-brand-title">KI-Sicherheit.jetzt</h1>
+    </header>
+    <div class="mk-card-body">
+      <!-- Trust Badge -->
+      <div class="mk-trust-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        TÜV-zertifiziert · steuerlich absetzbar
+      </div>
+
+      <h2 class="mk-title">Willkommen zurück</h2>
+      <p class="mk-subtitle">Melden Sie sich mit Ihrer E-Mail an. Sie erhalten einen sicheren 6-stelligen Code.</p>
+
+      <form id="login-form" novalidate>
+        <div class="mk-form-group">
+          <label class="mk-form-label" for="email">E-Mail-Adresse</label>
+          <input type="email" id="email" name="email" class="mk-form-input" placeholder="ihre.email@firma.de" autocomplete="email" required>
         </div>
 
-        <h2 class="page-title">Willkommen zurück</h2>
-        <p class="page-subtitle">Melden Sie sich mit Ihrer E-Mail an. Sie erhalten einen sicheren 6-stelligen Code.</p>
+        <button type="button" class="mk-btn-primary" id="btn-request">
+          Code anfordern
+        </button>
 
-        <form id="login-form" novalidate>
-          <div class="form-group">
-            <label class="form-label" for="email">E-Mail-Adresse</label>
-            <input type="email" id="email" name="email" class="form-input" placeholder="ihre.email@firma.de" autocomplete="email" required>
+        <div id="code-area" style="display:none">
+          <div class="mk-form-group" style="margin-top:1.25rem">
+            <label class="mk-form-label" for="code">Bestätigungscode</label>
+            <input type="text" id="code" name="code" class="mk-form-input" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
           </div>
+          <button type="button" class="mk-btn-primary" id="btn-login">Einloggen</button>
+        </div>
 
-          <button type="button" class="btn-primary" id="btn-request">
-            Code anfordern
-          </button>
+        <p id="msg" class="mk-message" role="status" aria-live="polite"></p>
+        <p id="err" class="mk-message error" role="alert"></p>
+      </form>
 
-          <div id="code-area" style="display:none">
-            <div class="form-group" style="margin-top:1.25rem">
-              <label class="form-label" for="code">Bestätigungscode</label>
-              <input type="text" id="code" name="code" class="form-input" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
-            </div>
-            <button type="button" class="btn-primary" id="btn-login">Einloggen</button>
-          </div>
-
-          <p id="msg" class="message" role="status" aria-live="polite"></p>
-          <p id="err" class="message error" role="alert"></p>
-        </form>
+      <!-- Help Box -->
+      <div class="mk-help-box" aria-labelledby="help-title">
+        <h4 id="help-title">Hilfe bei Problemen</h4>
+        <ul>
+          <li>Kein Code? Prüfen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu 2 Minuten.</li>
+          <li>Erneut senden: Klicken Sie nochmal auf <em>Code anfordern</em>.</li>
+          <li>E-Mail nicht freigeschaltet? Kontakt: <a href="mailto:support@ki-sicherheit.jetzt">support@ki-sicherheit.jetzt</a></li>
+        </ul>
+      </div>
 
         <div class="help-box" aria-labelledby="help-title">
           <h2 id="help-title">Hilfe bei Problemen</h2>
