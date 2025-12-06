@@ -71,11 +71,9 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       BASE STYLES (Report-identisch)
-    ══════════════════════════════════════════════════════════════ */
     html { scroll-behavior: smooth; }
 
+    /* Background with Dot Matrix */
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: linear-gradient(135deg, #f0f5fa 0%, #faf8f5 50%, #f5f8fc 100%);
@@ -129,9 +127,7 @@
       filter: blur(50px);
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       LAYOUT (zentriert)
-    ══════════════════════════════════════════════════════════════ */
+    /* Layout */
     .page-wrapper {
       position: relative;
       z-index: 1;
@@ -147,9 +143,7 @@
       margin: auto;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       PREMIUM CARD (Report-identisch: 14px, shadow rgba(0,0,0,0.07))
-    ══════════════════════════════════════════════════════════════ */
+    /* Premium Card */
     .premium-card {
       background: var(--bg-card);
       border-radius: 14px;
@@ -166,7 +160,6 @@
       overflow: hidden;
     }
 
-    /* Header Dot Pattern (subtiler, Report-Style) */
     .card-header::before {
       content: '';
       position: absolute;
@@ -190,9 +183,7 @@
       padding: 2rem 2rem 1.75rem;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       TRUST BADGE (Report-Gold Style - goldener, weichere Border)
-    ══════════════════════════════════════════════════════════════ */
+    /* Trust Badge */
     .trust-badge {
       display: inline-flex;
       align-items: center;
@@ -224,9 +215,6 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       TYPOGRAPHY (Report-Style)
-    ══════════════════════════════════════════════════════════════ */
     .page-title {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: 1.85rem;
@@ -247,9 +235,6 @@
       line-height: 1.6;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       FORM ELEMENTS (Report-Style: off-white bg, 10px radius, 2px border)
-    ══════════════════════════════════════════════════════════════ */
     .form-group {
       margin-bottom: 1.25rem;
     }
@@ -296,9 +281,6 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       PREMIUM CTA BUTTON (Report-Style: gradient + inner glow + scale)
-    ══════════════════════════════════════════════════════════════ */
     .btn-primary {
       display: inline-flex;
       align-items: center;
@@ -323,7 +305,6 @@
       overflow: hidden;
     }
 
-    /* Inner Glow */
     .btn-primary::before {
       content: '';
       position: absolute;
@@ -350,9 +331,6 @@
       transform: none;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       HELP BOX (Report Info-Box Style - subtiler)
-    ══════════════════════════════════════════════════════════════ */
     .help-box {
       margin-top: 1.75rem;
       padding: 1.1rem 1.25rem;
@@ -444,9 +422,6 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       LOGO BAR (Report-Style: pill containers, 44-48px logos)
-    ══════════════════════════════════════════════════════════════ */
     .logo-bar {
       display: flex;
       flex-wrap: wrap;
@@ -506,9 +481,6 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       MESSAGES & FEEDBACK
-    ══════════════════════════════════════════════════════════════ */
     .message {
       font-size: 0.9rem;
       margin-top: 1rem;
@@ -544,9 +516,6 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       TOASTS
-    ══════════════════════════════════════════════════════════════ */
     .toast-stack {
       position: fixed;
       right: 20px;
@@ -590,9 +559,6 @@
     }
     .toast .close:hover { opacity: 1; }
 
-    /* ══════════════════════════════════════════════════════════════
-       RESPONSIVE
-    ══════════════════════════════════════════════════════════════ */
     @media (max-width: 640px) {
       .page-wrapper { padding: 1rem; }
 
@@ -633,7 +599,6 @@
   </style>
 </head>
 <body>
-<!-- Secondary Warmtone Blob -->
 <div class="warmtone-blob-secondary"></div>
 
 <div class="page-wrapper">
@@ -674,17 +639,16 @@
           <p id="err" class="message error" role="alert"></p>
         </form>
 
-        <!-- Help Box (Report Info-Box Style) -->
         <div class="help-box" aria-labelledby="help-title">
           <h2 id="help-title">Hilfe bei Problemen</h2>
           <ul>
-            <li>Kein Code? Prüfen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu 2 Minuten.</li>
+            <li>Kein Code? Prüfen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu 2&nbsp;Minuten.</li>
             <li>Erneut senden: Klicken Sie nochmal auf <em>Code anfordern</em>.</li>
             <li>E-Mail nicht freigeschaltet? Kontakt: <a href="mailto:support@ki-sicherheit.jetzt">support@ki-sicherheit.jetzt</a></li>
           </ul>
         </div>
 
-        <!-- Logo Bar (Report-Style Pill Layout) -->
+        <!-- Logo Bar -->
         <div class="logo-bar">
           <div class="logo-pill main-logo">
             <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
@@ -707,7 +671,6 @@
   </div>
 </div>
 
-<!-- Toast Container -->
 <div id="toasts" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
 
 <script src="/js/config.js"></script>

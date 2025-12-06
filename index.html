@@ -12,9 +12,6 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ══════════════════════════════════════════════════════════════
-       PREMIUM DESIGN SYSTEM – 1:1 Report-Style
-    ══════════════════════════════════════════════════════════════ */
     :root {
       /* Navy Palette (identisch mit Report) */
       --navy-900: #0a1628;
@@ -45,17 +42,15 @@
       --border-light: #e2e8f0;
       --border-medium: #cbd5e1;
 
-      /* Shadows (Report-Style: rgba(0,0,0,0.07)) */
+      /* Shadows (Report-Style) */
       --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
       --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
       --shadow-lg: 0 8px 24px rgba(0,0,0,0.07);
 
-      /* Transitions */
       --transition-fast: 0.15s ease;
       --transition-base: 0.25s ease;
     }
 
-    /* Dark Mode */
     @media (prefers-color-scheme: dark) {
       :root {
         --text-primary: #e8eef6;
@@ -70,9 +65,6 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       BASE STYLES (Report-identisch)
-    ══════════════════════════════════════════════════════════════ */
     html { scroll-behavior: smooth; }
 
     body {
@@ -91,7 +83,6 @@
       }
     }
 
-    /* Dot Matrix Background (Report-Dichte: 24px) */
     body::before {
       content: '';
       position: fixed;
@@ -102,7 +93,6 @@
       z-index: 0;
     }
 
-    /* Warmtone Blobs (Report-Position & Blur) */
     body::after {
       content: '';
       position: fixed;
@@ -116,7 +106,6 @@
       filter: blur(40px);
     }
 
-    /* Second Warmtone Blob (bottom-left) */
     .warmtone-blob-secondary {
       position: fixed;
       bottom: -10%;
@@ -129,9 +118,6 @@
       filter: blur(50px);
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       LAYOUT (zentriert wie Report)
-    ══════════════════════════════════════════════════════════════ */
     .container {
       max-width: 580px;
       width: 100%;
@@ -143,9 +129,6 @@
       align-items: center;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       EYEBROW BADGE (Report-Hero-Badge Style - Gold)
-    ══════════════════════════════════════════════════════════════ */
     .eyebrow {
       display: inline-flex;
       align-items: center;
@@ -178,9 +161,6 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       PREMIUM CARD (Report-identisch: 14px, shadow rgba(0,0,0,0.07))
-    ══════════════════════════════════════════════════════════════ */
     .content-card {
       background: var(--bg-card);
       border-radius: 14px;
@@ -190,9 +170,6 @@
       width: 100%;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       TYPOGRAPHY (Report-Hero-Style)
-    ══════════════════════════════════════════════════════════════ */
     h1 {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: 2.15rem;
@@ -210,8 +187,8 @@
     .lead {
       font-size: 1rem;
       color: var(--text-secondary);
-      margin-bottom: 1.5rem;
-      line-height: 1.65;
+      margin-bottom: 1.75rem;
+      line-height: 1.7;
     }
 
     .lead strong {
@@ -219,9 +196,6 @@
       font-weight: 600;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       FEATURES LIST (Report-Checkmark Style: Navy)
-    ══════════════════════════════════════════════════════════════ */
     .features-list {
       list-style: none;
       margin: 0 0 1.75rem 0;
@@ -265,9 +239,6 @@
       font-weight: 600;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       CTA BUTTON (Report-Hero Style: gradient + inner glow + scale)
-    ══════════════════════════════════════════════════════════════ */
     .cta-section {
       margin: 1.75rem 0 0;
     }
@@ -276,8 +247,9 @@
       background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-800) 100%);
       color: #ffffff;
       border: none;
-      padding: 1rem 2rem;
-      font-size: 1rem;
+      padding: 0.9rem 1.75rem;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 0.95rem;
       font-weight: 600;
       border-radius: 10px;
       cursor: pointer;
@@ -294,7 +266,6 @@
       overflow: hidden;
     }
 
-    /* Inner Glow */
     .button::before {
       content: '';
       position: absolute;
@@ -325,9 +296,6 @@
       transform: translateX(4px);
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       TESTIMONIALS (Report-Deluxe Style: Serif, warm-cream bg)
-    ══════════════════════════════════════════════════════════════ */
     .testimonials-section {
       margin-top: 2rem;
       padding: 1.5rem;
@@ -376,16 +344,13 @@
       color: var(--text-primary);
       font-size: 0.95rem;
       font-style: italic;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
     .testimonial.show {
       opacity: 1;
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       LOGO BAR (Report-Style: pill containers, 44-48px logos)
-    ══════════════════════════════════════════════════════════════ */
     .logo-bar {
       display: flex;
       flex-wrap: wrap;
@@ -445,9 +410,6 @@
       }
     }
 
-    /* ══════════════════════════════════════════════════════════════
-       RESPONSIVE (Report-aligned breakpoints)
-    ══════════════════════════════════════════════════════════════ */
     @media (max-width: 768px) {
       body { padding: 2rem 1rem; }
 
@@ -493,7 +455,6 @@
 </head>
 <body>
 
-<!-- Secondary Warmtone Blob -->
 <div class="warmtone-blob-secondary"></div>
 
 <div class="container">
@@ -507,9 +468,9 @@
     </p>
 
     <ul class="features-list">
-      <li><strong>DSGVO- & EU AI Act-konform</strong></li>
+      <li><strong>DSGVO- &amp; EU AI Act-konform</strong></li>
       <li><strong>mit detaillierter Risikoanalyse</strong></li>
-      <li><strong>mit konkreten Empfehlungen & Tools</strong></li>
+      <li><strong>mit konkreten Empfehlungen &amp; Tools</strong></li>
       <li><strong>TÜV-zertifizierte KI-Beratung</strong></li>
     </ul>
 
@@ -520,13 +481,13 @@
     <section class="testimonials-section">
       <h2>Das sagen unsere Kunden</h2>
       <div class="testimonial-slider">
-        <div class="testimonial show">„Endlich konkrete Maßnahmen statt nur Theorie."</div>
-        <div class="testimonial">„Perfekt für die Investor-Kommunikation."</div>
-        <div class="testimonial">„EU AI Act? Jetzt weiß ich, wo ich stehe."</div>
-        <div class="testimonial">„Schneller Check, klare Handlungsempfehlungen."</div>
-        <div class="testimonial">„Spart mir Stunden bei der Risikoanalyse."</div>
-        <div class="testimonial">„Zeigt sofort die DSGVO-Lücken auf."</div>
-        <div class="testimonial">„Strukturiert, verständlich, umsetzbar."</div>
+        <div class="testimonial show">„Endlich konkrete Maßnahmen statt nur Theorie.“</div>
+        <div class="testimonial">„Perfekt für die Investor-Kommunikation.“</div>
+        <div class="testimonial">„EU AI Act? Jetzt weiß ich, wo ich stehe.“</div>
+        <div class="testimonial">„Schneller Check, klare Handlungsempfehlungen.“</div>
+        <div class="testimonial">„Spart mir Stunden bei der Risikoanalyse.“</div>
+        <div class="testimonial">„Zeigt sofort die DSGVO-Lücken auf.“</div>
+        <div class="testimonial">„Strukturiert, verständlich, umsetzbar.“</div>
       </div>
     </section>
 
@@ -562,7 +523,7 @@ function showTestimonial(){
 showTestimonial();
 setInterval(showTestimonial, 4000);
 
-// Optional: Demo-Link
+// Optional: Demo-Link (nur falls Element existiert)
 (function(){
   const DEMO_OK = !!(window.__CONFIG__ && window.__CONFIG__.BACKEND_BASE_URL);
   const demo = document.getElementById('ctaDemo');
