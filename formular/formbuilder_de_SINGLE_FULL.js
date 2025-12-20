@@ -8,7 +8,19 @@ function _collectLabelFor(fieldKey, value){
     if (!fld && typeof FIELDS !== 'undefined'){
       fld = FIELDS.find(f => f.key === fieldKey);
     }
-    if(!fld || !Array.isArray(fld.options)) return value || "";
+    if(!fld) return value || "";
+    // Support optgroups
+    if(fld.optgroups && Array.isArray(fld.optgroups)){
+      for(var g=0; g<fld.optgroups.length; g++){
+        var grp = fld.optgroups[g];
+        if(grp.options){
+          var opt = grp.options.find(o => String(o.value) === String(value));
+          if(opt) return opt.label || value || "";
+        }
+      }
+      return value || "";
+    }
+    if(!Array.isArray(fld.options)) return value || "";
     var opt = fld.options.find(o => String(o.value) === String(value));
     return opt ? (opt.label || value || "") : (value || "");
   }catch(e){ return value || ""; }
@@ -54,8 +66,20 @@ function _collectLabelFor(fieldKey, value){
   function renderInput(f) {
     if (f.type === "select") {
       var opts = "<option value=''>Bitte wählen...</option>";
-      for (var i=0; i<f.options.length; i++){
-        opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>";
+      // Unterstützung für optgroups: wenn optgroups vorhanden, als Gruppen rendern
+      if (f.optgroups) {
+        for (var g=0; g<f.optgroups.length; g++){
+          var grp = f.optgroups[g];
+          opts += "<optgroup label='" + grp.label + "'>";
+          for (var o=0; o<grp.options.length; o++){
+            opts += "<option value='" + grp.options[o].value + "'>" + grp.options[o].label + "</option>";
+          }
+          opts += "</optgroup>";
+        }
+      } else {
+        for (var i=0; i<f.options.length; i++){
+          opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>";
+        }
       }
       return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
     }
@@ -262,7 +286,30 @@ function _collectLabelFor(fieldKey, value){
         { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
         { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
       ],
-      description: "(Damit regionale Programme, Ansprechpartner und Quoten automatisch berücksichtigt werden.)"
+      description: "(Damit regionale Programme, Ansprechpartner und Quoten automatisch berücksichtigt werden.)",
+      showIf: function (data) { return data.land === "DE" || !data.land; }
+    },
+    { key: "land", label: "Land (für regionale Förderung & Compliance)", type: "select",
+      optgroups: [
+        { label: "EU", options: [
+          { value: "DE", label: "Deutschland (DE)" }, { value: "AT", label: "Österreich (AT)" },
+          { value: "FR", label: "Frankreich (FR)" }, { value: "IT", label: "Italien (IT)" }, { value: "ES", label: "Spanien (ES)" },
+          { value: "NL", label: "Niederlande (NL)" }, { value: "BE", label: "Belgien (BE)" }, { value: "IE", label: "Irland (IE)" },
+          { value: "PL", label: "Polen (PL)" }, { value: "SE", label: "Schweden (SE)" }, { value: "DK", label: "Dänemark (DK)" },
+          { value: "FI", label: "Finnland (FI)" }, { value: "PT", label: "Portugal (PT)" }, { value: "CZ", label: "Tschechien (CZ)" },
+          { value: "GR", label: "Griechenland (GR)" }, { value: "HU", label: "Ungarn (HU)" }, { value: "RO", label: "Rumänien (RO)" },
+          { value: "other_eu", label: "Anderes EU-Land" }
+        ]},
+        { label: "Europa (Nicht-EU)", options: [
+          { value: "GB", label: "Vereinigtes Königreich (UK)" }, { value: "CH", label: "Schweiz (CH)" }, { value: "NO", label: "Norwegen (NO)" },
+          { value: "IS", label: "Island (IS)" }, { value: "LI", label: "Liechtenstein (LI)" }, { value: "other_europe", label: "Anderes europäisches Land" }
+        ]},
+        { label: "Andere", options: [
+          { value: "other", label: "Nicht-europäisches Land" }
+        ]}
+      ],
+      options: [],
+      description: "(Damit Förderungen, Compliance und länderspezifische Programme korrekt zugeordnet werden.)"
     },
     { key: "hauptleistung", label: "Was ist Ihre Hauptdienstleistung oder Ihr wichtigstes Produkt?", type: "textarea",
       placeholder: "In 2–3 Sätzen oder Stichpunkten: Was bieten Sie an – und was unterscheidet Sie von anderen?",
@@ -482,7 +529,7 @@ function _collectLabelFor(fieldKey, value){
   ];
 
   var blocks = [
-    { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
+    { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "land", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
     { title: "Ziele & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategie & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
@@ -585,7 +632,7 @@ function _collectLabelFor(fieldKey, value){
     saveAutosave();
 
     // Conditionals: re-render, damit showIf greift
-    if (e && e.target && e.target.id === "unternehmensgroesse") {
+    if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "land")) {
       renderStep(); scrollToStepTop(false);
       return;
     }
@@ -691,6 +738,7 @@ function _collectLabelFor(fieldKey, value){
     // ensure required top-level fields for backend (auch in answers gespiegelt)
     payload.branche = data.branche || payload.branche || "";
     payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
+    payload.land = data.land || payload.land || "DE";
     payload.bundesland = data.bundesland || payload.bundesland || "";
     payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
     if (email && payload.answers && typeof payload.answers === "object") {
@@ -807,12 +855,14 @@ function robustSubmitForm(){
     // critical top-level fields
     payload.branche = data.branche || "";
     payload.unternehmensgroesse = data.unternehmensgroesse || data.company_size || "";
+    payload.land = data.land || "DE";
     payload.bundesland = data.bundesland || data.bundesland_code || "";
     payload.hauptleistung = data.hauptleistung || data.main_service || "";
 
     // provide human-readable labels
     try{ payload.branche_label = _collectLabelFor("branche", payload.branche); }catch(_){}
     try{ payload.unternehmensgroesse_label = _collectLabelFor("unternehmensgroesse", payload.unternehmensgroesse); }catch(_){}
+    try{ payload.land_label = _collectLabelFor("land", payload.land); }catch(_){}
     try{ payload.bundesland_label = _collectLabelFor("bundesland", payload.bundesland); }catch(_){}
     try{ payload.jahresumsatz_label = _collectLabelFor("jahresumsatz", data.jahresumsatz || ""); }catch(_){}
 
