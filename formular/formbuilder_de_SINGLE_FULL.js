@@ -287,9 +287,9 @@ function _collectLabelFor(fieldKey, value){
         { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
       ],
       description: "(Damit regionale Programme, Ansprechpartner und Quoten automatisch berücksichtigt werden.)",
-      showIf: function (data) { return data.land === "DE" || !data.land; }
+      showIf: function (data) { return data.country === "DE" || !data.country; }
     },
-    { key: "land", label: "Land (für regionale Förderung & Compliance)", type: "select",
+    { key: "country", label: "Land (für regionale Förderung & Compliance)", type: "select",
       optgroups: [
         { label: "EU", options: [
           { value: "DE", label: "Deutschland (DE)" }, { value: "AT", label: "Österreich (AT)" },
@@ -529,7 +529,7 @@ function _collectLabelFor(fieldKey, value){
   ];
 
   var blocks = [
-    { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "land", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
+    { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
     { title: "Ziele & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategie & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
@@ -632,7 +632,7 @@ function _collectLabelFor(fieldKey, value){
     saveAutosave();
 
     // Conditionals: re-render, damit showIf greift
-    if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "land")) {
+    if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country")) {
       renderStep(); scrollToStepTop(false);
       return;
     }
@@ -738,7 +738,7 @@ function _collectLabelFor(fieldKey, value){
     // ensure required top-level fields for backend (auch in answers gespiegelt)
     payload.branche = data.branche || payload.branche || "";
     payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
-    payload.land = data.land || payload.land || "DE";
+    payload.country = data.country || payload.country || "DE";
     payload.bundesland = data.bundesland || payload.bundesland || "";
     payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
     if (email && payload.answers && typeof payload.answers === "object") {
@@ -855,14 +855,14 @@ function robustSubmitForm(){
     // critical top-level fields
     payload.branche = data.branche || "";
     payload.unternehmensgroesse = data.unternehmensgroesse || data.company_size || "";
-    payload.land = data.land || "DE";
+    payload.country = data.country || "DE";
     payload.bundesland = data.bundesland || data.bundesland_code || "";
     payload.hauptleistung = data.hauptleistung || data.main_service || "";
 
     // provide human-readable labels
     try{ payload.branche_label = _collectLabelFor("branche", payload.branche); }catch(_){}
     try{ payload.unternehmensgroesse_label = _collectLabelFor("unternehmensgroesse", payload.unternehmensgroesse); }catch(_){}
-    try{ payload.land_label = _collectLabelFor("land", payload.land); }catch(_){}
+    try{ payload.country_label = _collectLabelFor("country", payload.country); }catch(_){}
     try{ payload.bundesland_label = _collectLabelFor("bundesland", payload.bundesland); }catch(_){}
     try{ payload.jahresumsatz_label = _collectLabelFor("jahresumsatz", data.jahresumsatz || ""); }catch(_){}
 
