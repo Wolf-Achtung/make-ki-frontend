@@ -65,6 +65,7 @@ function _collectLabelFor(fieldKey, value){
 
   function renderInput(f) {
     if (f.type === "select") {
+      var current = (formData && formData[f.key] != null) ? String(formData[f.key]) : "";
       var opts = "<option value=''>Bitte wählen...</option>";
       // Unterstützung für optgroups: wenn optgroups vorhanden, als Gruppen rendern
       if (f.optgroups) {
@@ -72,13 +73,15 @@ function _collectLabelFor(fieldKey, value){
           var grp = f.optgroups[g];
           opts += "<optgroup label='" + grp.label + "'>";
           for (var o=0; o<grp.options.length; o++){
-            opts += "<option value='" + grp.options[o].value + "'>" + grp.options[o].label + "</option>";
+            var v = String(grp.options[o].value);
+            opts += "<option value='" + v + "'" + (v === current ? " selected" : "") + ">" + grp.options[o].label + "</option>";
           }
           opts += "</optgroup>";
         }
       } else {
         for (var i=0; i<f.options.length; i++){
-          opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>";
+          var v = String(f.options[i].value);
+          opts += "<option value='" + v + "'" + (v === current ? " selected" : "") + ">" + f.options[i].label + "</option>";
         }
       }
       return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
