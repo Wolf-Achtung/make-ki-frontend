@@ -128,9 +128,16 @@
 
   (function init(){
     const token = getToken();
-    if (!token){ window.location.href="/login.html"; return; }
-    const email = getEmailFromJWT(token);
-    if (email) document.getElementById("feedback-email").value = email;
+    if (!token){ window.location.href="/login_en.html"; return; }
+
+    // Email from URL parameter (priority) or JWT
+    const emailParam = qs("email");
+    if (emailParam) {
+      document.getElementById("feedback-email").value = decodeURIComponent(emailParam);
+    } else {
+      const email = getEmailFromJWT(token);
+      if (email) document.getElementById("feedback-email").value = email;
+    }
 
     const map = { solo:'Solo (self‑employed/freelance)', team:'Small team (2–10)', sme:'SME (11–100)', kmu:'SME (11–100)' };
     let v = (qs("variant") || "").toLowerCase();
