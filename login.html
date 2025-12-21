@@ -376,41 +376,60 @@
       line-height: 1.5;
     }
 
+    /* Prominent Error Alert Box */
     .status-msg.error {
-      color: #dc2626;
-    }
-
-    /* Toasts */
-    .toast-stack {
-      position: fixed;
-      right: 20px;
-      bottom: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 9999;
-    }
-
-    .toast {
-      min-width: 280px;
-      max-width: 420px;
-      padding: 1rem 1.25rem;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid #dc2626;
       border-radius: var(--radius-input);
-      color: var(--color-text);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-      border: 1px solid var(--color-border);
-      background: #fff;
+      padding: 1rem 1.25rem;
+      color: #991b1b;
+      font-weight: 500;
       display: flex;
-      gap: 0.75rem;
       align-items: flex-start;
+      gap: 0.75rem;
+      animation: slideIn 0.3s ease-out;
     }
 
-    .toast .title { font-weight: 600; margin-bottom: 0.15rem; }
-    .toast.success { background: #ecfdf5; border-color: #a7f3d0; }
-    .toast.warning { background: #fffbeb; border-color: #fde68a; }
-    .toast.error { background: #fef2f2; border-color: #fecaca; }
-    .toast .close { margin-left: auto; cursor: pointer; font-weight: 700; opacity: 0.5; }
-    .toast .close:hover { opacity: 1; }
+    .status-msg.error:empty {
+      display: none;
+    }
+
+    .status-msg.error::before {
+      content: '!';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      background: #dc2626;
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Success Message */
+    .status-msg:not(.error):not(:empty) {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-left: 4px solid #10b981;
+      border-radius: var(--radius-input);
+      padding: 1rem 1.25rem;
+      color: #065f46;
+      font-weight: 500;
+    }
+
+    /* Hide Toasts - use inline messages instead */
+    .toast-stack {
+      display: none;
+    }
 
     /* Responsive */
     @media (max-width: 640px) {
