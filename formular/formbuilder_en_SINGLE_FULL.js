@@ -8,7 +8,19 @@ function _collectLabelFor(fieldKey, value){
     if (!fld && typeof FIELDS !== 'undefined'){
       fld = FIELDS.find(f => f.key === fieldKey);
     }
-    if(!fld || !Array.isArray(fld.options)) return value || "";
+    if(!fld) return value || "";
+    // Support optgroups
+    if(fld.optgroups && Array.isArray(fld.optgroups)){
+      for(var g=0; g<fld.optgroups.length; g++){
+        var grp = fld.optgroups[g];
+        if(grp.options){
+          var opt = grp.options.find(o => String(o.value) === String(value));
+          if(opt) return opt.label || value || "";
+        }
+      }
+      return value || "";
+    }
+    if(!Array.isArray(fld.options)) return value || "";
     var opt = fld.options.find(o => String(o.value) === String(value));
     return opt ? (opt.label || value || "") : (value || "");
   }catch(e){ return value || ""; }
@@ -53,9 +65,24 @@ function _collectLabelFor(fieldKey, value){
 
   function renderInput(f) {
     if (f.type === "select") {
+      var current = (formData && formData[f.key] != null) ? String(formData[f.key]) : "";
       var opts = "<option value=''>Please select...</option>";
-      for (var i=0; i<f.options.length; i++){
-        opts += "<option value='" + f.options[i].value + "'>" + f.options[i].label + "</option>";
+      // Support for optgroups: if options have 'group' property, render as optgroups
+      if (f.optgroups) {
+        for (var g=0; g<f.optgroups.length; g++){
+          var grp = f.optgroups[g];
+          opts += "<optgroup label='" + grp.label + "'>";
+          for (var o=0; o<grp.options.length; o++){
+            var v = String(grp.options[o].value);
+            opts += "<option value='" + v + "'" + (v === current ? " selected" : "") + ">" + grp.options[o].label + "</option>";
+          }
+          opts += "</optgroup>";
+        }
+      } else {
+        for (var i=0; i<f.options.length; i++){
+          var v = String(f.options[i].value);
+          opts += "<option value='" + v + "'" + (v === current ? " selected" : "") + ">" + f.options[i].label + "</option>";
+        }
       }
       return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
     }
@@ -254,12 +281,25 @@ function _collectLabelFor(fieldKey, value){
       showIf: function (data) { return data.unternehmensgroesse === "solo"; }
     },
     { key: "country", label: "Country (for regional considerations)", type: "select",
-      options: [
-        { value: "de", label: "Germany" }, { value: "at", label: "Austria" }, { value: "ch", label: "Switzerland" },
-        { value: "fr", label: "France" }, { value: "it", label: "Italy" }, { value: "es", label: "Spain" },
-        { value: "nl", label: "Netherlands" }, { value: "be", label: "Belgium" }, { value: "uk", label: "United Kingdom" },
-        { value: "ie", label: "Ireland" }, { value: "other_eu", label: "Other EU Country" }, { value: "non_eu", label: "Non-EU Country" }
+      optgroups: [
+        { label: "EU", options: [
+          { value: "DE", label: "Germany (DE)" }, { value: "AT", label: "Austria (AT)" },
+          { value: "FR", label: "France (FR)" }, { value: "IT", label: "Italy (IT)" }, { value: "ES", label: "Spain (ES)" },
+          { value: "NL", label: "Netherlands (NL)" }, { value: "BE", label: "Belgium (BE)" }, { value: "IE", label: "Ireland (IE)" },
+          { value: "PL", label: "Poland (PL)" }, { value: "SE", label: "Sweden (SE)" }, { value: "DK", label: "Denmark (DK)" },
+          { value: "FI", label: "Finland (FI)" }, { value: "PT", label: "Portugal (PT)" }, { value: "CZ", label: "Czech Republic (CZ)" },
+          { value: "GR", label: "Greece (GR)" }, { value: "HU", label: "Hungary (HU)" }, { value: "RO", label: "Romania (RO)" },
+          { value: "other_eu", label: "Other EU Country" }
+        ]},
+        { label: "Europe (Non-EU)", options: [
+          { value: "GB", label: "United Kingdom (UK)" }, { value: "CH", label: "Switzerland (CH)" }, { value: "NO", label: "Norway (NO)" },
+          { value: "IS", label: "Iceland (IS)" }, { value: "LI", label: "Liechtenstein (LI)" }, { value: "other_europe", label: "Other European Country" }
+        ]},
+        { label: "Other", options: [
+          { value: "other", label: "Non-European Country" }
+        ]}
       ],
+      options: [],
       description: "(So regional regulations and requirements can be considered.)"
     },
     { key: "hauptleistung", label: "What is your main service or most important product?", type: "textarea",

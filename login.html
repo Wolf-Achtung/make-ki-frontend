@@ -3,542 +3,92 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — KI-Readiness</title>
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
+  <title>Login – KI-Sicherheit.jetzt</title>
+  <meta name="description" content="Sicherer Login für Ihren KI-Readiness Check">
   <link rel="icon" href="/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <style>
-    /* DESIGN SYSTEM – KI-Sicherheit.jetzt */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      /* Navy & Warm Palette */
-      --color-navy: #0d2b4a;
-      --color-navy-light: #1a4a6e;
-      --color-navy-dark: #091d32;
-      --color-warm: #f5f0e8;
-      --color-warm-light: #faf8f4;
-      --color-accent: #c9a227;
-      --color-accent-light: #e8c94b;
-
-      /* Functional Colors */
-      --color-bg-start: #f0f5fa;
-      --color-bg-end: #e8f0f8;
-      --color-card: #ffffff;
-      --color-primary: #0f4c75;
-      --color-primary-dark: #0a3a5c;
-      --color-primary-glow: rgba(15, 76, 117, 0.35);
-      --color-text: #1b3a4b;
-      --color-text-muted: #4a6572;
-      --color-border: #dbe5ed;
-      --color-badge-bg: #f8fafc;
-      --color-input-bg: #f8fafc;
-      --color-info-bg: #eff6ff;
-      --color-info-border: #dbeafe;
-      --color-info-text: #1e40af;
-      --color-success: #10b981;
-
-      /* Spacing & Radius */
-      --radius-card: 16px;
-      --radius-button: 10px;
-      --radius-input: 8px;
-      --radius-badge: 8px;
-
-      /* Shadows */
-      --shadow-card: 0 8px 32px rgba(13, 43, 74, 0.10), 0 2px 8px rgba(13, 43, 74, 0.05);
-      --shadow-button: 0 4px 14px var(--color-primary-glow);
-      --shadow-button-hover: 0 6px 20px var(--color-primary-glow);
-
-      /* Typography */
-      --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-display: 'Playfair Display', Georgia, serif;
-      --font-mono: 'Share Tech Mono', 'SF Mono', Monaco, Consolas, monospace;
-    }
-
-    /* Background with Dot Matrix */
-    body {
-      font-family: var(--font-sans);
-      background: linear-gradient(145deg, var(--color-bg-start) 0%, var(--color-bg-end) 50%, var(--color-warm-light) 100%);
-      min-height: 100vh;
-      color: var(--color-text);
-      line-height: 1.6;
-      position: relative;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: radial-gradient(circle, rgba(13, 43, 74, 0.03) 1px, transparent 1px);
-      background-size: 24px 24px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: -30%;
-      right: -20%;
-      width: 60%;
-      height: 60%;
-      background: radial-gradient(ellipse, rgba(201, 162, 39, 0.06) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Layout Wrapper */
-    .page-wrapper {
-      position: relative;
-      z-index: 1;
-      padding: 2.5rem 1.5rem;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .app-shell {
-      max-width: 520px;
-      width: 100%;
-    }
-
-    /* Premium Card */
-    .premium-card {
-      background: var(--color-card);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-card);
-      overflow: hidden;
-      border: 1px solid rgba(13, 43, 74, 0.06);
-    }
-
-    /* Card Header */
-    .card-header {
-      background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-light) 100%);
-      padding: 1.25rem 2rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
-      background-size: 16px 16px;
-      pointer-events: none;
-    }
-
-    .brand-title {
-      font-family: var(--font-mono);
-      font-size: 1.35rem;
-      font-weight: 400;
-      color: #ffffff;
-      letter-spacing: 0.02em;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Trust Badge */
-    .trust-badge {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1rem;
-      background: var(--color-warm);
-      font-size: 0.78rem;
-      color: var(--color-navy);
-      font-weight: 500;
-      letter-spacing: 0.01em;
-    }
-
-    .trust-badge::before {
-      content: '✓';
-      color: var(--color-success);
-      font-weight: 700;
-    }
-
-    /* Card Body */
-    .card-body {
-      padding: 2rem 2rem 1.75rem;
-    }
-
-    /* Page Title */
-    .page-title {
-      font-family: var(--font-display);
-      font-size: 1.85rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin: 0 0 0.5rem 0;
-      line-height: 1.25;
-      letter-spacing: -0.01em;
-    }
-
-    /* Subtitle / Lead */
-    .page-subtitle {
-      font-size: 1rem;
-      color: var(--color-text-muted);
-      margin-bottom: 1.5rem;
-      line-height: 1.65;
-    }
-
-    /* Form Elements */
-    label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: var(--color-text);
-      margin: 1.25rem 0 0.4rem;
-    }
-
-    input[type="email"],
-    input[type="text"] {
-      width: 100%;
-      font-family: var(--font-sans);
-      font-size: 1rem;
-      padding: 0.85rem 1rem;
-      border-radius: var(--radius-input);
-      border: 1.5px solid var(--color-border);
-      background: var(--color-input-bg);
-      color: var(--color-text);
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    input[type="email"]:focus,
-    input[type="text"]:focus {
-      border-color: var(--color-primary);
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(15, 76, 117, 0.1);
-    }
-
-    input::placeholder {
-      color: #94a3b8;
-    }
-
-    /* Primary Button */
-    .btn-primary {
-      background: var(--color-primary);
-      color: #fff;
-      border: none;
-      padding: 0.9rem 1.75rem;
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: var(--radius-button);
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: all 0.2s ease;
-      box-shadow: var(--shadow-button);
-      margin-top: 1.25rem;
-    }
-
-    .btn-primary:hover {
-      background: var(--color-primary-dark);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-button-hover);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .btn-primary::after {
-      content: '→';
-      font-size: 1.05rem;
-      transition: transform 0.2s;
-    }
-
-    .btn-primary:hover::after {
-      transform: translateX(3px);
-    }
-
-    #code-area { margin-top: 0.5rem; }
-
-    /* Help Box */
-    .help-box {
-      margin-top: 1.75rem;
-      background: var(--color-info-bg);
-      border: 1px solid var(--color-info-border);
-      border-radius: var(--radius-input);
-      padding: 1.1rem 1.25rem;
-      position: relative;
-    }
-
-    .help-box::before {
-      content: 'ℹ';
-      position: absolute;
-      left: 1rem;
-      top: 0.9rem;
-      font-size: 0.9rem;
-      opacity: 0.65;
-    }
-
-    .help-box h2 {
-      font-size: 0.85rem;
-      margin-bottom: 0.5rem;
-      margin-left: 1.35rem;
-      color: var(--color-info-text);
-      font-weight: 600;
-    }
-
-    .help-box ul {
-      margin-left: 2.5rem;
-      padding-left: 0;
-      list-style: none;
-    }
-
-    .help-box li {
-      margin: 0.4rem 0;
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      line-height: 1.5;
-    }
-
-    .help-box li strong {
-      color: var(--color-text);
-      font-weight: 600;
-    }
-
-    .help-box code {
-      background: #e0e7ff;
-      color: var(--color-info-text);
-      padding: 0.1rem 0.35rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-family: var(--font-mono);
-    }
-
-    .help-box a {
-      color: var(--color-primary);
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .help-box a:hover {
-      text-decoration: underline;
-    }
-
-    /* Logo Bar */
-    .logo-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      margin-top: 1.75rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--color-border);
-    }
-
-    .logo-pill {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--color-badge-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-badge);
-      padding: 0.45rem 0.75rem;
-      transition: all 0.2s;
-    }
-
-    .logo-pill:hover {
-      border-color: #c5d5e4;
-      background: #fff;
-    }
-
-    .logo-pill img {
-      height: 44px;
-      width: auto;
-      opacity: 0.92;
-    }
-
-    .logo-pill.main-logo img {
-      height: 40px;
-    }
-
-    /* Status Messages */
-    .status-msg {
-      font-size: 0.9rem;
-      margin-top: 1rem;
-      margin-bottom: 0;
-      line-height: 1.5;
-    }
-
-    /* Prominent Error Alert Box */
-    .status-msg.error {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-left: 4px solid #dc2626;
-      border-radius: var(--radius-input);
-      padding: 1rem 1.25rem;
-      color: #991b1b;
-      font-weight: 500;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    .status-msg.error:empty {
-      display: none;
-    }
-
-    .status-msg.error::before {
-      content: '!';
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 24px;
-      height: 24px;
-      background: #dc2626;
-      color: white;
-      border-radius: 50%;
-      font-weight: 700;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Success Message */
-    .status-msg:not(.error):not(:empty) {
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      border-left: 4px solid #10b981;
-      border-radius: var(--radius-input);
-      padding: 1rem 1.25rem;
-      color: #065f46;
-      font-weight: 500;
-    }
-
-    /* Hide Toasts - use inline messages instead */
-    .toast-stack {
-      display: none;
-    }
-
-    /* Responsive */
-    @media (max-width: 640px) {
-      .page-wrapper { padding: 1.25rem 1rem; }
-      .card-header { padding: 1rem 1.5rem; }
-      .brand-title { font-size: 1.15rem; }
-      .card-body { padding: 1.5rem 1.5rem 1.25rem; }
-      .page-title { font-size: 1.5rem; }
-      .btn-primary { width: 100%; }
-      .toast-stack { right: 12px; left: 12px; bottom: 12px; }
-      .logo-bar { gap: 0.4rem; }
-      .logo-pill { padding: 0.35rem 0.55rem; }
-      .logo-pill img { height: 36px; }
-      .logo-pill.main-logo img { height: 32px; }
-      .help-box::before { display: none; }
-      .help-box h2 { margin-left: 0; }
-      .help-box ul { margin-left: 1rem; }
-    }
-
-    /* Dark Mode Support */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --color-bg-start: #0f1a24;
-        --color-bg-end: #162231;
-        --color-card: #1c2a3a;
-        --color-text: #e8ecf0;
-        --color-text-muted: #94a3b8;
-        --color-border: #2d3f52;
-        --color-badge-bg: #1e2d3d;
-        --color-input-bg: #1e2d3d;
-        --color-info-bg: #1e2d3d;
-        --color-info-border: #2d4055;
-        --color-warm: #1e2d3d;
-        --color-warm-light: #162231;
-      }
-      .card-header {
-        background: linear-gradient(135deg, #0a1929 0%, #0d2b4a 100%);
-      }
-      .trust-badge {
-        background: var(--color-navy-dark);
-        color: #e8ecf0;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-<div class="page-wrapper">
-  <div class="app-shell">
-    <div class="premium-card">
-      <header class="card-header">
-        <h1 class="brand-title">KI-Sicherheit.jetzt</h1>
-      </header>
+<body class="mk-background">
 
-      <div class="trust-badge">
-        TÜV-zertifiziert · steuerlich absetzbar
-      </div>
+<!-- Secondary Warmtone Blob -->
+<div class="mk-warmblob-secondary"></div>
 
-      <div class="card-body">
-        <h2 class="page-title">Willkommen zurück</h2>
-        <p class="page-subtitle">Bitte E-Mail angeben. Sie erhalten einen 6-stelligen Code (Magic-Link).</p>
+<div class="mk-page-wrapper">
+  <div class="mk-card">
+    <header class="mk-card-header">
+      <h1 class="mk-brand-title">KI-Sicherheit.jetzt</h1>
+    </header>
 
-        <form id="login-form" novalidate>
-          <label for="email">E-Mail</label>
-          <input type="email" id="email" name="email" placeholder="ihr.name@firma.de" autocomplete="email" required>
+    <div class="mk-card-body">
+      <h2 class="mk-title">Willkommen zurück</h2>
+      <p class="mk-subtitle">Melden Sie sich mit Ihrer E-Mail an. Sie erhalten einen sicheren 6-stelligen Code.</p>
 
-          <button type="button" class="btn-primary" id="btn-request">Code anfordern</button>
-
-          <div id="code-area" style="display:none">
-            <label for="code">Code</label>
-            <input type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
-            <button type="button" class="btn-primary" id="btn-login">Einloggen</button>
-          </div>
-
-          <p id="msg" class="page-subtitle status-msg" role="status" aria-live="polite"></p>
-          <p id="err" class="page-subtitle status-msg error" role="alert"></p>
-        </form>
-
-        <div class="help-box" aria-labelledby="help-title">
-          <h2 id="help-title">Hilfe bei Problemen</h2>
-          <ul>
-            <li>Kein Code erhalten? Pruefen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu <strong>2 Minuten</strong>.</li>
-            <li>Erneut senden: Klicken Sie einfach nochmal auf <em>Code anfordern</em>.</li>
-            <li>E-Mail nicht freigeschaltet? Meldung <code>E-Mail ist nicht freigeschaltet</code>. Kontakt: <a href="mailto:support@ki-sicherheit.jetzt">support@ki-sicherheit.jetzt</a>.</li>
-          </ul>
+      <!-- Login Form -->
+      <form id="login-form" novalidate>
+        <div class="mk-form-group">
+          <label class="mk-form-label" for="email">E-Mail-Adresse</label>
+          <input type="email" id="email" name="email" class="mk-form-input" placeholder="ihre.email@firma.de" autocomplete="email" required>
         </div>
 
-        <div class="logo-bar">
-          <div class="logo-pill main-logo">
-            <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" onerror="this.parentElement.style.display='none'">
+        <button type="button" id="btn-request" class="mk-btn-primary">
+          Code anfordern
+        </button>
+
+        <div id="code-area" style="display:none">
+          <div class="mk-form-group" style="margin-top:1.25rem">
+            <label class="mk-form-label" for="code">Bestätigungscode</label>
+            <input type="text" id="code" name="code" class="mk-form-input" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
           </div>
-          <div class="logo-pill">
-            <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert">
+          <button type="button" id="btn-login" class="mk-btn-primary">Einloggen</button>
+        </div>
+
+        <p id="msg" class="mk-message" role="status" aria-live="polite"></p>
+        <p id="err" class="mk-message error" role="alert"></p>
+      </form>
+
+      <!-- Help Box -->
+      <div class="mk-help-box">
+        <h4>Hilfe bei Problemen</h4>
+        <ul>
+          <li>Kein Code? Prüfen Sie <strong>Spam</strong>/Werbung. Warten Sie bis zu 2 Minuten.</li>
+          <li>Erneut senden: Klicken Sie nochmal auf <em>Code anfordern</em>.</li>
+          <li>E-Mail nicht freigeschaltet? Kontakt: <a href="mailto:support@ki-sicherheit.jetzt">support@ki-sicherheit.jetzt</a></li>
+        </ul>
+      </div>
+
+      <!-- Logo Bar -->
+      <div class="mk-logo-bar" style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 1rem 0;">
+        <!-- Obere Reihe: DSGVO, EU AI Act, KI-Ready, TÜV -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem;">
+          <div style="background: transparent; border: none; box-shadow: none; display: flex; align-items: center;">
+            <img src="badges/dsgvo.svg" alt="DSGVO konform" style="height: 55px; width: auto;" onerror="this.parentElement.style.display='none'">
           </div>
-          <div class="logo-pill">
-            <img src="badges/dsgvo.svg" alt="DSGVO konform">
+          <div style="background: transparent; border: none; box-shadow: none; display: flex; align-items: center;">
+            <img src="badges/eu-ai.svg" alt="EU AI Act Ready" style="height: 55px; width: auto;" onerror="this.parentElement.style.display='none'">
           </div>
-          <div class="logo-pill">
-            <img src="badges/eu-ai.svg" alt="EU AI Act Ready">
+          <div style="background: transparent; border: none; box-shadow: none; display: flex; align-items: center;">
+            <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025" style="height: 55px; width: auto;" onerror="this.parentElement.style.display='none'">
           </div>
-          <div class="logo-pill">
-            <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025">
+          <div style="background: transparent; border: none; box-shadow: none; display: flex; align-items: center;">
+            <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert" style="height: 55px; width: auto;" onerror="this.parentElement.style.display='none'">
           </div>
+        </div>
+        <!-- Untere Reihe: KI-Sicherheit -->
+        <div style="display: flex; flex-direction: column; align-items: center; background: transparent; border: none; box-shadow: none;">
+          <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" style="height: 70px; width: auto;" onerror="this.parentElement.style.display='none'">
+          <span style="font-size: 0.75rem; color: #1e3a5f; margin-top: 0.5rem; font-weight: 600;">TÜV-zertifiziertes KI-Management - Wolf Hohl</span>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div id="toasts" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+<!-- Toast Stack -->
+<div id="toasts" class="mk-toast-stack" aria-live="polite" aria-atomic="true"></div>
 
 <script src="/js/config.js"></script>
 <script src="/js/login.js"></script>
