@@ -113,9 +113,12 @@
             warn('Zu viele Versuche. Bitte später erneut versuchen.');
             return;
           }
+          if(res.status === 403){
+            setText('err','Diese E-Mail-Adresse ist nicht für den Zugang registriert. Bitte kontaktieren Sie support@ki-sicherheit.jetzt für eine Freischaltung.', true);
+            return;
+          }
           if(!res.ok){
-            setText('err','Senden fehlgeschlagen. (' + res.status + ')', true);
-            err('Senden fehlgeschlagen (' + res.status + ').');
+            setText('err','Senden fehlgeschlagen. Bitte versuchen Sie es später erneut.', true);
             return;
           }
 
