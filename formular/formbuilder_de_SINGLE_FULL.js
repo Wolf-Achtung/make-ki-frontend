@@ -637,7 +637,21 @@ function _collectLabelFor(fieldKey, value){
 
     // Conditionals: re-render, damit showIf greift
     if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country")) {
-      renderStep(); scrollToStepTop(false);
+      // Save current field ID and scroll position before re-render
+      var targetId = e.target.id;
+      var scrollY = window.scrollY || window.pageYOffset;
+
+      // Re-render step (needed for showIf conditionals)
+      renderStep();
+
+      // Restore scroll position and focus after re-render
+      setTimeout(function() {
+        window.scrollTo(0, scrollY);
+        var field = document.getElementById(targetId);
+        if (field) {
+          field.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        }
+      }, 50);
       return;
     }
 
