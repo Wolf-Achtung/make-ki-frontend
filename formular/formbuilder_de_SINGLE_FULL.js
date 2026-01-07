@@ -580,7 +580,8 @@ function _collectLabelFor(fieldKey, value){
 
     root.innerHTML = html + nav;
 
-    // change handler
+    // change handler (remove first to prevent duplicates on re-render)
+    root.removeEventListener("change", handleChange);
     root.addEventListener("change", handleChange);
 
     // autofill & validate
@@ -637,9 +638,29 @@ function _collectLabelFor(fieldKey, value){
 
     // Conditionals: re-render, damit showIf greift
     if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country")) {
-      // Save current field ID and scroll position before re-render
+      // CRITICAL: Save ALL current form values before re-render to prevent data loss
       var targetId = e.target.id;
       var scrollY = window.scrollY || window.pageYOffset;
+
+      // Collect ALL visible form element values to ensure nothing is lost
+      var formElements = document.querySelectorAll('#formbuilder input, #formbuilder select, #formbuilder textarea');
+      for (var fe = 0; fe < formElements.length; fe++) {
+        var el = formElements[fe];
+        if (el.id && el.type !== 'button' && el.type !== 'submit') {
+          if (el.type === 'checkbox') {
+            // Handle checkbox groups
+            if (!formData[el.name]) formData[el.name] = [];
+            if (el.checked && formData[el.name].indexOf(el.value) === -1) {
+              formData[el.name].push(el.value);
+            }
+          } else if (el.type === 'radio') {
+            if (el.checked) formData[el.name] = el.value;
+          } else {
+            formData[el.id] = el.value;
+          }
+        }
+      }
+      saveAutosave();
 
       // Re-render step (needed for showIf conditionals)
       renderStep();
