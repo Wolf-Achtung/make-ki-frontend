@@ -280,7 +280,7 @@ function _collectLabelFor(fieldKey, value){
         { value: "einzelunternehmer", label: "Einzelunternehmer (mit Gewerbe)" }, { value: "sonstiges", label: "Sonstiges" }
       ],
       description: "(Damit Rechtsformabhängigkeiten bei Pflichten, Zuschüssen und Verträgen korrekt berücksichtigt werden.)",
-      showIf: function (data) { return data.unternehmensgroesse === "solo"; }
+      showIf: function (data) { return data.unternehmensgroesse === "1"; }
     },
     { key: "bundesland", label: "Bundesland (regionale Fördermöglichkeiten)", type: "select",
       options: [

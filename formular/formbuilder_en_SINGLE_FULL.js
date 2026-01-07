@@ -262,13 +262,14 @@ function _collectLabelFor(fieldKey, value){
         { value: "handel", label: "Retail & E-Commerce" }, { value: "bildung", label: "Education" },
         { value: "verwaltung", label: "Public Administration" }, { value: "gesundheit", label: "Healthcare" },
         { value: "bau", label: "Construction & Architecture" }, { value: "medien", label: "Media & Creative Industries" },
-        { value: "industrie", label: "Manufacturing & Production" }, { value: "logistik", label: "Transport & Logistics" }
+        { value: "industrie", label: "Manufacturing & Production" }, { value: "logistik", label: "Transport & Logistics" },
+        { value: "gastronomie", label: "Hospitality & Tourism" }
       ],
       description: "(So we can assign industry-specific examples and compliance requirements correctly.)"
     },
     { key: "unternehmensgroesse", label: "How large is your company?", type: "select",
       options: [
-        { value: "solo", label: "1 (Solo/Freelancer)" }, { value: "team", label: "2-10 (Small Team)" }, { value: "kmu", label: "11-100 (SME)" }
+        { value: "1", label: "1 (Solo/Freelancer)" }, { value: "2–10", label: "2–10 (Small Team)" }, { value: "11–100", label: "11–100 (SME)" }
       ],
       description: "(So recommendations and budgets are realistically scaled to your company size.)"
     },
@@ -278,7 +279,7 @@ function _collectLabelFor(fieldKey, value){
         { value: "limited_company", label: "Limited Company (1-person)" }, { value: "other", label: "Other" }
       ],
       description: "(So legal form dependencies in obligations and contracts are correctly considered.)",
-      showIf: function (data) { return data.unternehmensgroesse === "solo"; }
+      showIf: function (data) { return data.unternehmensgroesse === "1"; }
     },
     { key: "country", label: "Country (for regional considerations)", type: "select",
       optgroups: [
