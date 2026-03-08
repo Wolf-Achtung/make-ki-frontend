@@ -1,0 +1,77 @@
+[
+  {
+    "icon": "⚖️",
+    "category": "EU AI Act",
+    "text": "Seit Februar 2025 gilt die KI-Verordnung der EU. Ihr Report enthält Ihre individuelle Risikoklassen-Analyse."
+  },
+  {
+    "icon": "📊",
+    "category": "KI in Deutschland",
+    "text": "Nur 18% der deutschen KMU setzen KI produktiv ein (Bitkom 2025). Ihr Report zeigt, wo Sie im Vergleich stehen."
+  },
+  {
+    "icon": "💰",
+    "category": "Fördermittel",
+    "text": "Über BAFA-Programme können Solo-Selbstständige bis zu 4.000€ Förderung für KI-Beratung erhalten. Details finden Sie in Ihrem Report."
+  },
+  {
+    "icon": "🔒",
+    "category": "Datenschutz",
+    "text": "78% der deutschen Unternehmen sehen DSGVO-Konformität als größte Hürde beim KI-Einsatz. Ihr Vendor-Audit prüft das für Sie."
+  },
+  {
+    "icon": "⏱️",
+    "category": "Zeitersparnis",
+    "text": "Unternehmen, die KI strukturiert einsetzen, sparen durchschnittlich 20% ihrer Arbeitszeit bei administrativen Aufgaben."
+  },
+  {
+    "icon": "🎯",
+    "category": "Quick Win",
+    "text": "Der schnellste KI-Einstieg: E-Mail-Entwürfe und Meeting-Protokolle automatisieren. Ihr Report enthält Copy-Paste-Prompts dafür."
+  },
+  {
+    "icon": "🏆",
+    "category": "Best Practice",
+    "text": "Erfolgreiche KI-Einführung beginnt mit einem einzigen Arbeitsablauf — nicht mit zehn Tools gleichzeitig."
+  },
+  {
+    "icon": "📋",
+    "category": "Ihr Report",
+    "text": "Ihr Report enthält eine 30-Tage-Challenge, die Sie Schritt für Schritt an produktive KI-Nutzung heranführt."
+  },
+  {
+    "icon": "🇪🇺",
+    "category": "EU AI Act",
+    "text": "Ab Februar 2025 müssen Unternehmen KI-Kompetenz nachweisen (Art. 4). Ihr Report zeigt Ihren aktuellen Stand."
+  },
+  {
+    "icon": "🔍",
+    "category": "Vendor-Check",
+    "text": "Ihr Report enthält einen KI-TÜV: eine Datenschutz- und Compliance-Prüfung aller von Ihnen genutzten KI-Tools."
+  },
+  {
+    "icon": "📈",
+    "category": "ROI",
+    "text": "Ihr Report berechnet Ihren individuellen ROI — inklusive 3-Szenarien-Analyse und konservativer Decklung."
+  },
+  {
+    "icon": "💡",
+    "category": "Wussten Sie?",
+    "text": "ChatGPT, Claude und Perplexity haben unterschiedliche Stärken. Ihr Report empfiehlt die besten Tools für Ihren Anwendungsfall."
+  },
+  {
+    "icon": "📄",
+    "category": "Bonus",
+    "text": "Zusätzlich zu diesem Report erhalten Sie automatisch Ihre KI-Potenzial-Analyse — eine strategische Vertiefung per separater E-Mail."
+  },
+  {
+    "icon": "🛡️",
+    "category": "Sicherheit",
+    "text": "Diese Plattform speichert keine Kundendaten dauerhaft und nutzt kein Tracking. DSGVO-konform by design."
+  },
+  {
+    "icon": "🚀",
+    "category": "Starter-Kit",
+    "text": "Ihr Report enthält ein maßgeschneidertes Starter-Kit mit empfohlenen Tools, Setup-Zeiten und Förderprogrammen."
+  }
+]
