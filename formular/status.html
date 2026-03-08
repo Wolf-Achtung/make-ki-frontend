@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Report-Status – KI-Sicherheit.jetzt</title>
+  <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-900: #0a1628;
+      --navy-800: #0e1e36;
+      --navy-700: #132744;
+      --navy-600: #1a3a5c;
+      --navy-500: #1e4a6f;
+      --navy-400: #2a6a9e;
+      --navy-300: #4a8cc4;
+      --navy-200: #7eb3dc;
+      --navy-100: #c5ddf0;
+      --navy-50: #e8f2fa;
+      --warm-500: #c9a227;
+      --warm-400: #d4b33d;
+      --warm-300: #e0c65a;
+      --warm-200: #f0dfa0;
+      --warm-100: #faf4dc;
+      --text-primary: #0e1525;
+      --text-secondary: #3d4f63;
+      --text-muted: #6b7a8c;
+      --bg-page: #f8fafb;
+      --bg-card: #ffffff;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+      --shadow-sm: 0 1px 2px rgba(14,21,37,0.04);
+      --shadow-md: 0 4px 12px rgba(14,21,37,0.08);
+      --shadow-lg: 0 8px 24px rgba(14,21,37,0.12);
+      --transition-fast: 0.15s ease;
+      --transition-base: 0.25s ease;
+      --success-green: #059669;
+      --success-bg: #ecfdf5;
+      --success-border: #a7f3d0;
+      --error-red: #dc2626;
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text-primary: #e8eef6;
+        --text-secondary: #a8b5c4;
+        --text-muted: #6b7a8c;
+        --bg-page: #0a1628;
+        --bg-card: #0e1e36;
+        --border-light: #1f3350;
+        --border-medium: #2a4a6a;
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+        --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+        --success-bg: rgba(5,150,105,0.15);
+        --success-border: rgba(5,150,105,0.3);
+        --error-bg: rgba(220,38,38,0.15);
+        --error-border: rgba(220,38,38,0.3);
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f0f5fa 0%, #faf8f5 50%, #f5f8fc 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, var(--navy-900) 0%, #0c1a2e 50%, var(--navy-900) 100%);
+      }
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.06) 1px, transparent 0);
+      background-size: 20px 20px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      right: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(201,162,39,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .status-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-lg);
+      max-width: 620px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 100%);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+      background-size: 16px 16px;
+      pointer-events: none;
+    }
+
+    .brand-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: #ffffff;
+      margin: 0;
+      position: relative;
+      letter-spacing: 0.5px;
+    }
+
+    .card-body {
+      padding: 2rem 2rem 2.5rem;
+    }
+
+    /* --- Status States --- */
+
+    .status-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .status-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 0.75rem 0;
+      line-height: 1.25;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .status-title { color: var(--navy-100); }
+    }
+
+    .status-text {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+
+    .status-text strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .status-text strong { color: var(--navy-100); }
+    }
+
+    .email-highlight {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--navy-50);
+      color: var(--navy-700);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin: 0.5rem 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .email-highlight {
+        background: rgba(42,106,158,0.2);
+        color: var(--navy-200);
+      }
+    }
+
+    /* --- Progress Bar --- */
+
+    .progress-container {
+      margin: 1.5rem 0;
+    }
+
+    .progress-bar-track {
+      height: 6px;
+      background: var(--border-light);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--navy-400) 0%, var(--navy-300) 100%);
+      transition: width 0.5s ease;
+      position: relative;
+    }
+
+    .progress-bar-fill.indeterminate {
+      width: 40% !important;
+      animation: indeterminate 1.8s ease-in-out infinite;
+    }
+
+    @keyframes indeterminate {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+
+    .progress-bar-fill.done {
+      width: 100% !important;
+      background: linear-gradient(90deg, var(--success-green) 0%, #10b981 100%);
+      animation: none;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* --- Info Box --- */
+
+    .info-box {
+      background: var(--navy-50);
+      border: 1px solid var(--navy-100);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .info-box {
+        background: rgba(42,106,158,0.1);
+        border-color: rgba(42,106,158,0.25);
+      }
+    }
+
+    .info-box p {
+      margin: 0.3rem 0;
+    }
+
+    /* --- Buttons --- */
+
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-800) 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(19,39,68,0.25);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--navy-600) 0%, var(--navy-700) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(19,39,68,0.35);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--navy-700);
+      border: 2px solid var(--border-medium);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--navy-400);
+      background: var(--navy-50);
+      transform: translateY(-1px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .btn-secondary {
+        background: var(--navy-800);
+        color: var(--navy-200);
+        border-color: var(--navy-600);
+      }
+      .btn-secondary:hover {
+        background: var(--navy-700);
+        border-color: var(--navy-400);
+      }
+    }
+
+    /* --- Warning / Error Boxes --- */
+
+    .warning-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      margin-top: 1rem;
+      font-size: 0.88rem;
+      color: #92400e;
+      line-height: 1.55;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .warning-box {
+        background: rgba(245,158,11,0.12);
+        border-color: rgba(245,158,11,0.3);
+        color: #fbbf24;
+      }
+    }
+
+    .error-box {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: #991b1b;
+      line-height: 1.55;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .error-box {
+        color: #fca5a5;
+      }
+    }
+
+    /* --- Separator --- */
+
+    .separator {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 1.5rem 0;
+    }
+
+    /* --- Potenzial-Analyse Hint --- */
+
+    .analysis-hint {
+      background: linear-gradient(135deg, var(--warm-100) 0%, #fff9e6 100%);
+      border: 1px solid rgba(201,162,39,0.25);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: #7a6012;
+      line-height: 1.6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .analysis-hint {
+        background: rgba(201,162,39,0.1);
+        border-color: rgba(201,162,39,0.25);
+        color: var(--warm-300);
+      }
+    }
+
+    /* --- Contact --- */
+
+    .contact-link {
+      color: var(--navy-500);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .contact-link:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Responsive --- */
+
+    @media (max-width: 640px) {
+      .page-wrapper { padding: 1.5rem 1rem; }
+      .card-body { padding: 1.5rem 1.25rem 2rem; }
+      .status-title { font-size: 1.35rem; }
+      .btn-row { flex-direction: column; }
+      .btn { min-width: auto; }
+    }
+
+    /* --- Hidden utility --- */
+
+    [hidden] { display: none !important; }
+  </style>
+  <script src="/js/config.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+  <div class="status-card">
+    <header class="card-header">
+      <h1 class="brand-title">KI-Sicherheit.jetzt</h1>
+    </header>
+    <div class="card-body" id="status-content">
+      <!-- Content is rendered by status.js -->
+      <div class="status-icon">&#9203;</div>
+      <h2 class="status-title">Report-Status wird geladen...</h2>
+      <p class="status-text">Einen Moment bitte.</p>
+    </div>
+  </div>
+</div>
+<script src="/formular/status.js"></script>
+</body>
+</html>

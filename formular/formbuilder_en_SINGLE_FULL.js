@@ -787,16 +787,29 @@ function _collectLabelFor(fieldKey, value){
 
     try { SUBMIT_IN_FLIGHT = true; } catch(_) {}
 
+    var userEmailForStatus = "";
+    try { userEmailForStatus = localStorage.getItem("ki_user_email") || ""; } catch(_) {}
+
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": idem },
       body: JSON.stringify(payload),
-      credentials: "include",
-      keepalive: true
+      credentials: "include"
     }).then(function (res) {
       if (res && res.status === 401) {
-        // Redirect to login on auth failure
         window.location.href = '/login.html';
+        return;
+      }
+      if (res && res.ok) {
+        return res.json().then(function (body) {
+          var bid = body && (body.briefing_id || body.id);
+          if (bid) {
+            try { localStorage.removeItem(STORAGE_PREFIX + "data"); localStorage.removeItem(STORAGE_PREFIX + "step"); } catch(_) {}
+            var statusUrl = "/formular/status.html?id=" + encodeURIComponent(bid);
+            if (userEmailForStatus) statusUrl += "&email=" + encodeURIComponent(userEmailForStatus);
+            window.location.href = statusUrl;
+          }
+        }).catch(function() {});
       }
     }).catch(function(){}).finally(function(){ try { SUBMIT_IN_FLIGHT = false; } catch(_) {} });
   }
@@ -932,7 +945,7 @@ try{
   var _origSubmit = (typeof submitForm === "function") ? submitForm : null;
   submitForm = function(){
     try{ if(_origSubmit){ _origSubmit.apply(null, arguments); } }catch(_){ }
-    robustSubmitForm();
+    // robustSubmitForm disabled – main submitForm now handles redirect to status page
   };
 }catch(_){
   submitForm = robustSubmitForm;
