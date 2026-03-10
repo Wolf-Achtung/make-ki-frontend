@@ -125,7 +125,7 @@
 
     // Facts laden und anzeigen
     if (factsLoaded) {
-      showCurrentFact();
+      showCurrentFact(false); // Instant repopulate after DOM re-render (no animation)
     } else {
       loadKiFacts();
     }
@@ -287,30 +287,39 @@
     );
   }
 
-  function showCurrentFact() {
+  function showCurrentFact(animate) {
     if (!kiFacts.length) return;
     var card = document.getElementById("ki-fact-card");
     var fact = kiFacts[currentFactIndex];
     if (!card || !fact) return;
 
-    // Fade out
-    card.style.opacity = "0";
-
-    setTimeout(function () {
+    if (animate) {
+      // Fade out, update, fade in
+      card.style.opacity = "0";
+      setTimeout(function () {
+        var icon = document.getElementById("ki-fact-icon");
+        var cat = document.getElementById("ki-fact-category");
+        var txt = document.getElementById("ki-fact-text");
+        if (icon) icon.textContent = fact.icon;
+        if (cat) cat.textContent = fact.category;
+        if (txt) txt.textContent = fact.text;
+        card.style.opacity = "1";
+      }, 500);
+    } else {
+      // Instant update (no animation) – used after DOM re-render by polling
       var icon = document.getElementById("ki-fact-icon");
       var cat = document.getElementById("ki-fact-category");
       var txt = document.getElementById("ki-fact-text");
       if (icon) icon.textContent = fact.icon;
       if (cat) cat.textContent = fact.category;
       if (txt) txt.textContent = fact.text;
-      // Fade in
       card.style.opacity = "1";
-    }, 500);
+    }
   }
 
   function nextFact() {
     currentFactIndex = (currentFactIndex + 1) % kiFacts.length;
-    showCurrentFact();
+    showCurrentFact(true);
   }
 
   function loadKiFacts() {
@@ -322,7 +331,7 @@
         // Zufällige Reihenfolge
         kiFacts.sort(function () { return Math.random() - 0.5; });
         factsLoaded = true;
-        showCurrentFact();
+        showCurrentFact(true);
         if (!factInterval && kiFacts.length > 1) {
           factInterval = setInterval(nextFact, 8000);
         }
