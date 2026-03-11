@@ -12,7 +12,6 @@
   // --- Config ---
   var POLL_INTERVAL_MS = 5000;
   var POLL_MAX_ATTEMPTS = 120; // 10 Minuten bei 5s Intervall
-  var FACT_INTERVAL_MS = 12000; // Alle 12 Sekunden neuer Fact
 
   // --- State ---
   var briefingId = null;
@@ -79,67 +78,6 @@
     var div = document.createElement("div");
     div.appendChild(document.createTextNode(str || ""));
     return div.innerHTML;
-  }
-
-  // --- KI-Facts: Fisher-Yates Shuffle ---
-  function shuffleArray(arr) {
-    var a = arr.slice();
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = a[i];
-      a[i] = a[j];
-      a[j] = tmp;
-    }
-    return a;
-  }
-
-  function getNextFact() {
-    if (!shuffledFacts.length) return null;
-    if (factIndex >= shuffledFacts.length) {
-      shuffledFacts = shuffleArray(kiFacts);
-      factIndex = 0;
-    }
-    return shuffledFacts[factIndex++];
-  }
-
-  function loadKiFacts() {
-    fetch("/formular/ki-facts.json")
-      .then(function (res) { return res.ok ? res.json() : []; })
-      .then(function (data) {
-        if (Array.isArray(data) && data.length) {
-          kiFacts = data;
-          shuffledFacts = shuffleArray(kiFacts);
-          factIndex = 0;
-          showNextFact();
-          startFactRotation();
-        }
-      })
-      .catch(function () {});
-  }
-
-  function showNextFact() {
-    var el = document.getElementById("ki-fact-text");
-    if (!el) return;
-    var fact = getNextFact();
-    if (!fact) return;
-
-    el.style.opacity = "0";
-    setTimeout(function () {
-      el.textContent = fact;
-      el.style.opacity = "1";
-    }, 300);
-  }
-
-  function startFactRotation() {
-    stopFactRotation();
-    factTimer = setInterval(showNextFact, FACT_INTERVAL_MS);
-  }
-
-  function stopFactRotation() {
-    if (factTimer) {
-      clearInterval(factTimer);
-      factTimer = null;
-    }
   }
 
   // --- Backend-URL für PDF/HTML ---
@@ -390,8 +328,13 @@
       .then(function (res) { return res.json(); })
       .then(function (data) {
         kiFacts = data || [];
-        // Zufällige Reihenfolge
-        kiFacts.sort(function () { return Math.random() - 0.5; });
+        // Fisher-Yates Shuffle für gleichverteilte Zufallsreihenfolge
+        for (var i = kiFacts.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = kiFacts[i];
+          kiFacts[i] = kiFacts[j];
+          kiFacts[j] = tmp;
+        }
         factsLoaded = true;
         showCurrentFact(true);
         if (!factInterval && kiFacts.length > 1) {
@@ -510,7 +453,7 @@
       clearInterval(pollTimer);
       pollTimer = null;
     }
-    stopFactRotation();
+    stopFacts();
   }
 
   // --- Init ---
@@ -526,7 +469,6 @@
 
     // Sofort Bestätigungs-Zustand zeigen, dann pollen
     renderProcessing({ status: "accepted", created_at: null });
-    loadKiFacts();
     startPolling();
   }
 
