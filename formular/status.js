@@ -175,7 +175,7 @@
         "</div>" +
         '<div class="progress-meta">' +
           "<span>" + statusLabel + "</span>" +
-          "<span>Gestartet: " + elapsed + "</span>" +
+          "<span>Zuletzt gepr\u00fcft: " + new Date().toLocaleTimeString("de-DE") + "</span>" +
         "</div>" +
       "</div>" +
       '<div class="info-box">' +
@@ -536,4 +536,11 @@
   } else {
     init();
   }
+
+  // Sofort re-pollen wenn Tab wieder sichtbar wird (Browser throttelt setInterval im Hintergrund)
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && pollTimer && briefingId) {
+      fetchStatus();
+    }
+  });
 })();
