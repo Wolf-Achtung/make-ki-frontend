@@ -21,11 +21,11 @@
   var pollCount = 0;
   var startTime = null;
 
-  // --- KI-Facts State ---
+  // --- "Wussten Sie schon?" Facts ---
   var kiFacts = [];
-  var shuffledFacts = [];
-  var factIndex = 0;
-  var factTimer = null;
+  var currentFactIndex = 0;
+  var factInterval = null;
+  var factsLoaded = false;
 
   // --- API Base URL ---
   function getApiBase() {
@@ -182,11 +182,15 @@
         "<p>Sie erhalten eine E-Mail sobald Ihr Report fertig ist.</p>" +
         "<p>Sie können diese Seite auch schließen — Ihr Report wird trotzdem erstellt.</p>" +
       "</div>" +
-      '<div class="fact-card">' +
-        '<div class="fact-label">Wussten Sie schon?</div>' +
-        '<p class="fact-text" id="ki-fact-text"></p>' +
-      "</div>"
+      factsCardHtml()
     );
+
+    // Facts laden und anzeigen
+    if (factsLoaded) {
+      showCurrentFact(false); // Instant repopulate after DOM re-render (no animation)
+    } else {
+      loadKiFacts();
+    }
   }
 
   // Zustand 2: Report fertig
@@ -314,6 +318,99 @@
     );
   }
 
+  // --- "Wussten Sie schon?" Info-Karten ---
+
+  function factsCardHtml() {
+    return (
+      '<div id="ki-facts-container" style="margin-top: 24px;">' +
+        '<div id="ki-fact-card" style="' +
+          "background: var(--bg-card);" +
+          "border: 1px solid var(--border-light);" +
+          "border-left: 4px solid var(--navy-400);" +
+          "border-radius: 8px;" +
+          "padding: 16px 20px;" +
+          "transition: opacity 0.5s ease;" +
+          "opacity: 0;" +
+        '">' +
+          '<div style="display: flex; align-items: flex-start; gap: 12px;">' +
+            '<span id="ki-fact-icon" style="font-size: 24px; line-height: 1;"></span>' +
+            "<div>" +
+              '<div id="ki-fact-category" style="' +
+                "font-size: 11px; color: var(--navy-400); font-weight: 600;" +
+                "text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;" +
+              '"></div>' +
+              '<div id="ki-fact-text" style="' +
+                "font-size: 14px; color: var(--text-secondary); line-height: 1.5;" +
+              '"></div>' +
+            "</div>" +
+          "</div>" +
+        "</div>" +
+      "</div>"
+    );
+  }
+
+  function showCurrentFact(animate) {
+    if (!kiFacts.length) return;
+    var card = document.getElementById("ki-fact-card");
+    var fact = kiFacts[currentFactIndex];
+    if (!card || !fact) return;
+
+    if (animate) {
+      // Fade out, update, fade in
+      card.style.opacity = "0";
+      setTimeout(function () {
+        var icon = document.getElementById("ki-fact-icon");
+        var cat = document.getElementById("ki-fact-category");
+        var txt = document.getElementById("ki-fact-text");
+        if (icon) icon.textContent = fact.icon;
+        if (cat) cat.textContent = fact.category;
+        if (txt) txt.textContent = fact.text;
+        card.style.opacity = "1";
+      }, 500);
+    } else {
+      // Instant update (no animation) – used after DOM re-render by polling
+      var icon = document.getElementById("ki-fact-icon");
+      var cat = document.getElementById("ki-fact-category");
+      var txt = document.getElementById("ki-fact-text");
+      if (icon) icon.textContent = fact.icon;
+      if (cat) cat.textContent = fact.category;
+      if (txt) txt.textContent = fact.text;
+      card.style.opacity = "1";
+    }
+  }
+
+  function nextFact() {
+    currentFactIndex = (currentFactIndex + 1) % kiFacts.length;
+    showCurrentFact(true);
+  }
+
+  function loadKiFacts() {
+    if (factsLoaded) return;
+    fetch("/formular/data/ki-facts.json")
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        kiFacts = data || [];
+        // Zufällige Reihenfolge
+        kiFacts.sort(function () { return Math.random() - 0.5; });
+        factsLoaded = true;
+        showCurrentFact(true);
+        if (!factInterval && kiFacts.length > 1) {
+          factInterval = setInterval(nextFact, 8000);
+        }
+      })
+      .catch(function (e) {
+        // Fakten sind optional
+        console.log("KI-Facts nicht geladen:", e);
+      });
+  }
+
+  function stopFacts() {
+    if (factInterval) {
+      clearInterval(factInterval);
+      factInterval = null;
+    }
+  }
+
   // --- Polling ---
 
   function fetchStatus() {
@@ -371,9 +468,11 @@
 
         if (status === "done") {
           stopPolling();
+          stopFacts();
           renderDone(data);
         } else if (status === "failed") {
           stopPolling();
+          stopFacts();
           renderFailed();
         } else {
           // accepted, processing, or unknown → keep polling
