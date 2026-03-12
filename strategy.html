@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
+  <title>KI-Strategie – KI-Sicherheit.jetzt</title>
+  <meta name="description" content="KI-Strategiebericht: 10 Zusatzfragen für Ihren individuellen KI-Strategieplan.">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Strategy form specific styles */
+    .mk-card.mk-card--wide {
+      max-width: 680px;
+    }
+
+    .mk-strategy-intro {
+      margin-bottom: 2rem;
+    }
+
+    .mk-strategy-intro h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      color: var(--mk-text-primary);
+      font-size: 1.85rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.75rem 0;
+    }
+
+    .mk-strategy-intro p {
+      font-size: 1rem;
+      color: var(--mk-text-secondary);
+      line-height: 1.65;
+    }
+
+    /* Question group */
+    .mk-question-group {
+      margin-bottom: 2rem;
+      padding-bottom: 1.75rem;
+      border-bottom: 1px solid var(--mk-border-light);
+    }
+
+    .mk-question-group:last-of-type {
+      border-bottom: none;
+      margin-bottom: 1rem;
+      padding-bottom: 0;
+    }
+
+    .mk-question-group.invalid .mk-question-label {
+      color: #991b1b;
+    }
+
+    .mk-question-group.invalid .mk-question-label::after {
+      content: " — Bitte ausfüllen";
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #dc2626;
+    }
+
+    .mk-question-label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--mk-text-primary);
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .mk-question-label .mk-required {
+      color: #dc2626;
+      margin-left: 0.15rem;
+    }
+
+    .mk-question-hint {
+      font-size: 0.8rem;
+      color: var(--mk-text-muted);
+      margin-top: -0.4rem;
+      margin-bottom: 0.65rem;
+    }
+
+    /* Radio card grid */
+    .mk-radio-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .mk-radio-card {
+      position: relative;
+    }
+
+    .mk-radio-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .mk-radio-card label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--mk-border-light);
+      border-radius: 10px;
+      background: #fafbfc;
+      cursor: pointer;
+      font-size: 0.92rem;
+      color: var(--mk-text-primary);
+      transition: border-color var(--mk-transition-fast), background var(--mk-transition-fast), box-shadow var(--mk-transition-fast);
+    }
+
+    .mk-radio-card label::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--mk-border-medium);
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: border-color var(--mk-transition-fast), background var(--mk-transition-fast), box-shadow var(--mk-transition-fast);
+    }
+
+    .mk-radio-card label:hover {
+      border-color: var(--mk-navy-300);
+      background: #ffffff;
+    }
+
+    .mk-radio-card input[type="radio"]:checked + label {
+      border-color: var(--mk-navy-500);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
+    }
+
+    .mk-radio-card input[type="radio"]:checked + label::before {
+      border-color: var(--mk-navy-500);
+      background: var(--mk-navy-500);
+      box-shadow: inset 0 0 0 3px #ffffff;
+    }
+
+    /* Checkbox card */
+    .mk-check-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .mk-check-card {
+      position: relative;
+    }
+
+    .mk-check-card input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .mk-check-card label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--mk-border-light);
+      border-radius: 10px;
+      background: #fafbfc;
+      cursor: pointer;
+      font-size: 0.92rem;
+      color: var(--mk-text-primary);
+      transition: border-color var(--mk-transition-fast), background var(--mk-transition-fast), box-shadow var(--mk-transition-fast), opacity var(--mk-transition-fast);
+    }
+
+    .mk-check-card label::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--mk-border-medium);
+      border-radius: 4px;
+      flex-shrink: 0;
+      transition: border-color var(--mk-transition-fast), background var(--mk-transition-fast);
+    }
+
+    .mk-check-card label:hover {
+      border-color: var(--mk-navy-300);
+      background: #ffffff;
+    }
+
+    .mk-check-card input[type="checkbox"]:checked + label {
+      border-color: var(--mk-navy-500);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
+    }
+
+    .mk-check-card input[type="checkbox"]:checked + label::before {
+      border-color: var(--mk-navy-500);
+      background: var(--mk-navy-500);
+      box-shadow: inset 0 0 0 2px #ffffff;
+    }
+
+    .mk-check-card input[type="checkbox"]:disabled + label {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .mk-check-card input[type="checkbox"]:disabled + label:hover {
+      border-color: var(--mk-border-light);
+      background: #fafbfc;
+    }
+
+    /* Textarea */
+    .mk-form-textarea {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.875rem 1rem;
+      border-radius: 10px;
+      border: 2px solid var(--mk-border-light);
+      background: #fafbfc;
+      color: var(--mk-text-primary);
+      outline: none;
+      resize: vertical;
+      min-height: 80px;
+      transition: var(--mk-transition-fast);
+      box-sizing: border-box;
+    }
+
+    .mk-form-textarea::placeholder {
+      color: var(--mk-text-muted);
+    }
+
+    .mk-form-textarea:focus {
+      border-color: var(--mk-navy-400);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
+    }
+
+    .mk-char-counter {
+      text-align: right;
+      font-size: 0.75rem;
+      color: var(--mk-text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Status section */
+    .mk-status-section {
+      display: none;
+      text-align: center;
+      padding: 2rem 0;
+    }
+
+    .mk-spinner {
+      display: inline-block;
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--mk-border-light);
+      border-top-color: var(--mk-navy-500);
+      border-radius: 50%;
+      animation: mkSpin 0.8s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes mkSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .mk-status-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--mk-text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .mk-status-text {
+      font-size: 0.95rem;
+      color: var(--mk-text-secondary);
+      line-height: 1.6;
+    }
+
+    .mk-status-success {
+      color: #065f46;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    .mk-status-success .mk-status-title {
+      color: #065f46;
+    }
+
+    .mk-status-error {
+      color: #991b1b;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    .mk-status-error .mk-status-title {
+      color: #991b1b;
+    }
+
+    /* Error page */
+    .mk-error-page {
+      text-align: center;
+      padding: 2rem 0;
+    }
+
+    .mk-error-page .mk-error-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Section number badge */
+    .mk-section-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--mk-navy-50);
+      color: var(--mk-navy-600);
+      font-weight: 700;
+      font-size: 0.75rem;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+      flex-shrink: 0;
+      vertical-align: middle;
+    }
+
+    /* Dark mode additions */
+    @media (prefers-color-scheme: dark) {
+      .mk-radio-card label,
+      .mk-check-card label {
+        background: var(--mk-navy-900);
+        border-color: var(--mk-border-medium);
+        color: var(--mk-text-primary);
+      }
+
+      .mk-radio-card label:hover,
+      .mk-check-card label:hover {
+        border-color: var(--mk-navy-400);
+        background: var(--mk-navy-800);
+      }
+
+      .mk-radio-card input[type="radio"]:checked + label,
+      .mk-check-card input[type="checkbox"]:checked + label {
+        border-color: var(--mk-navy-400);
+        background: var(--mk-navy-800);
+        box-shadow: 0 0 0 3px rgba(42,106,158,0.2);
+      }
+
+      .mk-radio-card label::before,
+      .mk-check-card label::before {
+        border-color: var(--mk-border-medium);
+      }
+
+      .mk-radio-card input[type="radio"]:checked + label::before {
+        border-color: var(--mk-navy-300);
+        background: var(--mk-navy-300);
+        box-shadow: inset 0 0 0 3px var(--mk-navy-800);
+      }
+
+      .mk-check-card input[type="checkbox"]:checked + label::before {
+        border-color: var(--mk-navy-300);
+        background: var(--mk-navy-300);
+        box-shadow: inset 0 0 0 2px var(--mk-navy-800);
+      }
+
+      .mk-check-card input[type="checkbox"]:disabled + label {
+        opacity: 0.35;
+      }
+
+      .mk-form-textarea {
+        background: var(--mk-navy-900);
+        border-color: var(--mk-border-medium);
+        color: var(--mk-text-primary);
+      }
+
+      .mk-form-textarea:focus {
+        border-color: var(--mk-navy-400);
+        background: var(--mk-navy-800);
+      }
+
+      .mk-question-group {
+        border-bottom-color: var(--mk-border-light);
+      }
+
+      .mk-question-group.invalid .mk-question-label {
+        color: #fca5a5;
+      }
+
+      .mk-question-group.invalid .mk-question-label::after {
+        color: #f87171;
+      }
+
+      .mk-section-number {
+        background: rgba(42,106,158,0.2);
+        color: var(--mk-navy-300);
+      }
+
+      .mk-spinner {
+        border-color: var(--mk-border-medium);
+        border-top-color: var(--mk-navy-300);
+      }
+
+      .mk-status-success {
+        background: rgba(16,185,129,0.15);
+        border-color: rgba(16,185,129,0.3);
+        color: #6ee7b7;
+      }
+
+      .mk-status-success .mk-status-title {
+        color: #6ee7b7;
+      }
+
+      .mk-status-error {
+        background: rgba(239,68,68,0.15);
+        border-color: rgba(239,68,68,0.3);
+        color: #fca5a5;
+      }
+
+      .mk-status-error .mk-status-title {
+        color: #fca5a5;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .mk-strategy-intro h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="mk-background">
+
+<!-- Secondary Warmtone Blob -->
+<div class="mk-warmblob-secondary"></div>
+
+<div class="mk-page-wrapper">
+  <div class="mk-card mk-card--wide">
+    <header class="mk-card-header">
+      <h1 class="mk-brand-title">KI-Sicherheit.jetzt</h1>
+    </header>
+
+    <div class="mk-card-body">
+
+      <!-- Error: no briefing_id -->
+      <div id="error-section" class="mk-error-page" style="display:none;">
+        <div class="mk-error-icon">⚠</div>
+        <h2 class="mk-status-title">Keine Briefing-ID gefunden</h2>
+        <p class="mk-status-text">Bitte nutzen Sie den Link aus Ihrer E-Mail, um auf diese Seite zuzugreifen.</p>
+      </div>
+
+      <!-- Form section -->
+      <div id="form-section" style="display:none;">
+        <div class="mk-strategy-intro">
+          <h2>KI-Strategiebericht</h2>
+          <p>Beantworten Sie diese 10 Zusatzfragen, um Ihren individuellen KI-Strategiebericht zu erhalten. Pflichtfelder sind mit <strong style="color:#dc2626;">*</strong> markiert.</p>
+        </div>
+
+        <form id="strategy-form" novalidate>
+
+          <!-- S1: Investitionsbudget -->
+          <div class="mk-question-group" data-field="s1_budget">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S1</span>
+              Wie hoch ist Ihr geplantes Budget für KI-Investitionen in den nächsten 12 Monaten?
+              <span class="mk-required">*</span>
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="s1_budget" id="s1_1" value="Noch unklar">
+                <label for="s1_1">Noch unklar</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s1_budget" id="s1_2" value="Unter 5.000€">
+                <label for="s1_2">Unter 5.000 €</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s1_budget" id="s1_3" value="5.000–15.000€">
+                <label for="s1_3">5.000 – 15.000 €</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s1_budget" id="s1_4" value="15.000–50.000€">
+                <label for="s1_4">15.000 – 50.000 €</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s1_budget" id="s1_5" value="Über 50.000€">
+                <label for="s1_5">Über 50.000 €</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- S2: Umsetzungszeitraum -->
+          <div class="mk-question-group" data-field="s2_zeitrahmen">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S2</span>
+              In welchem Zeitraum wollen Sie erste KI-Maßnahmen umsetzen?
+              <span class="mk-required">*</span>
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="s2_zeitrahmen" id="s2_1" value="Sofort (1-3 Monate)">
+                <label for="s2_1">Sofort (1-3 Monate)</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s2_zeitrahmen" id="s2_2" value="Kurzfristig (3-6 Monate)">
+                <label for="s2_2">Kurzfristig (3-6 Monate)</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s2_zeitrahmen" id="s2_3" value="Mittelfristig (6-12 Monate)">
+                <label for="s2_3">Mittelfristig (6-12 Monate)</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s2_zeitrahmen" id="s2_4" value="Langfristig (12-18 Monate)">
+                <label for="s2_4">Langfristig (12-18 Monate)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- S3: Top-Prioritäten -->
+          <div class="mk-question-group" data-field="s3_prioritaeten">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S3</span>
+              Was sind Ihre wichtigsten Prioritäten beim KI-Einsatz?
+              <span class="mk-required">*</span>
+            </span>
+            <p class="mk-question-hint">Wählen Sie maximal 3 Optionen.</p>
+            <div class="mk-check-grid">
+              <div class="mk-check-card">
+                <input type="checkbox" name="s3_prioritaeten" id="s3_1" value="Kosten senken">
+                <label for="s3_1">Kosten senken</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s3_prioritaeten" id="s3_2" value="Umsatz steigern">
+                <label for="s3_2">Umsatz steigern</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s3_prioritaeten" id="s3_3" value="Qualität verbessern">
+                <label for="s3_3">Qualität verbessern</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s3_prioritaeten" id="s3_4" value="Geschwindigkeit erhöhen">
+                <label for="s3_4">Geschwindigkeit erhöhen</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s3_prioritaeten" id="s3_5" value="Compliance sichern">
+                <label for="s3_5">Compliance sichern</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s3_prioritaeten" id="s3_6" value="Neue Geschäftsfelder">
+                <label for="s3_6">Neue Geschäftsfelder</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s3_prioritaeten" id="s3_7" value="Fachkräftemangel kompensieren">
+                <label for="s3_7">Fachkräftemangel kompensieren</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s3_prioritaeten" id="s3_8" value="Kundenerlebnis verbessern">
+                <label for="s3_8">Kundenerlebnis verbessern</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- S4: Wichtigster Engpass -->
+          <div class="mk-question-group" data-field="s4_engpass">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S4</span>
+              Was ist aktuell der größte Engpass für Ihre KI-Einführung?
+              <span class="mk-required">*</span>
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="s4_engpass" id="s4_1" value="Zu wenig Know-how">
+                <label for="s4_1">Zu wenig Know-how</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s4_engpass" id="s4_2" value="Kein Budget">
+                <label for="s4_2">Kein Budget</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s4_engpass" id="s4_3" value="Fehlende Daten">
+                <label for="s4_3">Fehlende Daten</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s4_engpass" id="s4_4" value="Widerstand im Team">
+                <label for="s4_4">Widerstand im Team</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s4_engpass" id="s4_5" value="Regulatorische Unsicherheit">
+                <label for="s4_5">Regulatorische Unsicherheit</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s4_engpass" id="s4_6" value="Kein klarer Use Case">
+                <label for="s4_6">Kein klarer Use Case</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s4_engpass" id="s4_7" value="Andere">
+                <label for="s4_7">Andere</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- S5: Bestehende Software -->
+          <div class="mk-question-group" data-field="s5_software">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S5</span>
+              Welche Software und Tools nutzen Sie aktuell im Tagesgeschäft?
+            </span>
+            <textarea id="s5_software" class="mk-form-textarea" maxlength="200" placeholder="z. B. Microsoft 365, Slack, HubSpot, SAP, DATEV, Shopify..."></textarea>
+            <div id="s5_software_counter" class="mk-char-counter">0/200</div>
+          </div>
+
+          <!-- S6: Förderinteresse -->
+          <div class="mk-question-group" data-field="s6_foerderinteresse">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S6</span>
+              Sind Fördermittel für Ihre KI-Investitionen interessant?
+              <span class="mk-required">*</span>
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="s6_foerderinteresse" id="s6_1" value="Ja, dringend">
+                <label for="s6_1">Ja, dringend</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s6_foerderinteresse" id="s6_2" value="Ja, wenn passend">
+                <label for="s6_2">Ja, wenn passend</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s6_foerderinteresse" id="s6_3" value="Nein, eigenes Budget">
+                <label for="s6_3">Nein, eigenes Budget</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s6_foerderinteresse" id="s6_4" value="Weiß nicht">
+                <label for="s6_4">Weiß nicht</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- S7: Entscheidungsstruktur -->
+          <div class="mk-question-group" data-field="s7_entscheidung">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S7</span>
+              Wie werden bei Ihnen KI-Investitionsentscheidungen getroffen?
+              <span class="mk-required">*</span>
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="s7_entscheidung" id="s7_1" value="Entscheide allein">
+                <label for="s7_1">Entscheide allein</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s7_entscheidung" id="s7_2" value="Brauche Vorlage für Geschäftsleitung">
+                <label for="s7_2">Brauche Vorlage für Geschäftsleitung</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s7_entscheidung" id="s7_3" value="Muss Gesellschafter überzeugen">
+                <label for="s7_3">Muss Gesellschafter überzeugen</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s7_entscheidung" id="s7_4" value="Muss Aufsichtsrat/Beirat informieren">
+                <label for="s7_4">Muss Aufsichtsrat/Beirat informieren</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- S8: KI-Erfahrung -->
+          <div class="mk-question-group" data-field="s8_erfahrung">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S8</span>
+              Wie schätzen Sie Ihre bisherige Erfahrung mit KI ein?
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="s8_erfahrung" id="s8_1" value="Noch keine">
+                <label for="s8_1">Noch keine</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s8_erfahrung" id="s8_2" value="Experimentiert">
+                <label for="s8_2">Experimentiert</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s8_erfahrung" id="s8_3" value="Erste Tools im Einsatz">
+                <label for="s8_3">Erste Tools im Einsatz</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s8_erfahrung" id="s8_4" value="Fortgeschritten">
+                <label for="s8_4">Fortgeschritten</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- S9: Bevorzugter Ansatz -->
+          <div class="mk-question-group" data-field="s9_ansatz">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S9</span>
+              Welchen Infrastruktur-Ansatz bevorzugen Sie?
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="s9_ansatz" id="s9_1" value="Cloud-SaaS">
+                <label for="s9_1">Cloud-SaaS</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s9_ansatz" id="s9_2" value="On-Premise">
+                <label for="s9_2">On-Premise</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s9_ansatz" id="s9_3" value="Hybrid">
+                <label for="s9_3">Hybrid</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s9_ansatz" id="s9_4" value="Egal">
+                <label for="s9_4">Egal</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- S10: Datenschutz-Priorität -->
+          <div class="mk-question-group" data-field="s10_datenschutz">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S10</span>
+              Wie hoch ist Ihre Datenschutz-Priorität?
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="s10_datenschutz" id="s10_1" value="Hoch">
+                <label for="s10_1">Hoch</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s10_datenschutz" id="s10_2" value="Mittel">
+                <label for="s10_2">Mittel</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="s10_datenschutz" id="s10_3" value="Niedrig">
+                <label for="s10_3">Niedrig</label>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit" class="mk-btn-primary">
+            Strategiebericht anfordern <span class="arrow">&rarr;</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Status section -->
+      <div id="status-section" class="mk-status-section">
+        <div id="status-generating">
+          <div class="mk-spinner"></div>
+          <div class="mk-status-title">Ihr KI-Strategiebericht wird erstellt&hellip;</div>
+          <p class="mk-status-text">Dies kann einige Minuten dauern. Bitte lassen Sie diese Seite geöffnet.</p>
+        </div>
+        <div id="status-completed" style="display:none;">
+          <div class="mk-status-success">
+            <div class="mk-status-title">Strategiebericht fertig!</div>
+            <p class="mk-status-text">Ihr individueller KI-Strategiebericht wurde erfolgreich erstellt. Sie erhalten ihn in Kürze per E-Mail.</p>
+          </div>
+        </div>
+        <div id="status-failed" style="display:none;">
+          <div class="mk-status-error">
+            <div class="mk-status-title">Fehler bei der Erstellung</div>
+            <p class="mk-status-text">Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie <a href="mailto:support@ki-sicherheit.jetzt" style="color:inherit;font-weight:600;">support@ki-sicherheit.jetzt</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logo Bar -->
+      <div class="mk-logo-bar" style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 1rem 0;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem;">
+          <div style="background: transparent; border: none; box-shadow: none; display: flex; align-items: center;">
+            <img src="badges/dsgvo.svg" alt="DSGVO konform" style="height: 55px; width: auto;" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div style="background: transparent; border: none; box-shadow: none; display: flex; align-items: center;">
+            <img src="badges/eu-ai.svg" alt="EU AI Act Ready" style="height: 55px; width: auto;" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div style="background: transparent; border: none; box-shadow: none; display: flex; align-items: center;">
+            <img src="badges/ki-ready-2025.webp" alt="KI-Ready 2025" style="height: 55px; width: auto;" onerror="this.parentElement.style.display='none'">
+          </div>
+          <div style="background: transparent; border: none; box-shadow: none; display: flex; align-items: center;">
+            <img src="badges/tuev-logo.webp" alt="TÜV zertifiziert" style="height: 55px; width: auto;" onerror="this.parentElement.style.display='none'">
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; background: transparent; border: none; box-shadow: none;">
+          <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" style="height: 70px; width: auto;" onerror="this.parentElement.style.display='none'">
+          <span style="font-size: 0.75rem; color: #1e3a5f; margin-top: 0.5rem; font-weight: 600;">TÜV-zertifiziertes KI-Management - Wolf Hohl</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+    "use strict";
+
+    var API_BASE = "https://api-ki-backend-neu-production.up.railway.app";
+    var params = new URLSearchParams(window.location.search);
+    var briefingId = params.get("briefing_id");
+
+    if (!briefingId) {
+        document.getElementById("error-section").style.display = "block";
+        return;
+    }
+
+    // Show form
+    document.getElementById("form-section").style.display = "block";
+
+    // Checkbox max-3 logic for s3_prioritaeten
+    function setupMaxCheckboxes(name, max) {
+        var boxes = document.querySelectorAll("input[name='" + name + "']");
+        boxes.forEach(function(box) {
+            box.addEventListener("change", function() {
+                var checked = document.querySelectorAll("input[name='" + name + "']:checked");
+                boxes.forEach(function(b) {
+                    if (!b.checked) b.disabled = (checked.length >= max);
+                });
+            });
+        });
+    }
+
+    // Character counter for s5_software
+    function setupCharCounter(fieldId, max) {
+        var field = document.getElementById(fieldId);
+        var counter = document.getElementById(fieldId + "_counter");
+        if (!field || !counter) return;
+        field.addEventListener("input", function() {
+            var len = field.value.length;
+            counter.textContent = len + "/" + max;
+            if (len > max) field.value = field.value.substring(0, max);
+        });
+    }
+
+    // Clear invalid state on interaction
+    document.querySelectorAll("input[type='radio'], input[type='checkbox']").forEach(function(input) {
+        input.addEventListener("change", function() {
+            var group = input.closest(".mk-question-group");
+            if (group) group.classList.remove("invalid");
+        });
+    });
+
+    // Form Submit
+    document.getElementById("strategy-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        // Clear previous invalid states
+        document.querySelectorAll(".mk-question-group.invalid").forEach(function(el) {
+            el.classList.remove("invalid");
+        });
+
+        // Required validation
+        var required = ["s1_budget", "s2_zeitrahmen", "s3_prioritaeten", "s4_engpass",
+                        "s6_foerderinteresse", "s7_entscheidung"];
+        var missing = [];
+
+        required.forEach(function(name) {
+            if (name === "s3_prioritaeten") {
+                var checked = document.querySelectorAll("input[name='s3_prioritaeten']:checked");
+                if (checked.length === 0) missing.push(name);
+            } else {
+                var sel = document.querySelector("input[name='" + name + "']:checked");
+                if (!sel) missing.push(name);
+            }
+        });
+
+        if (missing.length > 0) {
+            missing.forEach(function(name) {
+                var group = document.querySelector("[data-field='" + name + "']");
+                if (group) group.classList.add("invalid");
+            });
+            var first = document.querySelector(".invalid");
+            if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+            return;
+        }
+
+        // Collect data
+        var data = {};
+
+        // Radio fields
+        ["s1_budget", "s2_zeitrahmen", "s4_engpass", "s6_foerderinteresse",
+         "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz"]
+        .forEach(function(name) {
+            var sel = document.querySelector("input[name='" + name + "']:checked");
+            if (sel) data[name] = sel.value;
+        });
+
+        // Checkbox -> Array
+        data.s3_prioritaeten = [];
+        document.querySelectorAll("input[name='s3_prioritaeten']:checked")
+            .forEach(function(p) { data.s3_prioritaeten.push(p.value); });
+
+        // Free text
+        var sw = document.getElementById("s5_software");
+        if (sw && sw.value.trim()) data.s5_software = sw.value.trim();
+
+        // Disable button
+        var btn = document.getElementById("btn-submit");
+        btn.disabled = true;
+        btn.textContent = "Wird gesendet\u2026";
+
+        // Chain: Questions -> Generate -> Poll
+        fetch(API_BASE + "/api/strategy/questions/" + briefingId, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
+        .then(function() {
+            return fetch(API_BASE + "/api/strategy/generate/" + briefingId, { method: "POST" });
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            // Form -> Status
+            document.getElementById("form-section").style.display = "none";
+            document.getElementById("status-section").style.display = "block";
+            pollStatus();
+        })
+        .catch(function(err) {
+            btn.disabled = false;
+            btn.textContent = "Strategiebericht anfordern";
+            alert("Fehler: " + err.message);
+        });
+    });
+
+    function pollStatus() {
+        var interval = setInterval(function() {
+            fetch(API_BASE + "/api/strategy/status/" + briefingId)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.status === "completed") {
+                    clearInterval(interval);
+                    document.getElementById("status-generating").style.display = "none";
+                    document.getElementById("status-completed").style.display = "block";
+                } else if (data.status === "failed") {
+                    clearInterval(interval);
+                    document.getElementById("status-generating").style.display = "none";
+                    document.getElementById("status-failed").style.display = "block";
+                }
+            }).catch(function() {});
+        }, 5000);
+    }
+
+    // Init
+    setupMaxCheckboxes("s3_prioritaeten", 3);
+    setupCharCounter("s5_software", 200);
+})();
+</script>
+
+</body>
+</html>
