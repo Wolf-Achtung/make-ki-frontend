@@ -462,8 +462,9 @@
       <!-- Form section -->
       <div id="form-section" style="display:none;">
         <div class="mk-strategy-intro">
-          <h2>KI-Strategiebericht</h2>
-          <p>Beantworten Sie diese 10 Zusatzfragen, um Ihren individuellen KI-Strategiebericht zu erhalten. Pflichtfelder sind mit <strong style="color:#dc2626;">*</strong> markiert.</p>
+          <h2>Ihr persönlicher KI-Strategiebericht</h2>
+          <p>Auf Basis Ihrer KI-Readiness-Analyse erstellen wir Ihren individuellen Implementierungsfahrplan. Dafür benötigen wir noch wenige Angaben zu Ihrer <strong>konkreten Umsetzungsplanung</strong> — einige Punkte kennen wir bereits aus Ihrer Analyse, hier geht es um die strategische Priorisierung.</p>
+          <p style="font-size:0.85rem; color:var(--mk-text-muted); margin-top:0.5rem;">10 Fragen · 3 Minuten · maßgeschneiderter Strategiefahrplan · Pflichtfelder mit <strong style="color:#dc2626;">*</strong></p>
         </div>
 
         <form id="strategy-form" novalidate>
@@ -472,9 +473,10 @@
           <div class="mk-question-group" data-field="s1_budget">
             <span class="mk-question-label">
               <span class="mk-section-number">S1</span>
-              Wie hoch ist Ihr geplantes Budget für KI-Investitionen in den nächsten 12 Monaten?
+              Wie hoch ist Ihr geplantes Budget speziell für die KI-Implementierung der nächsten 12 Monate?
               <span class="mk-required">*</span>
             </span>
+            <p class="mk-question-hint">Falls abweichend von Ihrer früheren Angabe — hier geht es um das konkrete Umsetzungsbudget.</p>
             <div class="mk-radio-grid">
               <div class="mk-radio-card">
                 <input type="radio" name="s1_budget" id="s1_1" value="Noch unklar">
@@ -533,7 +535,7 @@
               Was sind Ihre wichtigsten Prioritäten beim KI-Einsatz?
               <span class="mk-required">*</span>
             </span>
-            <p class="mk-question-hint">Wählen Sie maximal 3 Optionen.</p>
+            <p class="mk-question-hint">Für den Strategiebericht priorisieren wir auf maximal 3 Ziele — bitte wählen Sie die wichtigsten für die nächsten 6–12 Monate.</p>
             <div class="mk-check-grid">
               <div class="mk-check-card">
                 <input type="checkbox" name="s3_prioritaeten" id="s3_1" value="Kosten senken">
@@ -577,6 +579,7 @@
               Was ist aktuell der größte Engpass für Ihre KI-Einführung?
               <span class="mk-required">*</span>
             </span>
+            <p class="mk-question-hint">Welcher einzelne Engpass blockiert die Umsetzung am stärksten? (Hier wählen Sie bewusst nur einen — den wichtigsten.)</p>
             <div class="mk-radio-grid">
               <div class="mk-radio-card">
                 <input type="radio" name="s4_engpass" id="s4_1" value="Zu wenig Know-how">
@@ -626,6 +629,7 @@
               Sind Fördermittel für Ihre KI-Investitionen interessant?
               <span class="mk-required">*</span>
             </span>
+            <p class="mk-question-hint">Damit wir passende Förderprogramme im Strategiebericht gezielt berücksichtigen können.</p>
             <div class="mk-radio-grid">
               <div class="mk-radio-card">
                 <input type="radio" name="s6_foerderinteresse" id="s6_1" value="Ja, dringend">
@@ -679,6 +683,7 @@
               <span class="mk-section-number">S8</span>
               Wie schätzen Sie Ihre bisherige Erfahrung mit KI ein?
             </span>
+            <p class="mk-question-hint">Optional — hilft für die richtige Tiefe der strategischen Empfehlungen.</p>
             <div class="mk-radio-grid">
               <div class="mk-radio-card">
                 <input type="radio" name="s8_erfahrung" id="s8_1" value="Noch keine">
@@ -705,6 +710,7 @@
               <span class="mk-section-number">S9</span>
               Welchen Infrastruktur-Ansatz bevorzugen Sie?
             </span>
+            <p class="mk-question-hint">Optional — beeinflusst Tool-Empfehlungen und Architektur-Vorschläge im Strategiebericht.</p>
             <div class="mk-radio-grid">
               <div class="mk-radio-card">
                 <input type="radio" name="s9_ansatz" id="s9_1" value="Cloud-SaaS">
@@ -731,6 +737,7 @@
               <span class="mk-section-number">S10</span>
               Wie hoch ist Ihre Datenschutz-Priorität?
             </span>
+            <p class="mk-question-hint">Optional — bestimmt die Tiefe der Compliance-Empfehlungen im Strategiebericht.</p>
             <div class="mk-radio-grid">
               <div class="mk-radio-card">
                 <input type="radio" name="s10_datenschutz" id="s10_1" value="Hoch">
