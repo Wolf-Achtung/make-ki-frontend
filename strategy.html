@@ -212,6 +212,77 @@
       background: #fafbfc;
     }
 
+    /* Tool category headings (S5) */
+    .mk-tool-category {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--mk-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 1.25rem 0 0.5rem 0;
+    }
+
+    .mk-tool-category:first-of-type {
+      margin-top: 0.25rem;
+    }
+
+    .mk-tool-other-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--mk-text-secondary);
+      margin: 1.25rem 0 0.4rem 0;
+    }
+
+    .mk-form-text-input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 2px solid var(--mk-border-light);
+      background: #fafbfc;
+      color: var(--mk-text-primary);
+      outline: none;
+      transition: var(--mk-transition-fast);
+      box-sizing: border-box;
+    }
+
+    .mk-form-text-input::placeholder {
+      color: var(--mk-text-muted);
+    }
+
+    .mk-form-text-input:focus {
+      border-color: var(--mk-navy-400);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
+    }
+
+    /* Option hints (S9) */
+    .mk-radio-card label:has(.mk-radio-label-content) {
+      align-items: flex-start;
+      padding-top: 0.85rem;
+      padding-bottom: 0.85rem;
+    }
+
+    .mk-radio-card label:has(.mk-radio-label-content)::before {
+      margin-top: 2px;
+    }
+
+    .mk-radio-label-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mk-option-hint {
+      display: block;
+      color: #6b7280;
+      font-size: 0.82em;
+      font-weight: 400;
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
     /* Textarea */
     .mk-form-textarea {
       width: 100%;
@@ -377,15 +448,25 @@
         opacity: 0.35;
       }
 
-      .mk-form-textarea {
+      .mk-form-textarea,
+      .mk-form-text-input {
         background: var(--mk-navy-900);
         border-color: var(--mk-border-medium);
         color: var(--mk-text-primary);
       }
 
-      .mk-form-textarea:focus {
+      .mk-form-textarea:focus,
+      .mk-form-text-input:focus {
         border-color: var(--mk-navy-400);
         background: var(--mk-navy-800);
+      }
+
+      .mk-option-hint {
+        color: #9ca3af;
+      }
+
+      .mk-tool-category {
+        color: var(--mk-text-muted);
       }
 
       .mk-question-group {
@@ -618,8 +699,89 @@
               <span class="mk-section-number">S5</span>
               Welche Software und Tools nutzen Sie aktuell im Tagesgeschäft?
             </span>
-            <textarea id="s5_software" class="mk-form-textarea" maxlength="200" placeholder="z. B. Microsoft 365, Slack, HubSpot, SAP, DATEV, Shopify..."></textarea>
-            <div id="s5_software_counter" class="mk-char-counter">0/200</div>
+
+            <h4 class="mk-tool-category">Produktivität & Office</h4>
+            <div class="mk-check-grid">
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t1" value="Microsoft 365">
+                <label for="s5_t1">Microsoft 365 (Word, Excel, Teams, Outlook)</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t2" value="Google Workspace">
+                <label for="s5_t2">Google Workspace (Docs, Sheets, Gmail)</label>
+              </div>
+            </div>
+
+            <h4 class="mk-tool-category">Projektmanagement & Kollaboration</h4>
+            <div class="mk-check-grid">
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t3" value="Notion">
+                <label for="s5_t3">Notion</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t4" value="Asana / Monday / Trello">
+                <label for="s5_t4">Asana / Monday / Trello</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t5" value="Slack">
+                <label for="s5_t5">Slack</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t6" value="Jira / Confluence">
+                <label for="s5_t6">Jira / Confluence</label>
+              </div>
+            </div>
+
+            <h4 class="mk-tool-category">KI-Tools</h4>
+            <div class="mk-check-grid">
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t7" value="ChatGPT / OpenAI">
+                <label for="s5_t7">ChatGPT / OpenAI</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t8" value="Claude / Anthropic">
+                <label for="s5_t8">Claude / Anthropic</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t9" value="Perplexity">
+                <label for="s5_t9">Perplexity</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t10" value="Microsoft Copilot">
+                <label for="s5_t10">Microsoft Copilot</label>
+              </div>
+            </div>
+
+            <h4 class="mk-tool-category">Entwicklung & Infrastruktur</h4>
+            <div class="mk-check-grid">
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t11" value="GitHub / GitLab">
+                <label for="s5_t11">GitHub / GitLab</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t12" value="AWS / Azure / Google Cloud">
+                <label for="s5_t12">AWS / Azure / Google Cloud</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t13" value="Railway / Vercel / Netlify">
+                <label for="s5_t13">Railway / Vercel / Netlify</label>
+              </div>
+            </div>
+
+            <h4 class="mk-tool-category">CRM & Marketing</h4>
+            <div class="mk-check-grid">
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t14" value="Salesforce / HubSpot">
+                <label for="s5_t14">Salesforce / HubSpot</label>
+              </div>
+              <div class="mk-check-card">
+                <input type="checkbox" name="s5_tools" id="s5_t15" value="Mailchimp / Brevo">
+                <label for="s5_t15">Mailchimp / Brevo</label>
+              </div>
+            </div>
+
+            <label class="mk-tool-other-label" for="s5_tools_other">Weitere Tools (optional):</label>
+            <input type="text" id="s5_tools_other" class="mk-form-text-input" maxlength="200" placeholder="z. B. SAP, DATEV, Figma, Shopify...">
           </div>
 
           <!-- S6: Förderinteresse -->
@@ -714,19 +876,39 @@
             <div class="mk-radio-grid">
               <div class="mk-radio-card">
                 <input type="radio" name="s9_ansatz" id="s9_1" value="Cloud-SaaS">
-                <label for="s9_1">Cloud-SaaS</label>
+                <label for="s9_1">
+                  <span class="mk-radio-label-content">
+                    <strong>Cloud-SaaS</strong>
+                    <span class="mk-option-hint">Software läuft beim Anbieter im Internet — Sie brauchen keine eigenen Server. Beispiele: Microsoft 365, Google Workspace, Salesforce</span>
+                  </span>
+                </label>
               </div>
               <div class="mk-radio-card">
                 <input type="radio" name="s9_ansatz" id="s9_2" value="On-Premise">
-                <label for="s9_2">On-Premise</label>
+                <label for="s9_2">
+                  <span class="mk-radio-label-content">
+                    <strong>On-Premise</strong>
+                    <span class="mk-option-hint">Software läuft auf Ihren eigenen Servern — volle Kontrolle über die Daten. Beispiele: Lokaler Exchange-Server, eigene Datenbanken</span>
+                  </span>
+                </label>
               </div>
               <div class="mk-radio-card">
                 <input type="radio" name="s9_ansatz" id="s9_3" value="Hybrid">
-                <label for="s9_3">Hybrid</label>
+                <label for="s9_3">
+                  <span class="mk-radio-label-content">
+                    <strong>Hybrid</strong>
+                    <span class="mk-option-hint">Mix aus Cloud und eigener Infrastruktur. Häufigste Wahl bei KMU mit Datenschutz-Anforderungen.</span>
+                  </span>
+                </label>
               </div>
               <div class="mk-radio-card">
                 <input type="radio" name="s9_ansatz" id="s9_4" value="Egal">
-                <label for="s9_4">Egal</label>
+                <label for="s9_4">
+                  <span class="mk-radio-label-content">
+                    <strong>Noch unklar / Egal</strong>
+                    <span class="mk-option-hint">Sie haben keine Präferenz oder möchten sich beraten lassen.</span>
+                  </span>
+                </label>
               </div>
             </div>
           </div>
@@ -836,18 +1018,6 @@
         });
     }
 
-    // Character counter for s5_software
-    function setupCharCounter(fieldId, max) {
-        var field = document.getElementById(fieldId);
-        var counter = document.getElementById(fieldId + "_counter");
-        if (!field || !counter) return;
-        field.addEventListener("input", function() {
-            var len = field.value.length;
-            counter.textContent = len + "/" + max;
-            if (len > max) field.value = field.value.substring(0, max);
-        });
-    }
-
     // Clear invalid state on interaction
     document.querySelectorAll("input[type='radio'], input[type='checkbox']").forEach(function(input) {
         input.addEventListener("change", function() {
@@ -906,9 +1076,13 @@
         document.querySelectorAll("input[name='s3_prioritaeten']:checked")
             .forEach(function(p) { data.s3_prioritaeten.push(p.value); });
 
-        // Free text
-        var sw = document.getElementById("s5_software");
-        if (sw && sw.value.trim()) data.s5_software = sw.value.trim();
+        // S5: Combine checkboxes + free text into comma-separated string
+        var s5checked = [];
+        document.querySelectorAll("input[name='s5_tools']:checked")
+            .forEach(function(cb) { s5checked.push(cb.value); });
+        var s5other = document.getElementById("s5_tools_other");
+        if (s5other && s5other.value.trim()) s5checked.push(s5other.value.trim());
+        if (s5checked.length > 0) data.s5_software = s5checked.join(", ");
 
         // Disable button
         var btn = document.getElementById("btn-submit");
@@ -962,7 +1136,6 @@
 
     // Init
     setupMaxCheckboxes("s3_prioritaeten", 3);
-    setupCharCounter("s5_software", 200);
 })();
 </script>
 
