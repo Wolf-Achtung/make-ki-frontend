@@ -362,6 +362,62 @@
       }
     } catch(e) {}
   }
+
+  // Prefill branch & company size from briefing_id
+  const briefingId = qp.get("briefing_id");
+  if (briefingId) {
+    (async function() {
+      try {
+        const headers = { "Accept": "application/json" };
+        const jwt = localStorage.getItem("jwt");
+        if (jwt) headers["Authorization"] = "Bearer " + jwt;
+        const res = await fetch(API_BASE + "/briefings/" + encodeURIComponent(briefingId), {
+          credentials: "include",
+          headers: headers
+        });
+        if (!res.ok) return;
+        const json = await res.json();
+        const answers = (json.briefing && json.briefing.answers) || json.answers || json;
+
+        // Map API branche values to feedback form select values
+        const brancheMap = {
+          "beratung": "beratung",
+          "it": "it",
+          "medien": "medien",
+          "handel": "handel",
+          "industrie": "industrie",
+          "marketing": "sonstige",
+          "finanzen": "sonstige",
+          "bildung": "sonstige",
+          "verwaltung": "sonstige",
+          "gesundheit": "sonstige",
+          "bau": "sonstige",
+          "logistik": "sonstige",
+          "gastronomie": "sonstige"
+        };
+
+        // Map API unternehmensgroesse values to feedback form radio values
+        const sizeMap = {
+          "1": "solo",
+          "2–10": "small_team",
+          "2-10": "small_team",
+          "11–100": "kmu",
+          "11-100": "kmu"
+        };
+
+        if (answers.branche && brancheMap[answers.branche]) {
+          document.getElementById("branch_feedback").value = brancheMap[answers.branche];
+        }
+
+        if (answers.unternehmensgroesse && sizeMap[answers.unternehmensgroesse]) {
+          const radio = form.querySelector('input[name="company_size_feedback"][value="' + sizeMap[answers.unternehmensgroesse] + '"]');
+          if (radio) radio.checked = true;
+        }
+      } catch(e) {
+        // Graceful fallback: form remains empty on error
+      }
+    })();
+  }
 })();
 </script>
 
