@@ -12,12 +12,14 @@
   // --- Config ---
   var POLL_INTERVAL_MS = 5000;
   var POLL_MAX_ATTEMPTS = 120; // 10 Minuten bei 5s Intervall
+  var CONSECUTIVE_ERROR_MAX = 3; // Nach 3 aufeinanderfolgenden Fehlern aufgeben
 
   // --- State ---
   var briefingId = null;
   var userEmail = null;
   var pollTimer = null;
   var pollCount = 0;
+  var consecutiveErrors = 0;
   var startTime = null;
 
   // --- "Wussten Sie schon?" Facts ---
@@ -226,12 +228,21 @@
 
   // Fehler beim Laden
   function renderLoadError() {
+    var emailHint = "";
+    if (userEmail) {
+      emailHint =
+        '<div class="info-box" style="margin-top: 16px;">' +
+          "<p>Falls Ihr Report bereits fertig ist, prüfen Sie bitte Ihr " +
+          "E-Mail-Postfach: <strong>" + escapeHtml(userEmail) + "</strong></p>" +
+        "</div>";
+    }
     render(
       '<div class="status-icon">&#9888;&#65039;</div>' +
       '<h2 class="status-title">Status konnte nicht geladen werden.</h2>' +
       '<p class="status-text">' +
         "Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut." +
       "</p>" +
+      emailHint +
       '<div class="btn-row">' +
         '<button class="btn btn-primary" onclick="window.location.reload()">' +
           "&#128260; Erneut versuchen" +
@@ -363,14 +374,7 @@
       Accept: "application/json",
       "X-Client": "ki-readiness-frontend",
     };
-
-    // Add auth token if available
-    try {
-      var token = localStorage.getItem("access_token");
-      if (token) {
-        headers["Authorization"] = "Bearer " + token;
-      }
-    } catch (_) {}
+    // Kein Authorization-Header — /api/briefings/{id} ist öffentlich
 
     var controller = new AbortController();
     var timeout = setTimeout(function () {
@@ -380,7 +384,6 @@
     fetch(url, {
       method: "GET",
       headers: headers,
-      credentials: "include",
       signal: controller.signal,
     })
       .then(function (res) {
@@ -389,12 +392,6 @@
         if (res.status === 404) {
           stopPolling();
           renderNotFound();
-          return null;
-        }
-
-        if (res.status === 401) {
-          stopPolling();
-          window.location.href = "/login.html";
           return null;
         }
 
@@ -407,6 +404,7 @@
       .then(function (data) {
         if (!data) return;
 
+        consecutiveErrors = 0; // Reset on successful response
         var status = data.status;
 
         if (status === "done") {
@@ -425,9 +423,9 @@
       .catch(function (err) {
         clearTimeout(timeout);
         console.error("[Status] Fehler bei Status-Abfrage:", err);
-        pollCount++;
+        consecutiveErrors++;
 
-        if (pollCount >= POLL_MAX_ATTEMPTS) {
+        if (consecutiveErrors >= CONSECUTIVE_ERROR_MAX) {
           stopPolling();
           renderLoadError();
         }
