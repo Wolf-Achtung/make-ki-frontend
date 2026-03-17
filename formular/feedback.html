@@ -311,6 +311,14 @@
 
     if (!data.timestamp) data.timestamp = new Date().toISOString();
 
+    // Ensure type is always set
+    data.type = "form_feedback";
+
+    // Include briefing_id from URL or localStorage
+    const _qp = new URLSearchParams(location.search);
+    const bId = _qp.get("id") || _qp.get("briefing_id") || localStorage.getItem("last_briefing_id");
+    if (bId) data.briefing_id = parseInt(bId, 10);
+
     try {
       statusEl.textContent = "Wird gesendet …";
       const res = await fetch(`${API_BASE}/feedback`, {

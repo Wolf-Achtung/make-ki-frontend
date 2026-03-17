@@ -806,7 +806,8 @@ function _collectLabelFor(fieldKey, value){
         return res.json().then(function (body) {
           var bid = body && (body.briefing_id || body.id);
           if (bid) {
-            // Autosave löschen nach erfolgreichem Submit
+            // briefing_id für Feedback-Formular merken, dann Autosave löschen
+            try { localStorage.setItem("last_briefing_id", String(bid)); } catch(_) {}
             try { localStorage.removeItem(STORAGE_PREFIX + "data"); localStorage.removeItem(STORAGE_PREFIX + "step"); } catch(_) {}
             var statusUrl = "/formular/status.html?id=" + encodeURIComponent(bid);
             if (userEmailForStatus) statusUrl += "&email=" + encodeURIComponent(userEmailForStatus);
