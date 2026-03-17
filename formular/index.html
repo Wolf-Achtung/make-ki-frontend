@@ -437,13 +437,28 @@
   ];
 
   // ── Get current context ──
+  // Cache branche/size because Block 1 fields are removed from DOM on later blocks
+  var _cachedBranche = "";
+  var _cachedSize = "";
+
   function getContext() {
+    // Try live DOM first (when on Block 1)
     var brancheEl = document.querySelector('[name="branche"]');
     var sizeEl = document.querySelector('[name="unternehmensgroesse"]');
-    var branche = (brancheEl && brancheEl.value) || "";
-    var sizeRaw = (sizeEl && sizeEl.value) || "";
-    if (!branche || !sizeRaw) return null;
-    return { branche: branche, size: mapSize(sizeRaw) };
+    if (brancheEl && brancheEl.value) _cachedBranche = brancheEl.value;
+    if (sizeEl && sizeEl.value) _cachedSize = mapSize(sizeEl.value);
+
+    // Fallback: read from formbuilder autosave in localStorage
+    if (!_cachedBranche || !_cachedSize) {
+      try {
+        var saved = JSON.parse(localStorage.getItem("autosave_form_data") || "{}");
+        if (saved.branche && !_cachedBranche) _cachedBranche = saved.branche;
+        if (saved.unternehmensgroesse && !_cachedSize) _cachedSize = mapSize(saved.unternehmensgroesse);
+      } catch(_) {}
+    }
+
+    if (!_cachedBranche || !_cachedSize) return null;
+    return { branche: _cachedBranche, size: _cachedSize };
   }
 
   // ── Inject examples into current view ──
