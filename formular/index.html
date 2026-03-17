@@ -370,11 +370,177 @@
   });
 </script>
 
+<!-- Field Examples Data -->
+<script src="/field_examples_de.js"></script>
+
 <!-- Prefill/Autosync -->
 <script src="/formular/prefill.js"></script>
 
 <!-- Boot script -->
 <script src="/formular/boot.js"></script>
+
+<!-- Dynamic Field Examples Integration -->
+<script>
+(function() {
+  "use strict";
+
+  // ── CSS for example UI ──
+  var css = document.createElement("style");
+  css.textContent = ""
+    + ".fe-toggle{cursor:pointer;color:#4CAF50;font-size:0.9em;margin-top:8px;display:inline-block;user-select:none;transition:opacity 0.2s}"
+    + ".fe-toggle:hover{opacity:0.8}"
+    + ".fe-panel{display:none;margin-top:8px;animation:feSlide 0.2s ease}"
+    + ".fe-panel.fe-open{display:block}"
+    + ".fe-hint{font-style:italic;color:#999;font-size:0.85em;margin-bottom:8px;line-height:1.5}"
+    + ".fe-example-box{background:rgba(255,255,255,0.05);border-left:3px solid #4CAF50;padding:12px;border-radius:4px;font-size:0.9em;color:#475569;line-height:1.6;margin-bottom:10px}"
+    + ".fe-adopt-btn{border:0;border-radius:8px;padding:8px 16px;font-size:0.85em;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#4CAF50,#66BB6A);color:#fff;transition:all 0.2s}"
+    + ".fe-adopt-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(76,175,80,0.3)}"
+    + ".fe-select-hint{font-style:italic;color:#999;font-size:0.85em;margin-top:6px;line-height:1.4}"
+    + "@media(prefers-color-scheme:dark){"
+    + ".fe-example-box{background:rgba(255,255,255,0.07);color:#a8b5c4}"
+    + ".fe-hint{color:#6b7a8c}"
+    + ".fe-select-hint{color:#6b7a8c}"
+    + "}";
+  document.head.appendChild(css);
+
+  // ── Lookup function ──
+  function getFieldExample(branche, size, fieldName) {
+    if (!window.FIELD_EXAMPLES) return null;
+    var ex = FIELD_EXAMPLES;
+    if (ex[branche] && ex[branche][size] && ex[branche][size][fieldName])
+      return ex[branche][size][fieldName];
+    if (ex[branche] && ex[branche]["default"] && ex[branche]["default"][fieldName])
+      return ex[branche]["default"][fieldName];
+    if (ex["default"] && ex["default"][size] && ex["default"][size][fieldName])
+      return ex["default"][size][fieldName];
+    if (ex["default"] && ex["default"]["default"] && ex["default"]["default"][fieldName])
+      return ex["default"]["default"][fieldName];
+    return null;
+  }
+
+  // ── Size mapping ──
+  function mapSize(val) {
+    if (val === "1") return "solo";
+    if (val === "2\u201310" || val === "2-10") return "team";
+    return "kmu";
+  }
+
+  // ── Textarea fields that get full example+hint ──
+  var TEXTAREA_FIELDS = [
+    "hauptleistung", "ki_projekte", "zeitersparnis_prioritaet",
+    "geschaeftsmodell_evolution", "vision_3_jahre", "strategische_ziele", "ki_guardrails"
+  ];
+
+  // ── Select fields that get hint only ──
+  var SELECT_HINT_FIELDS = [
+    "pilot_bereich", "massnahmen_komplexitaet", "investitionsbudget"
+  ];
+
+  // ── Get current context ──
+  function getContext() {
+    var brancheEl = document.querySelector('[name="branche"]');
+    var sizeEl = document.querySelector('[name="unternehmensgroesse"]');
+    var branche = (brancheEl && brancheEl.value) || "";
+    var sizeRaw = (sizeEl && sizeEl.value) || "";
+    if (!branche || !sizeRaw) return null;
+    return { branche: branche, size: mapSize(sizeRaw) };
+  }
+
+  // ── Inject examples into current view ──
+  function injectExamples() {
+    var ctx = getContext();
+    if (!ctx) return;
+
+    // Remove old injections
+    var old = document.querySelectorAll('.fe-toggle, .fe-panel, .fe-select-hint');
+    for (var i = 0; i < old.length; i++) old[i].remove();
+
+    // Textarea fields: toggle + panel
+    TEXTAREA_FIELDS.forEach(function(fieldName) {
+      var group = document.querySelector("[data-key='" + fieldName + "']");
+      if (!group) return;
+      var data = getFieldExample(ctx.branche, ctx.size, fieldName);
+      if (!data) return;
+      var textarea = group.querySelector("textarea");
+      if (!textarea) return;
+
+      var toggleId = "fe-toggle-" + fieldName;
+      var panelId = "fe-panel-" + fieldName;
+
+      var toggle = document.createElement("div");
+      toggle.className = "fe-toggle";
+      toggle.id = toggleId;
+      toggle.textContent = "\uD83D\uDCA1 Beispiel anzeigen";
+
+      var panel = document.createElement("div");
+      panel.className = "fe-panel";
+      panel.id = panelId;
+
+      var html = "";
+      if (data.hint) html += "<div class='fe-hint'>" + data.hint + "</div>";
+      if (data.example) html += "<div class='fe-example-box'>" + data.example + "</div>";
+      if (data.example) html += "<button type='button' class='fe-adopt-btn' data-field='" + fieldName + "'>\u00ABals Vorlage \u00fcbernehmen\u00BB</button>";
+      panel.innerHTML = html;
+
+      group.appendChild(toggle);
+      group.appendChild(panel);
+
+      toggle.addEventListener("click", function() {
+        var isOpen = panel.classList.contains("fe-open");
+        panel.classList.toggle("fe-open");
+        toggle.textContent = isOpen ? "\uD83D\uDCA1 Beispiel anzeigen" : "\uD83D\uDCA1 Beispiel ausblenden";
+      });
+
+      var adoptBtn = panel.querySelector(".fe-adopt-btn");
+      if (adoptBtn) {
+        adoptBtn.addEventListener("click", function() {
+          var ta = document.querySelector("textarea[name='" + fieldName + "']");
+          if (!ta) return;
+          if (ta.value.trim() !== "") {
+            if (!confirm("Das Feld enth\u00e4lt bereits Text. M\u00f6chten Sie den Beispieltext als Vorlage \u00fcbernehmen? Der bisherige Text wird ersetzt.")) return;
+          }
+          ta.value = data.example;
+          ta.dispatchEvent(new Event("change", { bubbles: true }));
+          panel.classList.remove("fe-open");
+          toggle.textContent = "\uD83D\uDCA1 Beispiel anzeigen";
+        });
+      }
+    });
+
+    // Select fields: hint only
+    SELECT_HINT_FIELDS.forEach(function(fieldName) {
+      var group = document.querySelector("[data-key='" + fieldName + "']");
+      if (!group) return;
+      var data = getFieldExample(ctx.branche, ctx.size, fieldName);
+      if (!data || !data.hint) return;
+      var selectEl = group.querySelector("select");
+      if (!selectEl) return;
+
+      var hintEl = document.createElement("div");
+      hintEl.className = "fe-select-hint";
+      hintEl.textContent = data.hint;
+      group.appendChild(hintEl);
+    });
+  }
+
+  // ── Observe #formbuilder for re-renders ──
+  var root = document.getElementById("formbuilder");
+  if (root) {
+    var observer = new MutationObserver(function() {
+      setTimeout(injectExamples, 50);
+    });
+    observer.observe(root, { childList: true, subtree: false });
+  }
+
+  // ── Also re-inject when branche/size changes ──
+  document.addEventListener("change", function(e) {
+    var name = e.target && e.target.name;
+    if (name === "branche" || name === "unternehmensgroesse") {
+      setTimeout(injectExamples, 100);
+    }
+  });
+})();
+</script>
 
 <!-- Language redirect: ?lang=en → EN page -->
 <script>

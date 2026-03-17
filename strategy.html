@@ -784,6 +784,16 @@
             <input type="text" id="s5_tools_other" class="mk-form-text-input" maxlength="200" placeholder="z. B. SAP, DATEV, Figma, Shopify...">
           </div>
 
+          <!-- S5b: KI-Vision -->
+          <div class="mk-question-group" data-field="s5_vision">
+            <span class="mk-question-label">
+              <span class="mk-section-number">S5b</span>
+              Wie sieht Ihre persönliche KI-Vision für Ihr Unternehmen aus?
+            </span>
+            <p class="mk-question-hint">Optional — beschreiben Sie in eigenen Worten, wo Sie mit KI hinwollen.</p>
+            <textarea id="s5_vision" name="s5_vision" class="mk-form-textarea" rows="4" placeholder="Was wäre für Sie der größte Gewinn durch KI? Wo soll Ihr Unternehmen in 2–3 Jahren stehen?"></textarea>
+          </div>
+
           <!-- S6: Förderinteresse -->
           <div class="mk-question-group" data-field="s6_foerderinteresse">
             <span class="mk-question-label">
@@ -989,6 +999,7 @@
   </div>
 </div>
 
+<script src="/field_examples_de.js"></script>
 <script>
 (function() {
     "use strict";
@@ -1076,6 +1087,10 @@
         document.querySelectorAll("input[name='s3_prioritaeten']:checked")
             .forEach(function(p) { data.s3_prioritaeten.push(p.value); });
 
+        // S5b: Vision textarea
+        var s5vision = document.getElementById("s5_vision");
+        if (s5vision && s5vision.value.trim()) data.s5_vision = s5vision.value.trim();
+
         // S5: Combine checkboxes + free text into comma-separated string
         var s5checked = [];
         document.querySelectorAll("input[name='s5_tools']:checked")
@@ -1136,6 +1151,111 @@
 
     // Init
     setupMaxCheckboxes("s3_prioritaeten", 3);
+
+    // ── Field Examples Integration for s5_vision ──
+    function getFieldExample(branche, size, fieldName) {
+        if (!window.FIELD_EXAMPLES) return null;
+        var ex = FIELD_EXAMPLES;
+        if (ex[branche] && ex[branche][size] && ex[branche][size][fieldName])
+            return ex[branche][size][fieldName];
+        if (ex[branche] && ex[branche]["default"] && ex[branche]["default"][fieldName])
+            return ex[branche]["default"][fieldName];
+        if (ex["default"] && ex["default"][size] && ex["default"][size][fieldName])
+            return ex["default"][size][fieldName];
+        if (ex["default"] && ex["default"]["default"] && ex["default"]["default"][fieldName])
+            return ex["default"]["default"][fieldName];
+        return null;
+    }
+
+    function mapSize(val) {
+        if (val === "1") return "solo";
+        if (val === "2\u201310" || val === "2-10") return "team";
+        return "kmu";
+    }
+
+    function injectVisionExample(branche, size) {
+        var group = document.querySelector("[data-field='s5_vision']");
+        if (!group) return;
+        var data = getFieldExample(branche, size, "s5_vision");
+        if (!data) return;
+
+        // Remove old injection
+        var oldToggle = group.querySelector(".fe-toggle");
+        var oldPanel = group.querySelector(".fe-panel");
+        if (oldToggle) oldToggle.remove();
+        if (oldPanel) oldPanel.remove();
+
+        // Inject CSS once
+        if (!document.getElementById("fe-strategy-css")) {
+            var css = document.createElement("style");
+            css.id = "fe-strategy-css";
+            css.textContent = ""
+                + ".fe-toggle{cursor:pointer;color:#4CAF50;font-size:0.9em;margin-top:8px;display:inline-block;user-select:none;transition:opacity 0.2s}"
+                + ".fe-toggle:hover{opacity:0.8}"
+                + ".fe-panel{display:none;margin-top:8px}"
+                + ".fe-panel.fe-open{display:block}"
+                + ".fe-hint{font-style:italic;color:#999;font-size:0.85em;margin-bottom:8px;line-height:1.5}"
+                + ".fe-example-box{background:rgba(255,255,255,0.05);border-left:3px solid #4CAF50;padding:12px;border-radius:4px;font-size:0.9em;color:var(--mk-text-secondary,#475569);line-height:1.6;margin-bottom:10px}"
+                + ".fe-adopt-btn{border:0;border-radius:8px;padding:8px 16px;font-size:0.85em;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#4CAF50,#66BB6A);color:#fff;transition:all 0.2s}"
+                + ".fe-adopt-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(76,175,80,0.3)}";
+            document.head.appendChild(css);
+        }
+
+        var toggle = document.createElement("div");
+        toggle.className = "fe-toggle";
+        toggle.textContent = "\uD83D\uDCA1 Beispiel anzeigen";
+
+        var panel = document.createElement("div");
+        panel.className = "fe-panel";
+        var html = "";
+        if (data.hint) html += "<div class='fe-hint'>" + data.hint + "</div>";
+        if (data.example) html += "<div class='fe-example-box'>" + data.example + "</div>";
+        if (data.example) html += "<button type='button' class='fe-adopt-btn'>\u00ABals Vorlage \u00fcbernehmen\u00BB</button>";
+        panel.innerHTML = html;
+
+        group.appendChild(toggle);
+        group.appendChild(panel);
+
+        toggle.addEventListener("click", function() {
+            var isOpen = panel.classList.contains("fe-open");
+            panel.classList.toggle("fe-open");
+            toggle.textContent = isOpen ? "\uD83D\uDCA1 Beispiel anzeigen" : "\uD83D\uDCA1 Beispiel ausblenden";
+        });
+
+        var adoptBtn = panel.querySelector(".fe-adopt-btn");
+        if (adoptBtn) {
+            adoptBtn.addEventListener("click", function() {
+                var ta = document.getElementById("s5_vision");
+                if (!ta) return;
+                if (ta.value.trim() !== "") {
+                    if (!confirm("Das Feld enth\u00e4lt bereits Text. M\u00f6chten Sie den Beispieltext als Vorlage \u00fcbernehmen? Der bisherige Text wird ersetzt.")) return;
+                }
+                ta.value = data.example;
+                ta.dispatchEvent(new Event("change", { bubbles: true }));
+                panel.classList.remove("fe-open");
+                toggle.textContent = "\uD83D\uDCA1 Beispiel anzeigen";
+            });
+        }
+    }
+
+    // Fetch briefing data to get branche and unternehmensgroesse
+    if (briefingId && window.FIELD_EXAMPLES) {
+        fetch(API_BASE + "/api/briefings/" + briefingId, {
+            credentials: "include"
+        })
+        .then(function(res) { return res.ok ? res.json() : null; })
+        .then(function(briefing) {
+            if (!briefing) return;
+            var branche = briefing.branche || "default";
+            var sizeRaw = briefing.unternehmensgroesse || "";
+            var size = mapSize(sizeRaw);
+            injectVisionExample(branche, size);
+        })
+        .catch(function() {
+            // Fallback: show default examples
+            injectVisionExample("default", "default");
+        });
+    }
 })();
 </script>
 
