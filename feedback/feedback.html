@@ -105,6 +105,9 @@
 
     <label for="test_reference">Testprofil / Report-Referenz (optional)</label>
     <input type="text" name="test_reference" id="test_reference" placeholder="z. B. Testnummer, Report-ID …" maxlength="100"/>
+
+    <label for="email_display">Ihre Email-Adresse</label>
+    <input type="email" name="email_display" id="email_display" placeholder="Wird aus dem Report übernommen" readonly style="background:#f1f5f9; color:#475569;"/>
   </div>
 
   <!-- Block B: Fragebogen & UX -->
@@ -188,9 +191,9 @@
     <textarea name="report_comment" id="report_comment" maxlength="500" placeholder="Was war stark, was verbesserungswürdig?"></textarea>
   </div>
 
-  <!-- Block D: Gesamteindruck -->
+  <!-- Block D: Gesamteindruck & Ausblick -->
   <div class="card">
-    <h2><span class="step">D</span>Gesamteindruck</h2>
+    <h2><span class="step">D</span>Gesamteindruck & Ausblick</h2>
 
     <label class="req">Wie hilfreich war der KI-Checkup insgesamt?</label>
     <div class="scale-row">
@@ -207,12 +210,32 @@
     </div>
     <div class="scale-labels"><span>Nicht hilfreich</span><span>Sehr hilfreich</span></div>
 
-    <label>Würden Sie für so einen Report bezahlen? (optional)</label>
+    <label>Könnten Sie sich vorstellen, einen solchen Report als kostenpflichtigen Service zu nutzen? (optional)</label>
     <div class="radio-group">
-      <label><input type="radio" name="payment_willingness" value="no"/><span>Nein</span></label>
-      <label><input type="radio" name="payment_willingness" value="lt_100"/><span>Bis ca. 100 €</span></label>
-      <label><input type="radio" name="payment_willingness" value="100_250"/><span>100–250 €</span></label>
-      <label><input type="radio" name="payment_willingness" value="gt_250"/><span>Mehr als 250 €</span></label>
+      <label><input type="radio" name="payment_willingness" value="yes_interested"/><span>Ja, grundsätzlich interessant</span></label>
+      <label><input type="radio" name="payment_willingness" value="yes_if_deductible"/><span>Ja, wenn steuerlich absetzbar oder förderfähig</span></label>
+      <label><input type="radio" name="payment_willingness" value="not_really"/><span>Eher nicht</span></label>
+      <label><input type="radio" name="payment_willingness" value="need_info"/><span>Brauche erst mehr Informationen</span></label>
+    </div>
+
+    <label>Ab August 2026 müssen Unternehmen, die KI einsetzen, die KI-Kompetenz ihrer Mitarbeitenden nachweisen (EU AI Act, Artikel 4). Wäre eine bezahlbare Online-Schulung mit Zertifikat für Sie relevant? (optional)</label>
+    <div class="radio-group">
+      <label><input type="radio" name="training_interest" value="urgent"/><span>Ja, dringend</span></label>
+      <label><input type="radio" name="training_interest" value="interested"/><span>Ja, grundsätzlich interessant</span></label>
+      <label><input type="radio" name="training_interest" value="need_info"/><span>Brauche erst mehr Infos</span></label>
+      <label><input type="radio" name="training_interest" value="no"/><span>Nein, kein Bedarf</span></label>
+    </div>
+
+    <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:1rem; margin:1rem 0;">
+      <p style="margin:0; font-size:.9rem; color:#0c4a6e;">
+        💡 <strong>Gut zu wissen:</strong> KI-Beratung ist als Betriebsausgabe voll steuerlich absetzbar. Über die BAFA-Förderung können bis zu 80 % der Beratungskosten erstattet werden.
+      </p>
+    </div>
+
+    <label>Dürfen wir Sie zu unseren KI-Services kontaktieren? (optional)</label>
+    <div class="radio-group">
+      <label><input type="radio" name="contact_permission" value="yes"/><span>Ja, gerne per Email</span></label>
+      <label><input type="radio" name="contact_permission" value="no"/><span>Nein, danke</span></label>
     </div>
 
     <label for="final_comment">Sonstige Anmerkungen? (optional)</label>
@@ -348,6 +371,7 @@
   if (emailParam) {
     const decodedEmail = decodeURIComponent(emailParam);
     document.getElementById("feedback-email").value = decodedEmail;
+    document.getElementById("email_display").value = decodedEmail;
     document.getElementById("test_reference").value = decodedEmail;
   }
 
@@ -358,7 +382,10 @@
       if (t && t.split(".").length === 3) {
         const payload = JSON.parse(atob(t.split(".")[1]));
         const email = payload.email || payload.sub || null;
-        if (email) document.getElementById("feedback-email").value = email;
+        if (email) {
+          document.getElementById("feedback-email").value = email;
+          document.getElementById("email_display").value = email;
+        }
       }
     } catch(e) {}
   }
