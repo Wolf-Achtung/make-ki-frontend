@@ -1037,6 +1037,90 @@
         });
     });
 
+    // === Testphase: Formulardaten speichern/wiederherstellen ===
+    var STRATEGY_STORAGE_KEY = "strategy_form_data";
+
+    function saveStrategyForm() {
+        try {
+            var data = {};
+            // Radio fields
+            ["s1_budget", "s2_zeitrahmen", "s4_engpass", "s6_foerderinteresse",
+             "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz"]
+            .forEach(function(name) {
+                var sel = document.querySelector("input[name='" + name + "']:checked");
+                if (sel) data[name] = sel.value;
+            });
+            // Checkboxes
+            data.s3_prioritaeten = [];
+            document.querySelectorAll("input[name='s3_prioritaeten']:checked")
+                .forEach(function(cb) { data.s3_prioritaeten.push(cb.value); });
+            data.s5_tools = [];
+            document.querySelectorAll("input[name='s5_tools']:checked")
+                .forEach(function(cb) { data.s5_tools.push(cb.value); });
+            // Text fields
+            var s5other = document.getElementById("s5_tools_other");
+            if (s5other) data.s5_tools_other = s5other.value;
+            var s5vision = document.getElementById("s5_vision");
+            if (s5vision) data.s5_vision = s5vision.value;
+
+            localStorage.setItem(STRATEGY_STORAGE_KEY, JSON.stringify(data));
+        } catch(_) {}
+    }
+
+    function restoreStrategyForm() {
+        try {
+            var raw = localStorage.getItem(STRATEGY_STORAGE_KEY);
+            if (!raw) return;
+            var data = JSON.parse(raw);
+
+            // Radio fields
+            ["s1_budget", "s2_zeitrahmen", "s4_engpass", "s6_foerderinteresse",
+             "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz"]
+            .forEach(function(name) {
+                if (data[name]) {
+                    var el = document.querySelector("input[name='" + name + "'][value='" + CSS.escape(data[name]) + "']");
+                    if (el) el.checked = true;
+                }
+            });
+            // Checkboxes
+            if (data.s3_prioritaeten) {
+                data.s3_prioritaeten.forEach(function(val) {
+                    var el = document.querySelector("input[name='s3_prioritaeten'][value='" + CSS.escape(val) + "']");
+                    if (el) el.checked = true;
+                });
+            }
+            if (data.s5_tools) {
+                data.s5_tools.forEach(function(val) {
+                    var el = document.querySelector("input[name='s5_tools'][value='" + CSS.escape(val) + "']");
+                    if (el) el.checked = true;
+                });
+            }
+            // Text fields
+            var s5other = document.getElementById("s5_tools_other");
+            if (s5other && data.s5_tools_other) s5other.value = data.s5_tools_other;
+            var s5vision = document.getElementById("s5_vision");
+            if (s5vision && data.s5_vision) s5vision.value = data.s5_vision;
+        } catch(_) {}
+    }
+
+    // Beim Laden wiederherstellen
+    restoreStrategyForm();
+
+    // Re-apply max-3 checkbox constraints after restore
+    (function() {
+        var checked = document.querySelectorAll("input[name='s3_prioritaeten']:checked");
+        if (checked.length >= 3) {
+            document.querySelectorAll("input[name='s3_prioritaeten']").forEach(function(b) {
+                if (!b.checked) b.disabled = true;
+            });
+        }
+    })();
+
+    // Bei jeder Änderung speichern
+    document.getElementById("strategy-form").addEventListener("change", saveStrategyForm);
+    // Auch Texteingaben bei Tippen speichern
+    document.getElementById("strategy-form").addEventListener("input", saveStrategyForm);
+
     // Form Submit
     document.getElementById("strategy-form").addEventListener("submit", function(e) {
         e.preventDefault();
