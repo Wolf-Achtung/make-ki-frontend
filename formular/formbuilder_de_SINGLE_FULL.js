@@ -808,7 +808,9 @@ function _collectLabelFor(fieldKey, value){
           if (bid) {
             // briefing_id für Feedback-Formular merken, dann Autosave löschen
             try { localStorage.setItem("last_briefing_id", String(bid)); } catch(_) {}
-            try { localStorage.removeItem(STORAGE_PREFIX + "data"); localStorage.removeItem(STORAGE_PREFIX + "step"); } catch(_) {}
+            // Testphase: Formulardaten beibehalten für erneute Nutzung
+            // Nur Step zurücksetzen, damit User wieder bei Schritt 1 startet
+            try { localStorage.setItem(STORAGE_PREFIX + "step", "0"); } catch(_) {}
             var statusUrl = "/formular/status.html?id=" + encodeURIComponent(bid);
             if (userEmailForStatus) statusUrl += "&email=" + encodeURIComponent(userEmailForStatus);
             window.location.href = statusUrl;
