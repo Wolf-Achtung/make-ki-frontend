@@ -104,7 +104,7 @@
       '<h2 class="status-title">Ihr KI-Readiness Report wird erstellt...</h2>' +
       '<p class="status-text">' +
         "Vielen Dank für Ihre Angaben! Ihr individueller Report wird jetzt generiert. " +
-        "Das dauert in der Regel <strong>2–4 Minuten</strong>." +
+        "Das dauert in der Regel <strong>ca. 10 Minuten</strong>." +
       "</p>" +
       (userEmail
         ? '<p class="status-text">Sie erhalten Ihren Report per E-Mail an:</p>' + emailHtml()
