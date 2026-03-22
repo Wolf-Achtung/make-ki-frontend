@@ -258,13 +258,13 @@ function _collectLabelFor(fieldKey, value){
   var fields = [
     { key: "branche", label: "In welcher Branche ist Ihr Unternehmen tätig?", type: "select",
       options: [
-        { value: "marketing", label: "Marketing & Werbung" }, { value: "beratung", label: "Beratung & Dienstleistungen" },
-        { value: "it", label: "IT & Software" }, { value: "finanzen", label: "Finanzen & Versicherungen" },
-        { value: "handel", label: "Handel & E-Commerce" }, { value: "bildung", label: "Bildung" },
-        { value: "verwaltung", label: "Verwaltung" }, { value: "gesundheit", label: "Gesundheit & Pflege" },
-        { value: "bau", label: "Bauwesen & Architektur" }, { value: "medien", label: "Medien & Kreativwirtschaft" },
-        { value: "industrie", label: "Industrie & Produktion" }, { value: "logistik", label: "Transport & Logistik" },
-        { value: "gastronomie", label: "Gastronomie & Tourismus" }
+        { value: "marketing", label: "Marketing & Werbung (z.\u00A0B. Agentur, PR, Medienproduktion)" }, { value: "beratung", label: "Beratung & Dienstleistungen (z.\u00A0B. Steuerberatung, Unternehmensberatung, Coaching)" },
+        { value: "it", label: "IT & Software (z.\u00A0B. Systemhaus, Softwareentwicklung, Webdesign)" }, { value: "finanzen", label: "Finanzen & Versicherungen (z.\u00A0B. Bank, Versicherungsmakler, Vermögensverwaltung)" },
+        { value: "handel", label: "Handel & E-Commerce (z.\u00A0B. Einzelhandel, Großhandel, Online-Shop)" }, { value: "bildung", label: "Bildung (z.\u00A0B. Weiterbildung, Sprachschule, Nachhilfe)" },
+        { value: "verwaltung", label: "Verwaltung (z.\u00A0B. Behörde, Verband, Stiftung)" }, { value: "gesundheit", label: "Gesundheit & Pflege (z.\u00A0B. Arztpraxis, Pflegedienst, Therapie)" },
+        { value: "bau", label: "Bauwesen & Architektur (z.\u00A0B. Bauunternehmen, Architekturbüro, Ingenieurbüro)" }, { value: "medien", label: "Medien & Kreativwirtschaft (z.\u00A0B. Verlag, Filmproduktion, Designstudio)" },
+        { value: "industrie", label: "Industrie & Produktion (z.\u00A0B. Maschinenbau, Fertigung, Zulieferer)" }, { value: "logistik", label: "Transport & Logistik (z.\u00A0B. Spedition, Kurierdienst, Lagerhaltung)" },
+        { value: "gastronomie", label: "Gastronomie & Tourismus (z.\u00A0B. Restaurant, Hotel, Catering)" }
       ],
       description: "(Damit wir branchenspezifische Beispiele, Förderung und Compliance korrekt zuordnen.)"
     },
