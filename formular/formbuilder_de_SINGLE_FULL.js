@@ -160,6 +160,27 @@ function _collectLabelFor(fieldKey, value){
     if (lbl) lbl.textContent = val;
   }
 
+  // Wichtig-Badge für report-relevante Felder
+  var WICHTIG_FIELDS = {"hauptleistung":1,"ki_projekte":1,"zeitersparnis_prioritaet":1,"vision_3_jahre":1,"ki_guardrails":1,"strategische_ziele":1};
+
+  // FIELD_EXAMPLES Lookup: branche+size → branche+"default" → "default"+size → "default"+"default"
+  function getFieldExample(fieldKey) {
+    if (typeof FIELD_EXAMPLES === "undefined") return null;
+    var branche = (formData && formData.branche) || "default";
+    var rawSize = (formData && formData.unternehmensgroesse) || "default";
+    var size = (rawSize === "1") ? "solo" : (rawSize === "2–10" || rawSize === "2-10") ? "team" : (rawSize === "11–100" || rawSize === "11-100") ? "kmu" : "default";
+    var candidates = [
+      [branche, size], [branche, "default"], ["default", size], ["default", "default"]
+    ];
+    for (var i = 0; i < candidates.length; i++) {
+      var b = candidates[i][0], s = candidates[i][1];
+      if (FIELD_EXAMPLES[b] && FIELD_EXAMPLES[b][s] && FIELD_EXAMPLES[b][s][fieldKey]) {
+        return FIELD_EXAMPLES[b][s][fieldKey];
+      }
+    }
+    return null;
+  }
+
   function clampStep(){
     try{
       if (typeof currentBlock !== "number") currentBlock = 0;
@@ -238,20 +259,25 @@ function _collectLabelFor(fieldKey, value){
       + ".mr-auto{margin-right:auto}"
       + ".slider-container{display:flex;align-items:center;gap:12px}"
       + ".slider-value-label{min-width:48px;padding:8px 12px;background:#dbeafe;border-radius:8px;font-weight:600;color:#1e3a5f;text-align:center}"
-      + ".slider-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:13px;color:#475569}";
+      + ".slider-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:13px;color:#475569}"
+      + ".badge-wichtig{display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:8px;vertical-align:middle;letter-spacing:0.3px}"
+      + ".example-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin:6px 0 10px;font-size:14px;color:#166534;line-height:1.5}"
+      + ".example-box .ex-label{font-weight:600;font-size:12px;color:#15803d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}"
+      + ".example-box .ex-text{font-style:italic;color:#166534}"
+      + ".example-box .ex-hint{margin-top:6px;font-style:normal;color:#15803d;font-size:13px}";
     var s=document.createElement("style"); s.type="text/css"; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
   }catch(_){}})();
 
   // --------------------------- Inhalte ---------------------------
   var BLOCK_INTRO = [
-    "Hier erfassen wir Basisdaten (Branche, Größe, Standort). Keine Unterlagen nötig – grobe Angaben reichen völlig. So personalisieren wir Ihren Report und prüfen passende Förderung & Compliance.",
-    "Status Quo zu Prozessen, Daten und bisheriger KI-Nutzung. Ziel: schnelle, machbare Quick Wins und eine pragmatische Start-Roadmap – auch für kleine Teams.",
-    "Ziele & wichtigste Anwendungsfälle: Was soll KI ganz konkret leisten? Wir fokussieren umsetzbare Maßnahmen mit sichtbarem Nutzen.",
-    "Strategie & Governance: einfache, tragfähige Leitplanken für nachhaltigen KI-Einsatz ohne Bürokratie-Overhead.",
-    "Ressourcen & Präferenzen (Zeit, Tool-Landschaft). Wir passen Empfehlungen an Machbarkeit, Budget und Tempo an.",
-    "Rechtliches & Compliance: Prüfen Sie bitte kurz Ihr aktuelles Datenschutzniveau und bestehende Pflichten.",
-    "Förderungen und Investitionsrahmen: Wir prüfen für Sie relevante Programme und realistische Schritte.",
-    "Datenschutz & Absenden: Einwilligung bestätigen und den personalisierten Report starten."
+    "Hier erfassen wir Basisdaten (Branche, Größe, Standort). Keine Unterlagen nötig – grobe Angaben reichen völlig. So personalisieren wir Ihren Report und prüfen passende Förderung & Compliance. <strong>(ca. 3 Minuten)</strong>",
+    "Status Quo zu Prozessen, Daten und bisheriger KI-Nutzung. Ziel: schnelle, machbare Quick Wins und eine pragmatische Start-Roadmap – auch für kleine Teams. <strong>(ca. 2 Minuten)</strong>",
+    "Ziele & wichtigste Anwendungsfälle: Was soll KI ganz konkret leisten? Wir fokussieren umsetzbare Maßnahmen mit sichtbarem Nutzen. <strong>(ca. 4 Minuten)</strong><br><br>💡 <em>Je konkreter Ihre Angaben in den Textfeldern, desto spezifischer und nützlicher wird Ihr Report. Stichworte und kurze Sätze reichen völlig — aber leere Felder führen zu generischen Empfehlungen.</em>",
+    "Strategie & Governance: einfache, tragfähige Leitplanken für nachhaltigen KI-Einsatz ohne Bürokratie-Overhead. <strong>(ca. 3 Minuten)</strong><br><br>💡 <em>Auch hier gilt: Ihre konkreten Angaben machen den Unterschied zwischen einem Standard-Report und echten, umsetzbaren Empfehlungen für Ihr Unternehmen.</em>",
+    "Ressourcen & Präferenzen (Zeit, Tool-Landschaft). Wir passen Empfehlungen an Machbarkeit, Budget und Tempo an. <strong>(ca. 1 Minute)</strong>",
+    "Keine Sorge — die meisten kleinen Unternehmen stehen hier noch am Anfang. Ehrliche Antworten helfen uns, Ihren tatsächlichen Handlungsbedarf realistisch einzuschätzen. ‚Nein' ist eine absolut valide Antwort. <strong>(ca. 2 Minuten)</strong>",
+    "Förderungen und Investitionsrahmen: Wir prüfen für Sie relevante Programme und realistische Schritte. <strong>(ca. 1 Minute)</strong>",
+    "Fast geschafft! Einwilligung bestätigen und den personalisierten Report starten. <strong>(30 Sekunden)</strong>"
   ];
 
   // Felder (inkl. freundlich-konkreter Microcopy)
@@ -559,11 +585,22 @@ function _collectLabelFor(fieldKey, value){
       var k = block.keys[i]; var f = findField(k); if (!f) continue;
       if (typeof f.showIf === "function" && !f.showIf(formData)) continue;
 
-      html += "<div class='form-group' data-key='" + k + "'><label for='" + f.key + "'>" + f.label + "</label>";
+      var wichtigBadge = WICHTIG_FIELDS[k] ? "<span class='badge-wichtig'>✦ Wichtig für Ihren Report</span>" : "";
+      html += "<div class='form-group' data-key='" + k + "'><label for='" + f.key + "'>" + f.label + wichtigBadge + "</label>";
       if (f.description) html += "<div class='guidance'>" + f.description + "</div>";
       // Add guidance for required checkbox groups
       if (f.type === "checkbox" && (f.key === "zielgruppen" || f.key === "ki_ziele" || f.key === "anwendungsfaelle")) {
         html += "<div class='guidance important'>Bitte mindestens eine Option auswählen.</div>";
+      }
+      // Persistente Beispiel-Box aus FIELD_EXAMPLES (nur für Textareas)
+      if (f.type === "textarea") {
+        var ex = getFieldExample(k);
+        if (ex) {
+          html += "<div class='example-box'><div class='ex-label'>Beispiel aus Ihrer Branche:</div>";
+          if (ex.example) html += "<div class='ex-text'>&bdquo;" + ex.example + "&ldquo;</div>";
+          if (ex.hint) html += "<div class='ex-hint'>&#128161; " + ex.hint + "</div>";
+          html += "</div>";
+        }
       }
       html += renderInput(f) + "</div>";
     }
@@ -693,8 +730,10 @@ function _collectLabelFor(fieldKey, value){
       "jahresumsatz":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
       "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0,
-      "ki_projekte":1,"geschaeftsmodell_evolution":1,"vision_3_jahre":1,"ki_guardrails":1
+      "ki_projekte":0,"geschaeftsmodell_evolution":1,"vision_3_jahre":0,"ki_guardrails":0
     };
+    // Felder die für die Report-Qualität besonders wichtig sind
+    var wichtig = {"hauptleistung":1,"ki_projekte":1,"zeitersparnis_prioritaet":1,"vision_3_jahre":1,"ki_guardrails":1,"strategische_ziele":1};
     var missing = [];
     var block = blocks[currentBlock];
 
@@ -757,9 +796,10 @@ function _collectLabelFor(fieldKey, value){
 
     var root = document.getElementById("formbuilder");
     if (root) {
-      root.innerHTML = '<section class="fb-section"><h2>Vielen Dank für Ihre Angaben!</h2>'
+      root.innerHTML = '<section class="fb-section"><h2>Vielen Dank für Ihre Angaben! 🎉</h2>'
         + '<div class="guidance">Ihre KI-Analyse wird jetzt erstellt. '
-        + 'Nach Fertigstellung erhalten Sie Ihre individuelle Auswertung als PDF per E-Mail.</div></section>';
+        + 'Sie erhalten Ihren personalisierten Report <strong>in ca. 5–10 Minuten per E-Mail</strong> (inkl. PDF). '
+        + 'Bitte prüfen Sie auch Ihren Spam-Ordner.</div></section>';
     }
 
     // Auth is now handled via httpOnly cookies - no client-side token needed
