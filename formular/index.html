@@ -479,6 +479,9 @@
       var textarea = group.querySelector("textarea");
       if (!textarea) return;
 
+      // Skip if persistent example-box already rendered by formbuilder
+      if (group.querySelector(".example-box")) return;
+
       var toggleId = "fe-toggle-" + fieldName;
       var panelId = "fe-panel-" + fieldName;
 

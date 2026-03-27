@@ -115,7 +115,7 @@
         "</div>" +
         '<div class="progress-meta">' +
           "<span>" + statusLabel + "</span>" +
-          "<span>Zuletzt gepr\u00fcft: " + new Date().toLocaleTimeString("de-DE") + "</span>" +
+          "<span>Gestartet " + elapsed + "</span>" +
         "</div>" +
       "</div>" +
       '<div class="info-box">' +
