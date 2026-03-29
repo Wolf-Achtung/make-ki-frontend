@@ -1155,8 +1155,20 @@
             return;
         }
 
-        // Collect data
-        var data = {};
+        // Collect data — initialize all keys so empty optionals are always sent
+        var data = {
+            s1_budget: "",
+            s2_zeitrahmen: "",
+            s3_prioritaeten: [],
+            s4_engpass: "",
+            s5_software: "",
+            s5_vision: "",
+            s6_foerderinteresse: "",
+            s7_entscheidung: "",
+            s8_erfahrung: "",
+            s9_ansatz: "",
+            s10_datenschutz: ""
+        };
 
         // Radio fields
         ["s1_budget", "s2_zeitrahmen", "s4_engpass", "s6_foerderinteresse",
@@ -1167,7 +1179,6 @@
         });
 
         // Checkbox -> Array
-        data.s3_prioritaeten = [];
         document.querySelectorAll("input[name='s3_prioritaeten']:checked")
             .forEach(function(p) { data.s3_prioritaeten.push(p.value); });
 
