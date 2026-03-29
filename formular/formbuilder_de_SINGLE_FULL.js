@@ -50,6 +50,52 @@ function _collectLabelFor(fieldKey, value){
     }catch(_){}
   }
 
+  // --------------------------- Regionale Options-Maps ---------------------------
+  var REGION_OPTIONS = {
+    DE: [
+      { value: "bw", label: "Baden-Württemberg" }, { value: "by", label: "Bayern" }, { value: "be", label: "Berlin" },
+      { value: "bb", label: "Brandenburg" }, { value: "hb", label: "Bremen" }, { value: "hh", label: "Hamburg" },
+      { value: "he", label: "Hessen" }, { value: "mv", label: "Mecklenburg-Vorpommern" }, { value: "ni", label: "Niedersachsen" },
+      { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
+      { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
+    ],
+    CH: [
+      { value: "zh", label: "Zürich" }, { value: "be_ch", label: "Bern" }, { value: "lu", label: "Luzern" },
+      { value: "ur", label: "Uri" }, { value: "sz", label: "Schwyz" }, { value: "ow", label: "Obwalden" },
+      { value: "nw_ch", label: "Nidwalden" }, { value: "gl", label: "Glarus" }, { value: "zg", label: "Zug" },
+      { value: "fr", label: "Freiburg" }, { value: "so", label: "Solothurn" }, { value: "bs", label: "Basel-Stadt" },
+      { value: "bl", label: "Basel-Landschaft" }, { value: "sh_ch", label: "Schaffhausen" }, { value: "ar", label: "Appenzell Ausserrhoden" },
+      { value: "ai", label: "Appenzell Innerrhoden" }, { value: "sg", label: "St. Gallen" }, { value: "gr", label: "Graubünden" },
+      { value: "ag", label: "Aargau" }, { value: "tg", label: "Thurgau" }, { value: "ti", label: "Tessin" },
+      { value: "vd", label: "Waadt" }, { value: "vs", label: "Wallis" }, { value: "ne", label: "Neuenburg" },
+      { value: "ge", label: "Genf" }, { value: "ju", label: "Jura" }
+    ],
+    AT: [
+      { value: "wi", label: "Wien" }, { value: "noe", label: "Niederösterreich" }, { value: "ooe", label: "Oberösterreich" },
+      { value: "sbg", label: "Salzburg" }, { value: "tir", label: "Tirol" }, { value: "vbg", label: "Vorarlberg" },
+      { value: "ktn", label: "Kärnten" }, { value: "stm", label: "Steiermark" }, { value: "bgl", label: "Burgenland" }
+    ],
+    GB: [
+      { value: "eng", label: "England" }, { value: "sco", label: "Scotland" },
+      { value: "wal", label: "Wales" }, { value: "nir", label: "Northern Ireland" }
+    ]
+  };
+
+  var REGION_LABELS = {
+    DE: "Bundesland (regionale Fördermöglichkeiten)",
+    CH: "Kanton (regionale Fördermöglichkeiten)",
+    AT: "Bundesland (regionale Fördermöglichkeiten)",
+    GB: "Region (regionale Fördermöglichkeiten)"
+  };
+
+  function updateBundeslandField(country) {
+    var f = findField("bundesland");
+    if (!f) return;
+    var c = (country && REGION_OPTIONS[country]) ? country : "DE";
+    f.options = REGION_OPTIONS[c];
+    f.label = REGION_LABELS[c] || "Region (regionale Fördermöglichkeiten)";
+  }
+
   // --------------------------- Helper-Funktionen ---------------------------
   function findField(k) {
     for (var i=0; i<fields.length; i++) {
@@ -317,7 +363,7 @@ function _collectLabelFor(fieldKey, value){
         { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
       ],
       description: "(Damit regionale Programme, Ansprechpartner und Quoten automatisch berücksichtigt werden.)",
-      showIf: function (data) { return data.country === "DE" || !data.country; }
+      showIf: function (data) { var c = data.country; return !c || c === "DE" || c === "CH" || c === "AT" || c === "GB"; }
     },
     { key: "country", label: "Land (für regionale Förderung & Compliance)", type: "select",
       optgroups: [
@@ -675,6 +721,11 @@ function _collectLabelFor(fieldKey, value){
 
     // Conditionals: re-render, damit showIf greift
     if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country")) {
+      // Update bundesland options when country changes
+      if (e.target.id === "country") {
+        updateBundeslandField(e.target.value);
+        formData.bundesland = "";
+      }
       // CRITICAL: Save ALL current form values before re-render to prevent data loss
       var targetId = e.target.id;
       var scrollY = window.scrollY || window.pageYOffset;
@@ -887,6 +938,7 @@ function _collectLabelFor(fieldKey, value){
       if (formData[k]===undefined) formData[k] = '';
     }
     clampStep && clampStep();
+    updateBundeslandField(formData.country || "DE");
     renderStep();
     scrollToStepTop(true);
   }
