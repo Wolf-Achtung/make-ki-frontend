@@ -135,7 +135,8 @@ function _collectLabelFor(fieldKey, value){
     if (f.type === "checkbox") {
       var html = "<div class='checkbox-group'>";
       for (var j=0; j<f.options.length; j++){
-        html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + "</span></label>";
+        var hintHtml = f.options[j].hint ? " <small class='checkbox-hint'>" + f.options[j].hint + "</small>" : "";
+        html += "<label class='checkbox-label'><input type='checkbox' name='" + f.key + "' value='" + f.options[j].value + "'><span>" + f.options[j].label + hintHtml + "</span></label>";
       }
       return html + "</div>";
     }
@@ -522,7 +523,9 @@ function _collectLabelFor(fieldKey, value){
     { key: "regulierte_branche", label: "Regulierte Branche", type: "checkbox",
       options: [
         { value: "gesundheit", label: "Gesundheit & Medizin" }, { value: "finanzen", label: "Finanzen & Versicherungen" },
-        { value: "oeffentlich", label: "Öffentlicher Sektor" }, { value: "recht", label: "Rechtliche Dienstleistungen" }, { value: "keine", label: "Keine dieser Branchen" }
+        { value: "oeffentlich", label: "Öffentlicher Sektor" }, { value: "recht", label: "Rechtliche Dienstleistungen" },
+        { value: "vertraulich_nda", label: "Vertrauliche Kundendaten / NDA-Material", hint: "(z.B. unveröffentlichte Produkte, geschützte Inhalte, Mandantendaten)" },
+        { value: "keine", label: "Keine dieser Branchen" }
       ],
       description: "(Einige KI-Anwendungen unterliegen strengen gesetzlichen Vorgaben. Bitte auswählen, falls relevant.)" },
     { key: "trainings_interessen", label: "Interessante KI-Trainingsthemen", type: "checkbox",
@@ -710,6 +713,17 @@ function _collectLabelFor(fieldKey, value){
 
   // --------------------------- Data & Validation ---------------------------
   function handleChange(e) {
+    // Mutual exclusion for regulierte_branche: "keine" vs other options
+    if (e && e.target && e.target.name === "regulierte_branche") {
+      var clicked = e.target.value;
+      var boxes = document.querySelectorAll("input[name='regulierte_branche']");
+      if (clicked === "keine" && e.target.checked) {
+        for (var b=0; b<boxes.length; b++) { if (boxes[b].value !== "keine") boxes[b].checked = false; }
+      } else if (clicked !== "keine" && e.target.checked) {
+        for (var b2=0; b2<boxes.length; b2++) { if (boxes[b2].value === "keine") boxes[b2].checked = false; }
+      }
+    }
+
     // sichtbare Felder des aktuellen Blocks in formData schreiben
     var block = blocks[currentBlock];
     for (var i=0;i<block.keys.length;i++){
@@ -725,6 +739,10 @@ function _collectLabelFor(fieldKey, value){
       if (e.target.id === "country") {
         updateBundeslandField(e.target.value);
         formData.bundesland = "";
+      }
+      // Clear selbststaendig when not solo (field hidden via showIf)
+      if (e.target.id === "unternehmensgroesse" && e.target.value !== "1") {
+        delete formData.selbststaendig;
       }
       // CRITICAL: Save ALL current form values before re-render to prevent data loss
       var targetId = e.target.id;
