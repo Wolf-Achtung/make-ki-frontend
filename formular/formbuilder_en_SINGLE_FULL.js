@@ -782,6 +782,16 @@ function _collectLabelFor(fieldKey, value){
       payload.answers.email = email;
     }
 
+    // Moat fields from URL params (passed through from Schnell-Check)
+    try {
+      var _moatParams = new URLSearchParams(window.location.search);
+      var _moatKeys = ["wettbewerber_anzahl", "kundenbindung_typ", "datenreife"];
+      for (var _mi = 0; _mi < _moatKeys.length; _mi++) {
+        var _mv = _moatParams.get(_moatKeys[_mi]);
+        if (_mv) { payload[_moatKeys[_mi]] = _mv; }
+      }
+    } catch(_) {}
+
     var url = getBaseUrl() + SUBMIT_PATH;
     var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
 
@@ -908,6 +918,16 @@ function robustSubmitForm(){
     payload.unternehmensgroesse = data.unternehmensgroesse || data.company_size || "";
     payload.country = data.country || "";
     payload.hauptleistung = data.hauptleistung || data.main_service || "";
+
+    // Moat fields from URL params (passed through from Schnell-Check)
+    try {
+      var _moatParams2 = new URLSearchParams(window.location.search);
+      var _moatKeys2 = ["wettbewerber_anzahl", "kundenbindung_typ", "datenreife"];
+      for (var _mi2 = 0; _mi2 < _moatKeys2.length; _mi2++) {
+        var _mv2 = _moatParams2.get(_moatKeys2[_mi2]);
+        if (_mv2) { payload[_moatKeys2[_mi2]] = _mv2; }
+      }
+    } catch(_) {}
 
     // provide human-readable labels
     try{ payload.branche_label = _collectLabelFor("branche", payload.branche); }catch(_){}
