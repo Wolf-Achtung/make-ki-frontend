@@ -204,7 +204,8 @@
           }
           setText('msg','Erfolg. Weiterleitung …',false);
           ok('Anmeldung erfolgreich.');
-          window.location.href = '/formular/index.html';
+          var _params = new URLSearchParams(window.location.search);
+          window.location.href = '/formular/index.html' + (_params.toString() ? '?' + _params.toString() : '');
         }catch(e){
           setText('err','Login fehlgeschlagen. ' + (e && e.message ? e.message : ''), true);
           err('Login fehlgeschlagen.');
