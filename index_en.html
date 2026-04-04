@@ -100,6 +100,16 @@ function showTestimonial(){
 showTestimonial();
 setInterval(showTestimonial, 4000);
 
+// Moat-Params: append current URL params to CTA login links
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  if (params.toString()) {
+    document.querySelectorAll('a[href="login_en.html"], a[href="login_en.html/"], a[href="/login_en.html"]').forEach(function(link) {
+      link.href = link.getAttribute('href').replace(/\/$/, '') + '?' + params.toString();
+    });
+  }
+})();
+
 // Optional: Demo-Link
 (function(){
   const DEMO_OK = !!(window.__CONFIG__ && window.__CONFIG__.BACKEND_BASE_URL);
