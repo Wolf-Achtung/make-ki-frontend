@@ -946,6 +946,84 @@
             </div>
           </div>
 
+          <!-- Strategische Einschätzung (Moat-Felder, optional) -->
+          <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="font-family: 'Playfair Display', Georgia, serif; font-weight: 700; color: var(--mk-text-primary); font-size: 1.3rem; margin: 0 0 0.5rem 0;">Strategische Einschätzung (optional)</h3>
+            <p style="font-size: 0.9rem; color: var(--mk-text-secondary); margin: 0 0 1.5rem 0;">Diese Angaben helfen uns, Ihren Strategiebericht mit einer Wettbewerbsanalyse zu ergänzen.</p>
+          </div>
+
+          <!-- Moat: Wettbewerber-Anzahl -->
+          <div class="mk-question-group" data-field="wettbewerber_anzahl">
+            <span class="mk-question-label">
+              Wie viele direkte Wettbewerber haben Sie in Ihrem Kernmarkt?
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="wettbewerber_anzahl" id="moat_w1" value="wenige">
+                <label for="moat_w1">Wenige (1–3)</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="wettbewerber_anzahl" id="moat_w2" value="mehrere">
+                <label for="moat_w2">Mehrere (4–10)</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="wettbewerber_anzahl" id="moat_w3" value="viele">
+                <label for="moat_w3">Viele (mehr als 10)</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="wettbewerber_anzahl" id="moat_w4" value="unklar">
+                <label for="moat_w4">Schwer einzuschätzen</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Moat: Kundenbindung -->
+          <div class="mk-question-group" data-field="kundenbindung_typ">
+            <span class="mk-question-label">
+              Wie würden Sie Ihre Kundenbeziehungen beschreiben?
+            </span>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="kundenbindung_typ" id="moat_k1" value="einmalig">
+                <label for="moat_k1">Überwiegend Einmalkunden / Projektgeschäft</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="kundenbindung_typ" id="moat_k2" value="wiederkehrend">
+                <label for="moat_k2">Wiederkehrende Kunden / Verträge / Abos</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="kundenbindung_typ" id="moat_k3" value="gemischt">
+                <label for="moat_k3">Mischung aus beidem</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Moat: Datenreife -->
+          <div class="mk-question-group" data-field="datenreife">
+            <span class="mk-question-label">
+              Verfügt Ihr Unternehmen über eigene Datenbestände, die für KI nutzbar wären?
+            </span>
+            <p class="mk-question-hint">z.B. Kundendaten, Projekthistorien, Produktionsdaten, Branchenwissen in strukturierter Form</p>
+            <div class="mk-radio-grid">
+              <div class="mk-radio-card">
+                <input type="radio" name="datenreife" id="moat_d1" value="keine">
+                <label for="moat_d1">Kaum / keine strukturierten Daten</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="datenreife" id="moat_d2" value="basis">
+                <label for="moat_d2">Grundlegende Daten (CRM, Buchhaltung)</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="datenreife" id="moat_d3" value="umfangreich">
+                <label for="moat_d3">Umfangreiche eigene Datenbestände</label>
+              </div>
+              <div class="mk-radio-card">
+                <input type="radio" name="datenreife" id="moat_d4" value="unklar">
+                <label for="moat_d4">Bin mir nicht sicher</label>
+              </div>
+            </div>
+          </div>
+
           <button type="submit" id="btn-submit" class="mk-btn-primary">
             Strategiebericht anfordern <span class="arrow">&rarr;</span>
           </button>
@@ -1045,7 +1123,8 @@
             var data = {};
             // Radio fields
             ["s1_budget", "s2_zeitrahmen", "s4_engpass", "s6_foerderinteresse",
-             "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz"]
+             "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz",
+             "wettbewerber_anzahl", "kundenbindung_typ", "datenreife"]
             .forEach(function(name) {
                 var sel = document.querySelector("input[name='" + name + "']:checked");
                 if (sel) data[name] = sel.value;
@@ -1075,7 +1154,8 @@
 
             // Radio fields
             ["s1_budget", "s2_zeitrahmen", "s4_engpass", "s6_foerderinteresse",
-             "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz"]
+             "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz",
+             "wettbewerber_anzahl", "kundenbindung_typ", "datenreife"]
             .forEach(function(name) {
                 if (data[name]) {
                     var el = document.querySelector("input[name='" + name + "'][value='" + CSS.escape(data[name]) + "']");
@@ -1105,6 +1185,18 @@
 
     // Beim Laden wiederherstellen
     restoreStrategyForm();
+
+    // Moat-Felder aus URL-Parametern vorausfüllen (Schnell-Check → strategy.html)
+    (function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        ["wettbewerber_anzahl", "kundenbindung_typ", "datenreife"].forEach(function(name) {
+            var val = urlParams.get(name);
+            if (val) {
+                var radio = document.querySelector("input[name='" + name + "'][value='" + CSS.escape(val) + "']");
+                if (radio) radio.checked = true;
+            }
+        });
+    })();
 
     // Re-apply max-3 checkbox constraints after restore
     (function() {
@@ -1167,12 +1259,17 @@
             s7_entscheidung: "",
             s8_erfahrung: "",
             s9_ansatz: "",
-            s10_datenschutz: ""
+            s10_datenschutz: "",
+            // Moat fields (optional, für Wettbewerbsanalyse)
+            wettbewerber_anzahl: null,
+            kundenbindung_typ: null,
+            datenreife: null
         };
 
         // Radio fields
         ["s1_budget", "s2_zeitrahmen", "s4_engpass", "s6_foerderinteresse",
-         "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz"]
+         "s7_entscheidung", "s8_erfahrung", "s9_ansatz", "s10_datenschutz",
+         "wettbewerber_anzahl", "kundenbindung_typ", "datenreife"]
         .forEach(function(name) {
             var sel = document.querySelector("input[name='" + name + "']:checked");
             if (sel) data[name] = sel.value;
