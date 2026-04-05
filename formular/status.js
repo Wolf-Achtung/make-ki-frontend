@@ -12,7 +12,7 @@
   // --- Config ---
   var POLL_INTERVAL_MS = 5000;
   var POLL_MAX_ATTEMPTS = 120; // 10 Minuten bei 5s Intervall
-  var CONSECUTIVE_ERROR_MAX = 3; // Nach 3 aufeinanderfolgenden Fehlern aufgeben
+  var CONSECUTIVE_ERROR_MAX = 8; // Nach 8 aufeinanderfolgenden Fehlern aufgeben
 
   // --- State ---
   var briefingId = null;
@@ -244,11 +244,21 @@
       "</p>" +
       emailHint +
       '<div class="btn-row">' +
-        '<button class="btn btn-primary" onclick="window.location.reload()">' +
+        '<button id="retry-btn" class="btn btn-primary">' +
           "&#128260; Erneut versuchen" +
         "</button>" +
       "</div>"
     );
+
+    var retryBtn = document.getElementById("retry-btn");
+    if (retryBtn) {
+      retryBtn.addEventListener("click", function () {
+        consecutiveErrors = 0;
+        pollCount = 0;
+        renderProcessing({ status: "accepted", created_at: null });
+        startPolling();
+      });
+    }
   }
 
   // Keine Briefing-ID
@@ -410,6 +420,7 @@
         if (status === "done") {
           stopPolling();
           stopFacts();
+          try { sessionStorage.setItem('kis_done_' + briefingId, JSON.stringify(data)); } catch(_) {}
           renderDone(data);
         } else if (status === "failed") {
           stopPolling();
@@ -428,6 +439,13 @@
         if (consecutiveErrors >= CONSECUTIVE_ERROR_MAX) {
           stopPolling();
           renderLoadError();
+        } else if (consecutiveErrors > 1) {
+          // Backoff: bei wiederholten Fehlern Intervall verzögern
+          clearInterval(pollTimer);
+          pollTimer = setTimeout(function () {
+            fetchStatus();
+            pollTimer = setInterval(function () { fetchStatus(); }, POLL_INTERVAL_MS);
+          }, POLL_INTERVAL_MS * Math.min(consecutiveErrors, 4));
         }
         // Sonst: weiter pollen, nächster Versuch beim nächsten Intervall
       });
@@ -464,6 +482,18 @@
       renderNoId();
       return;
     }
+
+    // Gecachten "done"-Status sofort anzeigen
+    try {
+      var cached = sessionStorage.getItem('kis_done_' + briefingId);
+      if (cached) {
+        var cachedData = JSON.parse(cached);
+        renderDone(cachedData);
+        // Trotzdem einmal frisch laden für aktuellste Daten
+        fetchStatus();
+        return;
+      }
+    } catch(_) {}
 
     // Sofort Bestätigungs-Zustand zeigen, dann pollen
     renderProcessing({ status: "accepted", created_at: null });
