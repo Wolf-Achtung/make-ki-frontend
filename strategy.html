@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/chat-widget.css">
   <style>
     /* Strategy form specific styles */
     .mk-card.mk-card--wide {
@@ -526,12 +527,16 @@
 <div class="mk-warmblob-secondary"></div>
 
 <div class="mk-page-wrapper">
-  <div class="mk-card mk-card--wide">
+  <div id="chat-container" style="display:none"></div>
+  <div class="mk-card mk-card--wide" id="strategy-card">
     <header class="mk-card-header">
       <h1 class="mk-brand-title">KI-Sicherheit.jetzt</h1>
     </header>
 
     <div class="mk-card-body">
+
+      <!-- Mode selector for strategy chat -->
+      <div id="strategy-mode-selector" style="display:none;"></div>
 
       <!-- Error: no briefing_id -->
       <div id="error-section" class="mk-error-page" style="display:none;">
@@ -1077,6 +1082,7 @@
   </div>
 </div>
 
+<script src="/chat-widget.js"></script>
 <script src="/field_examples_de.js"></script>
 <script>
 (function() {
@@ -1091,8 +1097,38 @@
         return;
     }
 
-    // Show form
-    document.getElementById("form-section").style.display = "block";
+    // Show mode selector (chat vs form)
+    var modeSelector = document.getElementById("strategy-mode-selector");
+    modeSelector.style.display = "block";
+    modeSelector.innerHTML = ''
+        + '<div class="mode-selector" style="margin:20px 0;padding:0;">'
+        + '  <div class="mode-card mode-primary" id="strategy-mode-chat" tabindex="0" role="button">'
+        + '    <div class="mode-icon" aria-hidden="true">💬</div>'
+        + '    <h3>KI-gestütztes Gespräch</h3>'
+        + '    <p>Lassen Sie sich Schritt für Schritt durch die Strategiefragen '
+        + '       führen. Die KI erklärt Hintergründe und hilft bei der Einordnung.</p>'
+        + '    <span class="mode-badge">Empfohlen · ca. 5 Min.</span>'
+        + '  </div>'
+        + '  <div class="mode-card mode-secondary" id="strategy-mode-form" tabindex="0" role="button">'
+        + '    <div class="mode-icon" aria-hidden="true">📋</div>'
+        + '    <h3>Fragebogen direkt ausfüllen</h3>'
+        + '    <p>Klassischer Fragebogen zum selbst Ausfüllen — '
+        + '       für alle, die es lieber strukturiert mögen.</p>'
+        + '    <span class="mode-time">ca. 3 Min.</span>'
+        + '  </div>'
+        + '</div>';
+
+    document.getElementById("strategy-mode-chat").addEventListener("click", function() {
+        modeSelector.style.display = "none";
+        document.getElementById("strategy-card").style.display = "none";
+        document.getElementById("chat-container").style.display = "flex";
+        window.initChat({ report_type: "strategy", briefing_id: briefingId });
+    });
+
+    document.getElementById("strategy-mode-form").addEventListener("click", function() {
+        modeSelector.style.display = "none";
+        document.getElementById("form-section").style.display = "block";
+    });
 
     // Checkbox max-3 logic for s3_prioritaeten
     function setupMaxCheckboxes(name, max) {
