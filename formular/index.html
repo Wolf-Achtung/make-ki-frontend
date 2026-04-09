@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/formular/formular.css">
+  <link rel="stylesheet" href="/chat-widget.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -325,7 +326,9 @@
 <body>
 <div class="page-wrapper">
   <div class="app-shell">
-    <div class="premium-card">
+    <div id="intake-mode-selector"></div>
+    <div id="chat-container" style="display:none"></div>
+    <div class="premium-card" id="formbuilder-card">
       <header class="card-header">
         <h1 class="brand-title">KI-Sicherheit.jetzt</h1>
       </header>
@@ -369,6 +372,9 @@
     el.textContent = 'Schritt ' + e.detail.step + ' / ' + e.detail.total;
   });
 </script>
+
+<!-- Chat Widget -->
+<script src="/chat-widget.js"></script>
 
 <!-- Field Examples Data -->
 <script src="/field_examples_de.js"></script>
