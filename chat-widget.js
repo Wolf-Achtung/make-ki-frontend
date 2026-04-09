@@ -332,6 +332,9 @@
 
                     case "state_update":
                         updateProgress(data);
+                        if (data.is_completable === true) {
+                            showCompletionUI();
+                        }
                         break;
 
                     case "quick_replies":
@@ -444,6 +447,67 @@
                 barContainer.setAttribute("aria-valuenow", state.progress_percent);
             }
         }
+    }
+
+    /* ── Completion UI ── */
+    function showCompletionUI() {
+        clearQuickReplies();
+        var container = document.getElementById("chatQuickReplies");
+        if (!container) return;
+
+        container.innerHTML = ''
+            + '<div class="chat-completion">'
+            + '  <button class="btn-complete" id="btnComplete">'
+            + '    Angaben best\u00e4tigen &amp; Report starten'
+            + '  </button>'
+            + '  <button class="btn-edit" id="btnEdit">'
+            + '    Angaben korrigieren'
+            + '  </button>'
+            + '</div>';
+
+        document.getElementById("btnComplete").addEventListener("click", submitComplete);
+        document.getElementById("btnEdit").addEventListener("click", function() {
+            clearQuickReplies();
+            sendMessage("Ich m\u00f6chte einige Angaben korrigieren.");
+        });
+
+        scrollToBottom();
+    }
+
+    function submitComplete() {
+        var btn = document.getElementById("btnComplete");
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = "Wird verarbeitet\u2026";
+        }
+
+        fetch(getApiBase() + "/api/chat/complete", {
+            method: "POST",
+            headers: getAuthHeaders(),
+            credentials: "include",
+            body: JSON.stringify({
+                session_id: chatState.sessionId,
+                confirmed: true
+            })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
+        .then(function(data) {
+            if (data.success && data.redirect_url) {
+                try { localStorage.removeItem("chat_session_id"); } catch(e) {}
+                window.location.href = data.redirect_url;
+            } else {
+                appendMessage("system", "Unerwartete Antwort vom Server. Bitte versuchen Sie es erneut.");
+                if (btn) { btn.disabled = false; btn.textContent = "Angaben best\u00e4tigen & Report starten"; }
+            }
+        })
+        .catch(function(err) {
+            appendMessage("system", "Fehler beim Abschlie\u00dfen. Bitte versuchen Sie es erneut.");
+            console.error("Chat complete failed:", err);
+            if (btn) { btn.disabled = false; btn.textContent = "Angaben best\u00e4tigen & Report starten"; }
+        });
     }
 
     /* ── Switch to Form ── */
