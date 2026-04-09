@@ -132,18 +132,27 @@
     }
 
     /* ── Chat Init ── */
-    function initChat() {
+    function initChat(options) {
+        options = options || {};
+        var reportType = options.report_type || "r1";
+        var briefingId = options.briefing_id || null;
+
         renderChatContainer();
+
+        var payload = {
+            report_type: reportType,
+            lang: "de",
+            consent_report: true
+        };
+        if (briefingId) {
+            payload.briefing_id = briefingId;
+        }
 
         fetch(getApiBase() + "/api/chat/start", {
             method: "POST",
             headers: getAuthHeaders(),
             credentials: "include",
-            body: JSON.stringify({
-                report_type: "r1",
-                lang: "de",
-                consent_report: true
-            })
+            body: JSON.stringify(payload)
         })
         .then(function(res) {
             if (!res.ok) throw new Error("HTTP " + res.status);
@@ -614,8 +623,13 @@
         setTimeout(function() { announcer.textContent = text; }, 50);
     }
 
-    /* ── Init on page load ── */
+    /* ── Public API ── */
+    window.initChat = initChat;
+
+    /* ── Init on page load (R1 page only) ── */
     function init() {
+        if (!document.getElementById("intake-mode-selector")) return;
+
         var card = document.getElementById("formbuilder-card");
         if (card) card.style.display = "none";
 
