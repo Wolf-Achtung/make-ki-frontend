@@ -682,6 +682,10 @@
     }
 
     function restoreSession(sessionData) {
+        if (sessionData.session_id) {
+            chatState.sessionId = sessionData.session_id;
+        }
+
         var msgs = sessionData.messages || [];
 
         for (var i = 0; i < msgs.length; i++) {
@@ -690,10 +694,12 @@
 
         if (sessionData.state) {
             updateProgress(sessionData.state);
+        }
 
-            if (sessionData.state.quick_replies) {
-                renderQuickReplies(sessionData.state.quick_replies);
-            }
+        var qr = (sessionData.state && sessionData.state.quick_replies)
+            || sessionData.quick_replies;
+        if (qr) {
+            renderQuickReplies(qr);
         }
 
         scrollToBottom();
