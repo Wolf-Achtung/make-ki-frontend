@@ -1104,6 +1104,13 @@
         return;
     }
 
+    // If redirected back with status=generating, show status section directly
+    if (params.get("status") === "generating") {
+        document.getElementById("status-section").style.display = "block";
+        pollStatus();
+        return;
+    }
+
     // Show mode selector (chat vs form)
     var modeSelector = document.getElementById("strategy-mode-selector");
     modeSelector.style.display = "block";
