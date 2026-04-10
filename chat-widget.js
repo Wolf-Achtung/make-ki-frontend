@@ -224,10 +224,9 @@
     function scrollToBottom() {
         var container = document.getElementById("chatMessages");
         if (!container) return;
-        var isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-        if (isNearBottom) {
+        requestAnimationFrame(function() {
             container.scrollTop = container.scrollHeight;
-        }
+        });
     }
 
     /* ── Typing Indicator ── */
@@ -476,6 +475,8 @@
                 container.appendChild(confirmBtn);
             }
         }
+
+        scrollToBottom();
     }
 
     function handleQuickReply(field, value, label) {
