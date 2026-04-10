@@ -393,13 +393,19 @@
 
         for (var r = 0; r < replies.length; r++) {
             var reply = replies[r];
+            var isMulti = reply.multi_select === true;
+            var maxSelect = reply.max_select || 0;
 
-            if (replies.length > 1) {
-                var label = document.createElement("div");
-                label.className = "qr-label";
-                label.textContent = reply.label;
-                container.appendChild(label);
+            var label = document.createElement("div");
+            label.className = "qr-label";
+            var labelText = reply.label;
+            if (isMulti) {
+                labelText += maxSelect
+                    ? " (max. " + maxSelect + " auswählen)"
+                    : " (mehrere möglich)";
             }
+            label.textContent = labelText;
+            container.appendChild(label);
 
             var group = document.createElement("div");
             group.className = "qr-group";
@@ -417,14 +423,58 @@
                     btn.title = option.description;
                 }
 
-                btn.addEventListener("click", function() {
-                    handleQuickReply(this.dataset.field, this.dataset.value, this.textContent);
-                });
+                if (isMulti) {
+                    btn.addEventListener("click", (function(groupEl, max) {
+                        return function() {
+                            if (this.classList.contains("qr-btn-disabled")) return;
+                            this.classList.toggle("qr-btn-selected");
+                            this.setAttribute("aria-selected",
+                                this.classList.contains("qr-btn-selected") ? "true" : "false");
+                            if (max) {
+                                var selected = groupEl.querySelectorAll(".qr-btn-selected");
+                                var btns = groupEl.querySelectorAll(".qr-btn");
+                                for (var i = 0; i < btns.length; i++) {
+                                    if (!btns[i].classList.contains("qr-btn-selected")) {
+                                        if (selected.length >= max) {
+                                            btns[i].classList.add("qr-btn-disabled");
+                                            btns[i].disabled = true;
+                                        } else {
+                                            btns[i].classList.remove("qr-btn-disabled");
+                                            btns[i].disabled = false;
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                    })(group, maxSelect));
+                } else {
+                    btn.addEventListener("click", function() {
+                        handleQuickReply(this.dataset.field, this.dataset.value, this.textContent);
+                    });
+                }
 
                 group.appendChild(btn);
             }
 
             container.appendChild(group);
+
+            if (isMulti) {
+                var confirmBtn = document.createElement("button");
+                confirmBtn.className = "qr-confirm-btn";
+                confirmBtn.textContent = "Auswahl bestätigen \u2713";
+                confirmBtn.addEventListener("click", (function(groupEl) {
+                    return function() {
+                        var selected = groupEl.querySelectorAll(".qr-btn-selected");
+                        if (!selected.length) return;
+                        var labels = [];
+                        for (var i = 0; i < selected.length; i++) {
+                            labels.push(selected[i].textContent);
+                        }
+                        sendMessage(labels.join(", "));
+                    };
+                })(group));
+                container.appendChild(confirmBtn);
+            }
         }
     }
 
