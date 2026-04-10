@@ -248,7 +248,7 @@
     }
 
     /* ── Send Message (SSE Streaming) ── */
-    function sendMessage(text) {
+    function sendMessage(text, extra) {
         var input = document.getElementById("chatInput");
         var message = text || (input ? input.value.trim() : "");
         if (!message || chatState.isStreaming) return;
@@ -274,10 +274,10 @@
             method: "POST",
             headers: getAuthHeaders(),
             credentials: "include",
-            body: JSON.stringify({
+            body: JSON.stringify(Object.assign({
                 session_id: chatState.sessionId,
                 message: message
-            })
+            }, extra || {}))
         })
         .then(function(response) {
             if (!response.ok) {
@@ -479,7 +479,7 @@
     }
 
     function handleQuickReply(field, value, label) {
-        sendMessage(label);
+        sendMessage(label, { quick_reply_field: field, quick_reply_value: value });
     }
 
     function clearQuickReplies() {
