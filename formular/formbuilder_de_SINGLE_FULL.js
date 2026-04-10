@@ -210,6 +210,9 @@ function _collectLabelFor(fieldKey, value){
   // Wichtig-Badge für report-relevante Felder
   var WICHTIG_FIELDS = {"hauptleistung":1,"ki_projekte":1,"zeitersparnis_prioritaet":1,"vision_3_jahre":1,"ki_guardrails":1,"strategische_ziele":1};
 
+  // Optionale Felder (kein Pflicht-Sternchen)
+  var OPTIONAL_FIELDS = {"jahresumsatz":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,"zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,"vision_prioritaet":1,"selbststaendig":1,"geschaeftsmodell_evolution":1};
+
   // FIELD_EXAMPLES Lookup: branche+size → branche+"default" → "default"+size → "default"+"default"
   function getFieldExample(fieldKey) {
     if (typeof FIELD_EXAMPLES === "undefined") return null;
@@ -311,7 +314,8 @@ function _collectLabelFor(fieldKey, value){
       + ".example-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin:6px 0 10px;font-size:14px;color:#166534;line-height:1.5}"
       + ".example-box .ex-label{font-weight:600;font-size:12px;color:#15803d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}"
       + ".example-box .ex-text{font-style:italic;color:#166534}"
-      + ".example-box .ex-hint{margin-top:6px;font-style:normal;color:#15803d;font-size:13px}";
+      + ".example-box .ex-hint{margin-top:6px;font-style:normal;color:#15803d;font-size:13px}"
+      + ".autosave-hint{text-align:center;font-size:13px;color:#64748b;margin-top:12px;opacity:0.8}";
     var s=document.createElement("style"); s.type="text/css"; s.appendChild(document.createTextNode(css)); document.head.appendChild(s);
   }catch(_){}})();
 
@@ -635,7 +639,8 @@ function _collectLabelFor(fieldKey, value){
       if (typeof f.showIf === "function" && !f.showIf(formData)) continue;
 
       var wichtigBadge = WICHTIG_FIELDS[k] ? "<span class='badge-wichtig'>✦ Wichtig für Ihren Report</span>" : "";
-      html += "<div class='form-group' data-key='" + k + "'><label for='" + f.key + "'>" + f.label + wichtigBadge + "</label>";
+      var requiredMark = (!OPTIONAL_FIELDS[k] && f.type !== "privacy") ? "<span style='color:#dc2626;margin-left:3px'>*</span>" : "";
+      html += "<div class='form-group' data-key='" + k + "'><label for='" + f.key + "'>" + f.label + requiredMark + wichtigBadge + "</label>";
       if (f.description) html += "<div class='guidance'>" + f.description + "</div>";
       // Add guidance for required checkbox groups
       if (f.type === "checkbox" && (f.key === "zielgruppen" || f.key === "ki_ziele" || f.key === "anwendungsfaelle")) {
@@ -664,7 +669,7 @@ function _collectLabelFor(fieldKey, value){
     else nav += "<button type='button' class='btn btn-primary' id='btn-submit'>Absenden</button>";
     nav += "</nav>";
 
-    root.innerHTML = html + nav;
+    root.innerHTML = html + nav + "<div class='autosave-hint'>\u2713 Ihre Antworten werden automatisch gespeichert</div>";
 
     // change handler (remove first to prevent duplicates on re-render)
     root.removeEventListener("change", handleChange);

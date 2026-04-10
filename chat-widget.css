@@ -83,7 +83,7 @@
 
 .mode-time {
     font-size: 13px;
-    color: var(--text-muted, #6b7a8c);
+    color: var(--text-muted, #566578);
     font-weight: 500;
 }
 
@@ -133,7 +133,7 @@
 
 .btn-restart {
     background: none;
-    color: var(--text-muted, #6b7a8c);
+    color: var(--text-muted, #566578);
     border: 1px solid var(--border-light, #e2e8f0);
     border-radius: 10px;
     padding: 10px 20px;
@@ -189,7 +189,7 @@
 
 .chat-progress {
     font-size: 13px;
-    color: var(--text-muted, #6b7a8c);
+    color: var(--text-muted, #566578);
     font-weight: 500;
 }
 
@@ -216,7 +216,7 @@
 
 .chat-switch-btn {
     font-size: 13px;
-    color: var(--text-muted, #6b7a8c);
+    color: var(--text-muted, #566578);
     background: none;
     border: 1px solid var(--border-light, #e2e8f0);
     border-radius: 8px;
@@ -327,7 +327,7 @@
 .qr-label {
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-muted, #6b7a8c);
+    color: var(--text-muted, #566578);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 8px 0 6px;

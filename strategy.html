@@ -513,6 +513,13 @@
       }
     }
 
+    /* Focus-visible for keyboard accessibility */
+    .mk-radio-card input:focus-visible + label,
+    .mk-check-card input:focus-visible + label {
+      outline: 2px solid var(--mk-navy-400);
+      outline-offset: 2px;
+    }
+
     /* Responsive */
     @media (max-width: 640px) {
       .mk-strategy-intro h2 {
