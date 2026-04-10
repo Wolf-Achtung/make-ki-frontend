@@ -364,6 +364,38 @@
     transform: translateY(0);
 }
 
+.qr-btn-selected {
+    background: #2563eb !important;
+    color: #fff !important;
+    border-color: #2563eb !important;
+}
+
+.qr-btn-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.qr-confirm-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.qr-confirm-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37,99,235,.3);
+}
+
 /* --- Input Area --- */
 .chat-input-area {
     padding: 16px 24px;
