@@ -107,7 +107,7 @@
             + '<div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat-Verlauf"></div>'
             + '<div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
             + '<div class="chat-input-area">'
-            + '  <textarea id="chatInput" placeholder="Ihre Antwort..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
+            + '  <textarea id="chatInput" placeholder="Je mehr Sie verraten, desto mehr Umsatzpotenzial findet die Analyse." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
             + '  <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
             + '</div>';
 
