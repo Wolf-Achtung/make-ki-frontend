@@ -149,6 +149,34 @@
     color: var(--text-secondary, #3d4f63);
 }
 
+/* --- Chat Resume Banner --- */
+.chat-resume-banner {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1px solid #93c5fd;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 0 auto 20px;
+    max-width: 800px;
+    text-align: center;
+}
+
+.chat-resume-banner p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #1e40af;
+}
+
+@media (prefers-color-scheme: dark) {
+    .chat-resume-banner {
+        background: linear-gradient(135deg, rgba(37,99,235,.1), rgba(37,99,235,.15));
+        border-color: rgba(37,99,235,.3);
+    }
+
+    .chat-resume-banner p {
+        color: #93c5fd;
+    }
+}
+
 /* --- Chat Container --- */
 #chat-container {
     max-width: 800px;

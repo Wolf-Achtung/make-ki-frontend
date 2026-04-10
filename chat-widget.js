@@ -579,9 +579,37 @@
 
     /* ── Resume ── */
     function checkResume() {
+        var isLoggedIn = false;
+        try {
+            isLoggedIn = window.AUTH && window.AUTH.hasAuthCookie();
+        } catch(e) {}
+
+        if (isLoggedIn) {
+            fetch(getApiBase() + "/api/chat/sessions?status=active", {
+                headers: getAuthHeaders(),
+                credentials: "include"
+            })
+            .then(function(res) {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            })
+            .then(function(sessions) {
+                if (sessions && sessions.length > 0) {
+                    showResumePrompt(sessions[0].session_id, sessions[0]);
+                }
+            })
+            .catch(function() {
+                checkResumeLocalStorage();
+            });
+        } else {
+            checkResumeLocalStorage();
+        }
+    }
+
+    function checkResumeLocalStorage() {
         try {
             var savedSessionId = localStorage.getItem("chat_session_id");
-            if (!savedSessionId) return false;
+            if (!savedSessionId) return;
 
             fetch(getApiBase() + "/api/chat/session/" + savedSessionId, {
                 headers: getAuthHeaders(),
@@ -592,47 +620,59 @@
                 return res.json();
             })
             .then(function(data) {
-                if (data.resumable && data.state && data.state.status === "active") {
+                if (data.state && data.state.status === "active") {
                     showResumePrompt(savedSessionId, data);
                 }
             })
             .catch(function() {
                 localStorage.removeItem("chat_session_id");
             });
-
-            return true;
-        } catch(e) {
-            return false;
-        }
+        } catch(e) {}
     }
 
-    function showResumePrompt(sessionId, sessionData) {
+    function showResumePrompt(sessionId, summaryData) {
         var selector = document.getElementById("intake-mode-selector");
         if (!selector) return;
 
+        var state = summaryData.state || summaryData;
+        var progress = state.progress_percent || 0;
+
         var resumeDiv = document.createElement("div");
-        resumeDiv.className = "resume-banner";
+        resumeDiv.className = "chat-resume-banner";
         resumeDiv.innerHTML = ''
-            + '<div class="resume-content">'
-            + '  <p><strong>Sie haben eine begonnene Bestandsaufnahme.</strong><br>'
-            + '  ' + sessionData.state.collected_count + ' von ' + sessionData.state.total_fields
-            + '  Angaben erfasst (' + sessionData.state.current_section_name + ')</p>'
-            + '  <div class="resume-actions">'
-            + '    <button class="btn-resume" id="btnResume">Fortsetzen</button>'
-            + '    <button class="btn-restart" id="btnRestart">Neu starten</button>'
-            + '  </div>'
+            + '<p><strong>Sie haben ein offenes Gespr\u00e4ch</strong><br>'
+            + '(' + progress + '% abgeschlossen)</p>'
+            + '<div class="resume-actions">'
+            + '  <button class="btn-resume" id="btnResume">Fortsetzen</button>'
+            + '  <button class="btn-restart" id="btnRestart">Neu starten</button>'
             + '</div>';
 
         selector.insertBefore(resumeDiv, selector.firstChild);
 
         document.getElementById("btnResume").addEventListener("click", function() {
-            chatState.sessionId = sessionId;
-            document.getElementById("intake-mode-selector").style.display = "none";
-            var card = document.getElementById("formbuilder-card");
-            if (card) card.style.display = "none";
-            document.getElementById("chat-container").style.display = "flex";
-            renderChatContainer();
-            restoreSession(sessionData);
+            fetch(getApiBase() + "/api/chat/session/" + sessionId, {
+                headers: getAuthHeaders(),
+                credentials: "include"
+            })
+            .then(function(res) {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            })
+            .then(function(sessionData) {
+                chatState.sessionId = sessionId;
+                try { localStorage.setItem("chat_session_id", sessionId); } catch(e) {}
+
+                document.getElementById("intake-mode-selector").style.display = "none";
+                var card = document.getElementById("formbuilder-card");
+                if (card) card.style.display = "none";
+                document.getElementById("chat-container").style.display = "flex";
+
+                renderChatContainer();
+                restoreSession(sessionData);
+            })
+            .catch(function(err) {
+                console.error("Resume failed:", err);
+            });
         });
 
         document.getElementById("btnRestart").addEventListener("click", function() {
@@ -643,17 +683,20 @@
 
     function restoreSession(sessionData) {
         var msgs = sessionData.messages || [];
-        var recent = msgs.slice(-6);
 
-        for (var i = 0; i < recent.length; i++) {
-            appendMessage(recent[i].role, recent[i].content);
+        for (var i = 0; i < msgs.length; i++) {
+            appendMessage(msgs[i].role, msgs[i].content);
         }
 
-        updateProgress(sessionData.state);
+        if (sessionData.state) {
+            updateProgress(sessionData.state);
 
-        if (sessionData.state && sessionData.state.quick_replies) {
-            renderQuickReplies(sessionData.state.quick_replies);
+            if (sessionData.state.quick_replies) {
+                renderQuickReplies(sessionData.state.quick_replies);
+            }
         }
+
+        scrollToBottom();
 
         var input = document.getElementById("chatInput");
         if (input) input.focus();
