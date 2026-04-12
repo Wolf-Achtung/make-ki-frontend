@@ -562,7 +562,26 @@
 
     function handleFieldConfirmed(data) {
         // data = { field, value }
-        // Implemented in Schritt 4
+        showConfirmSuccess();
+        currentDraft = null;
+    }
+
+    function showConfirmSuccess() {
+        var chip = document.getElementById("draftChip");
+        if (!chip) return;
+
+        chip.classList.remove("draft-confirming");
+        chip.classList.add("draft-confirmed");
+
+        var actions = document.getElementById("draftChipActions");
+        if (actions) {
+            actions.innerHTML = '<span class="draft-confirmed-text">\u2713 \u00dcbernommen</span>';
+        }
+
+        setTimeout(function() {
+            chip.style.display = "none";
+            chip.classList.remove("draft-confirmed");
+        }, 1500);
     }
 
     function handleDialogMode(data) {
