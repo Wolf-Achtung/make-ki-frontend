@@ -48,7 +48,7 @@
             + '    <h3>KI-gestütztes Gespräch</h3>'
             + '    <p>Lassen Sie sich Schritt für Schritt durch die Bestandsaufnahme '
             + '       führen. Die KI erklärt Fachbegriffe und hilft bei Unsicherheiten.</p>'
-            + '    <span class="mode-badge">Empfohlen · ca. 5–7 Min.</span>'
+            + '    <span class="mode-badge">Empfohlen · ca. 10–15 Min.</span>'
             + '  </div>'
             + '  <div class="mode-card mode-secondary" id="mode-form" tabindex="0" role="button" aria-label="Fragebogen direkt ausfuellen">'
             + '    <div class="mode-icon" aria-hidden="true">📋</div>'
@@ -516,6 +516,16 @@
         scrollToBottom();
     }
 
+    /* ── Undo State ── */
+    var _undoTimer = null;
+    var _undoPendingMsg = null;
+
+    function escapeHtml(str) {
+        var div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     function handleQuickReply(field, value, label) {
         // Draft-action QR buttons (confirm/edit) route to draft handlers
         if (field === "_draft_action") {
@@ -528,10 +538,91 @@
         }
         // Hide draft chip on normal QR click (new flow step)
         hideDraftChip();
-        sendMessage(label, { quick_reply_field: field, quick_reply_value: value });
+
+        // Cancel any existing undo timer
+        if (_undoTimer) {
+            clearTimeout(_undoTimer);
+            _undoTimer = null;
+        }
+
+        // Remove any leftover pending message
+        if (_undoPendingMsg && _undoPendingMsg.parentNode) {
+            _undoPendingMsg.parentNode.removeChild(_undoPendingMsg);
+            _undoPendingMsg = null;
+        }
+
+        // Show pending message in chat (visual only, not pushed to chatState)
+        var messagesContainer = document.getElementById("chatMessages");
+        if (messagesContainer) {
+            _undoPendingMsg = document.createElement("div");
+            _undoPendingMsg.className = "chat-message chat-message-user chat-message-pending";
+            _undoPendingMsg.textContent = label;
+            messagesContainer.appendChild(_undoPendingMsg);
+            scrollToBottom();
+        }
+
+        // Preserve QR nodes (detach instead of innerHTML to keep event listeners)
+        var qrContainer = document.getElementById("chatQuickReplies");
+        var savedNodes = [];
+        while (qrContainer.firstChild) {
+            savedNodes.push(qrContainer.removeChild(qrContainer.firstChild));
+        }
+
+        // Show undo bar
+        showUndoBar(qrContainer, label, function onUndo() {
+            // Remove pending message
+            if (_undoPendingMsg && _undoPendingMsg.parentNode) {
+                _undoPendingMsg.parentNode.removeChild(_undoPendingMsg);
+            }
+            _undoPendingMsg = null;
+            // Restore QR buttons (event listeners preserved)
+            qrContainer.innerHTML = "";
+            savedNodes.forEach(function(node) {
+                qrContainer.appendChild(node);
+            });
+            scrollToBottom();
+        });
+
+        // After 3 seconds: commit the message
+        _undoTimer = setTimeout(function() {
+            _undoTimer = null;
+            // Remove pending message (sendMessage will re-add it properly)
+            if (_undoPendingMsg && _undoPendingMsg.parentNode) {
+                _undoPendingMsg.parentNode.removeChild(_undoPendingMsg);
+            }
+            _undoPendingMsg = null;
+            // Actually send
+            sendMessage(label, {
+                quick_reply_field: field,
+                quick_reply_value: value
+            });
+        }, 3000);
+    }
+
+    function showUndoBar(container, label, onUndo) {
+        var bar = document.createElement("div");
+        bar.className = "undo-bar";
+        bar.innerHTML = ''
+            + '<span class="undo-label">' + escapeHtml(label) + '</span>'
+            + '<button class="undo-btn">\u21a9 R\u00fcckg\u00e4ngig</button>'
+            + '<div class="undo-progress"><div class="undo-progress-fill"></div></div>';
+        container.appendChild(bar);
+
+        bar.querySelector(".undo-btn").addEventListener("click", function() {
+            if (_undoTimer) {
+                clearTimeout(_undoTimer);
+                _undoTimer = null;
+            }
+            onUndo();
+        });
     }
 
     function clearQuickReplies() {
+        // Cancel any pending undo when quick replies are cleared
+        if (_undoTimer) {
+            clearTimeout(_undoTimer);
+            _undoTimer = null;
+        }
         var container = document.getElementById("chatQuickReplies");
         if (container) container.innerHTML = "";
     }
