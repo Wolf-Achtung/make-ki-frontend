@@ -421,7 +421,7 @@ function _collectLabelFor(fieldKey, value){
       ],
       description: "(Damit Integrationsaufwand, Datenschutzanforderungen und Hosting-Optionen realistisch geplant werden.)"
     },
-    { key: "interne_ki_kompetenzen", label: "Gibt es ein internes KI-/Digitalisierungsteam?", type: "select",
+    { key: "interne_ki_kompetenzen", label: "Haben Sie KI-/Digitalisierungskompetenz im Unternehmen?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "nein", label: "Nein" }, { value: "in_planung", label: "In Planung" } ],
       description: "(Damit Trainings, Unterstützung und Roadmap auf vorhandene Kompetenzen abgestimmt sind.)"
     },
@@ -454,12 +454,12 @@ function _collectLabelFor(fieldKey, value){
         { value: "andere", label: "Andere Bereiche" }, { value: "noch_keine", label: "Noch keine Nutzung" }
       ],
       description: "(Damit vorhandene Lösungen berücksichtigt und Doppelarbeiten konsequent vermieden werden.)" },
-    { key: "ki_kompetenz", label: "KI-Kompetenz im Team", type: "select",
+    { key: "ki_kompetenz", label: "KI-Kompetenz", type: "select",
       options: [
         { value: "hoch", label: "Hoch" }, { value: "mittel", label: "Mittel" },
         { value: "niedrig", label: "Niedrig" }, { value: "keine", label: "Keine" }
       ],
-      description: "(Damit Inhalte, Tempo und Unterstützung zum Teamniveau passen.)" },
+      description: "(Damit Inhalte und Tempo zu Ihrem Kenntnisstand passen.)" },
 
     // Block 3: Ziele & Use Cases
     { key: "ki_ziele", label: "Ziele mit KI in den nächsten 3–6 Monaten", type: "checkbox",
@@ -470,7 +470,7 @@ function _collectLabelFor(fieldKey, value){
         { value: "wettbewerbsfaehigkeit", label: "Wettbewerbsfähigkeit" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
       description: "(Damit Maßnahmen auf kurzfristige, messbare Ziele ausgerichtet priorisiert werden.)" },
-    { key: "ki_projekte", label: "Gibt es bereits Tests, Tools oder Projekte mit KI (auch informell)?", type: "textarea", placeholder: "z. B. ChatGPT-Nutzung im Team, interne Pilotprojekte, Tools von Dienstleistern, Experimente mit Automatisierung …", description: "(Damit wir Doppelarbeit vermeiden, Synergien mit bestehenden Initiativen nutzen und Ihr aktuelles KI-Engagement passend einordnen können.)" },
+    { key: "ki_projekte", label: "Gibt es bereits Tests, Tools oder Projekte mit KI (auch informell)?", type: "textarea", placeholder: "z. B. ChatGPT-Nutzung, Pilotprojekte, Tools von Dienstleistern, Automatisierungs-Experimente …", description: "(Damit wir Doppelarbeit vermeiden, Synergien mit bestehenden Initiativen nutzen und Ihr aktuelles KI-Engagement passend einordnen können.)" },
     { key: "anwendungsfaelle", label: "Interessante Anwendungsfälle", type: "checkbox",
       options: [
         { value: "chatbots", label: "Chatbots / FAQ-Automatisierung" }, { value: "content_generation", label: "Content-Generierung" },
@@ -481,13 +481,13 @@ function _collectLabelFor(fieldKey, value){
       description: "(Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen.)" },
     { key: "zeitersparnis_prioritaet", label: "Wo frisst heute am meisten Zeit oder Nerven?", type: "textarea",
       placeholder: "In welchen Bereichen verlieren Sie heute am meisten Zeit? (z. B. E-Mails, Angebote, Dokumentation)", description: "(Damit wir sehr konkrete Quick-Win-Empfehlungen zur Entlastung ableiten können – mit spürbarer Zeitersparnis im Alltag.)" },
-    { key: "pilot_bereich", label: "Bester Bereich für Pilotprojekt", type: "select",
+    { key: "pilot_bereich", label: "Bester Bereich für nächstes KI-Projekt", type: "select",
       options: [
         { value: "kundenservice", label: "Kundenservice" }, { value: "marketing", label: "Marketing / Content" },
         { value: "vertrieb", label: "Vertrieb" }, { value: "verwaltung", label: "Verwaltung / Backoffice" },
         { value: "produktion", label: "Produktion / Logistik" }, { value: "andere", label: "Andere" }
       ],
-      description: "(Damit das erste Pilotprojekt reibungslos startet und zuverlässig Ergebnisse liefert.)" },
+      description: "(Damit Ihr nächstes KI-Projekt reibungslos startet und zuverlässig Ergebnisse liefert.)" },
     { key: "geschaeftsmodell_evolution", label: "Haben Sie Ideen, wie KI Ihr Geschäftsmodell verändern oder ergänzen könnte?", type: "textarea",
       placeholder: "z. B. neue digitale Produkte, Services, Beratungsangebote, datengetriebene Zusatzleistungen …", description: "(Damit wir Potenziale für echte Business-Innovation neben der reinen Effizienzsteigerung erkennen und im Report sichtbar machen.)" },
     { key: "vision_3_jahre", label: "Wie soll Ihr Unternehmen in 2–3 Jahren mit KI arbeiten?", type: "textarea",
@@ -506,7 +506,7 @@ function _collectLabelFor(fieldKey, value){
     { key: "governance_richtlinien", label: "KI-Governance-Richtlinien vorhanden?", type: "select",
       options: [ { value: "ja", label: "Ja" }, { value: "teilweise", label: "Teilweise" }, { value: "nein", label: "Nein" } ],
       description: "(Damit Verantwortungen, Freigaben und Zugriffsrechte sauber geregelt werden.)" },
-    { key: "change_management", label: "Veränderungsbereitschaft im Team", type: "select",
+    { key: "change_management", label: "Veränderungsbereitschaft", type: "select",
       options: [
         { value: "sehr_hoch", label: "Sehr hoch" }, { value: "hoch", label: "Hoch" },
         { value: "mittel", label: "Mittel" }, { value: "niedrig", label: "Niedrig" }, { value: "sehr_niedrig", label: "Sehr niedrig" }
