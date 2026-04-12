@@ -349,6 +349,18 @@
                         renderQuickReplies(data);
                         break;
 
+                    case "draft_value":
+                        handleDraftValue(data);
+                        break;
+
+                    case "field_confirmed":
+                        handleFieldConfirmed(data);
+                        break;
+
+                    case "dialog_mode":
+                        handleDialogMode(data);
+                        break;
+
                     case "done":
                         finishStream();
                         break;
@@ -486,6 +498,24 @@
     function clearQuickReplies() {
         var container = document.getElementById("chatQuickReplies");
         if (container) container.innerHTML = "";
+    }
+
+    /* ── Draft-Chip State ── */
+    var currentDraft = null;
+
+    function handleDraftValue(data) {
+        // data = { field, value, label }
+        // Implemented in Schritt 2
+    }
+
+    function handleFieldConfirmed(data) {
+        // data = { field, value }
+        // Implemented in Schritt 4
+    }
+
+    function handleDialogMode(data) {
+        // data = { active: true|false }
+        // Implemented in Schritt 5
     }
 
     /* ── Progress ── */
