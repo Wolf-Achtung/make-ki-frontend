@@ -106,6 +106,17 @@
             + '</div>'
             + '<div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat-Verlauf"></div>'
             + '<div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
+            + '<div class="draft-chip" id="draftChip" style="display:none;">'
+            + '  <div class="draft-chip-header">'
+            + '    <span class="draft-chip-icon">\uD83D\uDCDD</span>'
+            + '    <span class="draft-chip-label" id="draftChipLabel">Erkannt</span>'
+            + '  </div>'
+            + '  <div class="draft-chip-value" id="draftChipValue"></div>'
+            + '  <div class="draft-chip-actions" id="draftChipActions">'
+            + '    <button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
+            + '    <button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>'
+            + '  </div>'
+            + '</div>'
             + '<div class="chat-input-area">'
             + '  <textarea id="chatInput" placeholder="Je mehr Sie verraten, desto mehr Umsatzpotenzial findet die Analyse." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
             + '  <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
@@ -129,6 +140,13 @@
         });
 
         document.getElementById("chatSwitchToForm").addEventListener("click", switchToForm);
+
+        document.getElementById("draftConfirmBtn").addEventListener("click", function() {
+            confirmDraft();
+        });
+        document.getElementById("draftEditBtn").addEventListener("click", function() {
+            editDraft();
+        });
     }
 
     /* ── Chat Init ── */
@@ -505,7 +523,32 @@
 
     function handleDraftValue(data) {
         // data = { field, value, label }
-        // Implemented in Schritt 2
+        currentDraft = data;
+
+        var chip = document.getElementById("draftChip");
+        var label = document.getElementById("draftChipLabel");
+        var value = document.getElementById("draftChipValue");
+        var actions = document.getElementById("draftChipActions");
+        if (!chip) return;
+
+        label.textContent = data.label || "Erkannt";
+
+        if (Array.isArray(data.value)) {
+            value.textContent = data.value.join(", ");
+        } else {
+            value.textContent = String(data.value);
+        }
+
+        // Reset chip state for new draft
+        chip.classList.remove("draft-confirmed", "draft-confirming");
+        actions.innerHTML = ''
+            + '<button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
+            + '<button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>';
+        document.getElementById("draftConfirmBtn").addEventListener("click", function() { confirmDraft(); });
+        document.getElementById("draftEditBtn").addEventListener("click", function() { editDraft(); });
+
+        chip.style.display = "block";
+        scrollToBottom();
     }
 
     function handleFieldConfirmed(data) {
