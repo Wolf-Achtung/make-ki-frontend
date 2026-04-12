@@ -349,6 +349,115 @@
     40% { transform: scale(1); opacity: 1; }
 }
 
+/* --- Summary Cards --- */
+.summary-cards {
+    max-width: 100%;
+}
+
+.summary-header {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 12px;
+}
+
+.summary-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.summary-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #f8fafc;
+    cursor: pointer;
+    user-select: none;
+}
+
+.summary-card-header:hover {
+    background: #f1f5f9;
+}
+
+.summary-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.summary-card-toggle {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.summary-card-body {
+    padding: 8px 14px 12px;
+}
+
+.summary-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px solid #f1f5f9;
+    gap: 12px;
+}
+
+.summary-field:last-child {
+    border-bottom: none;
+}
+
+.summary-field-label {
+    font-size: 12px;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.summary-field-value {
+    font-size: 13px;
+    color: #1e293b;
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+}
+
+.summary-footer {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #475569;
+    text-align: center;
+    padding: 8px;
+}
+
+/* --- Section Separator --- */
+.chat-section-separator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 12px;
+    padding: 0 8px;
+    max-width: 100%;
+}
+
+.section-sep-line {
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.section-sep-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* --- Quick Replies --- */
 .chat-quick-replies {
     padding: 0 24px;
@@ -411,9 +520,9 @@
 .qr-confirm-btn {
     display: block;
     width: 100%;
-    margin-top: 10px;
+    margin: 12px 0 4px;
     padding: 10px 20px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    background: #2563eb;
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -424,9 +533,38 @@
     transition: all 0.2s;
 }
 
-.qr-confirm-btn:hover {
+.qr-confirm-btn:hover:not(:disabled) {
+    background: #1d4ed8;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(37,99,235,.3);
+}
+
+.qr-confirm-btn:disabled {
+    background: #93c5fd;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Skip button for optional fields */
+.qr-skip-btn {
+    display: block;
+    margin: 8px auto 0;
+    padding: 6px 16px;
+    background: transparent;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.qr-skip-btn:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #64748b;
 }
 
 /* Undo bar (shown after single-select QR click) */
@@ -774,6 +912,62 @@
 
     .draft-confirmed-text {
         color: #4ade80;
+    }
+
+    .summary-header {
+        color: #e2e8f0;
+    }
+
+    .summary-card {
+        background: var(--navy-800, #0e1e36);
+        border-color: rgba(226,232,240,0.15);
+    }
+
+    .summary-card-header {
+        background: rgba(248,250,252,0.05);
+    }
+
+    .summary-card-header:hover {
+        background: rgba(241,245,249,0.08);
+    }
+
+    .summary-card-title {
+        color: #e2e8f0;
+    }
+
+    .summary-field {
+        border-bottom-color: rgba(241,245,249,0.08);
+    }
+
+    .summary-field-label {
+        color: #94a3b8;
+    }
+
+    .summary-field-value {
+        color: #e2e8f0;
+    }
+
+    .summary-footer {
+        color: #94a3b8;
+    }
+
+    .section-sep-line {
+        background: rgba(226,232,240,0.2);
+    }
+
+    .section-sep-label {
+        color: #64748b;
+    }
+
+    .qr-skip-btn {
+        border-color: rgba(148,163,184,0.3);
+        color: #64748b;
+    }
+
+    .qr-skip-btn:hover {
+        background: rgba(148,163,184,0.1);
+        border-color: rgba(148,163,184,0.5);
+        color: #94a3b8;
     }
 
     .resume-content {
