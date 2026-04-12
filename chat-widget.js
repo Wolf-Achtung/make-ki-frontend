@@ -397,6 +397,10 @@
                 if (fullResponse) {
                     chatState.messages.push({ role: "assistant", content: fullResponse });
                     announceForScreenReader("Neue Nachricht vom Assistenten");
+                    // Check if response is a summary and render as cards
+                    if (fullResponse.indexOf("**Zusammenfassung Ihrer Angaben:**") !== -1 && streamDiv) {
+                        renderSummaryCards(streamDiv, fullResponse);
+                    }
                 }
                 var inp = document.getElementById("chatInput");
                 if (inp) inp.focus();
@@ -474,6 +478,18 @@
                                     }
                                 }
                             }
+                            // Update confirm button state and text
+                            var selectedCount = groupEl.querySelectorAll(".qr-btn-selected").length;
+                            var confirmEl = groupEl.parentNode.querySelector(".qr-confirm-btn");
+                            if (confirmEl) {
+                                if (selectedCount > 0) {
+                                    confirmEl.disabled = false;
+                                    confirmEl.textContent = selectedCount + " ausgew\u00e4hlt \u2014 Best\u00e4tigen \u2713";
+                                } else {
+                                    confirmEl.disabled = true;
+                                    confirmEl.textContent = "Bitte mindestens eine Option w\u00e4hlen";
+                                }
+                            }
                         };
                     })(group, maxSelect));
                 } else {
@@ -490,7 +506,8 @@
             if (isMulti) {
                 var confirmBtn = document.createElement("button");
                 confirmBtn.className = "qr-confirm-btn";
-                confirmBtn.textContent = "Auswahl bestätigen \u2713";
+                confirmBtn.textContent = "Bitte mindestens eine Option w\u00e4hlen";
+                confirmBtn.disabled = true;
                 confirmBtn.addEventListener("click", (function(groupEl) {
                     return function() {
                         var selected = groupEl.querySelectorAll(".qr-btn-selected");
@@ -510,6 +527,22 @@
                     };
                 })(group));
                 container.appendChild(confirmBtn);
+            }
+        }
+
+        // Add skip button for optional fields
+        if (_lastState && _lastState.missing_optional && replies.length) {
+            var lastReply = replies[replies.length - 1];
+            var fieldName = lastReply.field;
+            var isOptional = _lastState.missing_optional.indexOf(fieldName) !== -1;
+            if (isOptional) {
+                var skipBtn = document.createElement("button");
+                skipBtn.className = "qr-skip-btn";
+                skipBtn.textContent = "\u00dcberspringen \u2192";
+                skipBtn.addEventListener("click", function() {
+                    sendMessage("weiter");
+                });
+                container.appendChild(skipBtn);
             }
         }
 
@@ -757,9 +790,131 @@
         currentDraft = null;
     }
 
+    /* ── Summary Cards ── */
+    function parseSummary(text) {
+        var sections = [];
+        var lines = text.split("\n");
+        var currentSection = null;
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+
+            // Section header: **Title**
+            var sectionMatch = line.match(/^\*\*([^*]+)\*\*$/);
+            if (sectionMatch && sectionMatch[1] !== "Zusammenfassung Ihrer Angaben:") {
+                currentSection = { title: sectionMatch[1], fields: [] };
+                sections.push(currentSection);
+                continue;
+            }
+
+            // Field: - Label: Value
+            var fieldMatch = line.match(/^-\s+(.+?):\s+(.+)$/);
+            if (fieldMatch && currentSection) {
+                currentSection.fields.push({
+                    label: fieldMatch[1],
+                    value: fieldMatch[2]
+                });
+            }
+        }
+
+        return sections;
+    }
+
+    function renderSummaryCards(container, summaryText) {
+        var sections = parseSummary(summaryText);
+        if (!sections.length) return;
+
+        var html = '<div class="summary-cards">';
+        html += '<div class="summary-header">Zusammenfassung Ihrer Angaben</div>';
+
+        for (var i = 0; i < sections.length; i++) {
+            var s = sections[i];
+            var isCollapsed = i > 2;
+            html += ''
+                + '<div class="summary-card' + (isCollapsed ? ' collapsed' : '') + '">'
+                + '  <div class="summary-card-header" data-toggle="' + i + '">'
+                + '    <span class="summary-card-title">' + escapeHtml(s.title) + '</span>'
+                + '    <span class="summary-card-toggle">' + (isCollapsed ? '\u25b8' : '\u25be') + '</span>'
+                + '  </div>'
+                + '  <div class="summary-card-body"' + (isCollapsed ? ' style="display:none"' : '') + '>';
+
+            for (var j = 0; j < s.fields.length; j++) {
+                html += '<div class="summary-field">'
+                    + '<span class="summary-field-label">' + escapeHtml(s.fields[j].label) + '</span>'
+                    + '<span class="summary-field-value">' + escapeHtml(s.fields[j].value) + '</span>'
+                    + '</div>';
+            }
+
+            html += '  </div>'
+                + '</div>';
+        }
+
+        html += '</div>';
+        html += '<div class="summary-footer">Sind alle Angaben korrekt? Dann starte ich die Auswertung.</div>';
+
+        container.innerHTML = html;
+
+        // Bind toggle handlers
+        var headers = container.querySelectorAll(".summary-card-header");
+        for (var h = 0; h < headers.length; h++) {
+            headers[h].addEventListener("click", function() {
+                var card = this.parentElement;
+                var body = card.querySelector(".summary-card-body");
+                var toggle = this.querySelector(".summary-card-toggle");
+                if (card.classList.contains("collapsed")) {
+                    card.classList.remove("collapsed");
+                    body.style.display = "";
+                    toggle.textContent = "\u25be";
+                } else {
+                    card.classList.add("collapsed");
+                    body.style.display = "none";
+                    toggle.textContent = "\u25b8";
+                }
+            });
+        }
+
+        scrollToBottom();
+    }
+
+    /* ── Section Separator ── */
+    function insertSectionSeparator(stepNum, totalSteps, sectionName) {
+        var container = document.getElementById("chatMessages");
+        if (!container) return;
+
+        var sep = document.createElement("div");
+        sep.className = "chat-section-separator";
+        sep.setAttribute("role", "separator");
+        sep.innerHTML = ''
+            + '<div class="section-sep-line"></div>'
+            + '<span class="section-sep-label">'
+            + 'Abschnitt ' + stepNum + ' von ' + totalSteps
+            + ': ' + escapeHtml(sectionName)
+            + '</span>'
+            + '<div class="section-sep-line"></div>';
+        container.appendChild(sep);
+        scrollToBottom();
+    }
+
     /* ── Progress ── */
+    var _lastState = null;
+    var _lastSectionIndex = 0;
+
     function updateProgress(state) {
         if (!state) return;
+
+        _lastState = state;
+
+        // Section separator on section change
+        if (state.current_section != null && state.current_section !== _lastSectionIndex) {
+            if (_lastSectionIndex > 0 || state.current_section > 0) {
+                insertSectionSeparator(
+                    state.current_section + 1,
+                    state.total_sections,
+                    state.current_section_name
+                );
+            }
+            _lastSectionIndex = state.current_section;
+        }
 
         var progressEl = document.getElementById("chatProgress");
         if (progressEl && state.current_section_name != null) {
