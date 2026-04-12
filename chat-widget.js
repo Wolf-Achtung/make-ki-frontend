@@ -586,7 +586,16 @@
 
     function handleDialogMode(data) {
         // data = { active: true|false }
-        // Implemented in Schritt 5
+        var qrContainer = document.getElementById("chatQuickReplies");
+        var input = document.getElementById("chatInput");
+
+        if (data.active) {
+            if (qrContainer) qrContainer.style.display = "none";
+            if (input) input.placeholder = "Ihre Frage wird beantwortet \u2014 tippen Sie gerne weiter\u2026";
+        } else {
+            if (qrContainer) qrContainer.style.display = "";
+            if (input) input.placeholder = "Je mehr Sie verraten, desto mehr Umsatzpotenzial findet die Analyse.";
+        }
     }
 
     function confirmDraft() {
