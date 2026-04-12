@@ -497,10 +497,16 @@
                         if (!selected.length) return;
                         hideDraftChip();
                         var labels = [];
+                        var values = [];
+                        var field = selected[0].dataset.field;
                         for (var i = 0; i < selected.length; i++) {
                             labels.push(selected[i].textContent);
+                            values.push(selected[i].dataset.value);
                         }
-                        sendMessage(labels.join(", "));
+                        sendMessage(labels.join(", "), {
+                            quick_reply_field: field,
+                            quick_reply_value: values.join(",")
+                        });
                     };
                 })(group));
                 container.appendChild(confirmBtn);
