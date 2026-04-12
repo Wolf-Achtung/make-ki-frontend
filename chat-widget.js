@@ -495,6 +495,7 @@
                     return function() {
                         var selected = groupEl.querySelectorAll(".qr-btn-selected");
                         if (!selected.length) return;
+                        hideDraftChip();
                         var labels = [];
                         for (var i = 0; i < selected.length; i++) {
                             labels.push(selected[i].textContent);
@@ -519,6 +520,8 @@
             }
             return;
         }
+        // Hide draft chip on normal QR click (new flow step)
+        hideDraftChip();
         sendMessage(label, { quick_reply_field: field, quick_reply_value: value });
     }
 
@@ -869,6 +872,16 @@
             || sessionData.quick_replies;
         if (qr) {
             renderQuickReplies(qr);
+        }
+
+        // Restore pending draft if present
+        var state = sessionData.state;
+        if (state && state.pending_field && state.pending_value != null) {
+            handleDraftValue({
+                field: state.pending_field,
+                value: state.pending_value,
+                label: state.pending_label || state.pending_field
+            });
         }
 
         scrollToBottom();
