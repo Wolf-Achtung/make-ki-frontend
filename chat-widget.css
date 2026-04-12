@@ -540,6 +540,102 @@
     background: #f8fafc;
 }
 
+/* --- Draft Chip --- */
+.draft-chip {
+    margin: 8px 16px;
+    padding: 12px 16px;
+    background: #f0f7ff;
+    border: 1px solid #3b82f6;
+    border-radius: 12px;
+    animation: draftSlideUp 0.3s ease-out;
+    flex-shrink: 0;
+}
+
+.draft-chip-header {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.draft-chip-icon {
+    font-size: 14px;
+}
+
+.draft-chip-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 8px;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.draft-chip-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.draft-confirm-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.draft-confirm-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.draft-edit-btn {
+    background: white;
+    color: #3b82f6;
+    border: 1px solid #3b82f6;
+    padding: 6px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.draft-edit-btn:hover {
+    background: #eff6ff;
+    transform: translateY(-1px);
+}
+
+.draft-chip.draft-confirmed {
+    background: #f0fdf4;
+    border-color: #22c55e;
+    transition: all 0.3s ease;
+}
+
+.draft-confirmed-text {
+    color: #22c55e;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.draft-chip.draft-confirming {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+@keyframes draftSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* --- Dark Mode --- */
 @media (prefers-color-scheme: dark) {
     .mode-primary {
@@ -575,6 +671,38 @@
 
     .chat-switch-btn:hover {
         background: var(--navy-800, #0e1e36);
+    }
+
+    .draft-chip {
+        background: rgba(59,130,246,0.1);
+        border-color: rgba(59,130,246,0.4);
+    }
+
+    .draft-chip-header {
+        color: #9ca3af;
+    }
+
+    .draft-chip-value {
+        color: var(--text-primary, #e8eef6);
+    }
+
+    .draft-edit-btn {
+        background: var(--navy-800, #0e1e36);
+        color: #93c5fd;
+        border-color: rgba(59,130,246,0.4);
+    }
+
+    .draft-edit-btn:hover {
+        background: rgba(59,130,246,0.15);
+    }
+
+    .draft-chip.draft-confirmed {
+        background: rgba(34,197,94,0.1);
+        border-color: rgba(34,197,94,0.4);
+    }
+
+    .draft-confirmed-text {
+        color: #4ade80;
     }
 
     .resume-content {

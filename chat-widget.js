@@ -106,6 +106,17 @@
             + '</div>'
             + '<div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat-Verlauf"></div>'
             + '<div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
+            + '<div class="draft-chip" id="draftChip" style="display:none;">'
+            + '  <div class="draft-chip-header">'
+            + '    <span class="draft-chip-icon">\uD83D\uDCDD</span>'
+            + '    <span class="draft-chip-label" id="draftChipLabel">Erkannt</span>'
+            + '  </div>'
+            + '  <div class="draft-chip-value" id="draftChipValue"></div>'
+            + '  <div class="draft-chip-actions" id="draftChipActions">'
+            + '    <button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
+            + '    <button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>'
+            + '  </div>'
+            + '</div>'
             + '<div class="chat-input-area">'
             + '  <textarea id="chatInput" placeholder="Je mehr Sie verraten, desto mehr Umsatzpotenzial findet die Analyse." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
             + '  <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
@@ -129,6 +140,13 @@
         });
 
         document.getElementById("chatSwitchToForm").addEventListener("click", switchToForm);
+
+        document.getElementById("draftConfirmBtn").addEventListener("click", function() {
+            confirmDraft();
+        });
+        document.getElementById("draftEditBtn").addEventListener("click", function() {
+            editDraft();
+        });
     }
 
     /* ── Chat Init ── */
@@ -349,6 +367,18 @@
                         renderQuickReplies(data);
                         break;
 
+                    case "draft_value":
+                        handleDraftValue(data);
+                        break;
+
+                    case "field_confirmed":
+                        handleFieldConfirmed(data);
+                        break;
+
+                    case "dialog_mode":
+                        handleDialogMode(data);
+                        break;
+
                     case "done":
                         finishStream();
                         break;
@@ -465,6 +495,7 @@
                     return function() {
                         var selected = groupEl.querySelectorAll(".qr-btn-selected");
                         if (!selected.length) return;
+                        hideDraftChip();
                         var labels = [];
                         for (var i = 0; i < selected.length; i++) {
                             labels.push(selected[i].textContent);
@@ -480,12 +511,153 @@
     }
 
     function handleQuickReply(field, value, label) {
+        // Draft-action QR buttons (confirm/edit) route to draft handlers
+        if (field === "_draft_action") {
+            if (value === "confirm") {
+                confirmDraft();
+            } else if (value === "edit") {
+                editDraft();
+            }
+            return;
+        }
+        // Hide draft chip on normal QR click (new flow step)
+        hideDraftChip();
         sendMessage(label, { quick_reply_field: field, quick_reply_value: value });
     }
 
     function clearQuickReplies() {
         var container = document.getElementById("chatQuickReplies");
         if (container) container.innerHTML = "";
+    }
+
+    /* ── Draft-Chip State ── */
+    var currentDraft = null;
+
+    function handleDraftValue(data) {
+        // data = { field, value, label }
+        currentDraft = data;
+
+        var chip = document.getElementById("draftChip");
+        var label = document.getElementById("draftChipLabel");
+        var value = document.getElementById("draftChipValue");
+        var actions = document.getElementById("draftChipActions");
+        if (!chip) return;
+
+        label.textContent = data.label || "Erkannt";
+
+        if (Array.isArray(data.value)) {
+            value.textContent = data.value.join(", ");
+        } else {
+            value.textContent = String(data.value);
+        }
+
+        // Reset chip state for new draft
+        chip.classList.remove("draft-confirmed", "draft-confirming");
+        actions.innerHTML = ''
+            + '<button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
+            + '<button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>';
+        document.getElementById("draftConfirmBtn").addEventListener("click", function() { confirmDraft(); });
+        document.getElementById("draftEditBtn").addEventListener("click", function() { editDraft(); });
+
+        chip.style.display = "block";
+        scrollToBottom();
+    }
+
+    function handleFieldConfirmed(data) {
+        // data = { field, value }
+        showConfirmSuccess();
+        currentDraft = null;
+    }
+
+    function showConfirmSuccess() {
+        var chip = document.getElementById("draftChip");
+        if (!chip) return;
+
+        chip.classList.remove("draft-confirming");
+        chip.classList.add("draft-confirmed");
+
+        var actions = document.getElementById("draftChipActions");
+        if (actions) {
+            actions.innerHTML = '<span class="draft-confirmed-text">\u2713 \u00dcbernommen</span>';
+        }
+
+        setTimeout(function() {
+            chip.style.display = "none";
+            chip.classList.remove("draft-confirmed");
+        }, 1500);
+    }
+
+    function handleDialogMode(data) {
+        // data = { active: true|false }
+        var qrContainer = document.getElementById("chatQuickReplies");
+        var input = document.getElementById("chatInput");
+
+        if (data.active) {
+            if (qrContainer) qrContainer.style.display = "none";
+            if (input) input.placeholder = "Ihre Frage wird beantwortet \u2014 tippen Sie gerne weiter\u2026";
+        } else {
+            if (qrContainer) qrContainer.style.display = "";
+            if (input) input.placeholder = "Je mehr Sie verraten, desto mehr Umsatzpotenzial findet die Analyse.";
+        }
+    }
+
+    function confirmDraft() {
+        if (!currentDraft) return;
+
+        var chip = document.getElementById("draftChip");
+        if (chip) chip.classList.add("draft-confirming");
+
+        fetch(getApiBase() + "/api/chat/confirm", {
+            method: "POST",
+            headers: getAuthHeaders(),
+            credentials: "include",
+            body: JSON.stringify({
+                session_id: chatState.sessionId,
+                field: currentDraft.field,
+                action: "confirm"
+            })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            // field_confirmed SSE event will handle success UI
+        })
+        .catch(function(err) {
+            console.error("Confirm failed:", err);
+            if (chip) chip.classList.remove("draft-confirming");
+        });
+    }
+
+    function editDraft() {
+        if (!currentDraft) return;
+
+        fetch(getApiBase() + "/api/chat/confirm", {
+            method: "POST",
+            headers: getAuthHeaders(),
+            credentials: "include",
+            body: JSON.stringify({
+                session_id: chatState.sessionId,
+                field: currentDraft.field,
+                action: "edit"
+            })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            hideDraftChip();
+            var input = document.getElementById("chatInput");
+            if (input) {
+                input.focus();
+                input.placeholder = "Bitte geben Sie Ihre Antwort nochmal ein\u2026";
+            }
+        })
+        .catch(function(err) {
+            console.error("Edit failed:", err);
+        });
+    }
+
+    function hideDraftChip() {
+        var chip = document.getElementById("draftChip");
+        if (chip) chip.style.display = "none";
+        currentDraft = null;
     }
 
     /* ── Progress ── */
@@ -700,6 +872,16 @@
             || sessionData.quick_replies;
         if (qr) {
             renderQuickReplies(qr);
+        }
+
+        // Restore pending draft if present
+        var state = sessionData.state;
+        if (state && state.pending_field && state.pending_value != null) {
+            handleDraftValue({
+                field: state.pending_field,
+                value: state.pending_value,
+                label: state.pending_label || state.pending_field
+            });
         }
 
         scrollToBottom();
