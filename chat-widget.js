@@ -118,7 +118,7 @@
             + '  </div>'
             + '</div>'
             + '<div class="chat-input-area">'
-            + '  <textarea id="chatInput" placeholder="Je mehr Sie verraten, desto mehr Umsatzpotenzial findet die Analyse." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
+            + '  <textarea id="chatInput" placeholder="Ihre Antwort oder Frage..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
             + '  <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
             + '</div>';
 
@@ -597,7 +597,7 @@
             if (input) input.placeholder = "Ihre Frage wird beantwortet \u2014 tippen Sie gerne weiter\u2026";
         } else {
             if (qrContainer) qrContainer.style.display = "";
-            if (input) input.placeholder = "Je mehr Sie verraten, desto mehr Umsatzpotenzial findet die Analyse.";
+            if (input) input.placeholder = "Ihre Antwort oder Frage...";
         }
     }
 
