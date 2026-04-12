@@ -510,6 +510,15 @@
     }
 
     function handleQuickReply(field, value, label) {
+        // Draft-action QR buttons (confirm/edit) route to draft handlers
+        if (field === "_draft_action") {
+            if (value === "confirm") {
+                confirmDraft();
+            } else if (value === "edit") {
+                editDraft();
+            }
+            return;
+        }
         sendMessage(label, { quick_reply_field: field, quick_reply_value: value });
     }
 
@@ -559,6 +568,65 @@
     function handleDialogMode(data) {
         // data = { active: true|false }
         // Implemented in Schritt 5
+    }
+
+    function confirmDraft() {
+        if (!currentDraft) return;
+
+        var chip = document.getElementById("draftChip");
+        if (chip) chip.classList.add("draft-confirming");
+
+        fetch(getApiBase() + "/api/chat/confirm", {
+            method: "POST",
+            headers: getAuthHeaders(),
+            credentials: "include",
+            body: JSON.stringify({
+                session_id: chatState.sessionId,
+                field: currentDraft.field,
+                action: "confirm"
+            })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            // field_confirmed SSE event will handle success UI
+        })
+        .catch(function(err) {
+            console.error("Confirm failed:", err);
+            if (chip) chip.classList.remove("draft-confirming");
+        });
+    }
+
+    function editDraft() {
+        if (!currentDraft) return;
+
+        fetch(getApiBase() + "/api/chat/confirm", {
+            method: "POST",
+            headers: getAuthHeaders(),
+            credentials: "include",
+            body: JSON.stringify({
+                session_id: chatState.sessionId,
+                field: currentDraft.field,
+                action: "edit"
+            })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            hideDraftChip();
+            var input = document.getElementById("chatInput");
+            if (input) {
+                input.focus();
+                input.placeholder = "Bitte geben Sie Ihre Antwort nochmal ein\u2026";
+            }
+        })
+        .catch(function(err) {
+            console.error("Edit failed:", err);
+        });
+    }
+
+    function hideDraftChip() {
+        var chip = document.getElementById("draftChip");
+        if (chip) chip.style.display = "none";
+        currentDraft = null;
     }
 
     /* ── Progress ── */
