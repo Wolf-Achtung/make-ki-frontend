@@ -283,7 +283,7 @@
         if (!message && !isResumeTrigger) return;
         if (chatState.isStreaming) return;
 
-        if (message) {
+        if (message && !(extra && extra._hideUserMessage)) {
             appendMessage("user", message);
         }
 
@@ -430,6 +430,9 @@
                 if (qrContainer && !qrContainer.children.length) {
                     renderSkipButtonIfOptional(qrContainer, null);
                 }
+
+                // Show help button for freetext fields (not simple ones)
+                renderHelpButtonIfApplicable();
 
                 var inp = document.getElementById("chatInput");
                 if (inp) inp.focus();
@@ -597,6 +600,36 @@
         });
         container.appendChild(skipBtn);
         scrollToBottom();
+    }
+
+    /* ── Help Button ("Was ist hier gemeint?") ── */
+    var SIMPLE_FIELDS = ["branche", "unternehmensgroesse", "land", "bundesland"];
+
+    function renderHelpButton(fieldName) {
+        if (!fieldName || SIMPLE_FIELDS.indexOf(fieldName) !== -1) return;
+
+        var container = document.getElementById("chatMessages");
+        if (!container) return;
+
+        var helpBtn = document.createElement("div");
+        helpBtn.className = "help-trigger";
+        helpBtn.innerHTML = "\uD83D\uDCA1 Was ist hier gemeint?";
+        helpBtn.addEventListener("click", function handler() {
+            helpBtn.classList.add("help-trigger--used");
+            helpBtn.removeEventListener("click", handler);
+            appendMessage("user", "\uD83D\uDCA1 Erkl\u00e4rung angefordert");
+            sendMessage("__HELP_REQUEST__", { _hideUserMessage: true });
+        });
+
+        container.appendChild(helpBtn);
+        scrollToBottom();
+    }
+
+    function renderHelpButtonIfApplicable() {
+        if (!_lastState) return;
+        var fieldName = _lastState.current_field;
+        if (!fieldName) return;
+        renderHelpButton(fieldName);
     }
 
     /* ── Undo State ── */

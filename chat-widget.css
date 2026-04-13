@@ -567,6 +567,32 @@
     color: #64748b;
 }
 
+/* Help trigger button */
+.help-trigger {
+    display: inline-block;
+    padding: 6px 14px;
+    margin: 8px 0 4px 0;
+    font-size: 0.85rem;
+    color: #4A7BF7;
+    cursor: pointer;
+    border-radius: 16px;
+    border: 1px dashed #B0C4FF;
+    background: transparent;
+    transition: all 0.2s;
+    animation: chatFadeIn 0.3s ease;
+}
+
+.help-trigger:hover {
+    background: #EEF2FF;
+    border-color: #4A7BF7;
+}
+
+.help-trigger--used {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
 /* Undo bar (shown after single-select QR click) */
 .undo-bar {
     display: flex;
@@ -968,6 +994,16 @@
         background: rgba(148,163,184,0.1);
         border-color: rgba(148,163,184,0.5);
         color: #94a3b8;
+    }
+
+    .help-trigger {
+        color: #93c5fd;
+        border-color: rgba(59,130,246,0.3);
+    }
+
+    .help-trigger:hover {
+        background: rgba(59,130,246,0.1);
+        border-color: rgba(59,130,246,0.5);
     }
 
     .resume-content {
