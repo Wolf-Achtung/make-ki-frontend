@@ -141,11 +141,22 @@
 
         document.getElementById("chatSwitchToForm").addEventListener("click", switchToForm);
 
-        document.getElementById("draftConfirmBtn").addEventListener("click", function() {
-            confirmDraft();
-        });
-        document.getElementById("draftEditBtn").addEventListener("click", function() {
-            editDraft();
+        // Event delegation for draft chip — survives innerHTML replacement
+        document.getElementById("draftChip").addEventListener("click", function(e) {
+            var target = e.target;
+            while (target && target !== this) {
+                if (target.id === "draftConfirmBtn" || target.classList.contains("draft-confirm-btn")) {
+                    e.preventDefault();
+                    confirmDraft();
+                    return;
+                }
+                if (target.id === "draftEditBtn" || target.classList.contains("draft-edit-btn")) {
+                    e.preventDefault();
+                    editDraft();
+                    return;
+                }
+                target = target.parentElement;
+            }
         });
     }
 
@@ -692,8 +703,6 @@
         actions.innerHTML = ''
             + '<button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
             + '<button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>';
-        document.getElementById("draftConfirmBtn").addEventListener("click", function() { confirmDraft(); });
-        document.getElementById("draftEditBtn").addEventListener("click", function() { editDraft(); });
 
         chip.style.display = "block";
         scrollToBottom();
