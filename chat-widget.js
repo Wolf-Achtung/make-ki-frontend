@@ -426,6 +426,12 @@
 
         for (var r = 0; r < replies.length; r++) {
             var reply = replies[r];
+
+            // Draft-action QR buttons suppressed — Draft Chip handles this
+            if (reply.field === "_draft_action") {
+                continue;
+            }
+
             var isMulti = reply.multi_select === true;
             var maxSelect = reply.max_select || 0;
 

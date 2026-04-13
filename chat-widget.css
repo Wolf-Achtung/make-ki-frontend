@@ -573,8 +573,8 @@
     align-items: center;
     gap: 12px;
     padding: 10px 16px;
-    background: #fef3c7;
-    border: 1px solid #fbbf24;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
     border-radius: 12px;
     margin: 8px 0;
     position: relative;
@@ -584,7 +584,7 @@
 .undo-label {
     flex: 1;
     font-size: 14px;
-    color: #92400e;
+    color: #1e3a5f;
     font-weight: 500;
     min-width: 0;
     overflow: hidden;
@@ -594,8 +594,8 @@
 
 .undo-btn {
     background: #fff;
-    border: 1px solid #d97706;
-    color: #d97706;
+    border: 1px solid #3b82f6;
+    color: #3b82f6;
     padding: 6px 14px;
     border-radius: 8px;
     font-size: 13px;
@@ -608,7 +608,7 @@
 }
 
 .undo-btn:hover {
-    background: #fffbeb;
+    background: #dbeafe;
 }
 
 .undo-progress {
@@ -617,14 +617,14 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: #fde68a;
+    background: #dbeafe;
     border-radius: 0 0 12px 12px;
     overflow: hidden;
 }
 
 .undo-progress-fill {
     height: 100%;
-    background: #d97706;
+    background: #3b82f6;
     animation: undoCountdown 3s linear forwards;
 }
 
