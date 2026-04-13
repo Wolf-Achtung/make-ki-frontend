@@ -105,7 +105,6 @@
             + '  </div>'
             + '</div>'
             + '<div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat-Verlauf"></div>'
-            + '<div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
             + '<div class="draft-chip" id="draftChip" style="display:none;">'
             + '  <div class="draft-chip-header">'
             + '    <span class="draft-chip-icon">\uD83D\uDCDD</span>'
@@ -118,8 +117,11 @@
             + '  </div>'
             + '</div>'
             + '<div class="chat-input-area">'
-            + '  <textarea id="chatInput" placeholder="Ihre Antwort oder Frage..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
-            + '  <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
+            + '  <div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
+            + '  <div class="chat-input-row">'
+            + '    <textarea id="chatInput" placeholder="Ihre Antwort oder Frage..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
+            + '    <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
+            + '  </div>'
             + '</div>';
 
         document.getElementById("chatSend").addEventListener("click", function() {
@@ -255,6 +257,26 @@
         if (!container) return;
         requestAnimationFrame(function() {
             container.scrollTop = container.scrollHeight;
+        });
+    }
+
+    function scrollToLastBotMessage() {
+        var container = document.getElementById("chatMessages");
+        if (!container) return;
+        var messages = container.querySelectorAll(".chat-message-assistant");
+        var lastMsg = messages.length ? messages[messages.length - 1] : null;
+        if (!lastMsg) {
+            scrollToBottom();
+            return;
+        }
+        requestAnimationFrame(function() {
+            var msgTop = lastMsg.offsetTop - 12;
+            var msgBottom = lastMsg.offsetTop + lastMsg.offsetHeight;
+            if (msgBottom - msgTop <= container.clientHeight) {
+                container.scrollTop = Math.max(0, msgTop);
+            } else {
+                container.scrollTop = container.scrollHeight;
+            }
         });
     }
 
@@ -585,7 +607,10 @@
             renderSkipButtonIfOptional(container, fieldName);
         }
 
-        scrollToBottom();
+        // Scroll to show bot message at top with QR visible below
+        setTimeout(function() {
+            scrollToLastBotMessage();
+        }, 50);
     }
 
     /* ── Skip Button (standalone, works with and without QR) ── */
@@ -989,6 +1014,19 @@
             + ': ' + escapeHtml(sectionName)
             + '</span>'
             + '<div class="section-sep-line"></div>';
+
+        // Insert separator BEFORE the currently streaming bot message
+        // so it appears above the new section's content, not between
+        // the bot message and QR buttons
+        if (chatState.isStreaming) {
+            var lastChild = container.lastElementChild;
+            if (lastChild && lastChild.classList.contains("chat-message-assistant")) {
+                container.insertBefore(sep, lastChild);
+                scrollToBottom();
+                return;
+            }
+        }
+
         container.appendChild(sep);
         scrollToBottom();
     }
