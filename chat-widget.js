@@ -424,6 +424,13 @@
                         renderSummaryCards(streamDiv, fullResponse);
                     }
                 }
+
+                // Show skip button for freetext-only optional fields (no QR buttons rendered)
+                var qrContainer = document.getElementById("chatQuickReplies");
+                if (qrContainer && !qrContainer.children.length) {
+                    renderSkipButtonIfOptional(qrContainer, null);
+                }
+
                 var inp = document.getElementById("chatInput");
                 if (inp) inp.focus();
             }
@@ -444,7 +451,12 @@
         if (!container) return;
         container.innerHTML = "";
 
-        if (!replies || !replies.length) return;
+        if (!replies || !replies.length) {
+            // No QR buttons but field might be optional — show skip if applicable
+            renderSkipButtonIfOptional(container, null);
+            scrollToBottom();
+            return;
+        }
 
         for (var r = 0; r < replies.length; r++) {
             var reply = replies[r];
@@ -558,22 +570,32 @@
             }
         }
 
-        // Add skip button for optional fields
+        // Add skip button for optional fields (with QR context)
         if (_lastState && _lastState.missing_optional && replies.length) {
             var lastReply = replies[replies.length - 1];
             var fieldName = lastReply.field;
-            var isOptional = _lastState.missing_optional.indexOf(fieldName) !== -1;
-            if (isOptional) {
-                var skipBtn = document.createElement("button");
-                skipBtn.className = "qr-skip-btn";
-                skipBtn.textContent = "\u00dcberspringen \u2192";
-                skipBtn.addEventListener("click", function() {
-                    sendMessage("weiter");
-                });
-                container.appendChild(skipBtn);
-            }
+            renderSkipButtonIfOptional(container, fieldName);
         }
 
+        scrollToBottom();
+    }
+
+    /* ── Skip Button (standalone, works with and without QR) ── */
+    function renderSkipButtonIfOptional(container, fieldName) {
+        if (!_lastState || !_lastState.missing_optional) return;
+
+        var fn = fieldName || (_lastState && _lastState.current_field);
+        if (!fn) return;
+
+        if (_lastState.missing_optional.indexOf(fn) === -1) return;
+
+        var skipBtn = document.createElement("button");
+        skipBtn.className = "qr-skip-btn";
+        skipBtn.textContent = "\u00dcberspringen \u2192";
+        skipBtn.addEventListener("click", function() {
+            sendMessage("weiter");
+        });
+        container.appendChild(skipBtn);
         scrollToBottom();
     }
 
