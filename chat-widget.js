@@ -905,6 +905,18 @@
         var sections = parseSummary(summaryText);
         if (!sections.length) return;
 
+        // Remove old summary cards to prevent duplicates during edit flow
+        var chatMessages = document.getElementById("chatMessages");
+        if (chatMessages) {
+            var oldSummaries = chatMessages.querySelectorAll(".summary-cards");
+            for (var s2 = 0; s2 < oldSummaries.length; s2++) {
+                var parentMsg = oldSummaries[s2].closest(".chat-message");
+                if (parentMsg && parentMsg !== container) {
+                    parentMsg.remove();
+                }
+            }
+        }
+
         var html = '<div class="summary-cards">';
         html += '<div class="summary-header">Zusammenfassung Ihrer Angaben</div>';
 
