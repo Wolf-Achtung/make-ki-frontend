@@ -283,7 +283,7 @@
         if (!message && !isResumeTrigger) return;
         if (chatState.isStreaming) return;
 
-        if (message) {
+        if (message && !(extra && extra._hideUserMessage)) {
             appendMessage("user", message);
         }
 
@@ -424,6 +424,16 @@
                         renderSummaryCards(streamDiv, fullResponse);
                     }
                 }
+
+                // Show skip button for freetext-only optional fields (no QR buttons rendered)
+                var qrContainer = document.getElementById("chatQuickReplies");
+                if (qrContainer && !qrContainer.children.length) {
+                    renderSkipButtonIfOptional(qrContainer, null);
+                }
+
+                // Show help button for freetext fields (not simple ones)
+                renderHelpButtonIfApplicable();
+
                 var inp = document.getElementById("chatInput");
                 if (inp) inp.focus();
             }
@@ -444,7 +454,12 @@
         if (!container) return;
         container.innerHTML = "";
 
-        if (!replies || !replies.length) return;
+        if (!replies || !replies.length) {
+            // No QR buttons but field might be optional — show skip if applicable
+            renderSkipButtonIfOptional(container, null);
+            scrollToBottom();
+            return;
+        }
 
         for (var r = 0; r < replies.length; r++) {
             var reply = replies[r];
@@ -558,23 +573,63 @@
             }
         }
 
-        // Add skip button for optional fields
+        // Add skip button for optional fields (with QR context)
         if (_lastState && _lastState.missing_optional && replies.length) {
             var lastReply = replies[replies.length - 1];
             var fieldName = lastReply.field;
-            var isOptional = _lastState.missing_optional.indexOf(fieldName) !== -1;
-            if (isOptional) {
-                var skipBtn = document.createElement("button");
-                skipBtn.className = "qr-skip-btn";
-                skipBtn.textContent = "\u00dcberspringen \u2192";
-                skipBtn.addEventListener("click", function() {
-                    sendMessage("weiter");
-                });
-                container.appendChild(skipBtn);
-            }
+            renderSkipButtonIfOptional(container, fieldName);
         }
 
         scrollToBottom();
+    }
+
+    /* ── Skip Button (standalone, works with and without QR) ── */
+    function renderSkipButtonIfOptional(container, fieldName) {
+        if (!_lastState || !_lastState.missing_optional) return;
+
+        var fn = fieldName || (_lastState && _lastState.current_field);
+        if (!fn) return;
+
+        if (_lastState.missing_optional.indexOf(fn) === -1) return;
+
+        var skipBtn = document.createElement("button");
+        skipBtn.className = "qr-skip-btn";
+        skipBtn.textContent = "\u00dcberspringen \u2192";
+        skipBtn.addEventListener("click", function() {
+            sendMessage("weiter");
+        });
+        container.appendChild(skipBtn);
+        scrollToBottom();
+    }
+
+    /* ── Help Button ("Was ist hier gemeint?") ── */
+    var SIMPLE_FIELDS = ["branche", "unternehmensgroesse", "land", "bundesland"];
+
+    function renderHelpButton(fieldName) {
+        if (!fieldName || SIMPLE_FIELDS.indexOf(fieldName) !== -1) return;
+
+        var container = document.getElementById("chatMessages");
+        if (!container) return;
+
+        var helpBtn = document.createElement("div");
+        helpBtn.className = "help-trigger";
+        helpBtn.innerHTML = "\uD83D\uDCA1 Was ist hier gemeint?";
+        helpBtn.addEventListener("click", function handler() {
+            helpBtn.classList.add("help-trigger--used");
+            helpBtn.removeEventListener("click", handler);
+            appendMessage("user", "\uD83D\uDCA1 Erkl\u00e4rung angefordert");
+            sendMessage("__HELP_REQUEST__", { _hideUserMessage: true });
+        });
+
+        container.appendChild(helpBtn);
+        scrollToBottom();
+    }
+
+    function renderHelpButtonIfApplicable() {
+        if (!_lastState) return;
+        var fieldName = _lastState.current_field;
+        if (!fieldName) return;
+        renderHelpButton(fieldName);
     }
 
     /* ── Undo State ── */
@@ -665,7 +720,7 @@
         bar.className = "undo-bar";
         bar.innerHTML = ''
             + '<span class="undo-label">' + escapeHtml(label) + '</span>'
-            + '<button class="undo-btn">\u21a9 R\u00fcckg\u00e4ngig</button>'
+            + '<button class="undo-btn">Angabe noch mal \u00e4ndern</button>'
             + '<div class="undo-progress"><div class="undo-progress-fill"></div></div>';
         container.appendChild(bar);
 
@@ -849,6 +904,18 @@
     function renderSummaryCards(container, summaryText) {
         var sections = parseSummary(summaryText);
         if (!sections.length) return;
+
+        // Remove old summary cards to prevent duplicates during edit flow
+        var chatMessages = document.getElementById("chatMessages");
+        if (chatMessages) {
+            var oldSummaries = chatMessages.querySelectorAll(".summary-cards");
+            for (var s2 = 0; s2 < oldSummaries.length; s2++) {
+                var parentMsg = oldSummaries[s2].closest(".chat-message");
+                if (parentMsg && parentMsg !== container) {
+                    parentMsg.remove();
+                }
+            }
+        }
 
         var html = '<div class="summary-cards">';
         html += '<div class="summary-header">Zusammenfassung Ihrer Angaben</div>';
