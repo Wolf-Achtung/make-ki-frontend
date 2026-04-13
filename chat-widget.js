@@ -720,7 +720,7 @@
         bar.className = "undo-bar";
         bar.innerHTML = ''
             + '<span class="undo-label">' + escapeHtml(label) + '</span>'
-            + '<button class="undo-btn">Angabe noch mal \u00e4ndern</button>'
+            + '<button class="undo-btn">Angabe korrigieren? Einfach hier klicken!</button>'
             + '<div class="undo-progress"><div class="undo-progress-fill"></div></div>';
         container.appendChild(bar);
 
