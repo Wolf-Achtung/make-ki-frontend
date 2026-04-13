@@ -105,7 +105,6 @@
             + '  </div>'
             + '</div>'
             + '<div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat-Verlauf"></div>'
-            + '<div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
             + '<div class="draft-chip" id="draftChip" style="display:none;">'
             + '  <div class="draft-chip-header">'
             + '    <span class="draft-chip-icon">\uD83D\uDCDD</span>'
@@ -118,8 +117,11 @@
             + '  </div>'
             + '</div>'
             + '<div class="chat-input-area">'
-            + '  <textarea id="chatInput" placeholder="Ihre Antwort oder Frage..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
-            + '  <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
+            + '  <div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
+            + '  <div class="chat-input-row">'
+            + '    <textarea id="chatInput" placeholder="Ihre Antwort oder Frage..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
+            + '    <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
+            + '  </div>'
             + '</div>';
 
         document.getElementById("chatSend").addEventListener("click", function() {
