@@ -278,10 +278,14 @@
     /* ── Send Message (SSE Streaming) ── */
     function sendMessage(text, extra) {
         var input = document.getElementById("chatInput");
-        var message = text || (input ? input.value.trim() : "");
-        if (!message || chatState.isStreaming) return;
+        var isResumeTrigger = extra && extra._resumeTrigger;
+        var message = (text != null) ? String(text) : (input ? input.value.trim() : "");
+        if (!message && !isResumeTrigger) return;
+        if (chatState.isStreaming) return;
 
-        appendMessage("user", message);
+        if (message) {
+            appendMessage("user", message);
+        }
 
         if (input) {
             input.value = "";
@@ -298,14 +302,21 @@
         var currentEvent = null;
         var buffer = "";
 
+        // Build request body, stripping internal flags (prefixed with _)
+        var body = { session_id: chatState.sessionId, message: message };
+        if (extra) {
+            for (var key in extra) {
+                if (extra.hasOwnProperty(key) && key.charAt(0) !== "_") {
+                    body[key] = extra[key];
+                }
+            }
+        }
+
         fetch(getApiBase() + "/api/chat/message", {
             method: "POST",
             headers: getAuthHeaders(),
             credentials: "include",
-            body: JSON.stringify(Object.assign({
-                session_id: chatState.sessionId,
-                message: message
-            }, extra || {}))
+            body: JSON.stringify(body)
         })
         .then(function(response) {
             if (!response.ok) {
@@ -1125,20 +1136,44 @@
             chatState.sessionId = sessionData.session_id;
         }
 
+        hideDraftChip();
+
         var msgs = sessionData.messages || [];
 
+        // Render messages with role normalization
         for (var i = 0; i < msgs.length; i++) {
-            appendMessage(msgs[i].role, msgs[i].content);
+            var msg = msgs[i];
+            var role = msg.role || msg.sender || "user";
+            if (role === "bot" || role === "model") role = "assistant";
+            var content = msg.content || msg.text || "";
+            if (!content) continue;
+            appendMessage(role, content);
         }
 
         if (sessionData.state) {
             updateProgress(sessionData.state);
         }
 
+        // Try quick replies from state, then sessionData, then last assistant message
         var qr = (sessionData.state && sessionData.state.quick_replies)
             || sessionData.quick_replies;
-        if (qr) {
+        if (!qr || !qr.length) {
+            for (var j = msgs.length - 1; j >= 0; j--) {
+                var m = msgs[j];
+                var r = m.role || m.sender || "user";
+                if (r === "bot" || r === "model") r = "assistant";
+                if (r === "assistant" && m.quick_replies && m.quick_replies.length) {
+                    qr = m.quick_replies;
+                    break;
+                }
+            }
+        }
+
+        if (qr && qr.length) {
             renderQuickReplies(qr);
+        } else if (msgs.length > 0) {
+            // No quick replies available — trigger next turn from bot
+            sendMessage("", { _resumeTrigger: true });
         }
 
         // Restore pending draft if present
