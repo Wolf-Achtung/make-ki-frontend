@@ -461,6 +461,11 @@
             return;
         }
 
+        // Safety-net: only render first QR group (backend should send max 1)
+        if (replies.length > 1) {
+            replies = [replies[0]];
+        }
+
         for (var r = 0; r < replies.length; r++) {
             var reply = replies[r];
 
