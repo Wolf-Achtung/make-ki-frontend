@@ -575,6 +575,34 @@
     transform: translateY(0);
 }
 
+/* V8-FE: Primary button (e.g. "Auswertung starten") */
+.qr-btn.qr-btn--primary {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 24px;
+}
+
+.qr-btn.qr-btn--primary:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+/* V8-FE: Secondary button (e.g. "Angaben korrigieren") */
+.qr-btn.qr-btn--secondary {
+    background: transparent;
+    color: #3b82f6;
+    border-color: #cbd5e1;
+    font-weight: 400;
+}
+
+.qr-btn.qr-btn--secondary:hover {
+    background: #f1f5f9;
+    border-color: #3b82f6;
+}
+
 .qr-btn-selected {
     background: #2563eb !important;
     color: #fff !important;
@@ -584,6 +612,13 @@
 .qr-btn-disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+/* V5-FE: Preview QR buttons (shown before stream finishes) */
+.qr-btn--preview {
+    opacity: 0.5;
+    cursor: default;
+    transition: opacity 0.3s ease;
 }
 
 /* Checkpoint block buttons with time estimate */
@@ -701,6 +736,51 @@
     opacity: 0.5;
     cursor: default;
     pointer-events: none;
+}
+
+/* --- Block Progress Bar (V7-FE) --- */
+.block-progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 24px;
+    border-top: 1px solid var(--border-light, #e2e8f0);
+    background: #f8fafc;
+    font-size: 13px;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.bp-label {
+    white-space: nowrap;
+    font-weight: 500;
+    color: #475569;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bp-track {
+    flex: 1;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    overflow: hidden;
+    min-width: 60px;
+}
+
+.bp-fill {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.bp-count {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    min-width: 30px;
+    text-align: right;
 }
 
 /* --- Input Area --- */
@@ -986,6 +1066,27 @@
         color: #94a3b8;
     }
 
+    .qr-btn.qr-btn--primary {
+        background: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .qr-btn.qr-btn--primary:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .qr-btn.qr-btn--secondary {
+        background: transparent;
+        color: #93c5fd;
+        border-color: rgba(148,163,184,0.4);
+    }
+
+    .qr-btn.qr-btn--secondary:hover {
+        background: rgba(59,130,246,0.1);
+        border-color: rgba(59,130,246,0.5);
+    }
+
     .qr-btn-meta {
         background: transparent;
         border-color: rgba(148,163,184,0.4);
@@ -1078,6 +1179,27 @@
 
     .summary-footer {
         color: #94a3b8;
+    }
+
+    .block-progress-bar {
+        background: var(--navy-800, #0e1e36);
+        border-top-color: rgba(226,232,240,0.15);
+    }
+
+    .bp-label {
+        color: #94a3b8;
+    }
+
+    .bp-track {
+        background: rgba(226,232,240,0.15);
+    }
+
+    .bp-fill {
+        background: #3b82f6;
+    }
+
+    .bp-count {
+        color: #64748b;
     }
 
     .phase-dot {
@@ -1208,6 +1330,16 @@
     .chat-switch-btn {
         font-size: 12px;
         padding: 4px 8px;
+    }
+
+    .block-progress-bar {
+        padding: 6px 16px;
+        gap: 8px;
+        font-size: 12px;
+    }
+
+    .bp-label {
+        max-width: 120px;
     }
 
     .chat-input-row {
