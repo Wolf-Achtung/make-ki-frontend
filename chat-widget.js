@@ -321,6 +321,15 @@
         if (el) el.remove();
     }
 
+    /* ── Report Redirect (Bug A Fix) ── */
+    function handleReportRedirect(data) {
+        if (!data || !data.redirect_url) return;
+        try { localStorage.removeItem("chat_session_id"); } catch(e) {}
+        setTimeout(function() {
+            window.location.href = data.redirect_url;
+        }, 2000);
+    }
+
     /* ── Send Message (SSE Streaming) ── */
     function sendMessage(text, extra) {
         var input = document.getElementById("chatInput");
@@ -448,7 +457,11 @@
                         break;
 
                     case "done":
-                        finishStream();
+                        finishStream(data);
+                        break;
+
+                    case "report_started":
+                        handleReportRedirect(data);
                         break;
 
                     case "error":
@@ -459,9 +472,17 @@
                 }
             }
 
-            function finishStream() {
+            function finishStream(doneData) {
                 hideTypingIndicator();
                 chatState.isStreaming = false;
+
+                // Bug C Fix: Replace streamed raw text with post-processed clean text
+                if (doneData && doneData.text && streamDiv) {
+                    fullResponse = doneData.text;
+                    streamDiv.innerHTML = formatMessageContent(fullResponse);
+                    scrollToBottom();
+                }
+
                 if (fullResponse) {
                     chatState.messages.push({ role: "assistant", content: fullResponse });
                     announceForScreenReader("Neue Nachricht vom Assistenten");
@@ -469,6 +490,12 @@
                     if (fullResponse.indexOf("**Zusammenfassung Ihrer Angaben:**") !== -1 && streamDiv) {
                         renderSummaryCards(streamDiv, fullResponse);
                     }
+                }
+
+                // Bug A Fix: Redirect to report dashboard if briefing was created
+                if (doneData && doneData.briefing_id && doneData.redirect_url) {
+                    handleReportRedirect(doneData);
+                    return; // Skip input re-enable — user is being redirected
                 }
 
                 // Show skip button for freetext-only optional fields (no QR buttons rendered)
