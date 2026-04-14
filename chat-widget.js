@@ -481,11 +481,25 @@
                 hideTypingIndicator();
                 chatState.isStreaming = false;
 
-                // Bug C Fix: Replace streamed raw text with post-processed clean text
+                // Template-Turn: No token events were sent, so streamDiv was never created.
+                // Create the bot message container now so the done text can be rendered.
+                if (doneData && doneData.text && !streamDiv) {
+                    streamDiv = document.createElement("div");
+                    streamDiv.className = "chat-message chat-message-assistant";
+                    document.getElementById("chatMessages").appendChild(streamDiv);
+                }
+
+                // Set final text: for template turns this is the only text,
+                // for streamed turns this replaces raw tokens with post-processed text (Bug C Fix)
                 if (doneData && doneData.text && streamDiv) {
                     fullResponse = doneData.text;
                     streamDiv.innerHTML = formatMessageContent(fullResponse);
                     scrollToBottom();
+                }
+
+                // Render quick_replies from done payload (template turns bundle them here)
+                if (doneData && doneData.quick_replies) {
+                    renderQuickReplies(doneData.quick_replies);
                 }
 
                 if (fullResponse) {
