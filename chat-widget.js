@@ -12,6 +12,21 @@
         isStreaming: false
     };
 
+    /* ── Phase + Block Constants ── */
+    var BLOCK_LABELS = {
+        "block_a": "F\u00f6rdermittel & Budget",
+        "block_b": "KI-Strategie & Roadmap",
+        "block_c": "Tools & Automatisierung",
+        "block_d": "Recht & Datenschutz"
+    };
+
+    var BLOCK_TIME_ESTIMATES = {
+        "block_a": "~2 Min",
+        "block_b": "~3 Min",
+        "block_c": "~4 Min",
+        "block_d": "~2 Min"
+    };
+
     /* ── API helpers ── */
     function getApiBase() {
         try {
@@ -95,12 +110,21 @@
             + '<div class="chat-header">'
             + '  <div class="chat-header-left">'
             + '    <span class="chat-title">KI-Bestandsaufnahme</span>'
-            + '    <span class="chat-progress" id="chatProgress" role="status">Schritt 1 von 8: Ihr Unternehmen</span>'
+            + '  </div>'
+            + '  <div class="phase-indicator" id="phaseIndicator" role="navigation" aria-label="Fortschritt">'
+            + '    <div class="phase-segment phase-active" data-phase="grunddaten">'
+            + '      <span class="phase-dot"></span><span class="phase-label">Grunddaten</span>'
+            + '    </div>'
+            + '    <div class="phase-connector"></div>'
+            + '    <div class="phase-segment" data-phase="vertiefung">'
+            + '      <span class="phase-dot"></span><span class="phase-label">Vertiefung</span>'
+            + '    </div>'
+            + '    <div class="phase-connector"></div>'
+            + '    <div class="phase-segment" data-phase="zusammenfassung">'
+            + '      <span class="phase-dot"></span><span class="phase-label">Zusammenfassung</span>'
+            + '    </div>'
             + '  </div>'
             + '  <div class="chat-header-right">'
-            + '    <div class="chat-progress-bar-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
-            + '      <div class="chat-progress-bar" id="chatProgressBar" style="width:0%"></div>'
-            + '    </div>'
             + '    <button class="chat-switch-btn" id="chatSwitchToForm">Zum Formular wechseln</button>'
             + '  </div>'
             + '</div>'
@@ -496,6 +520,9 @@
                 continue;
             }
 
+            // Skip replies with no options
+            if (!reply.options || !reply.options.length) continue;
+
             var isMulti = reply.multi_select === true;
             var maxSelect = reply.max_select || 0;
 
@@ -526,6 +553,16 @@
                     btn.title = option.description;
                 }
 
+                // Checkpoint enhancements for multi-select
+                if (isMulti && BLOCK_TIME_ESTIMATES[option.value]) {
+                    btn.dataset.label = option.label;
+                    btn.innerHTML = escapeHtml(option.label)
+                        + '<span class="qr-btn-time">' + BLOCK_TIME_ESTIMATES[option.value] + '</span>';
+                    btn.classList.add("qr-btn-block");
+                } else if (isMulti && !BLOCK_LABELS.hasOwnProperty(option.value)) {
+                    btn.classList.add("qr-btn-meta");
+                }
+
                 if (isMulti) {
                     btn.addEventListener("click", (function(groupEl, max) {
                         return function() {
@@ -553,8 +590,16 @@
                             var confirmEl = groupEl.parentNode.querySelector(".qr-confirm-btn");
                             if (confirmEl) {
                                 if (selectedCount > 0) {
+                                    // Calculate estimated time from selected blocks
+                                    var selBtns = groupEl.querySelectorAll(".qr-btn-selected");
+                                    var totalMins = 0;
+                                    for (var k = 0; k < selBtns.length; k++) {
+                                        var tEst = BLOCK_TIME_ESTIMATES[selBtns[k].dataset.value];
+                                        if (tEst) totalMins += parseInt(tEst.replace(/[^0-9]/g, ""), 10) || 0;
+                                    }
+                                    var timeInfo = totalMins > 0 ? " (~" + totalMins + " Min)" : "";
                                     confirmEl.disabled = false;
-                                    confirmEl.textContent = selectedCount + " ausgew\u00e4hlt \u2014 Best\u00e4tigen \u2713";
+                                    confirmEl.textContent = selectedCount + " ausgew\u00e4hlt" + timeInfo + " \u2014 Best\u00e4tigen \u2713";
                                 } else {
                                     confirmEl.disabled = true;
                                     confirmEl.textContent = "Bitte mindestens eine Option w\u00e4hlen";
@@ -568,6 +613,12 @@
                     });
                 }
 
+                // Insert separator before first meta button in multi-select
+                if (btn.classList.contains("qr-btn-meta") && !group.querySelector(".qr-meta-sep")) {
+                    var metaSep = document.createElement("div");
+                    metaSep.className = "qr-meta-sep";
+                    group.appendChild(metaSep);
+                }
                 group.appendChild(btn);
             }
 
@@ -587,7 +638,7 @@
                         var values = [];
                         var field = selected[0].dataset.field;
                         for (var i = 0; i < selected.length; i++) {
-                            labels.push(selected[i].textContent);
+                            labels.push(selected[i].dataset.label || selected[i].textContent);
                             values.push(selected[i].dataset.value);
                         }
                         sendMessage(labels.join(", "), {
@@ -932,6 +983,12 @@
     }
 
     function renderSummaryCards(container, summaryText) {
+        // Force phase indicator to Zusammenfassung when summary is shown
+        if (_currentPhase !== "zusammenfassung") {
+            _currentPhase = "zusammenfassung";
+            updatePhaseIndicator("zusammenfassung");
+        }
+
         var sections = parseSummary(summaryText);
         if (!sections.length) return;
 
@@ -950,9 +1007,13 @@
         var html = '<div class="summary-cards">';
         html += '<div class="summary-header">Zusammenfassung Ihrer Angaben</div>';
 
+        var cardIndex = 0;
         for (var i = 0; i < sections.length; i++) {
             var s = sections[i];
-            var isCollapsed = i > 2;
+            // Skip sections with no fields
+            if (!s.fields || !s.fields.length) continue;
+            var isCollapsed = cardIndex > 2;
+            cardIndex++;
             html += ''
                 + '<div class="summary-card' + (isCollapsed ? ' collapsed' : '') + '">'
                 + '  <div class="summary-card-header" data-toggle="' + i + '">'
@@ -973,6 +1034,15 @@
         }
 
         html += '</div>';
+
+        // Hint text for areas not explored in depth
+        if (_lastState && _lastState.unsurveyed_note) {
+            html += '<div class="summary-note">'
+                + '<span class="summary-note-icon">\u2139\ufe0f</span>'
+                + '<p>' + escapeHtml(_lastState.unsurveyed_note) + '</p>'
+                + '</div>';
+        }
+
         html += '<div class="summary-footer">Sind alle Angaben korrekt? Dann starte ich die Auswertung.</div>';
 
         container.innerHTML = html;
@@ -1004,14 +1074,19 @@
         var container = document.getElementById("chatMessages");
         if (!container) return;
 
+        // Use block label from mapping if available, otherwise section name
+        var label = sectionName;
+        if (_lastState && _lastState.current_block && BLOCK_LABELS[_lastState.current_block]) {
+            label = BLOCK_LABELS[_lastState.current_block];
+        }
+
         var sep = document.createElement("div");
         sep.className = "chat-section-separator";
         sep.setAttribute("role", "separator");
         sep.innerHTML = ''
             + '<div class="section-sep-line"></div>'
             + '<span class="section-sep-label">'
-            + 'Abschnitt ' + stepNum + ' von ' + totalSteps
-            + ': ' + escapeHtml(sectionName)
+            + escapeHtml(label)
             + '</span>'
             + '<div class="section-sep-line"></div>';
 
@@ -1034,11 +1109,66 @@
     /* ── Progress ── */
     var _lastState = null;
     var _lastSectionIndex = 0;
+    var _currentPhase = "grunddaten";
+
+    function detectPhase(state) {
+        // Prefer backend-provided conversation_phase
+        if (state.conversation_phase) {
+            var cp = state.conversation_phase;
+            if (cp === "phase_1a" || cp === "phase_1b") return "grunddaten";
+            if (cp === "checkpoint" || cp === "phase_2") return "vertiefung";
+            if (cp === "summary" || cp === "complete") return "zusammenfassung";
+        }
+        // Fallback: infer from available state data
+        if (state.is_completable) return "zusammenfassung";
+        if (state.current_block) return "vertiefung";
+        if (state.progress_percent != null) {
+            if (state.progress_percent >= 85) return "zusammenfassung";
+            if (state.progress_percent > 25) return "vertiefung";
+        }
+        return "grunddaten";
+    }
+
+    function updatePhaseIndicator(phase) {
+        var indicator = document.getElementById("phaseIndicator");
+        if (!indicator) return;
+
+        var phases = ["grunddaten", "vertiefung", "zusammenfassung"];
+        var activeIndex = phases.indexOf(phase);
+        if (activeIndex === -1) activeIndex = 0;
+
+        var segments = indicator.querySelectorAll(".phase-segment");
+        var connectors = indicator.querySelectorAll(".phase-connector");
+
+        for (var i = 0; i < segments.length; i++) {
+            segments[i].classList.remove("phase-active", "phase-done");
+            if (i < activeIndex) {
+                segments[i].classList.add("phase-done");
+            } else if (i === activeIndex) {
+                segments[i].classList.add("phase-active");
+            }
+        }
+
+        for (var j = 0; j < connectors.length; j++) {
+            if (j < activeIndex) {
+                connectors[j].classList.add("phase-connector-done");
+            } else {
+                connectors[j].classList.remove("phase-connector-done");
+            }
+        }
+    }
 
     function updateProgress(state) {
         if (!state) return;
 
         _lastState = state;
+
+        // Detect and update phase indicator
+        var phase = detectPhase(state);
+        if (phase !== _currentPhase) {
+            _currentPhase = phase;
+            updatePhaseIndicator(phase);
+        }
 
         // Section separator on section change
         if (state.current_section != null && state.current_section !== _lastSectionIndex) {
@@ -1050,22 +1180,6 @@
                 );
             }
             _lastSectionIndex = state.current_section;
-        }
-
-        var progressEl = document.getElementById("chatProgress");
-        if (progressEl && state.current_section_name != null) {
-            progressEl.textContent = "Schritt " + (state.current_section + 1)
-                + " von " + state.total_sections
-                + ": " + state.current_section_name;
-        }
-
-        var bar = document.getElementById("chatProgressBar");
-        if (bar && state.progress_percent != null) {
-            bar.style.width = state.progress_percent + "%";
-            var barContainer = bar.parentElement;
-            if (barContainer) {
-                barContainer.setAttribute("aria-valuenow", state.progress_percent);
-            }
         }
     }
 
@@ -1132,9 +1246,91 @@
 
     /* ── Switch to Form ── */
     function switchToForm() {
+        var btn = document.getElementById("chatSwitchToForm");
+        var sessionId = chatState.sessionId;
+
+        // No session — just show form without prefill
+        if (!sessionId) {
+            showFormView();
+            return;
+        }
+
+        // Loading state on button
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = "Wird geladen\u2026";
+        }
+
+        // Fetch collected fields from backend
+        fetch(getApiBase() + "/api/chat/session/" + sessionId + "/fields", {
+            headers: getAuthHeaders(),
+            credentials: "include"
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
+        .then(function(data) {
+            if (data.fields && Object.keys(data.fields).length > 0) {
+                prefillForm(data.fields);
+            }
+            showFormView();
+        })
+        .catch(function(err) {
+            console.error("Field fetch failed:", err);
+            // Still switch to form, just without prefill
+            showFormView();
+        });
+    }
+
+    function showFormView() {
         document.getElementById("chat-container").style.display = "none";
         var card = document.getElementById("formbuilder-card");
         if (card) card.style.display = "block";
+    }
+
+    function prefillForm(fields) {
+        try {
+            // Merge chat fields into existing form autosave data
+            var existing = {};
+            try {
+                var saved = localStorage.getItem("autosave_form_data");
+                if (saved) existing = JSON.parse(saved);
+            } catch(e) {}
+
+            for (var key in fields) {
+                if (fields.hasOwnProperty(key) && fields[key] != null) {
+                    existing[key] = fields[key];
+                }
+            }
+
+            localStorage.setItem("autosave_form_data", JSON.stringify(existing));
+            localStorage.setItem("autosave_form_step", "0");
+
+            // Re-initialize formbuilder to pick up new data
+            if (typeof window.initFormBuilder === "function") {
+                window.initFormBuilder();
+            }
+
+            // Show toast notification
+            showPrefillToast(Object.keys(fields).length);
+        } catch(e) {
+            console.error("Prefill failed:", e);
+        }
+    }
+
+    function showPrefillToast(count) {
+        var toast = document.createElement("div");
+        toast.className = "prefill-toast";
+        toast.textContent = count + " Angaben aus dem Chat \u00fcbernommen";
+        document.body.appendChild(toast);
+
+        setTimeout(function() {
+            toast.classList.add("prefill-toast-hide");
+            setTimeout(function() {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 300);
+        }, 4000);
     }
 
     /* ── Resume ── */

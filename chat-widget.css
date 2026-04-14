@@ -215,31 +215,77 @@
     color: var(--navy-800, #0e1e36);
 }
 
-.chat-progress {
-    font-size: 13px;
-    color: var(--text-muted, #566578);
-    font-weight: 500;
-}
-
 .chat-header-right {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.chat-progress-bar-container {
-    width: 120px;
-    height: 6px;
-    background: var(--border-light, #e2e8f0);
-    border-radius: 3px;
-    overflow: hidden;
+/* --- Phase Indicator --- */
+.phase-indicator {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+    padding: 0 12px;
+    gap: 0;
 }
 
-.chat-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #2563eb, #3b82f6);
-    border-radius: 3px;
-    transition: width 0.5s ease;
+.phase-segment {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.phase-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    display: inline-block;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.phase-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.phase-connector {
+    width: 20px;
+    height: 2px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+}
+
+.phase-segment.phase-active .phase-dot {
+    background: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.2);
+}
+
+.phase-segment.phase-active .phase-label {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.phase-segment.phase-done .phase-dot {
+    background: #22c55e;
+}
+
+.phase-segment.phase-done .phase-label {
+    color: #334155;
+}
+
+.phase-connector.phase-connector-done {
+    background: #22c55e;
 }
 
 .chat-switch-btn {
@@ -425,6 +471,31 @@
     word-break: break-word;
 }
 
+/* Hint text for unsurveyed areas */
+.summary-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    margin: 8px 0;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #0c4a6e;
+    line-height: 1.5;
+}
+
+.summary-note-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    line-height: 1.5;
+}
+
+.summary-note p {
+    margin: 0;
+}
+
 .summary-footer {
     margin-top: 12px;
     font-size: 14px;
@@ -450,12 +521,11 @@
 }
 
 .section-sep-label {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #94a3b8;
     white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 /* --- Quick Replies --- */
@@ -519,6 +589,47 @@
 .qr-btn-disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+/* Checkpoint block buttons with time estimate */
+.qr-btn-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 18px;
+    min-width: 140px;
+}
+
+.qr-btn-time {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.qr-btn-selected .qr-btn-time {
+    color: rgba(255,255,255,0.8);
+}
+
+/* Meta buttons (Alle Bereiche, Report erstellen) */
+.qr-btn-meta {
+    background: transparent;
+    border-style: dashed;
+    border-color: #94a3b8;
+    color: #475569;
+}
+
+.qr-btn-meta:hover {
+    background: #f8fafc;
+    border-color: #64748b;
+}
+
+/* Separator between block buttons and meta buttons */
+.qr-meta-sep {
+    flex-basis: 100%;
+    height: 1px;
+    background: #e2e8f0;
+    margin: 4px 0;
 }
 
 .qr-confirm-btn {
@@ -880,6 +991,35 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* --- Prefill Toast --- */
+.prefill-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    z-index: 9999;
+    animation: toastSlideUp 0.3s ease-out;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.prefill-toast-hide {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+    transition: all 0.3s ease;
+}
+
+@keyframes toastSlideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 /* --- Dark Mode --- */
 @media (prefers-color-scheme: dark) {
     .mode-primary {
@@ -911,6 +1051,25 @@
     .qr-btn:hover {
         background: rgba(37,99,235,.25);
         border-color: rgba(37,99,235,.4);
+    }
+
+    .qr-btn-time {
+        color: #94a3b8;
+    }
+
+    .qr-btn-meta {
+        background: transparent;
+        border-color: rgba(148,163,184,0.4);
+        color: #94a3b8;
+    }
+
+    .qr-btn-meta:hover {
+        background: rgba(148,163,184,0.1);
+        border-color: rgba(148,163,184,0.6);
+    }
+
+    .qr-meta-sep {
+        background: rgba(226,232,240,0.15);
     }
 
     .chat-switch-btn:hover {
@@ -982,8 +1141,47 @@
         color: #e2e8f0;
     }
 
+    .summary-note {
+        background: rgba(14,165,233,0.1);
+        border-color: rgba(14,165,233,0.3);
+        color: #7dd3fc;
+    }
+
     .summary-footer {
         color: #94a3b8;
+    }
+
+    .phase-dot {
+        background: #475569;
+    }
+
+    .phase-label {
+        color: #64748b;
+    }
+
+    .phase-connector {
+        background: rgba(226,232,240,0.2);
+    }
+
+    .phase-segment.phase-active .phase-dot {
+        background: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+    }
+
+    .phase-segment.phase-active .phase-label {
+        color: #93c5fd;
+    }
+
+    .phase-segment.phase-done .phase-dot {
+        background: #4ade80;
+    }
+
+    .phase-segment.phase-done .phase-label {
+        color: #94a3b8;
+    }
+
+    .phase-connector.phase-connector-done {
+        background: #4ade80;
     }
 
     .section-sep-line {
@@ -1061,8 +1259,21 @@
         gap: 8px;
     }
 
-    .chat-progress-bar-container {
-        width: 80px;
+    .phase-indicator {
+        padding: 0 6px;
+    }
+
+    .phase-label {
+        font-size: 11px;
+    }
+
+    .phase-segment {
+        padding: 3px 5px;
+        gap: 4px;
+    }
+
+    .phase-connector {
+        width: 12px;
     }
 
     .chat-switch-btn {
