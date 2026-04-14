@@ -449,6 +449,12 @@
                         renderQuickReplies(data);
                         break;
 
+                    case "preview_qr":
+                        if (data && data.length) {
+                            renderQuickReplies(data, { preview: true });
+                        }
+                        break;
+
                     case "draft_value":
                         handleDraftValue(data);
                         break;
@@ -500,6 +506,9 @@
                 // Render quick_replies from done payload (template turns bundle them here)
                 if (doneData && doneData.quick_replies) {
                     renderQuickReplies(doneData.quick_replies);
+                } else {
+                    // V5-FE: Activate preview QR buttons if no new QR set arrives
+                    activatePreviewButtons();
                 }
 
                 if (fullResponse) {
@@ -541,10 +550,21 @@
     }
 
     /* ── Quick Replies ── */
-    function renderQuickReplies(replies) {
+    function renderQuickReplies(replies, opts) {
         var container = document.getElementById("chatQuickReplies");
         if (!container) return;
-        container.innerHTML = "";
+
+        // V5-FE: Preview mode — only clear if not already showing preview buttons
+        var isPreview = opts && opts.preview;
+        if (!isPreview) {
+            container.innerHTML = "";
+        } else {
+            // Don't overwrite existing non-preview buttons
+            if (container.children.length && !container.querySelector(".qr-btn--preview")) {
+                return;
+            }
+            container.innerHTML = "";
+        }
 
         if (!replies || !replies.length) {
             // No QR buttons but field might be optional — show skip if applicable
@@ -594,6 +614,11 @@
                 btn.dataset.field = reply.field;
                 btn.dataset.value = option.value;
                 btn.setAttribute("role", "option");
+
+                // V8-FE: Apply primary/secondary styling from backend
+                if (option.style) {
+                    btn.classList.add("qr-btn--" + option.style);
+                }
 
                 if (option.description) {
                     btn.title = option.description;
@@ -657,6 +682,12 @@
                     btn.addEventListener("click", function() {
                         handleQuickReply(this.dataset.field, this.dataset.value, this.textContent);
                     });
+                }
+
+                // V5-FE: Preview mode — buttons disabled and semi-transparent
+                if (isPreview) {
+                    btn.disabled = true;
+                    btn.classList.add("qr-btn--preview");
                 }
 
                 // Insert separator before first meta button in multi-select
@@ -788,6 +819,14 @@
     function clearQuickReplies() {
         var container = document.getElementById("chatQuickReplies");
         if (container) container.innerHTML = "";
+    }
+
+    function activatePreviewButtons() {
+        var previews = document.querySelectorAll(".qr-btn--preview");
+        for (var i = 0; i < previews.length; i++) {
+            previews[i].disabled = false;
+            previews[i].classList.remove("qr-btn--preview");
+        }
     }
 
     /* ── Draft-Chip State ── */
@@ -1136,6 +1175,9 @@
             updatePhaseIndicator(phase);
         }
 
+        // Block progress bar (V7-FE)
+        updateBlockProgress(state);
+
         // Section separator on section change
         if (state.current_section != null && state.current_section !== _lastSectionIndex) {
             if (_lastSectionIndex > 0 || state.current_section > 0) {
@@ -1147,6 +1189,39 @@
             }
             _lastSectionIndex = state.current_section;
         }
+    }
+
+    function updateBlockProgress(state) {
+        var bar = document.getElementById("block-progress-bar");
+
+        // Hide progress bar when not in a block (phase 1a/1b, summary, no block data)
+        if (!state.current_block || !state.block_total) {
+            if (bar) bar.style.display = "none";
+            return;
+        }
+
+        if (!bar) {
+            bar = document.createElement("div");
+            bar.id = "block-progress-bar";
+            bar.className = "block-progress-bar";
+            var inputArea = document.querySelector(".chat-input-area");
+            if (inputArea && inputArea.parentElement) {
+                inputArea.parentElement.insertBefore(bar, inputArea);
+            }
+        }
+
+        bar.style.display = "flex";
+        var progress = state.block_progress || 0;
+        var total = state.block_total;
+        var pct = Math.round((progress / total) * 100);
+        var label = state.block_label || BLOCK_LABELS[state.current_block] || state.current_block;
+
+        bar.innerHTML = ''
+            + '<span class="bp-label">' + escapeHtml(label) + '</span>'
+            + '<div class="bp-track">'
+            + '  <div class="bp-fill" style="width: ' + pct + '%"></div>'
+            + '</div>'
+            + '<span class="bp-count">' + progress + '/' + total + '</span>';
     }
 
     /* ── Completion UI ── */
