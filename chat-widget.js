@@ -306,6 +306,7 @@
 
     /* ── Typing Indicator ── */
     function showTypingIndicator() {
+        if (document.getElementById("chatTypingIndicator")) return;
         var container = document.getElementById("chatMessages");
         if (!container) return;
         var indicator = document.createElement("div");
@@ -419,6 +420,10 @@
             function handleSSEEvent(eventType, data) {
                 switch (eventType) {
                     case "heartbeat":
+                        break;
+
+                    case "typing":
+                        showTypingIndicator();
                         break;
 
                     case "token":
