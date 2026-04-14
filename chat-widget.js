@@ -20,6 +20,13 @@
         "block_d": "Recht & Datenschutz"
     };
 
+    var BLOCK_TIME_ESTIMATES = {
+        "block_a": "~2 Min",
+        "block_b": "~3 Min",
+        "block_c": "~4 Min",
+        "block_d": "~2 Min"
+    };
+
     /* ── API helpers ── */
     function getApiBase() {
         try {
@@ -543,6 +550,16 @@
                     btn.title = option.description;
                 }
 
+                // Checkpoint enhancements for multi-select
+                if (isMulti && BLOCK_TIME_ESTIMATES[option.value]) {
+                    btn.dataset.label = option.label;
+                    btn.innerHTML = escapeHtml(option.label)
+                        + '<span class="qr-btn-time">' + BLOCK_TIME_ESTIMATES[option.value] + '</span>';
+                    btn.classList.add("qr-btn-block");
+                } else if (isMulti && !BLOCK_LABELS.hasOwnProperty(option.value)) {
+                    btn.classList.add("qr-btn-meta");
+                }
+
                 if (isMulti) {
                     btn.addEventListener("click", (function(groupEl, max) {
                         return function() {
@@ -570,8 +587,16 @@
                             var confirmEl = groupEl.parentNode.querySelector(".qr-confirm-btn");
                             if (confirmEl) {
                                 if (selectedCount > 0) {
+                                    // Calculate estimated time from selected blocks
+                                    var selBtns = groupEl.querySelectorAll(".qr-btn-selected");
+                                    var totalMins = 0;
+                                    for (var k = 0; k < selBtns.length; k++) {
+                                        var tEst = BLOCK_TIME_ESTIMATES[selBtns[k].dataset.value];
+                                        if (tEst) totalMins += parseInt(tEst.replace(/[^0-9]/g, ""), 10) || 0;
+                                    }
+                                    var timeInfo = totalMins > 0 ? " (~" + totalMins + " Min)" : "";
                                     confirmEl.disabled = false;
-                                    confirmEl.textContent = selectedCount + " ausgew\u00e4hlt \u2014 Best\u00e4tigen \u2713";
+                                    confirmEl.textContent = selectedCount + " ausgew\u00e4hlt" + timeInfo + " \u2014 Best\u00e4tigen \u2713";
                                 } else {
                                     confirmEl.disabled = true;
                                     confirmEl.textContent = "Bitte mindestens eine Option w\u00e4hlen";
@@ -585,6 +610,12 @@
                     });
                 }
 
+                // Insert separator before first meta button in multi-select
+                if (btn.classList.contains("qr-btn-meta") && !group.querySelector(".qr-meta-sep")) {
+                    var metaSep = document.createElement("div");
+                    metaSep.className = "qr-meta-sep";
+                    group.appendChild(metaSep);
+                }
                 group.appendChild(btn);
             }
 
@@ -604,7 +635,7 @@
                         var values = [];
                         var field = selected[0].dataset.field;
                         for (var i = 0; i < selected.length; i++) {
-                            labels.push(selected[i].textContent);
+                            labels.push(selected[i].dataset.label || selected[i].textContent);
                             values.push(selected[i].dataset.value);
                         }
                         sendMessage(labels.join(", "), {
