@@ -215,31 +215,77 @@
     color: var(--navy-800, #0e1e36);
 }
 
-.chat-progress {
-    font-size: 13px;
-    color: var(--text-muted, #566578);
-    font-weight: 500;
-}
-
 .chat-header-right {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.chat-progress-bar-container {
-    width: 120px;
-    height: 6px;
-    background: var(--border-light, #e2e8f0);
-    border-radius: 3px;
-    overflow: hidden;
+/* --- Phase Indicator --- */
+.phase-indicator {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+    padding: 0 12px;
+    gap: 0;
 }
 
-.chat-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #2563eb, #3b82f6);
-    border-radius: 3px;
-    transition: width 0.5s ease;
+.phase-segment {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.phase-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    display: inline-block;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.phase-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.phase-connector {
+    width: 20px;
+    height: 2px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+}
+
+.phase-segment.phase-active .phase-dot {
+    background: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.2);
+}
+
+.phase-segment.phase-active .phase-label {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.phase-segment.phase-done .phase-dot {
+    background: #22c55e;
+}
+
+.phase-segment.phase-done .phase-label {
+    color: #334155;
+}
+
+.phase-connector.phase-connector-done {
+    background: #22c55e;
 }
 
 .chat-switch-btn {
@@ -450,12 +496,11 @@
 }
 
 .section-sep-label {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: #94a3b8;
     white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
 }
 
 /* --- Quick Replies --- */
@@ -986,6 +1031,39 @@
         color: #94a3b8;
     }
 
+    .phase-dot {
+        background: #475569;
+    }
+
+    .phase-label {
+        color: #64748b;
+    }
+
+    .phase-connector {
+        background: rgba(226,232,240,0.2);
+    }
+
+    .phase-segment.phase-active .phase-dot {
+        background: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+    }
+
+    .phase-segment.phase-active .phase-label {
+        color: #93c5fd;
+    }
+
+    .phase-segment.phase-done .phase-dot {
+        background: #4ade80;
+    }
+
+    .phase-segment.phase-done .phase-label {
+        color: #94a3b8;
+    }
+
+    .phase-connector.phase-connector-done {
+        background: #4ade80;
+    }
+
     .section-sep-line {
         background: rgba(226,232,240,0.2);
     }
@@ -1061,8 +1139,21 @@
         gap: 8px;
     }
 
-    .chat-progress-bar-container {
-        width: 80px;
+    .phase-indicator {
+        padding: 0 6px;
+    }
+
+    .phase-label {
+        font-size: 11px;
+    }
+
+    .phase-segment {
+        padding: 3px 5px;
+        gap: 4px;
+    }
+
+    .phase-connector {
+        width: 12px;
     }
 
     .chat-switch-btn {

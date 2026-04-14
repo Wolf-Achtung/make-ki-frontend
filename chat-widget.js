@@ -12,6 +12,14 @@
         isStreaming: false
     };
 
+    /* ── Phase + Block Constants ── */
+    var BLOCK_LABELS = {
+        "block_a": "F\u00f6rdermittel & Budget",
+        "block_b": "KI-Strategie & Roadmap",
+        "block_c": "Tools & Automatisierung",
+        "block_d": "Recht & Datenschutz"
+    };
+
     /* ── API helpers ── */
     function getApiBase() {
         try {
@@ -95,12 +103,21 @@
             + '<div class="chat-header">'
             + '  <div class="chat-header-left">'
             + '    <span class="chat-title">KI-Bestandsaufnahme</span>'
-            + '    <span class="chat-progress" id="chatProgress" role="status">Schritt 1 von 8: Ihr Unternehmen</span>'
+            + '  </div>'
+            + '  <div class="phase-indicator" id="phaseIndicator" role="navigation" aria-label="Fortschritt">'
+            + '    <div class="phase-segment phase-active" data-phase="grunddaten">'
+            + '      <span class="phase-dot"></span><span class="phase-label">Grunddaten</span>'
+            + '    </div>'
+            + '    <div class="phase-connector"></div>'
+            + '    <div class="phase-segment" data-phase="vertiefung">'
+            + '      <span class="phase-dot"></span><span class="phase-label">Vertiefung</span>'
+            + '    </div>'
+            + '    <div class="phase-connector"></div>'
+            + '    <div class="phase-segment" data-phase="zusammenfassung">'
+            + '      <span class="phase-dot"></span><span class="phase-label">Zusammenfassung</span>'
+            + '    </div>'
             + '  </div>'
             + '  <div class="chat-header-right">'
-            + '    <div class="chat-progress-bar-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'
-            + '      <div class="chat-progress-bar" id="chatProgressBar" style="width:0%"></div>'
-            + '    </div>'
             + '    <button class="chat-switch-btn" id="chatSwitchToForm">Zum Formular wechseln</button>'
             + '  </div>'
             + '</div>'
@@ -932,6 +949,12 @@
     }
 
     function renderSummaryCards(container, summaryText) {
+        // Force phase indicator to Zusammenfassung when summary is shown
+        if (_currentPhase !== "zusammenfassung") {
+            _currentPhase = "zusammenfassung";
+            updatePhaseIndicator("zusammenfassung");
+        }
+
         var sections = parseSummary(summaryText);
         if (!sections.length) return;
 
@@ -1004,14 +1027,19 @@
         var container = document.getElementById("chatMessages");
         if (!container) return;
 
+        // Use block label from mapping if available, otherwise section name
+        var label = sectionName;
+        if (_lastState && _lastState.current_block && BLOCK_LABELS[_lastState.current_block]) {
+            label = BLOCK_LABELS[_lastState.current_block];
+        }
+
         var sep = document.createElement("div");
         sep.className = "chat-section-separator";
         sep.setAttribute("role", "separator");
         sep.innerHTML = ''
             + '<div class="section-sep-line"></div>'
             + '<span class="section-sep-label">'
-            + 'Abschnitt ' + stepNum + ' von ' + totalSteps
-            + ': ' + escapeHtml(sectionName)
+            + escapeHtml(label)
             + '</span>'
             + '<div class="section-sep-line"></div>';
 
@@ -1034,11 +1062,66 @@
     /* ── Progress ── */
     var _lastState = null;
     var _lastSectionIndex = 0;
+    var _currentPhase = "grunddaten";
+
+    function detectPhase(state) {
+        // Prefer backend-provided conversation_phase
+        if (state.conversation_phase) {
+            var cp = state.conversation_phase;
+            if (cp === "phase_1a" || cp === "phase_1b") return "grunddaten";
+            if (cp === "checkpoint" || cp === "phase_2") return "vertiefung";
+            if (cp === "summary" || cp === "complete") return "zusammenfassung";
+        }
+        // Fallback: infer from available state data
+        if (state.is_completable) return "zusammenfassung";
+        if (state.current_block) return "vertiefung";
+        if (state.progress_percent != null) {
+            if (state.progress_percent >= 85) return "zusammenfassung";
+            if (state.progress_percent > 25) return "vertiefung";
+        }
+        return "grunddaten";
+    }
+
+    function updatePhaseIndicator(phase) {
+        var indicator = document.getElementById("phaseIndicator");
+        if (!indicator) return;
+
+        var phases = ["grunddaten", "vertiefung", "zusammenfassung"];
+        var activeIndex = phases.indexOf(phase);
+        if (activeIndex === -1) activeIndex = 0;
+
+        var segments = indicator.querySelectorAll(".phase-segment");
+        var connectors = indicator.querySelectorAll(".phase-connector");
+
+        for (var i = 0; i < segments.length; i++) {
+            segments[i].classList.remove("phase-active", "phase-done");
+            if (i < activeIndex) {
+                segments[i].classList.add("phase-done");
+            } else if (i === activeIndex) {
+                segments[i].classList.add("phase-active");
+            }
+        }
+
+        for (var j = 0; j < connectors.length; j++) {
+            if (j < activeIndex) {
+                connectors[j].classList.add("phase-connector-done");
+            } else {
+                connectors[j].classList.remove("phase-connector-done");
+            }
+        }
+    }
 
     function updateProgress(state) {
         if (!state) return;
 
         _lastState = state;
+
+        // Detect and update phase indicator
+        var phase = detectPhase(state);
+        if (phase !== _currentPhase) {
+            _currentPhase = phase;
+            updatePhaseIndicator(phase);
+        }
 
         // Section separator on section change
         if (state.current_section != null && state.current_section !== _lastSectionIndex) {
@@ -1050,22 +1133,6 @@
                 );
             }
             _lastSectionIndex = state.current_section;
-        }
-
-        var progressEl = document.getElementById("chatProgress");
-        if (progressEl && state.current_section_name != null) {
-            progressEl.textContent = "Schritt " + (state.current_section + 1)
-                + " von " + state.total_sections
-                + ": " + state.current_section_name;
-        }
-
-        var bar = document.getElementById("chatProgressBar");
-        if (bar && state.progress_percent != null) {
-            bar.style.width = state.progress_percent + "%";
-            var barContainer = bar.parentElement;
-            if (barContainer) {
-                barContainer.setAttribute("aria-valuenow", state.progress_percent);
-            }
         }
     }
 
