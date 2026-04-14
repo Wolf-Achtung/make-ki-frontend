@@ -1246,9 +1246,91 @@
 
     /* ── Switch to Form ── */
     function switchToForm() {
+        var btn = document.getElementById("chatSwitchToForm");
+        var sessionId = chatState.sessionId;
+
+        // No session — just show form without prefill
+        if (!sessionId) {
+            showFormView();
+            return;
+        }
+
+        // Loading state on button
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = "Wird geladen\u2026";
+        }
+
+        // Fetch collected fields from backend
+        fetch(getApiBase() + "/api/chat/session/" + sessionId + "/fields", {
+            headers: getAuthHeaders(),
+            credentials: "include"
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
+        .then(function(data) {
+            if (data.fields && Object.keys(data.fields).length > 0) {
+                prefillForm(data.fields);
+            }
+            showFormView();
+        })
+        .catch(function(err) {
+            console.error("Field fetch failed:", err);
+            // Still switch to form, just without prefill
+            showFormView();
+        });
+    }
+
+    function showFormView() {
         document.getElementById("chat-container").style.display = "none";
         var card = document.getElementById("formbuilder-card");
         if (card) card.style.display = "block";
+    }
+
+    function prefillForm(fields) {
+        try {
+            // Merge chat fields into existing form autosave data
+            var existing = {};
+            try {
+                var saved = localStorage.getItem("autosave_form_data");
+                if (saved) existing = JSON.parse(saved);
+            } catch(e) {}
+
+            for (var key in fields) {
+                if (fields.hasOwnProperty(key) && fields[key] != null) {
+                    existing[key] = fields[key];
+                }
+            }
+
+            localStorage.setItem("autosave_form_data", JSON.stringify(existing));
+            localStorage.setItem("autosave_form_step", "0");
+
+            // Re-initialize formbuilder to pick up new data
+            if (typeof window.initFormBuilder === "function") {
+                window.initFormBuilder();
+            }
+
+            // Show toast notification
+            showPrefillToast(Object.keys(fields).length);
+        } catch(e) {
+            console.error("Prefill failed:", e);
+        }
+    }
+
+    function showPrefillToast(count) {
+        var toast = document.createElement("div");
+        toast.className = "prefill-toast";
+        toast.textContent = count + " Angaben aus dem Chat \u00fcbernommen";
+        document.body.appendChild(toast);
+
+        setTimeout(function() {
+            toast.classList.add("prefill-toast-hide");
+            setTimeout(function() {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 300);
+        }, 4000);
     }
 
     /* ── Resume ── */

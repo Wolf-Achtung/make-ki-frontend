@@ -991,6 +991,35 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* --- Prefill Toast --- */
+.prefill-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    z-index: 9999;
+    animation: toastSlideUp 0.3s ease-out;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.prefill-toast-hide {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+    transition: all 0.3s ease;
+}
+
+@keyframes toastSlideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 /* --- Dark Mode --- */
 @media (prefers-color-scheme: dark) {
     .mode-primary {
