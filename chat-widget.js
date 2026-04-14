@@ -520,6 +520,9 @@
                 continue;
             }
 
+            // Skip replies with no options
+            if (!reply.options || !reply.options.length) continue;
+
             var isMulti = reply.multi_select === true;
             var maxSelect = reply.max_select || 0;
 
@@ -1004,9 +1007,13 @@
         var html = '<div class="summary-cards">';
         html += '<div class="summary-header">Zusammenfassung Ihrer Angaben</div>';
 
+        var cardIndex = 0;
         for (var i = 0; i < sections.length; i++) {
             var s = sections[i];
-            var isCollapsed = i > 2;
+            // Skip sections with no fields
+            if (!s.fields || !s.fields.length) continue;
+            var isCollapsed = cardIndex > 2;
+            cardIndex++;
             html += ''
                 + '<div class="summary-card' + (isCollapsed ? ' collapsed' : '') + '">'
                 + '  <div class="summary-card-header" data-toggle="' + i + '">'
@@ -1027,6 +1034,15 @@
         }
 
         html += '</div>';
+
+        // Hint text for areas not explored in depth
+        if (_lastState && _lastState.unsurveyed_note) {
+            html += '<div class="summary-note">'
+                + '<span class="summary-note-icon">\u2139\ufe0f</span>'
+                + '<p>' + escapeHtml(_lastState.unsurveyed_note) + '</p>'
+                + '</div>';
+        }
+
         html += '<div class="summary-footer">Sind alle Angaben korrekt? Dann starte ich die Auswertung.</div>';
 
         container.innerHTML = html;
