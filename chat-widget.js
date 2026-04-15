@@ -551,6 +551,8 @@
 
     /* ── Quick Replies ── */
     function renderQuickReplies(replies, opts) {
+        if (_editMode) return; // Preserve edit panel — QR buttons suppressed in edit mode
+
         var container = document.getElementById("chatQuickReplies");
         if (!container) return;
 
@@ -817,6 +819,7 @@
     }
 
     function clearQuickReplies() {
+        if (_editMode) return; // Preserve edit panel
         var container = document.getElementById("chatQuickReplies");
         if (container) container.innerHTML = "";
     }
@@ -828,6 +831,10 @@
             previews[i].classList.remove("qr-btn--preview");
         }
     }
+
+    /* ── Edit-Mode State ── */
+    var _editMode = false;
+    var _summaryFields = []; // Parsed summary sections stored for edit mode
 
     /* ── Draft-Chip State ── */
     var currentDraft = null;
@@ -997,6 +1004,14 @@
         var sections = parseSummary(summaryText);
         if (!sections.length) return;
 
+        // Store fields for edit mode
+        _summaryFields = sections;
+
+        // If in edit mode, refresh the edit panel with updated values
+        if (_editMode) {
+            renderEditMode();
+        }
+
         // Remove old summary cards to prevent duplicates during edit flow
         var chatMessages = document.getElementById("chatMessages");
         if (chatMessages) {
@@ -1072,6 +1087,94 @@
         }
 
         scrollToBottom();
+    }
+
+    /* ── Edit Mode ── */
+    function renderEditMode() {
+        var container = document.getElementById("chatQuickReplies");
+        if (!container) return;
+        if (!_summaryFields.length) return;
+
+        container.innerHTML = "";
+
+        var panel = document.createElement("div");
+        panel.className = "edit-mode-panel";
+        panel.id = "editModePanel";
+
+        var header = document.createElement("div");
+        header.className = "edit-mode-header";
+        header.textContent = "Welches Feld m\u00f6chten Sie \u00e4ndern?";
+        panel.appendChild(header);
+
+        for (var i = 0; i < _summaryFields.length; i++) {
+            var section = _summaryFields[i];
+            if (!section.fields || !section.fields.length) continue;
+
+            var sectionTitle = document.createElement("div");
+            sectionTitle.className = "edit-section-title";
+            sectionTitle.textContent = section.title;
+            panel.appendChild(sectionTitle);
+
+            for (var j = 0; j < section.fields.length; j++) {
+                var field = section.fields[j];
+                var row = document.createElement("div");
+                row.className = "edit-field-row";
+
+                var labelSpan = document.createElement("span");
+                labelSpan.className = "edit-field-label";
+                labelSpan.textContent = field.label;
+
+                var valueSpan = document.createElement("span");
+                valueSpan.className = "edit-field-value";
+                valueSpan.textContent = field.value;
+
+                var btn = document.createElement("button");
+                btn.className = "edit-field-btn";
+                btn.textContent = "\u00c4ndern";
+                btn.dataset.fieldLabel = field.label;
+                btn.addEventListener("click", (function(fieldLabel) {
+                    return function() {
+                        // Highlight the field being edited
+                        var rows = panel.querySelectorAll(".edit-field-row");
+                        for (var r = 0; r < rows.length; r++) {
+                            rows[r].classList.remove("edit-field-active");
+                        }
+                        this.closest(".edit-field-row").classList.add("edit-field-active");
+
+                        sendMessage('Ich m\u00f6chte "' + fieldLabel + '" \u00e4ndern.');
+                    };
+                })(field.label));
+
+                row.appendChild(labelSpan);
+                row.appendChild(valueSpan);
+                row.appendChild(btn);
+                panel.appendChild(row);
+            }
+        }
+
+        // Footer with action button
+        var footer = document.createElement("div");
+        footer.className = "edit-mode-footer";
+
+        var completeBtn = document.createElement("button");
+        completeBtn.className = "edit-mode-complete-btn";
+        completeBtn.textContent = "Fertig \u2014 Auswertung starten";
+        completeBtn.addEventListener("click", function() {
+            exitEditMode();
+            submitComplete();
+        });
+        footer.appendChild(completeBtn);
+
+        panel.appendChild(footer);
+        container.appendChild(panel);
+
+        scrollToBottom();
+    }
+
+    function exitEditMode() {
+        _editMode = false;
+        var container = document.getElementById("chatQuickReplies");
+        if (container) container.innerHTML = "";
     }
 
     /* ── Section Separator ── */
@@ -1226,6 +1329,8 @@
 
     /* ── Completion UI ── */
     function showCompletionUI() {
+        if (_editMode) return; // Don't overwrite edit panel
+
         clearQuickReplies();
         var container = document.getElementById("chatQuickReplies");
         if (!container) return;
@@ -1242,8 +1347,16 @@
 
         document.getElementById("btnComplete").addEventListener("click", submitComplete);
         document.getElementById("btnEdit").addEventListener("click", function() {
-            clearQuickReplies();
-            sendMessage("Ich m\u00f6chte einige Angaben korrigieren.");
+            if (!_summaryFields.length) {
+                // Fallback: no stored fields, send text to backend
+                clearQuickReplies();
+                sendMessage("Ich m\u00f6chte einige Angaben korrigieren.");
+                return;
+            }
+            _editMode = true;
+            renderEditMode();
+            // Notify backend of edit intent (hidden from chat)
+            sendMessage("Ich m\u00f6chte einige Angaben korrigieren.", { _hideUserMessage: true });
         });
 
         scrollToBottom();
