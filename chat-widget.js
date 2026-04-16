@@ -407,9 +407,15 @@
 
                             try {
                                 var data = JSON.parse(dataStr);
+                                if (currentEvent === 'draft_value' || currentEvent === 'field_confirmed' || currentEvent === 'dialog_mode') {
+                                    console.log('🔥 SSE-PARSER: Parsed event=' + currentEvent + ', raw dataStr=' + dataStr);
+                                }
                                 handleSSEEvent(currentEvent, data);
                             } catch(e) {
                                 console.warn("SSE parse error:", e, dataStr);
+                                if (currentEvent === 'draft_value') {
+                                    console.error('🔥 SSE-PARSER: FAILED to parse draft_value data! Raw:', dataStr);
+                                }
                             }
 
                             currentEvent = null;
@@ -459,14 +465,17 @@
                         break;
 
                     case "draft_value":
+                        console.log('🔥 SSE-DEBUG: draft_value event received:', JSON.stringify(data));
                         handleDraftValue(data);
                         break;
 
                     case "field_confirmed":
+                        console.log('🔥 SSE-DEBUG: field_confirmed event received:', JSON.stringify(data));
                         handleFieldConfirmed(data);
                         break;
 
                     case "dialog_mode":
+                        console.log('🔥 SSE-DEBUG: dialog_mode event received:', JSON.stringify(data));
                         handleDialogMode(data);
                         break;
 
@@ -855,13 +864,30 @@
 
     function handleDraftValue(data) {
         // data = { field, value, label }
+        console.log('🔥 DRAFT-DEBUG: handleDraftValue() called with:', JSON.stringify(data));
+
         currentDraft = data;
 
         var chip = document.getElementById("draftChip");
         var label = document.getElementById("draftChipLabel");
         var value = document.getElementById("draftChipValue");
         var actions = document.getElementById("draftChipActions");
-        if (!chip) return;
+
+        console.log('🔥 DRAFT-DEBUG: Elements found:', {
+            chip: !!chip,
+            label: !!label,
+            value: !!value,
+            actions: !!actions
+        });
+
+        if (!chip) {
+            console.error('🔥 DRAFT-DEBUG: FATAL - draftChip element not found!');
+            console.log('🔥 DRAFT-DEBUG: Elements with "draft" in id/class:',
+                Array.from(document.querySelectorAll('[id*="draft"], [class*="draft"]')).map(function(el) {
+                    return el.tagName + '#' + el.id + '.' + el.className;
+                }));
+            return;
+        }
 
         label.textContent = data.label || "Erkannt";
 
@@ -877,8 +903,37 @@
             + '<button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
             + '<button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>';
 
+        var oldDisplay = chip.style.display;
         chip.style.display = "block";
+        var computedDisplay = getComputedStyle(chip).display;
+
+        console.log('🔥 DRAFT-DEBUG: Display change:', {
+            before: oldDisplay,
+            afterInline: chip.style.display,
+            computed: computedDisplay
+        });
+
+        console.log('🔥 DRAFT-DEBUG: Chip dimensions:', {
+            offsetWidth: chip.offsetWidth,
+            offsetHeight: chip.offsetHeight,
+            parentElement: chip.parentElement ? chip.parentElement.id || chip.parentElement.className : 'none'
+        });
+
         scrollToBottom();
+
+        // Delayed state check — detect if something overwrites display after this function
+        setTimeout(function() {
+            var finalComputed = getComputedStyle(chip).display;
+            var visible = chip.offsetWidth > 0 && chip.offsetHeight > 0;
+            console.log('🔥 DRAFT-DEBUG: State after 200ms:', {
+                computed_display: finalComputed,
+                actually_visible: visible,
+                offsetWidth: chip.offsetWidth,
+                offsetHeight: chip.offsetHeight,
+                labelText: label.textContent,
+                valueText: value.textContent
+            });
+        }, 200);
     }
 
     function handleFieldConfirmed(data) {
@@ -888,6 +943,7 @@
     }
 
     function showConfirmSuccess() {
+        console.log('🔥 DRAFT-DEBUG: showConfirmSuccess() called');
         var chip = document.getElementById("draftChip");
         if (!chip) return;
 
@@ -973,6 +1029,7 @@
     }
 
     function hideDraftChip() {
+        console.log('🔥 DRAFT-DEBUG: hideDraftChip() called', new Error().stack);
         var chip = document.getElementById("draftChip");
         if (chip) chip.style.display = "none";
         currentDraft = null;
