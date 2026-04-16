@@ -27,6 +27,9 @@
         "block_d": "~2 Min"
     };
 
+    /* ── Summary Marker (backend contract, mirrors SUMMARY_MARKER in backend) ── */
+    var SUMMARY_MARKER = "**Zusammenfassung Ihrer Angaben:**";
+
     /* ── API helpers ── */
     function getApiBase() {
         try {
@@ -515,8 +518,11 @@
                     chatState.messages.push({ role: "assistant", content: fullResponse });
                     announceForScreenReader("Neue Nachricht vom Assistenten");
                     // Check if response is a summary and render as cards
-                    if (fullResponse.indexOf("**Zusammenfassung Ihrer Angaben:**") !== -1 && streamDiv) {
+                    if (fullResponse.indexOf(SUMMARY_MARKER) !== -1 && streamDiv) {
+                        console.info("[EditMode] Summary marker detected, rendering cards");
                         renderSummaryCards(streamDiv, fullResponse);
+                    } else if (_currentPhase === "zusammenfassung") {
+                        console.warn("[EditMode] Summary marker not found in response — _summaryFields will remain empty");
                     }
                 }
 
