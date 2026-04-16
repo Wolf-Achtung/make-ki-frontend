@@ -465,17 +465,22 @@
                         break;
 
                     case "draft_value":
-                        console.log('🔥 SSE-DEBUG: draft_value event received:', JSON.stringify(data));
+                        console.log('SSE draft_value received:', JSON.stringify(data));
                         handleDraftValue(data);
+                        setTimeout(function() {
+                            var chip = document.getElementById("draftChip");
+                            if (chip && !chip.classList.contains("draft-active")) {
+                                console.log('Draft chip backup trigger');
+                                handleDraftValue(data);
+                            }
+                        }, 150);
                         break;
 
                     case "field_confirmed":
-                        console.log('🔥 SSE-DEBUG: field_confirmed event received:', JSON.stringify(data));
                         handleFieldConfirmed(data);
                         break;
 
                     case "dialog_mode":
-                        console.log('🔥 SSE-DEBUG: dialog_mode event received:', JSON.stringify(data));
                         handleDialogMode(data);
                         break;
 
@@ -862,78 +867,107 @@
     /* ── Draft-Chip State ── */
     var currentDraft = null;
 
+    function createFallbackDraftChip() {
+        if (document.getElementById("draftChip")) return;
+
+        var parent = document.getElementById("chat-container");
+        if (!parent) return;
+
+        var inputArea = parent.querySelector(".chat-input-area");
+        var chip = document.createElement("div");
+        chip.id = "draftChip";
+        chip.className = "draft-chip";
+        chip.style.display = "none";
+        chip.innerHTML = ''
+            + '<div class="draft-chip-header">'
+            + '  <span class="draft-chip-icon">\uD83D\uDCDD</span>'
+            + '  <span class="draft-chip-label" id="draftChipLabel">Erkannt</span>'
+            + '</div>'
+            + '<div class="draft-chip-value" id="draftChipValue"></div>'
+            + '<div class="draft-chip-actions" id="draftChipActions">'
+            + '  <button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
+            + '  <button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>'
+            + '</div>';
+
+        if (inputArea) {
+            parent.insertBefore(chip, inputArea);
+        } else {
+            parent.appendChild(chip);
+        }
+
+        chip.addEventListener("click", function(e) {
+            var target = e.target;
+            while (target && target !== this) {
+                if (target.id === "draftConfirmBtn" || target.classList.contains("draft-confirm-btn")) {
+                    e.preventDefault();
+                    confirmDraft();
+                    return;
+                }
+                if (target.id === "draftEditBtn" || target.classList.contains("draft-edit-btn")) {
+                    e.preventDefault();
+                    editDraft();
+                    return;
+                }
+                target = target.parentElement;
+            }
+        });
+
+        console.log('Draft chip: fallback element created');
+    }
+
     function handleDraftValue(data) {
         // data = { field, value, label }
-        console.log('🔥 DRAFT-DEBUG: handleDraftValue() called with:', JSON.stringify(data));
+        console.log('Draft event received:', JSON.stringify(data));
 
         currentDraft = data;
+        window.currentDraft = data;
 
         var chip = document.getElementById("draftChip");
+
+        if (!chip) {
+            console.warn('draftChip not found, creating fallback');
+            createFallbackDraftChip();
+            chip = document.getElementById("draftChip");
+        }
+
+        if (!chip) {
+            console.error('Could not create draftChip');
+            return;
+        }
+
         var label = document.getElementById("draftChipLabel");
         var value = document.getElementById("draftChipValue");
         var actions = document.getElementById("draftChipActions");
 
-        console.log('🔥 DRAFT-DEBUG: Elements found:', {
-            chip: !!chip,
-            label: !!label,
-            value: !!value,
-            actions: !!actions
-        });
+        if (label) label.textContent = data.label || "Erkannt";
 
-        if (!chip) {
-            console.error('🔥 DRAFT-DEBUG: FATAL - draftChip element not found!');
-            console.log('🔥 DRAFT-DEBUG: Elements with "draft" in id/class:',
-                Array.from(document.querySelectorAll('[id*="draft"], [class*="draft"]')).map(function(el) {
-                    return el.tagName + '#' + el.id + '.' + el.className;
-                }));
-            return;
+        if (value) {
+            if (Array.isArray(data.value)) {
+                value.textContent = data.value.join(", ");
+            } else {
+                value.textContent = String(data.value);
+            }
         }
 
-        label.textContent = data.label || "Erkannt";
-
-        if (Array.isArray(data.value)) {
-            value.textContent = data.value.join(", ");
-        } else {
-            value.textContent = String(data.value);
-        }
-
-        // Reset chip state for new draft
         chip.classList.remove("draft-confirmed", "draft-confirming");
-        actions.innerHTML = ''
-            + '<button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
-            + '<button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>';
+        if (actions) {
+            actions.innerHTML = ''
+                + '<button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
+                + '<button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>';
+        }
 
-        var oldDisplay = chip.style.display;
-        chip.style.display = "block";
-        var computedDisplay = getComputedStyle(chip).display;
-
-        console.log('🔥 DRAFT-DEBUG: Display change:', {
-            before: oldDisplay,
-            afterInline: chip.style.display,
-            computed: computedDisplay
-        });
-
-        console.log('🔥 DRAFT-DEBUG: Chip dimensions:', {
-            offsetWidth: chip.offsetWidth,
-            offsetHeight: chip.offsetHeight,
-            parentElement: chip.parentElement ? chip.parentElement.id || chip.parentElement.className : 'none'
-        });
+        chip.classList.add("draft-active");
+        chip.style.setProperty("display", "block", "important");
+        chip.style.visibility = "visible";
+        chip.style.opacity = "1";
 
         scrollToBottom();
 
-        // Delayed state check — detect if something overwrites display after this function
         setTimeout(function() {
-            var finalComputed = getComputedStyle(chip).display;
-            var visible = chip.offsetWidth > 0 && chip.offsetHeight > 0;
-            console.log('🔥 DRAFT-DEBUG: State after 200ms:', {
-                computed_display: finalComputed,
-                actually_visible: visible,
-                offsetWidth: chip.offsetWidth,
-                offsetHeight: chip.offsetHeight,
-                labelText: label.textContent,
-                valueText: value.textContent
-            });
-        }, 200);
+            if (chip && chip.classList.contains("draft-active")) {
+                chip.style.setProperty("display", "block", "important");
+            }
+        }, 100);
     }
 
     function handleFieldConfirmed(data) {
@@ -943,7 +977,6 @@
     }
 
     function showConfirmSuccess() {
-        console.log('🔥 DRAFT-DEBUG: showConfirmSuccess() called');
         var chip = document.getElementById("draftChip");
         if (!chip) return;
 
@@ -956,8 +989,8 @@
         }
 
         setTimeout(function() {
-            chip.style.display = "none";
-            chip.classList.remove("draft-confirmed");
+            chip.classList.remove("draft-active", "draft-confirmed");
+            chip.style.setProperty("display", "none", "important");
         }, 1500);
     }
 
@@ -1029,10 +1062,13 @@
     }
 
     function hideDraftChip() {
-        console.log('🔥 DRAFT-DEBUG: hideDraftChip() called', new Error().stack);
         var chip = document.getElementById("draftChip");
-        if (chip) chip.style.display = "none";
+        if (chip) {
+            chip.classList.remove("draft-active");
+            chip.style.setProperty("display", "none", "important");
+        }
         currentDraft = null;
+        window.currentDraft = null;
     }
 
     /* ── Summary Cards ── */
