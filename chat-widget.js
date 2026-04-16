@@ -580,6 +580,14 @@
             replies = [replies[0]];
         }
 
+        // Route meta-action QRs (e.g. __summary_action__) to dedicated completion UI
+        for (var m = 0; m < replies.length; m++) {
+            if (replies[m].field && replies[m].field === "__summary_action__") {
+                showCompletionUI();
+                return;
+            }
+        }
+
         for (var r = 0; r < replies.length; r++) {
             var reply = replies[r];
 
@@ -1335,29 +1343,28 @@
         var container = document.getElementById("chatQuickReplies");
         if (!container) return;
 
+        var editButtonHtml = _summaryFields.length
+            ? '  <button class="btn-edit" id="btnEdit">Angaben korrigieren</button>'
+            : '';
+
         container.innerHTML = ''
             + '<div class="chat-completion">'
             + '  <button class="btn-complete" id="btnComplete">'
             + '    Angaben best\u00e4tigen &amp; Report starten'
             + '  </button>'
-            + '  <button class="btn-edit" id="btnEdit">'
-            + '    Angaben korrigieren'
-            + '  </button>'
+            + editButtonHtml
             + '</div>';
 
         document.getElementById("btnComplete").addEventListener("click", submitComplete);
-        document.getElementById("btnEdit").addEventListener("click", function() {
-            if (!_summaryFields.length) {
-                // Fallback: no stored fields, send text to backend
-                clearQuickReplies();
-                sendMessage("Ich m\u00f6chte einige Angaben korrigieren.");
-                return;
-            }
-            _editMode = true;
-            renderEditMode();
-            // Notify backend of edit intent (hidden from chat)
-            sendMessage("Ich m\u00f6chte einige Angaben korrigieren.", { _hideUserMessage: true });
-        });
+        var editBtn = document.getElementById("btnEdit");
+        if (editBtn) {
+            editBtn.addEventListener("click", function() {
+                _editMode = true;
+                renderEditMode();
+                // Notify backend of edit intent (hidden from chat)
+                sendMessage("Ich m\u00f6chte einige Angaben korrigieren.", { _hideUserMessage: true });
+            });
+        }
 
         scrollToBottom();
     }
