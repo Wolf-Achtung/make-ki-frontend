@@ -957,11 +957,11 @@
             meta: meta,
             chat_mode_value: mode,
             chat_mode_type: typeof mode,
-            strict_equal_textarea: mode === "textarea"
+            strict_equal_FT: mode === "FT"
         });
 
-        if (mode !== "textarea") {
-            debugLog('ABORT — mode mismatch', 'chat_mode="' + mode + '" ≠ "textarea"');
+        if (mode !== "FT") {
+            debugLog('ABORT — mode mismatch', 'chat_mode="' + mode + '" ≠ "FT"');
             return clearSmartChips();
         }
 
