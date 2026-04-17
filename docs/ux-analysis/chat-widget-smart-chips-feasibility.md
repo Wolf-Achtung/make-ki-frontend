@@ -234,3 +234,75 @@ Aus der DOM-Hierarchie (`renderChatContainer()` Z. 110–190, vgl. Doc 1 §3) ko
 | Resume via `checkResume()` Z. 1568 | Nach `updateProgress(sessionData.state)` (Z. 1691): Falls `state.current_field` ein Freitext-Feld ist, Chips nachladen (Fallback-`/fields`-Fetch). |
 
 **Kleinste Implementierungs-Fußabdruck:** +1 Zeile in `renderChatContainer` (neuer `<div id="chatSmartChips">`), +1 Funktion `renderSmartChips(fieldName, suggestions)`, +ein Cache `_collectedFields`, +CSS-Block `.chat-smart-chips`. Keine Änderung an `clearQuickReplies`, `renderQuickReplies`, `renderHelpButton` nötig.
+
+---
+
+## 4. Backend-Voraussetzungen & Gesamtbewertung
+
+### 4.1 Backend-Änderungen — nötig, nice-to-have, nicht nötig
+
+**Frontend-only lösbar (kein Backend-Change):**
+
+- **DOM-Container** (Kandidat A aus §3): reine Widget-Änderung in `renderChatContainer()`.
+- **Feld-Kontext-Lesen**: `_lastState.current_field` existiert bereits (Z. 778, 818).
+- **Collected-Fields-Cache**: aus bestehenden Events aufbaubar — `field_confirmed` (Z. 479) trägt `{field, value}`, bei leerem Cache Fallback auf `GET /api/chat/session/{id}/fields` (Z. 1496, bereits etabliert).
+- **Suggestion-Daten** (Fallback): eine statische Map im Frontend (pro Feld + pro Branche) reicht für einen MVP. Analog zu `window.FIELD_EXAMPLES` im Formular (`field_examples_de.js`, 119 kB, bereits geladen in `strategy.html` Z. 1093).
+- **Trigger-Logik**: Chips erscheinen bei `state_update`, verschwinden bei `field_confirmed`/`draft_value`/non-leerem `quick_replies`. Alles ohne Backend-Contract-Änderung.
+
+**Nice-to-have (Backend-Erweiterung verbessert, aber nicht Voraussetzung):**
+
+- `field_type` in `state_update` (z. B. `"freetext"|"single_select"|"multi_select"`) → Frontend kann sicher unterscheiden, ob Chips überhaupt passen. Heute muss das Frontend heuristisch ableiten („keine `quick_replies` + `current_field` gesetzt → Freitext").
+- `field_label` in `state_update` → Gleicher Wortlaut wie Bot-Frage, ermöglicht Chip-Gruppen-Überschrift ohne Message-Parsing.
+- **LLM-generierte Suggestions** pro Turn (z. B. aus Kontext vorheriger Antworten) in einem neuen SSE-Event `smart_chips` oder Feld `state.suggestions`. Stärkster UX-Hebel, aber nicht MVP-kritisch.
+- `collected_fields` direkt im `state_update` → spart den `/fields`-Polling-Fallback.
+
+**Absolut nicht nötig:**
+
+- Neuer API-Endpoint. `/api/chat/session/{id}/fields` ist ausreichend.
+- Neuer SSE-Event-Typ für MVP. Vorhandene Events (`state_update`, `field_confirmed`) reichen.
+- Backend-seitige Session-Persistenz für Chip-State. Der Cache darf flüchtig sein.
+- Änderungen an `/api/chat/message`-Request-Format.
+
+### 4.2 Wolf's Live-Test-Durchgang — Szenario in 7 Schritten
+
+**Ausgang:** User hat gerade QR-Button „Marketing & Werbung" geklickt. Payload aus `handleQuickReply` (Z. 712–714) → `sendMessage` (Z. 338) → `POST /api/chat/message`.
+
+1. **Backend empfängt Antwort** für `branche`. Interner State wird fortgeschrieben.
+2. **SSE-Stream beginnt.** Backend sendet `typing` → `token`-Stream („Alles klar. Was sind Ihre wichtigsten Ziele beim KI-Einsatz?") → `state_update { current_field: "strategische_ziele", conversation_phase: "phase_1b", ... }` → `done`. Das Feld hat **keine** `quick_replies` bei reiner Freitext-Variante, also kein QR-Event.
+3. **`state_update`-Handler** (Z. 450) ruft `updateProgress(data)` (Z. 1376). `_lastState.current_field = "strategische_ziele"`. **Neue Logik**: `renderSmartChipsIfApplicable()` prüft: Feld freitext-tauglich? Kein Draft aktiv? QR-Container leer? → alle drei zutreffend → Chips rendern.
+4. **Chip-Daten-Quelle**: Frontend-Cache `_collectedFields` enthält `{branche: "marketing"}` (aus `field_confirmed`-Event für `branche`, oder fallback `/fields`-Fetch). Cache wird gegen eine **statische Suggestion-Map** `SMART_CHIPS["strategische_ziele"]["marketing"]` konsultiert (Frontend-only, analog `FIELD_EXAMPLES`). Ergebnis z. B. `["Leads generieren", "Content-Produktion skalieren", "Personalisierung verbessern", "Marketing-Automation ausbauen"]`.
+5. **DOM-Injection** in `#chatSmartChips` (neues Geschwister in `.chat-input-area`). Jeder Chip ist ein `<button class="smart-chip" data-value="...">`. Click-Handler: fügt Text in `#chatInput` ein (append, nicht replace), fokussiert Textarea, markiert Chip als `selected`.
+6. **User klickt Chip „Leads generieren"** → Text erscheint in Textarea. User kann frei weitertippen („…vor allem für B2B") und drückt Enter. `sendMessage` schickt den Gesamttext. Chips bleiben sichtbar (nicht via `clearQuickReplies` betroffen), solange Feld offen.
+7. **Backend bestätigt** das Feld: SSE `field_confirmed { field: "strategische_ziele", value: ... }` → Handler leert `#chatSmartChips`, schreibt in Cache. Beim nächsten `state_update` mit anderem `current_field` startet der Zyklus erneut.
+
+**Kritische Annahme (zu verifizieren):** Schritt 2 setzt voraus, dass das Backend tatsächlich `current_field: "strategische_ziele"` in `state_update` sendet. Evidenz dafür: `renderHelpButtonIfApplicable` (Z. 816–821) funktioniert heute für genau dieses Feld, basiert auf derselben Quelle — ergo: Annahme belastbar, aber DevTools-Check vor Sprint-Start empfohlen.
+
+### 4.3 Gesamtbewertung
+
+**✅ Machbar frontend-only? — Ja, für MVP.**
+
+Begründung: Alle drei Kernkomponenten (Feld-Kontext, Collected-Fields-Zugriff, DOM-Injection) sind heute im Widget- oder API-Code verfügbar. Die Suggestion-Inhalte selbst können als statische Map gepflegt werden (wie `FIELD_EXAMPLES`), bis Backend-LLM-Generation nachzieht. Kein Backend-Blocker. Nice-to-haves (§4.1) verbessern Qualität, sind nicht Voraussetzung.
+
+**Aufwandsschätzung (Frontend, MVP):**
+
+| Position | Stunden |
+|----------|---------|
+| DOM-Container + CSS | 1 |
+| `renderSmartChips()` + Click-Handler + Suppression-Regeln | 2 |
+| Collected-Fields-Cache (`field_confirmed`-Listener + `/fields`-Fallback bei Resume) | 2 |
+| Statische Suggestion-Map (initial 6–8 Felder × 4 Branchen, je 3–5 Suggestions) | 3 |
+| Smoke-Tests (manuell, 3 Browser, Wolf's Live-Szenario) | 1 |
+| Dokumentation inline + README-Update | 1 |
+| **Summe MVP** | **~10 h** |
+
+Optional Backend-Integration (`smart_chips`-Event + Server-seitige Suggestion-Generierung): +6–10 h, separat zu planen.
+
+**Top-3-Risiken:**
+
+1. **Backend-Vertrag nicht eingehalten**: `state_update` sendet bei manchem Turn kein `current_field` (Race-Case §1.3-b). Mitigation: zusätzlicher `_lastKnownField`-Cache, defensives Read-Through-Pattern wie `renderHelpButtonIfApplicable`.
+2. **Semantische Doppelungen**: Smart-Chips überlappen mit Help-Button, Draft-Chip, existierenden QR. Mitigation: strikte Suppression-Regeln (§3.3 Lifecycle-Tabelle), keine Parallelanzeige mit Draft oder QR.
+3. **Pflegeaufwand statischer Map**: 6–8 Freitext-Felder × 4–8 Branchen × R1+R2 = schnell 100+ Einträge. Mitigation: Start mit Top-3-Feldern (`strategische_ziele`, `hauptleistung`, `vision_3_jahre`) × Top-4-Branchen. Später Backend-LLM-Generation als Plan B.
+
+**Empfehlung für Sprint C1: GO mit einem Klärungspunkt.**
+
+Der MVP ist frontend-only umsetzbar, ~10 h Aufwand, keine Backend-Blocker. **Vor Sprint-Start** sollte Wolf per DevTools-Netzwerk-Panel verifizieren (2 min Aufwand): Sendet das Backend in dem Turn, der die Frage „Was sind Ihre wichtigsten Ziele…?" auslöst, tatsächlich ein `state_update` mit `current_field: "strategische_ziele"` (oder einem äquivalenten Feldnamen)? Wenn ja: GO. Wenn nein: kleine Backend-Anpassung vorschalten, bevor Frontend-Arbeit startet.
