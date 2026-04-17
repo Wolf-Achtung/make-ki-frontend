@@ -1956,22 +1956,27 @@
         // H2-Fix: Globale Draft-Button-Delegation — überlebt DOM-Neurenderings,
         // deckt sowohl initialen #draftChip (aus renderChatContainer) als auch
         // Fallback-Chip (aus createFallbackDraftChip) ab.
+        // Capturing-Phase (useCapture=true) damit andere Handler den Event nicht schlucken können.
         document.addEventListener("click", function(e) {
             var target = e.target;
             while (target && target !== document) {
                 if (target.id === "draftConfirmBtn") {
+                    console.log("[draft-handler] confirm clicked");
                     e.preventDefault();
+                    e.stopImmediatePropagation();
                     confirmDraft();
                     return;
                 }
                 if (target.id === "draftEditBtn") {
+                    console.log("[draft-handler] edit clicked");
                     e.preventDefault();
+                    e.stopImmediatePropagation();
                     editDraft();
                     return;
                 }
                 target = target.parentNode;
             }
-        });
+        }, true);
     }
 
     if (document.readyState === "loading") {
