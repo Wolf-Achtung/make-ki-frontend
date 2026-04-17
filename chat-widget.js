@@ -30,45 +30,6 @@
     /* ── Summary Marker (backend contract, mirrors SUMMARY_MARKER in backend) ── */
     var SUMMARY_MARKER = "**Zusammenfassung Ihrer Angaben:**";
 
-    // ===== TEMPORARY DEBUG — wird nach Diagnose entfernt =====
-    function injectDebugBanner() {
-        if (document.getElementById('smartChipsDebug')) return;
-        var banner = document.createElement('div');
-        banner.id = 'smartChipsDebug';
-        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;' +
-            'background:#fef3c7;border-bottom:2px solid #f59e0b;padding:8px 12px;' +
-            'font-family:monospace;font-size:11px;color:#78350f;max-height:200px;' +
-            'overflow:auto;white-space:pre-wrap;word-break:break-all;line-height:1.4;';
-        banner.textContent = '[smart-chips debug] Warte auf state_update...';
-        document.body.insertBefore(banner, document.body.firstChild);
-    }
-
-    function debugLog(label, data) {
-        var banner = document.getElementById('smartChipsDebug');
-        if (!banner) return;
-        var ts = new Date().toLocaleTimeString();
-        var msg;
-        try {
-            msg = '[' + ts + '] ' + label + ': ' + JSON.stringify(data, null, 2);
-        } catch (e) {
-            msg = '[' + ts + '] ' + label + ': <unstringifiable: ' + e.message + '>';
-        }
-        banner.textContent = msg + '\n\n' + banner.textContent;
-        if (banner.textContent.length > 5000) {
-            banner.textContent = banner.textContent.substring(0, 5000) + '... (truncated)';
-        }
-    }
-
-    // Banner sofort einblenden wenn Feature-Flag gesetzt
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            if (document.querySelector('[data-smart-chips="1"]')) injectDebugBanner();
-        });
-    } else {
-        if (document.querySelector('[data-smart-chips="1"]')) injectDebugBanner();
-    }
-    // ===== END DEBUG =====
-
     /* ── API helpers ── */
     function getApiBase() {
         try {
@@ -922,82 +883,31 @@
     }
 
     function renderSmartChipsIfApplicable(state) {
-        // DEBUG START
-        debugLog('renderSmartChipsIfApplicable CALLED', {
-            enabled: SMART_CHIPS_ENABLED,
-            next_fields: state && state.next_fields,
-            next_fields_meta: state && state.next_fields_meta,
-            pending_field: state && state.pending_field,
-            edit_mode: _editMode,
-            collected_keys: state && state.collected_fields ? Object.keys(state.collected_fields) : []
-        });
-        // DEBUG END
-
         // Suppression-Matrix (alle 6 Punkte gegen-prüfen, sonst clear + return)
-        if (!SMART_CHIPS_ENABLED) {
-            debugLog('ABORT', 'SMART_CHIPS_ENABLED = false');
-            return clearSmartChips();
-        }
-        if (!state) {
-            debugLog('ABORT', 'no state');
-            return clearSmartChips();
-        }
+        if (!SMART_CHIPS_ENABLED) return clearSmartChips();
+        if (!state) return clearSmartChips();
 
         var field = state.next_fields && state.next_fields[0];
-        if (!field) {
-            debugLog('ABORT', 'no next_fields[0]');
-            return clearSmartChips();
-        }
+        if (!field) return clearSmartChips();
 
+        // Backend-Vertrag: chat_mode "FT" = Free Text (Textarea), "QR" = Quick Reply (Enum)
+        // Verifiziert via Live-Debug am 2026-04-17 (Session auf make.ki-sicherheit.jetzt/formular/)
         var meta = state.next_fields_meta && state.next_fields_meta[field];
         var mode = meta && meta.chat_mode;
+        if (mode !== "FT") return clearSmartChips();
 
-        debugLog('MODE CHECK', {
-            nextField: field,
-            meta: meta,
-            chat_mode_value: mode,
-            chat_mode_type: typeof mode,
-            strict_equal_FT: mode === "FT"
-        });
-
-        if (mode !== "FT") {
-            debugLog('ABORT — mode mismatch', 'chat_mode="' + mode + '" ≠ "FT"');
-            return clearSmartChips();
-        }
-
-        if (state.pending_field) {
-            debugLog('ABORT', 'pending_field set: ' + state.pending_field);
-            return clearSmartChips();
-        }
-        if (_editMode) {
-            debugLog('ABORT', '_editMode active');
-            return clearSmartChips();
-        }
+        if (state.pending_field) return clearSmartChips();
+        if (_editMode) return clearSmartChips();
 
         var branche = _collectedFields && _collectedFields.branche;
         var chips = (typeof window.getSmartChips === "function")
             ? window.getSmartChips(field, branche)
             : null;
-
-        debugLog('MAP LOOKUP', {
-            field: field,
-            branche: branche,
-            chips_found: chips ? chips.length : 0,
-            getSmartChips_defined: typeof window.getSmartChips === "function"
-        });
-
-        if (!chips || !chips.length) {
-            debugLog('ABORT', 'no chips in map for field=' + field + ' branche=' + branche);
-            return clearSmartChips();
-        }
+        if (!chips || !chips.length) return clearSmartChips();
 
         // Idempotenz: gleiches Feld → DOM nicht neu bauen (erhält .smart-chip--used-Zustand)
-        if (field === _lastRenderedField) {
-            debugLog('SKIP render', 'field unchanged: ' + field);
-            return;
-        }
+        if (field === _lastRenderedField) return;
 
-        debugLog('RENDER', { field: field, chip_count: chips.length });
         renderChipsDom(field, chips);
         _lastRenderedField = field;
     }
