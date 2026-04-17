@@ -85,7 +85,7 @@ User steht vor leerem Feld. Hilfe gibt es nur auf Klick („Was ist hier gemeint
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-Ausgewählter Chip bekommt einen „✓"-Marker (oder `.selected`-Klasse), bleibt aber weiterhin klickbar — erneuter Klick fügt den Text noch einmal an (User entscheidet). Nach Senden und `field_confirmed`-Event verschwindet die Leiste.
+Ausgewählter Chip bekommt einen „✓"-Marker (oder `.selected`-Klasse), bleibt aber weiterhin klickbar — erneuter Klick fügt den Text noch einmal an (User entscheidet). Sobald `state_update` ein neues `next_fields[0]` meldet, wird die Leiste neu berechnet — oder versteckt, wenn das neue Feld `chat_mode: "QR"` hat.
 
 ---
 
