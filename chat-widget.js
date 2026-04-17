@@ -145,6 +145,7 @@
             + '</div>'
             + '<div class="chat-input-area">'
             + '  <div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
+            + '  <div class="chat-smart-chips" id="chatSmartChips" role="group" aria-label="Formulierungs-Vorschl\u00e4ge" style="display:none;"></div>'
             + '  <div class="chat-input-row">'
             + '    <textarea id="chatInput" placeholder="Ihre Antwort oder Frage..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
             + '    <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
@@ -194,6 +195,9 @@
         options = options || {};
         var reportType = options.report_type || "r1";
         var briefingId = options.briefing_id || null;
+
+        // Feature-Flag aus HTML lesen — Smart-Chips nur aktiv, wenn data-smart-chips="1" gesetzt ist
+        SMART_CHIPS_ENABLED = !!document.querySelector('[data-smart-chips="1"]');
 
         renderChatContainer();
 
@@ -353,6 +357,7 @@
         document.getElementById("chatSend").disabled = true;
 
         clearQuickReplies();
+        clearSmartChips();
         showTypingIndicator();
         chatState.isStreaming = true;
 
@@ -449,6 +454,8 @@
 
                     case "state_update":
                         updateProgress(data);
+                        _collectedFields = data.collected_fields || {};
+                        renderSmartChipsIfApplicable(data);
                         if (data.is_completable === true) {
                             showCompletionUI();
                         }
@@ -860,6 +867,70 @@
         }
     }
 
+    /* ── Smart-Chips (Sprint C1) ─────────────────────────────────────────
+     * Vorschlags-Chips für Freitext-Felder. Datenquelle: window.SMART_CHIPS_DE
+     * (smart-chips-de.js) + window.getSmartChips(field, branche). Briefing:
+     * docs/sprints/sprint-c1-smart-chips-briefing.md
+     * ────────────────────────────────────────────────────────────────── */
+
+    function clearSmartChips() {
+        var container = document.getElementById("chatSmartChips");
+        if (container) {
+            container.innerHTML = "";
+            container.style.display = "none";
+        }
+        _lastRenderedField = null;
+    }
+
+    function renderSmartChipsIfApplicable(state) {
+        // Suppression-Matrix (alle 6 Punkte gegen-prüfen, sonst clear + return)
+        if (!SMART_CHIPS_ENABLED) return clearSmartChips();
+        if (!state) return clearSmartChips();
+
+        var field = state.next_fields && state.next_fields[0];
+        if (!field) return clearSmartChips();
+
+        var meta = state.next_fields_meta && state.next_fields_meta[field];
+        var mode = meta && meta.chat_mode;
+        if (mode !== "textarea") return clearSmartChips();
+
+        if (state.pending_field) return clearSmartChips();
+        if (_editMode) return clearSmartChips();
+
+        var branche = _collectedFields && _collectedFields.branche;
+        var chips = (typeof window.getSmartChips === "function")
+            ? window.getSmartChips(field, branche)
+            : null;
+        if (!chips || !chips.length) return clearSmartChips();
+
+        // Idempotenz: gleiches Feld → DOM nicht neu bauen (erhält .smart-chip--used-Zustand)
+        if (field === _lastRenderedField) return;
+
+        renderChipsDom(field, chips);
+        _lastRenderedField = field;
+    }
+
+    function renderChipsDom(fieldKey, chips) {
+        var container = document.getElementById("chatSmartChips");
+        if (!container) return;
+
+        var html = '<div class="smart-chips-label">Vorschl\u00e4ge — klicken zum \u00dcbernehmen, frei erg\u00e4nzbar:</div>';
+        html += '<div class="smart-chips-group" data-field="' + escapeHtml(fieldKey) + '">';
+        for (var i = 0; i < chips.length; i++) {
+            var text = String(chips[i]);
+            html += '<button type="button" class="smart-chip"'
+                  + ' data-chip-text="' + escapeHtml(text) + '"'
+                  + ' aria-label="Vorschlag \u00fcbernehmen: ' + escapeHtml(text) + '"'
+                  + ' aria-pressed="false">'
+                  + '+ ' + escapeHtml(text)
+                  + '</button>';
+        }
+        html += '</div>';
+
+        container.innerHTML = html;
+        container.style.display = "";
+    }
+
     /* ── Edit-Mode State ── */
     var _editMode = false;
     var _summaryFields = []; // Parsed summary sections stored for edit mode
@@ -916,6 +987,7 @@
     }
 
     function handleDraftValue(data) {
+        clearSmartChips();
         // data = { field, value, label }
         console.log('Draft event received:', JSON.stringify(data));
 
@@ -1325,6 +1397,11 @@
     var _lastState = null;
     var _lastSectionIndex = 0;
     var _currentPhase = "grunddaten";
+
+    /* ── Smart-Chips State (Sprint C1) ── */
+    var _collectedFields = {};       // Spiegel von state.collected_fields, replace bei jedem state_update
+    var _lastRenderedField = null;   // Idempotenz-Guard: gleiches Feld → kein Re-Render
+    var SMART_CHIPS_ENABLED = false; // HTML-Feature-Flag (data-smart-chips="1"), in initChat gesetzt
 
     function detectPhase(state) {
         // Prefer backend-provided conversation_phase
@@ -1743,6 +1820,27 @@
         announcer.textContent = "";
         setTimeout(function() { announcer.textContent = text; }, 50);
     }
+
+    /* ── Smart-Chips Click-Delegation (Sprint C1) ── */
+    document.addEventListener("click", function(e) {
+        var chip = e.target.closest && e.target.closest(".smart-chip");
+        if (!chip) return;
+
+        var chipText = chip.dataset.chipText || chip.textContent.replace(/^\+\s*/, "");
+        var input = document.getElementById("chatInput");
+        if (!input) return;
+
+        var current = input.value.trim();
+        var separator = current ? (current.slice(-1) === "." ? " " : ", ") : "";
+        input.value = current + separator + chipText;
+
+        // Auto-Resize triggern (existierender Listener auf "input")
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.focus();
+
+        chip.classList.add("smart-chip--used");
+        chip.setAttribute("aria-pressed", "true");
+    });
 
     /* ── Public API ── */
     window.initChat = initChat;
