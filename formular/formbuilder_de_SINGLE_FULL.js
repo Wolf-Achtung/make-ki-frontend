@@ -148,12 +148,27 @@ function _collectLabelFor(fieldKey, value){
       return "<label style='display:flex;gap:12px;align-items:flex-start;'><input type='checkbox' id='" + f.key + "' name='" + f.key + "' style='margin-top:4px;width:18px;height:18px;'><span>" + f.label + "</span></label>";
     }
     if (f.type === "slider") {
-      var sliderHtml = "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'>"
-        + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
-      // Add endpoint labels for specific sliders
-      if (f.key === "digitalisierungsgrad" || f.key === "risikofreude") {
-        sliderHtml += "<div class='slider-labels'><span>Niedrig</span><span>Hoch</span></div>";
+      var labelsId = f.key + "_labels";
+      var describedBy = "";
+      var sliderLabelsHtml = "";
+      if (f.key === "digitalisierungsgrad") {
+        sliderLabelsHtml = "<div class='slider-labels' id='" + labelsId + "'>"
+          + "<span>1 · Papier-lastig</span>"
+          + "<span>5 · Mix</span>"
+          + "<span>10 · Voll digital</span>"
+          + "</div>";
+        describedBy = " aria-describedby='" + labelsId + "'";
+      } else if (f.key === "risikofreude") {
+        sliderLabelsHtml = "<div class='slider-labels' id='" + labelsId + "'>"
+          + "<span>1 · Sehr vorsichtig</span>"
+          + "<span>3 · Ausgewogen</span>"
+          + "<span>5 · Experimentierfreudig</span>"
+          + "</div>";
+        describedBy = " aria-describedby='" + labelsId + "'";
       }
+      var sliderHtml = "<div class='slider-container'><input type='range' id='" + f.key + "' name='" + f.key + "' min='" + f.min + "' max='" + f.max + "' step='" + f.step + "'" + describedBy + ">"
+        + "<span class='slider-value-label' id='" + f.key + "_value'>" + (f.min || 1) + "</span></div>";
+      sliderHtml += sliderLabelsHtml;
       return sliderHtml;
     }
     return "<input type='text' id='" + f.key + "' name='" + f.key + "' placeholder='" + (f.placeholder || '') + "'>";
@@ -309,7 +324,11 @@ function _collectLabelFor(fieldKey, value){
       + ".mr-auto{margin-right:auto}"
       + ".slider-container{display:flex;align-items:center;gap:12px}"
       + ".slider-value-label{min-width:48px;padding:8px 12px;background:#dbeafe;border-radius:8px;font-weight:600;color:#1e3a5f;text-align:center}"
-      + ".slider-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:13px;color:#475569}"
+      + ".slider-labels{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:13px;color:#475569;line-height:1.3}"
+      + ".slider-labels span{flex:1 1 0}"
+      + ".slider-labels span:nth-child(2){text-align:center}"
+      + ".slider-labels span:last-child{text-align:right}"
+      + "@media (max-width:480px){.slider-labels{font-size:11px;gap:4px}}"
       + ".badge-wichtig{display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:8px;vertical-align:middle;letter-spacing:0.3px}"
       + ".example-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin:6px 0 10px;font-size:14px;color:#166534;line-height:1.5}"
       + ".example-box .ex-label{font-weight:600;font-size:12px;color:#15803d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}"
