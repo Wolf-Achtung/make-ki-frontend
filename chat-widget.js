@@ -462,6 +462,7 @@
                         break;
 
                     case "quick_replies":
+                        clearSmartChips();
                         renderQuickReplies(data);
                         break;
 
@@ -484,6 +485,7 @@
                         break;
 
                     case "field_confirmed":
+                        clearSmartChips();
                         handleFieldConfirmed(data);
                         break;
 
@@ -529,6 +531,7 @@
 
                 // Render quick_replies from done payload (template turns bundle them here)
                 if (doneData && doneData.quick_replies) {
+                    clearSmartChips();
                     renderQuickReplies(doneData.quick_replies);
                 } else {
                     // V5-FE: Activate preview QR buttons if no new QR set arrives
