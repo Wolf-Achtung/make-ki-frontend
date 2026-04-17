@@ -14,11 +14,39 @@ Testumgebung: `make.ki-sicherheit.jetzt/formular/` im Chat-Modus.
 ## Chip-Rendering je Feld
 
 - [ ] `hauptleistung` → 5 default-Chips
-- [ ] `vision_3_jahre` → 5 default-Chips
+- [ ] `vision_3_jahre` → 5 default-Chips (ohne matchende Größe)
 - [ ] `strategische_ziele` (Branche Marketing) → 4 marketing-Chips
 - [ ] `strategische_ziele` (Branche IT) → 4 it-Chips
 - [ ] `strategische_ziele` (Branche Beratung) → 4 beratung-Chips
-- [ ] `strategische_ziele` (Branche Gesundheit, keine Variante) → 5 default-Chips
+
+## Phase-5: Neue Branche-Varianten (strategische_ziele)
+
+- [ ] Branche Finanzen → 4 finanzen-Chips (u. a. „Compliance-Aufwand beherrschbar halten")
+- [ ] Branche Bildung → 4 bildung-Chips (u. a. „Lernmaterialien individualisieren")
+- [ ] Branche Verwaltung → 4 verwaltung-Chips (u. a. „Bürgeranfragen schneller beantworten")
+- [ ] Branche Bau → 4 bau-Chips (u. a. „Angebotserstellung beschleunigen")
+- [ ] Branche Medien → 4 medien-Chips (u. a. „Redaktionelle Produktion skalieren")
+
+## Phase-5: Fallback auf default bei nicht-gecoverten Branchen
+
+- [ ] Branche Handel → 5 default-Chips
+- [ ] Branche Gesundheit → 5 default-Chips
+- [ ] Branche Industrie → 5 default-Chips
+- [ ] Branche Logistik → 5 default-Chips
+- [ ] Branche Gastronomie → 5 default-Chips
+
+## Phase-5: Größen-Varianten (vision_3_jahre)
+
+- [ ] Größe `"1"` (solo) → 5 solo-Chips (u. a. „Work-Life-Balance halten bei steigendem Umsatz")
+- [ ] Größe `"2-10"` (kleines_team) → 5 kleines_team-Chips (u. a. „Nicht mehr alles selbst machen müssen")
+- [ ] Größe `"11-100"` (kmu) → 5 kmu-Chips (u. a. „Strukturen für echte Skalierung schaffen")
+- [ ] Unbekannte/leere Größe → 5 default-Chips
+
+## Phase-5: Lookup-Priorität
+
+- [ ] Feld mit passender Branche **und** passender Größe → Branche gewinnt (nur relevant, wenn zukünftig ein Feld beide Dimensionen kombiniert; heute hat `strategische_ziele` nur byBranche, `vision_3_jahre` nur bySize — daher ist dieser Fall synthetisch)
+- [ ] Feld nur mit passender Größe, kein byBranche → bySize greift (`vision_3_jahre` bei bekannter Größe)
+- [ ] Weder matchende Branche noch Größe → default greift
 
 ## Suppression-Matrix (alle 6 Regeln müssen greifen)
 
