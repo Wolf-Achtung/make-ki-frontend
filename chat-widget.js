@@ -210,23 +210,10 @@
 
         document.getElementById("chatSwitchToForm").addEventListener("click", switchToForm);
 
-        // Event delegation for draft chip — survives innerHTML replacement
-        document.getElementById("draftChip").addEventListener("click", function(e) {
-            var target = e.target;
-            while (target && target !== this) {
-                if (target.id === "draftConfirmBtn" || target.classList.contains("draft-confirm-btn")) {
-                    e.preventDefault();
-                    confirmDraft();
-                    return;
-                }
-                if (target.id === "draftEditBtn" || target.classList.contains("draft-edit-btn")) {
-                    e.preventDefault();
-                    editDraft();
-                    return;
-                }
-                target = target.parentElement;
-            }
-        });
+        // H2-Fix: Draft-Button-Click-Delegation ist jetzt global auf document-
+        // Level in init() registriert (überlebt DOM-Neurenderings, deckt sowohl
+        // initialen #draftChip als auch Fallback-Chip ab). Kein lokales
+        // addEventListener mehr nötig.
     }
 
     /* ── Chat Init ── */
@@ -1062,22 +1049,8 @@
             parent.appendChild(chip);
         }
 
-        chip.addEventListener("click", function(e) {
-            var target = e.target;
-            while (target && target !== this) {
-                if (target.id === "draftConfirmBtn" || target.classList.contains("draft-confirm-btn")) {
-                    e.preventDefault();
-                    confirmDraft();
-                    return;
-                }
-                if (target.id === "draftEditBtn" || target.classList.contains("draft-edit-btn")) {
-                    e.preventDefault();
-                    editDraft();
-                    return;
-                }
-                target = target.parentElement;
-            }
-        });
+        // H2-Fix: Kein lokaler Click-Handler mehr — die globale
+        // document-Level-Delegation in init() deckt diesen Chip mit ab.
 
         console.log('Draft chip: fallback element created');
     }
@@ -1177,7 +1150,21 @@
     }
 
     function confirmDraft() {
-        if (!currentDraft) return;
+        // H1-Fix: currentDraft kann null sein, wenn handleDraftValue-Event fehlte.
+        // Fallback: aus _lastState.pending_* rekonstruieren.
+        if (!currentDraft) {
+            if (_lastState && _lastState.pending_field) {
+                currentDraft = {
+                    field: _lastState.pending_field,
+                    value: _lastState.pending_value,
+                    label: _lastState.pending_label || _lastState.pending_field
+                };
+                console.log("[confirmDraft] reconstructed currentDraft from _lastState");
+            } else {
+                console.warn("[confirmDraft] no currentDraft and no _lastState.pending_field — aborting");
+                return;
+            }
+        }
 
         var chip = document.getElementById("draftChip");
         if (chip) chip.classList.add("draft-confirming");
@@ -1203,7 +1190,21 @@
     }
 
     function editDraft() {
-        if (!currentDraft) return;
+        // H1-Fix: currentDraft kann null sein, wenn handleDraftValue-Event fehlte.
+        // Fallback: aus _lastState.pending_* rekonstruieren.
+        if (!currentDraft) {
+            if (_lastState && _lastState.pending_field) {
+                currentDraft = {
+                    field: _lastState.pending_field,
+                    value: _lastState.pending_value,
+                    label: _lastState.pending_label || _lastState.pending_field
+                };
+                console.log("[editDraft] reconstructed currentDraft from _lastState");
+            } else {
+                console.warn("[editDraft] no currentDraft and no _lastState.pending_field — aborting");
+                return;
+            }
+        }
 
         fetch(getApiBase() + "/api/chat/confirm", {
             method: "POST",
@@ -1950,6 +1951,26 @@
 
         renderModeSelector();
         checkResume();
+
+        // H2-Fix: Globale Draft-Button-Delegation — überlebt DOM-Neurenderings,
+        // deckt sowohl initialen #draftChip (aus renderChatContainer) als auch
+        // Fallback-Chip (aus createFallbackDraftChip) ab.
+        document.addEventListener("click", function(e) {
+            var target = e.target;
+            while (target && target !== document) {
+                if (target.id === "draftConfirmBtn") {
+                    e.preventDefault();
+                    confirmDraft();
+                    return;
+                }
+                if (target.id === "draftEditBtn") {
+                    e.preventDefault();
+                    editDraft();
+                    return;
+                }
+                target = target.parentNode;
+            }
+        });
     }
 
     if (document.readyState === "loading") {
