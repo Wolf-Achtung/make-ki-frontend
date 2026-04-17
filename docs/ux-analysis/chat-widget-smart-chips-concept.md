@@ -338,3 +338,73 @@ function lookupSmartChips(field, branche) {
 - Sprache: deutsch. Englische Map separat (`SMART_CHIPS_EN`) — analog zu `FIELD_EXAMPLES`.
 
 **Teil B fertig.** Bereit für Teil C (Open Questions + Aufwand) auf Wolf's Signal.
+
+---
+
+# Teil C: Open Questions + Aufwand + Empfehlung
+
+## C.1 Open Questions für Wolf
+
+Fünf Fragen, die vor Sprint-Start beantwortet sein sollten. Alle anderen Details lassen sich im Sprint entscheiden.
+
+1. **Scope der Felder für MVP.** Smart-Chips auf *allen* Feldern mit `chat_mode: "textarea"` (sind laut `next_fields_meta` deutlich weniger als 10) oder nur auf einer kuratieren Shortlist? Vorschlag MVP-Shortlist: `strategische_ziele`, `hauptleistung`, `vision_3_jahre`. Ausweitung in Phase 2.
+2. **Branche-Varianten — welche Felder?** Vollständige `byBranche`-Maps sind Pflegearbeit. Vorschlag: Nur `strategische_ziele` bekommt branche-spezifische Varianten; andere Felder starten mit `default`-only. Zustimmung?
+3. **Feature-Flag.** Name (`SMART_CHIPS_ENABLED`?), Default-Wert für Produktion (`false` zum Start, `true` nach internem Smoke-Test?), Steuerung über `document.body.dataset` oder `window`-Flag oder Backend?
+4. **R1 vs. R2.** Chat-Widget wird in `strategy.html` (R2) bereits genutzt; soll MVP für beide aktiv sein oder zuerst nur R2? Unterschiede im Feld-Set?
+5. **Sprache.** MVP nur deutsche Suggestions (`SMART_CHIPS_DE`) oder direkt mit Englisch-Parallel-Map (`SMART_CHIPS_EN`)? English-Pfad im Widget heute laut `initChat` über `lang`-Parameter (Z. 209) differenzierbar.
+
+Nicht-Fragen (entscheidet das Sprint-Team, keine Wolf-Abstimmung nötig): CSS-Farbtöne, Icon-Wahl („+" vs. „›"), genaue Copy der Label-Zeile, Datei-Struktur (`smart_chips_de.js` vs. inline).
+
+## C.2 Aufwandsschätzung (Breakdown)
+
+| Position | Stunden | Notiz |
+|----------|---------|-------|
+| Suggestion-Map initial (3 Felder, `strategische_ziele` × 3 Branchen + 2 Felder × default) | 2 | Copy-Arbeit, Abstimmung mit Wolf |
+| `renderSmartChipsIfApplicable()` + `clearSmartChips()` + `onChipClick` | 2 | inkl. Modul-Variablen, Suppression-Logik |
+| Handler-Anschlüsse in `state_update` (Z. 450) und `handleDraftValue` (Z. 467) | 0.25 | Drei Zeilen |
+| DOM-Container in `renderChatContainer()` (Z. 146–152) | 0.25 | Ein neuer `<div>` zwischen QR und Input-Row |
+| CSS-Block `.chat-smart-chips` + `.smart-chip` (+ `.selected`, `:empty`) | 1 | Pill-Styling, `:empty { display:none }`, Mobile-Anpassung |
+| Edge-Case-Tests manuell (Draft aktiv, QR-Turn, Resume, Edit-Mode) | 1 | 4 Szenarien × 2 Browser |
+| A11y-Polish (Keyboard-Reihenfolge, `aria-label`, Focus-Ring) | 0.5 | Standard-Pattern, kein Custom-Code |
+| Dokumentation (Pflege-Regeln in README oder Header-Kommentar) | 0.5 | Kurz, mit Beispiel |
+| **Zwischensumme MVP** | **~7.5 h** | |
+| Puffer (±20 %) | +1.5 h | für unvorhergesehene Integrationsprobleme |
+| **Gesamt MVP** | **~9 h** | passt in einen Sprint-Tag mit Review-Puffer |
+
+Phase 2 (später, separat): Ausweitung auf weitere Felder, weitere Branchen, ggf. Backend-LLM-Suggestions: **+6–10 h**.
+
+## C.3 Top-3-Risiken bei der Implementation
+
+1. **Suggestion-Qualität wird als „zu generisch" empfunden.**
+   *Beispiel:* User in Nische „Kanzlei-Automatisierung" bekommt Marketing-Chips wie „Leads generieren" → wirkt fremd.
+   **Mitigation:** Klare Schwelle in C.1 Q2 ziehen — Branche-Varianten nur dort, wo die Differenz spürbar hilft. Im Zweifel lieber 3 neutrale `default`-Chips als 5 aufgesetzte branche-spezifische. Suggestion-Map als PR-Review-Artefakt (Wolf liest mit), nicht eigenmächtig.
+2. **UI-Clutter durch parallele Helfer.**
+   *Beispiel:* Smart-Chips + Help-Button + Skip-Button + Textarea nebeneinander — visueller Lärm.
+   **Mitigation:** Help-Button nicht rendern, wenn Smart-Chips aktiv (zusätzliche Zeile in `renderHelpButtonIfApplicable` Z. 816: `if (getSmartChipsVisible()) return;`). Skip-Button bleibt (andere Funktion). Sprint-Exit-Kriterium: Screenshot-Diff „vorher/nachher" gemeinsam mit Wolf begutachten.
+3. **Feature-Flag nicht sauber verdrahtet → Rollout außer Kontrolle.**
+   *Beispiel:* Flag nur clientseitig, vergessen bei Release → Chips live bei allen.
+   **Mitigation:** Flag-Default `false`, Aktivierung explizit per HTML-Attribut (z. B. `<body data-smart-chips="1">`) und/oder via `window.__SMART_CHIPS_ENABLED`. Smoke-Test-Pfad in `strategy.html` eines Staging-Deploys vor Produktion. Kill-Switch: Ein einziges `return;` am Anfang von `renderSmartChipsIfApplicable` deaktiviert das Feature vollständig ohne Code-Rollback.
+
+## C.4 Finale Empfehlung
+
+**GO für Sprint C1, Phase-1-MVP.**
+
+*Begründung:* Live-API liefert alle Daten ohne Backend-Change; Injection-Point ist robust gegen bestehende Events; Aufwand ~9 h passt in einen Sprint-Tag; Kill-Switch ist vorhanden; Risiken sind mit konkreten Mitigationen adressiert. Kein offener Klärungspunkt mehr aus der Feasibility.
+
+**Vorgeschlagene Sprint-Struktur:**
+
+| Phase | Scope | Erfolgskriterium |
+|-------|-------|------------------|
+| **Phase 1 MVP (Sprint C1, ~9 h)** | 3 Felder (`strategische_ziele`, `hauptleistung`, `vision_3_jahre`), nur `strategische_ziele` mit Branche-Varianten (3 Branchen), Feature-Flag default `false`, deutsche Sprache | Wolf's Live-Test-Szenario („Was sind Ihre wichtigsten Ziele…?") zeigt 3–5 passende Chips; Klick fügt Text in Textarea ein; Draft/QR/Edit-Suppression greift |
+| **Phase 2 Rollout (später, separat)** | Ausweitung auf weitere Felder, weitere Branchen, Englisch-Map, ggf. Backend-LLM-generierte Suggestions | Coverage ≥ 80 % der Freitext-Turns; Pflege-Doku für neue Felder |
+
+**Out-of-Scope für Sprint C1 — bewusst NICHT in diesem Sprint:**
+
+- Backend-Änderungen (LLM-Suggestions, neuer SSE-Event-Typ, erweiterte `next_fields_meta`).
+- Autocomplete-Live-Tippen (separates Konzept, eigener Sprint).
+- Ersatz für Quick-Replies oder Help-Button.
+- Analytics/Telemetrie zu Chip-Klicks (sinnvolle Phase-2-Ergänzung, aber nicht MVP-blocker).
+- Formular-Seitige Smart-Chips (das wäre das ursprüngliche, verworfene Scope aus Phase 0 — kein Teil dieser Arbeit).
+- Mehrsprachige Maps über Deutsch hinaus (Englisch in Phase 2, alles andere ungeplant).
+
+**Teil C fertig. Dokument 3 komplett.** Bereit für Dokument 4 (Executive Summary) auf Wolf's Signal.
