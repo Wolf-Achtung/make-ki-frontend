@@ -131,14 +131,14 @@
                 bildung: [
                     "Lernmaterialien individualisieren",
                     "Verwaltungsaufwand für Lehrende senken",
-                    "Lernerfolg messbar und sichtbar machen",
+                    "Abschlussquoten und Kundenzufriedenheit steigern",
                     "Zeit für pädagogische Arbeit zurückgewinnen"
                 ],
                 verwaltung: [
                     "Bürgeranfragen schneller beantworten",
                     "Aktenrecherche und Fallprüfung beschleunigen",
                     "Prozess-Durchlaufzeiten spürbar kürzen",
-                    "Amtshandlungen transparenter gestalten"
+                    "Compliance-Anforderungen zuverlässig erfüllen"
                 ],
                 bau: [
                     "Angebotserstellung beschleunigen",
