@@ -158,3 +158,79 @@ fetch(getApiBase() + "/api/chat/session/" + sessionId + "/fields", {
 - Endpoint funktioniert, aber heute nur für Form-Switch. Die Struktur `{fields: {...}}` reicht für Smart-Chips aus.
 - Kein Code-Hinweis, dass `state_update` bereits collected_fields mitsendet.
 - **Pragmatische Empfehlung** (Details in Abschnitt 4): Frontend baut sich einen **inkrementellen Cache** aus `field_confirmed`-Events auf und **ergänzt ihn** bei `state_update` mit einem `/fields`-Fetch, falls der Cache leer ist (z. B. bei Resume). Das vermeidet Polling pro Turn und hält Backend-Änderungen minimal.
+
+---
+
+## 3. Injection-Points Bewertung
+
+### 3.1 Kandidaten
+
+Aus der DOM-Hierarchie (`renderChatContainer()` Z. 110–190, vgl. Doc 1 §3) kommen drei Positionen in Betracht. Zur Orientierung — die relevante Teil-Struktur:
+
+```
+#chat-container
+├── #chatMessages                  (Nachrichten-Log, wächst nach unten, scrollt)
+├── #draftChip                     (Geschwister-Element, display:none initial)
+└── .chat-input-area               (flex-column, border-top, flex-shrink:0)
+    ├── #chatQuickReplies          (Buttons, leer wenn keine QR)
+    └── .chat-input-row            (Textarea + Send-Button)
+```
+
+| Kandidat | Position | Pro | Contra |
+|----------|----------|-----|--------|
+| **A:** Zwischen `#chatQuickReplies` und `.chat-input-row` | `.chat-input-area`-Child, Index 1 (neu) | Direkt über der Textarea — maximale visuelle Nähe zum Input, wo der User gerade steht. Persistiert durch `clearQuickReplies()` (Z. 849–853 wipet nur `#chatQuickReplies.innerHTML`, nicht Geschwister). Kein Layout-Shift bei QR-Wipe. | Erfordert neues DOM-Element (kein Container vorhanden). Muss einmalig in `renderChatContainer()` angelegt werden — kleine Änderung. |
+| **B:** Als erstes Child in `#chatQuickReplies` (vor den QR-Buttons) | innerhalb existierendem Container | Null neues Markup nötig. QR-Container ist schon adressiert (role="group"). | **Konflikt:** `clearQuickReplies()` (Z. 852) wipet den ganzen Container bei jedem `sendMessage` (Z. 355). Smart-Chips würden bei jedem User-Send verschwinden. Auch `renderQuickReplies` selbst setzt `container.innerHTML = ""` (Z. 582). **Zu fragil.** |
+| **C:** Am Ende von `#chatMessages` (nach letzter Assistant-Bubble) | Scrollt mit Nachrichten mit | Gleiche Position wie bereits der `help-trigger` (Z. 799–812, `container.appendChild(helpBtn)`). Bewährtes Muster. | Scrollt nach oben weg, sobald neue Messages kommen — für multi-turn Freitext-Dialoge (Help-Response + Neu-Frage) verlieren die Chips Kontextnähe zum Input. Auch: bei `finishStream` erzeugt `token` neue `streamDiv`s (Z. 443) — Chips bleiben zwar stehen, werden aber begraben. |
+
+### 3.2 Wechselwirkungen mit existierenden UI-Elementen
+
+**Draft-Chip (`#draftChip`) — parallel sichtbar?**
+
+- `#draftChip` ist **Geschwister** von `.chat-input-area` (Z. 134–145, direkt unter `#chatMessages`), nicht Teil davon.
+- CSS (`chat-widget.css` Z. 1036–1046): eigener Block, `border: 1px solid #3b82f6`, `.draft-active`-Klasse schaltet Sichtbarkeit.
+- **Kandidat A** ist physisch unter dem Draft-Chip — beide können gleichzeitig sichtbar sein, Draft-Chip oben (Wert-Vorschlag), Smart-Chips unten (Suggestion-Alternative). Semantisch aber doppelt: Wenn das Backend einen Draft hat, sind Suggestions redundant. **Regel:** Smart-Chips nicht rendern, solange `#draftChip.draft-active`.
+- **Kandidat B/C**: Draft-Chip bleibt davon unberührt, aber B wird eh durch clearQR zerstört.
+
+**Quick-Replies (`#chatQuickReplies`) — Konflikt bei Freitext-Turns?**
+
+- Bei reinem Freitext-Feld (z. B. `strategische_ziele` Freitext-Variante) sendet das Backend **kein** `quick_replies`. Dann ist `#chatQuickReplies` leer (Z. 662 CSS `.chat-quick-replies:empty` — existiert als Selector, vermutlich `display:none`).
+- **Kandidat A** koexistiert problemlos: leerer QR-Container oben (kein visueller Platz verbraucht), Smart-Chips darunter.
+- Bei **Mischfeldern** (QR + Freitext erlaubt, z. B. Multi-Select mit Confirm-Button) stehen Smart-Chips und QR-Buttons nebeneinander — Gefahr visueller Redundanz. **Regel:** Smart-Chips unterdrücken, solange `#chatQuickReplies` Buttons enthält (außer explizit als ergänzende Freitext-Hilfe gewollt).
+- **Skip-Button** (Z. 783–789) wird ebenfalls in `#chatQuickReplies` angehängt — unabhängig von Smart-Chips-Position.
+
+**Help-Trigger (`renderHelpButton`, Z. 796–813) — Position-Konflikt?**
+
+- Wird **in `#chatMessages`** angehängt (Z. 812), direkt nach der letzten Bot-Nachricht. **Nicht** in `.chat-input-area`.
+- Triggert erst **nach `done`** (Z. 556 via `renderHelpButtonIfApplicable`). Smart-Chips an **Kandidat A** sind räumlich getrennt — kein Layout-Konflikt.
+- Semantisch überlappen sie aber: Help-Button sagt „Was ist gemeint?", Smart-Chips sagen „Hier ist ein Vorschlag". Beides zielt auf denselben User-Zustand (Unsicherheit). **Entscheidung (für Doc 3):** Smart-Chips machen den Help-Button für Felder mit Suggestions obsolet oder ergänzen ihn. Nicht beide gleichzeitig zeigen, sonst Clutter.
+
+### 3.3 Empfehlung — finaler Injection-Point
+
+**Kandidat A: Neues `<div id="chatSmartChips" class="chat-smart-chips">` als Child von `.chat-input-area`, eingefügt zwischen `#chatQuickReplies` (Index 0) und `.chat-input-row` (Index 1).**
+
+**Begründung:**
+
+1. **Robust gegen `clearQuickReplies()`** (Z. 852): Der Wipe trifft nur `#chatQuickReplies.innerHTML`, nicht das neue Geschwisterelement. Smart-Chips überleben User-Sends, solange sie nicht aktiv entfernt werden.
+2. **Visuelle Nähe zum Input**: Direkt über der Textarea, wo der User ohnehin hinschaut. Kein „Scrollen nach oben, um Hinweise zu sehen".
+3. **Bestehende Flex-Struktur**: `.chat-input-area` ist bereits `flex-direction: column` (CSS Z. 917) — neues Child ordnet sich automatisch korrekt ein.
+4. **Koexistenz mit Draft-Chip**: Draft-Chip (Geschwister von `.chat-input-area`) bleibt oben, Smart-Chips unten. Suppression-Regel: Chips nur rendern, wenn kein `#draftChip.draft-active`.
+5. **Keine Kollision mit Help-Trigger**: Hilfe sitzt im Message-Log, Smart-Chips im Input-Bereich — zwei verschiedene visuelle Layer.
+
+**CSS-Ankerpunkt:**
+
+- Neuer Selector `.chat-smart-chips` — analog zu `.chat-quick-replies` (CSS Z. 655–662), mit `:empty { display: none }` für automatisches Ausblenden, wenn keine Suggestions da sind.
+- `border-top` nicht nötig, da `.chat-input-area` schon einen hat (CSS Z. 916).
+- Empfohlen: `padding: 8px 24px 0; display: flex; flex-wrap: wrap; gap: 8px;`
+
+**Event-Lifecycle:**
+
+| Zeitpunkt | Aktion |
+|-----------|--------|
+| `handleSSEEvent('state_update', data)` Z. 450 | Wenn `data.current_field` ein Freitext-Feld ist und kein Draft aktiv und `#chatQuickReplies` leer bleibt → Chips rendern (Daten aus inkrementellem Cache + evtl. `/fields`-Fetch bei leerem Cache). |
+| `handleSSEEvent('draft_value', data)` Z. 467 | Chips unterdrücken/leeren, solange Draft aktiv. |
+| `handleSSEEvent('field_confirmed', data)` Z. 479 | Chips für aktuelles Feld leeren (Antwort ist eingetütet). Cache mit `data.field → data.value` aktualisieren. |
+| `handleSSEEvent('quick_replies', data)` Z. 457 mit non-leerer Liste | Chips leeren (QR-Buttons übernehmen die Führung). |
+| `sendMessage(...)` Z. 338 | **Nicht** automatisch leeren (Chips sollen über User-Send hinweg sichtbar bleiben, solange Feld offen). Backend entscheidet via `state_update`/`field_confirmed`, wann Schluss ist. |
+| Resume via `checkResume()` Z. 1568 | Nach `updateProgress(sessionData.state)` (Z. 1691): Falls `state.current_field` ein Freitext-Feld ist, Chips nachladen (Fallback-`/fields`-Fetch). |
+
+**Kleinste Implementierungs-Fußabdruck:** +1 Zeile in `renderChatContainer` (neuer `<div id="chatSmartChips">`), +1 Funktion `renderSmartChips(fieldName, suggestions)`, +ein Cache `_collectedFields`, +CSS-Block `.chat-smart-chips`. Keine Änderung an `clearQuickReplies`, `renderQuickReplies`, `renderHelpButton` nötig.
