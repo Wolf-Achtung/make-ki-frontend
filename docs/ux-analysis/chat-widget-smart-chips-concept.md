@@ -140,3 +140,201 @@ Chip-Text wird **angehängt** (append), mit Trennzeichen `, ` oder `\n`, abhäng
 ---
 
 **Teil A fertig.** Bereit für Teil B (Event-Flow + Code-Skizzen) auf Wolf's Signal.
+
+---
+
+# Teil B: Event-Flow + Code-Skizzen
+
+Datenquellen gemäß korrigierter Feasibility: `state.next_fields[0]`,
+`state.next_fields_meta[field].chat_mode`, `state.collected_fields`,
+`state.pending_field`.
+
+---
+
+## B.1 Event-Lifecycle — was löst was aus?
+
+```
+ SSE-Event                Reaktion auf Smart-Chips-Leiste
+ ─────────────────────────────────────────────────────────────────────
+ state_update   ────▶   renderSmartChips(next_fields[0], meta, fields)
+                         └─ intern: clear, Suppression-Checks, Render
+ draft_value    ────▶   clearSmartChips()          (pending_field aktiv)
+ field_confirmed ───▶   (nichts — nächstes state_update regelt es)
+ quick_replies  ────▶   (nichts — state_update davor hat chat_mode)
+ preview_qr     ────▶   (nichts)
+ typing/token   ────▶   (nichts — niemals auf Token-Stream reagieren)
+ done           ────▶   (nichts — state_update desselben Turns war führend)
+ error          ────▶   clearSmartChips()          (defensiv)
+```
+
+**User-Aktionen:**
+
+| User-Aktion | Effekt |
+|---|---|
+| Chip-Klick | Append des Chip-Texts in `#chatInput`, Fokus in Textarea, `.selected`-Klasse setzen. **Chips bleiben sichtbar.** |
+| `sendMessage()` (Z. 338) | **Nichts.** Leiste bleibt. Das folgende `state_update` entscheidet: gleiches Feld → unverändert; neues Feld → neu rendern; Feld geschlossen → verstecken. |
+| Resume (`checkResume` Z. 1568) | `updateProgress(sessionData.state)` an Z. 1691 trifft denselben Pfad wie `state_update`. Kein Sonderweg. |
+
+**Suppression-Matrix — wann gar nichts rendern?**
+
+| Bedingung | Quelle | Verhalten |
+|---|---|---|
+| `next_fields` fehlt oder leer | Backend (Summary/Complete-Phase) | Chips leer |
+| `next_fields_meta[field].chat_mode !== "textarea"` | Live-API | Chips leer (QR übernimmt) |
+| `pending_field` gesetzt | Live-API | Chips leer (Draft-Chip führt) |
+| `_editMode === true` | Z. 864 | Chips leer (Edit-Panel führt) |
+| keine Suggestions in statischer Map | Frontend | Chips leer |
+| `#chatQuickReplies` nicht leer | DOM-State | Chips leer (Safety-Net) |
+
+Leerer Container wird per `.chat-smart-chips:empty { display: none }` unsichtbar
+— kein manuelles `style.display`-Handling.
+
+---
+
+## B.2 Code-Skizze: `renderSmartChipsIfApplicable(state)`
+
+Pseudocode, nicht produktionsreif. Ergänzt den `state_update`-Handler (Z. 450).
+
+```js
+// Modul-Scope (neben _lastState Z. 1325)
+var _collectedFields = {};
+var _lastRenderedField = null;
+
+function renderSmartChipsIfApplicable(state) {
+    var container = document.getElementById("chatSmartChips");
+    if (!container) return;
+
+    // --- Suppression ---
+    var field = state.next_fields && state.next_fields[0];
+    var meta  = field && state.next_fields_meta && state.next_fields_meta[field];
+    var mode  = meta && meta.chat_mode;
+    var qrContainer = document.getElementById("chatQuickReplies");
+
+    if (!field || mode !== "textarea") return clearSmartChips();
+    if (state.pending_field) return clearSmartChips();       // Draft aktiv
+    if (_editMode) return clearSmartChips();                 // Edit-Modus
+    if (qrContainer && qrContainer.children.length) return clearSmartChips();
+
+    // --- Feld unverändert? Dann nicht neu rendern (erhält .selected-Zustand) ---
+    if (field === _lastRenderedField) return;
+
+    // --- Suggestions ziehen ---
+    var branche = _collectedFields.branche;
+    var suggestions = lookupSmartChips(field, branche);
+    if (!suggestions || !suggestions.length) return clearSmartChips();
+
+    // --- Render ---
+    container.innerHTML = "";
+    container.appendChild(makeLabel("Vorschläge — klicken zum Übernehmen:"));
+    suggestions.forEach(function(s) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "smart-chip";
+        btn.textContent = "+ " + s;
+        btn.addEventListener("click", onChipClick);
+        container.appendChild(btn);
+    });
+    _lastRenderedField = field;
+}
+
+function clearSmartChips() {
+    var container = document.getElementById("chatSmartChips");
+    if (container) container.innerHTML = "";
+    _lastRenderedField = null;
+}
+
+function onChipClick(e) {
+    var input = document.getElementById("chatInput");
+    var text = e.currentTarget.textContent.replace(/^\+\s*/, "");
+    var sep  = input.value && !input.value.endsWith(", ") ? ", " : "";
+    input.value = input.value + sep + text;
+    input.focus();
+    e.currentTarget.classList.add("selected");
+}
+```
+
+**Anschluss im bestehenden Handler** (Z. 450):
+
+```js
+case "state_update":
+    updateProgress(data);
+    _collectedFields = data.collected_fields || {};
+    renderSmartChipsIfApplicable(data);
+    if (data.is_completable === true) showCompletionUI();
+    break;
+```
+
+Zusätzlich in `handleDraftValue` (Z. 467): `clearSmartChips();` als erste Zeile.
+
+---
+
+## B.3 Suggestion-Map — Struktur
+
+Analog zu `window.FIELD_EXAMPLES` (`field_examples_de.js`, bereits in `strategy.html` Z. 1093 geladen). Neue Datei `smart_chips_de.js` oder Inline im Widget, je nach Pflege-Präferenz.
+
+```js
+window.SMART_CHIPS_DE = {
+
+    strategische_ziele: {
+        default: [
+            "Effizienz steigern",
+            "Kosten senken",
+            "Qualität verbessern",
+            "Mitarbeiter entlasten"
+        ],
+        byBranche: {
+            marketing: [
+                "Leads generieren",
+                "Content-Produktion skalieren",
+                "Personalisierung verbessern",
+                "Marketing-Automation ausbauen"
+            ],
+            it: [
+                "Code-Qualität verbessern",
+                "Incident-Response beschleunigen",
+                "Dokumentation automatisieren",
+                "Testing-Coverage erhöhen"
+            ],
+            beratung: [
+                "Research-Zeit verkürzen",
+                "Berichte automatisiert erstellen",
+                "Wissensmanagement aufbauen",
+                "Mandantenkommunikation skalieren"
+            ]
+        }
+    },
+
+    hauptleistung: {
+        default: [
+            "Beratung",
+            "Dienstleistung",
+            "Produktentwicklung",
+            "Vertrieb"
+        ]
+        // byBranche optional pro Feld
+    }
+
+};
+```
+
+**Lookup-Funktion:**
+
+```js
+function lookupSmartChips(field, branche) {
+    var entry = window.SMART_CHIPS_DE && window.SMART_CHIPS_DE[field];
+    if (!entry) return null;
+    if (branche && entry.byBranche && entry.byBranche[branche]) {
+        return entry.byBranche[branche];
+    }
+    return entry.default || null;
+}
+```
+
+**Regeln für Pflege:**
+
+- `default` ist Pflicht, sobald ein `field`-Schlüssel existiert — Fallback für unbekannte Branchen.
+- `byBranche` optional; Branchenschlüssel exakt wie in `collected_fields.branche` (z. B. `"marketing"`, nicht `"Marketing & Werbung"`).
+- Max 5 Suggestions pro Eintrag — mehr würde die Chip-Leiste visuell überladen.
+- Sprache: deutsch. Englische Map separat (`SMART_CHIPS_EN`) — analog zu `FIELD_EXAMPLES`.
+
+**Teil B fertig.** Bereit für Teil C (Open Questions + Aufwand) auf Wolf's Signal.
