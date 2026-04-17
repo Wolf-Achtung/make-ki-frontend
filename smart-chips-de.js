@@ -76,7 +76,8 @@
                 "Effizienz im Tagesgeschäft steigern",
                 "Mitarbeiter von Routinearbeit entlasten",
                 "Kundenzufriedenheit messbar verbessern",
-                "Wettbewerbsvorteil ausbauen"
+                "Wettbewerbsvorteil ausbauen",
+                "Abhängigkeit von einzelnen Mitarbeitern reduzieren"
             ],
             byBranche: {
                 marketing: [
@@ -86,16 +87,16 @@
                     "Kampagnen-Performance verbessern"
                 ],
                 it: [
-                    "Code-Qualität durch KI-Reviews steigern",
-                    "Incident-Response beschleunigen",
+                    "Entwicklerproduktivität nachhaltig steigern",
+                    "Kundenprobleme schneller lösen",
                     "Technische Dokumentation automatisieren",
-                    "Test-Coverage systematisch erhöhen"
+                    "Qualitätssicherung skalierbar machen"
                 ],
                 beratung: [
-                    "Research-Zeit pro Mandat halbieren",
-                    "Berichte und Analysen automatisiert erstellen",
+                    "Recherche und Vorbereitung beschleunigen",
+                    "Berichterstellung automatisieren",
                     "Wissensmanagement strukturiert aufbauen",
-                    "Mandantenkommunikation effizienter gestalten"
+                    "Kundenkommunikation professionalisieren"
                 ]
             }
         }
