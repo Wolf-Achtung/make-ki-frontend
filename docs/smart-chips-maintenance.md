@@ -5,6 +5,7 @@
 Smart-Chips ergänzen den Chat-Modus um kontextuelle Formulierungs-Vorschläge.
 MVP-Scope (Sprint C1): R1-Chat, 3 Felder (`strategische_ziele`, `vision_3_jahre`, `hauptleistung`).
 Phase-5-Erweiterung: 5 zusätzliche Branchen, Größen-Varianten für `vision_3_jahre`.
+Phase-6-Erweiterung: verbleibende 5 Branchen ergänzt (vollständige byBranche-Coverage) + Resume-Path-Fix.
 
 ## Coverage-Stand
 
@@ -12,12 +13,28 @@ Phase-5-Erweiterung: 5 zusätzliche Branchen, Größen-Varianten für `vision_3_
 |------|---------|-------------------|------------------|
 | `hauptleistung` | 5 Chips (strict) | — | — |
 | `vision_3_jahre` | 5 Chips | — | `solo`, `kleines_team`, `kmu` (je 5) |
-| `strategische_ziele` | 5 Chips | **8 von 13 Branchen** (je 4) | — |
+| `strategische_ziele` | 5 Chips | **13 von 13 Branchen** (je 4) | — |
 
 > **Hinweis `hauptleistung`:** `strict: true` unterdrückt den default-Fallback. Ohne `byBranche`-Match werden **keine** Chips gezeigt — die Defaults wirken in Branchen wie Bildung oder Bau als Kontextbruch. Siehe Abschnitt „Strict-Modus".
 
-**Branche-Coverage (strategische_ziele):** `marketing`, `it`, `beratung`, `finanzen`, `bildung`, `verwaltung`, `bau`, `medien`.
-**Fallback auf `default`:** `handel`, `gesundheit`, `industrie`, `logistik`, `gastronomie` — bewusst, weil für diese Branchen noch keine distinkten Formulierungen kuratiert sind (Regel: nur wo spürbar anders).
+**Branche-Coverage (strategische_ziele) — 13 von 13:** `marketing`, `it`, `beratung`, `finanzen`, `bildung`, `verwaltung`, `bau`, `medien`, `handel`, `gesundheit`, `industrie`, `logistik`, `gastronomie`.
+Fallback auf `default` greift nur noch für Branchen-Werte, die nicht im Schema stehen (Edge-Case).
+
+**Chip-Gesamtzahl:** 82 (5 hauptleistung + 20 vision_3_jahre + 5 default + 52 byBranche).
+
+## Resume-Path (Session fortsetzen)
+
+Smart-Chips funktionieren auch nach Page-Reload mitten in einer Session:
+
+- `SMART_CHIPS_ENABLED` wird in `init()` gesetzt — vor dem Early-Return, damit
+  Start- und Resume-Flow den gleichen Flag-Stand sehen.
+- `restoreSession()` ruft `renderSmartChipsIfApplicable(state)` nach
+  `updateProgress(state)` auf und spiegelt `_collectedFields` aus
+  `sessionData.state.collected_fields` — analog dem `state_update`-Handler.
+
+Vor dem Fix: Chips waren nach Page-Reload stumm, auch wenn sie vorher aktiv
+waren, weil `SMART_CHIPS_ENABLED` auf `false` blieb und der Resume-Handler
+`renderSmartChipsIfApplicable` nicht aufgerufen hat.
 
 ## Lookup-Priorität
 
@@ -62,12 +79,14 @@ Beim Hinzufügen neuer Chips:
 
 ## Branche-Varianten erweitern
 
-Aktuell abgedeckt: `marketing`, `it`, `beratung`, `finanzen`, `bildung`, `verwaltung`, `bau`, `medien` für `strategische_ziele`.
+Aktuell vollständig abgedeckt für `strategische_ziele` (13 von 13 Branchen):
+`marketing`, `it`, `beratung`, `finanzen`, `bildung`, `verwaltung`, `bau`,
+`medien`, `handel`, `gesundheit`, `industrie`, `logistik`, `gastronomie`.
 
-Weitere Branchen hinzufügen:
+Sollte das Branche-Schema später erweitert werden:
 
 1. `byBranche.{branche_key}` analog den existierenden anlegen
-2. Branche-Keys müssen mit Backend-Values matchen (z. B. `"handel"`, `"gesundheit"`, `"industrie"`, `"logistik"`, `"gastronomie"`)
+2. Branche-Key exakt wie in Backend-Schema (Lowercase-Slug)
 3. 3–5 Chips pro Branche
 4. Nur hinzufügen, wenn spürbar anders als `default` — sonst Pflegeaufwand ohne UX-Nutzen
 
