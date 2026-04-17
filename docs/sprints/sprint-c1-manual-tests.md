@@ -27,13 +27,18 @@ Testumgebung: `make.ki-sicherheit.jetzt/formular/` im Chat-Modus.
 - [ ] Branche Bau → 4 bau-Chips (u. a. „Angebotserstellung beschleunigen")
 - [ ] Branche Medien → 4 medien-Chips (u. a. „Redaktionelle Produktion skalieren")
 
-## Phase-5: Fallback auf default bei nicht-gecoverten Branchen
+## Phase-6: Restliche 5 Branche-Varianten (strategische_ziele)
 
-- [ ] Branche Handel → 5 default-Chips
-- [ ] Branche Gesundheit → 5 default-Chips
-- [ ] Branche Industrie → 5 default-Chips
-- [ ] Branche Logistik → 5 default-Chips
-- [ ] Branche Gastronomie → 5 default-Chips
+- [ ] Branche Handel → 4 handel-Chips (u. a. „Produktpräsentation individuell ausspielen")
+- [ ] Branche Gesundheit → 4 gesundheit-Chips (u. a. „Behandlungsdokumentation konsequent entlasten")
+- [ ] Branche Industrie → 4 industrie-Chips (u. a. „Qualitätskontrolle durchgängig automatisieren")
+- [ ] Branche Logistik → 4 logistik-Chips (u. a. „Routenplanung dynamisch optimieren")
+- [ ] Branche Gastronomie → 4 gastronomie-Chips (u. a. „Personalplanung bedarfsgerecht steuern")
+
+## Phase-6: Branche-Coverage vollständig (13/13)
+
+- [ ] `byBranche` enthält alle 13 Branchen-Keys (marketing, it, beratung, finanzen, bildung, verwaltung, bau, medien, handel, gesundheit, industrie, logistik, gastronomie)
+- [ ] Default-Fallback greift nur bei unbekannten/leeren Branchen-Werten, nicht mehr bei „Handel/Gesundheit/…"
 
 ## Phase-5: Größen-Varianten (vision_3_jahre)
 
@@ -90,3 +95,18 @@ Testumgebung: `make.ki-sicherheit.jetzt/formular/` im Chat-Modus.
 - [ ] Session-Resume (Page-Reload mit aktiver Session): Chips erscheinen beim nächsten `state_update`
 - [ ] Schnelles Klicken mehrerer Chips: kein JS-Error, alle Texte landen im Input
 - [ ] Chat-Ende erreicht: Keine stale Chips nach finalem State
+
+## Phase-6: Resume-Path — Smart-Chips nach Page-Reload
+
+Vorbereitung: Chat starten (Branche `bildung`, Größe `KMU`). Antworten bis zu
+einem FT-Feld (`hauptleistung` oder `strategische_ziele`), bei dem Chips
+sichtbar sein müssten.
+
+- [ ] Ohne Reload: Chips erscheinen am FT-Feld wie erwartet (Sanity-Check)
+- [ ] Nach **Page-Reload (F5 / Cmd-R)** mitten in Session:
+    - [ ] Resume-Banner erscheint auf Mode-Selector-Seite
+    - [ ] „Fortsetzen" wiederherstellt Session (alle Messages, QR, Input-State)
+    - [ ] Chips werden bei FT-Feld automatisch wieder gerendert (Branche-matched wie vor dem Reload)
+- [ ] Page-Reload bei Branche ohne byBranche-Key: default-Chips erscheinen (nur strategische_ziele; `hauptleistung` bleibt strict-stumm)
+- [ ] Page-Reload bei Nicht-FT-Feld (z. B. Branche-Quick-Reply): keine Chips, keine JS-Errors in der Konsole
+- [ ] `SMART_CHIPS_ENABLED`-Flag ist nach Reload auf `true` gesetzt (in DevTools: `data-smart-chips="1"` am `<body>` → Flag initialisiert in `init()` vor Early-Return)
