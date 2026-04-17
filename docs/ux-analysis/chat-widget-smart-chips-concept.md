@@ -172,7 +172,7 @@ Datenquellen gemäß korrigierter Feasibility: `state.next_fields[0]`,
 | User-Aktion | Effekt |
 |---|---|
 | Chip-Klick | Append des Chip-Texts in `#chatInput`, Fokus in Textarea, `.selected`-Klasse setzen. **Chips bleiben sichtbar.** |
-| `sendMessage()` (Z. 338) | **Nichts.** Leiste bleibt. Das folgende `state_update` entscheidet: gleiches Feld → unverändert; neues Feld → neu rendern; Feld geschlossen → verstecken. |
+| `sendMessage()` (Z. 338) | ⚠️ **Obsolet — überstimmt durch Sprint-C1-Briefing.** Aktuelle Regel: `clearSmartChips()` am Ende von `sendMessage()`, damit während des `typing`-Indicators keine Chips zum gerade verlassenen Feld stehen bleiben. Siehe `docs/sprints/sprint-c1-smart-chips-briefing.md`. |
 | Resume (`checkResume` Z. 1568) | `updateProgress(sessionData.state)` an Z. 1691 trifft denselben Pfad wie `state_update`. Kein Sonderweg. |
 
 **Suppression-Matrix — wann gar nichts rendern?**
