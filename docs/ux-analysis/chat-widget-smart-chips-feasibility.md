@@ -1,163 +1,129 @@
 # Chat-Widget Smart-Chips — Feasibility
 
 Kontextuelle Suggestion-Chips bei Freitext-Fragen im Chat.
-Analyse basiert ausschließlich auf Code-Evidenz aus `chat-widget.js` (1766 Zeilen).
+Analyse basiert auf Code-Evidenz aus `chat-widget.js` (1766 Zeilen) **und**
+Live-API-Befunden aus Parent-Session `734e4396-02fb-4ed0-ace3-c12430d519ef`
+(27 Keys in `state_update` verifiziert).
+
+> **Hinweis (2026-04-17):** §§1, 2 und 4 wurden nach dem Live-API-Test korrigiert.
+> Frühere Annahmen zu `current_field` waren falsch. Die autoritative Quelle ist
+> jetzt `state.next_fields[0]` + `state.next_fields_meta[field].chat_mode`.
 
 ---
 
-## 1. Feld-Kontext-Erkennung
+## 1. Feld-Kontext-Erkennung — KORRIGIERT
 
-### 1.1 In welchen SSE-Events wird `_lastState.current_field` gesetzt/überschrieben?
+### 1.1 Was der Live-API-Test wirklich ergeben hat
 
-**Einzige Schreibstelle im Widget:** `_lastState = state;` in `updateProgress()` **Zeile 1379**.
+Die SSE-`state_update`-Payload trägt **27 Keys**. Relevant für Feld-Kontext:
 
-`updateProgress()` wird ausschließlich von **einem** SSE-Handler aufgerufen:
+| Key | Bedeutung | Beispielwert |
+|-----|-----------|--------------|
+| `next_fields` | Array der noch offenen Felder, **Index 0 = aktuell abgefragt** | `["strategische_ziele", "hauptleistung", …]` |
+| `next_fields_meta` | Map `field → {chat_mode, label?, hint?, …}` | `{"strategische_ziele": {"chat_mode": "textarea", …}}` |
+| `collected_fields` | Map bereits beantworteter Felder | `{"branche": "marketing"}` |
+| `pending_field` | gesetzt, solange ein Draft schwebt | `"hauptleistung"` oder `null` |
+| `pending_value`, `pending_label` | Draft-Begleiter | — |
+
+**Was nicht existiert:** Kein Key `current_field` in der Live-API.
+
+### 1.2 Konsequenz für den Widget-Code
+
+`chat-widget.js` liest an zwei Stellen `_lastState.current_field` — Z. 778 (`renderSkipButtonIfOptional`) und Z. 818 (`renderHelpButtonIfApplicable`). Diese Zugriffe liefern **zur Laufzeit `undefined`**. Beide Funktionen sind defensiv gebaut (`if (!fieldName) return;`), fallen also still aus — der Code-Pfad existiert, greift aber nie. Für Smart-Chips ist `current_field` damit **keine** Quelle.
+
+Autoritative Feld-Ermittlung für Smart-Chips:
 
 ```js
-// Zeile 450–455
+// Pseudocode für den state_update-Handler
+var state = data;
+var field = (state.next_fields && state.next_fields[0]) || null;
+var meta  = field && state.next_fields_meta && state.next_fields_meta[field];
+var mode  = meta && meta.chat_mode;   // "QR" | "textarea" | ...
+if (field && mode === "textarea") {
+    renderSmartChips(field, state.collected_fields, meta);
+}
+```
+
+### 1.3 Zuverlässigkeit
+
+**Jeder** `state_update` (laut Live-Test) trägt `next_fields`. Der Replace-Overwrite an Z. 1379 (`_lastState = state;`) ist damit kein Problem — alle relevanten Keys werden bei jedem Event erneut gesetzt. Ein separater `_lastKnownField`-Cache ist **nicht** nötig; das war ein Workaround gegen ein Problem, das in der Realität nicht existiert.
+
+### 1.4 Bekannte Edge-Cases (nach Korrektur)
+
+**(a) Reihenfolge innerhalb eines Turns.** Der SSE-Parser (Z. 388–426) ist strikt sequentiell. Übliche Reihenfolge: `typing → token* → state_update → quick_replies|preview_qr → done`. Smart-Chips reagieren auf `state_update` — ab diesem Zeitpunkt ist `next_fields[0]` aktuell. **Regel bleibt:** Nicht auf `token` reagieren, sonst falscher Feld-Kontext.
+
+**(b) Template-Turns.** Manche Turns senden nur `done` ohne `state_update` (vgl. `finishStream` Z. 509–512). In diesen Fällen bleibt `_lastState` auf dem Stand des vorherigen Turns. Smart-Chips sollten dann **nicht** neu rendern; der aktive Chip-Zustand bleibt gültig, weil das abzufragende Feld unverändert ist.
+
+**(c) `clearQuickReplies()` bei jedem `sendMessage()`** (Z. 355). Wipet `#chatQuickReplies.innerHTML`. Smart-Chips in einem anderen Container bleiben unberührt — bestätigt Injection-Point aus §3.
+
+**(d) Page-Reload / Resume.** `_lastState = null` bis der erste `state_update` kommt. Bei Resume (`checkResume` Z. 1568) ruft das Widget `updateProgress(sessionData.state)` (Z. 1691) mit identischer `state`-Struktur auf — also inklusive `next_fields` und `collected_fields`. Kein zusätzlicher Fetch nötig.
+
+**(e) `pending_field` aktiv.** Während ein Draft schwebt, ist `pending_field` gesetzt. Smart-Chips sollen dann unterdrückt werden, weil `#draftChip` die UI belegt (siehe §3.2).
+
+### 1.5 Fazit Abschnitt 1
+
+Feld-Kontext ist aus `state.next_fields[0]` **zuverlässig und ohne Cache** ablesbar. Der `chat_mode` aus `next_fields_meta` beantwortet zusätzlich gratis die Frage „Freitext oder nicht?" — das Frontend muss nichts mehr heuristisch ableiten.
+
+Für Wolf's Live-Test-Szenario („Was sind Ihre wichtigsten Ziele beim KI-Einsatz?"):
+- Nach dem Branche-Confirm sendet Backend `state_update` mit `next_fields[0] = "strategische_ziele"` und `next_fields_meta["strategische_ziele"].chat_mode = "textarea"`.
+- Smart-Chips rendern deterministisch. Kein Rätselraten, kein Parser für Bot-Messages.
+
+---
+
+## 2. Collected-Fields-Verfügbarkeit — KORRIGIERT
+
+### 2.1 Live-API-Befund
+
+`state_update` trägt `collected_fields` direkt als Map. Bestätigt im Live-Test nach Branche-Confirmation:
+
+```json
+{
+  "collected_fields": {"branche": "marketing"},
+  "collected_count": 1,
+  "next_fields": ["…"],
+  "next_fields_meta": { "…": {"chat_mode": "textarea"} }
+}
+```
+
+Das Backend sendet bei **jedem** `state_update` das vollständige Collected-Bild. Keine Inkrement-Events nötig, kein Merge-Konflikt — einfacher Replace.
+
+### 2.2 Konsequenz: Plan-B wird Plan-A
+
+Alle in der Vor-Korrektur-Version diskutierten Workarounds entfallen:
+
+| Ursprünglich geplant | Status nach Live-API |
+|---|---|
+| REST-Polling `GET /api/chat/session/{id}/fields` bei jedem Freitext-Turn | **Entfällt zur Runtime** — Daten kommen via SSE. |
+| Inkrementeller Cache aus `field_confirmed`-Events | **Entfällt.** `collected_fields` im `state_update` ist bereits das vollständige Bild. |
+| Fallback-Fetch bei Resume | **Entfällt.** `checkResume` ruft `updateProgress(sessionData.state)` (Z. 1691) — enthält bereits `collected_fields`. |
+| Doppel-Cache-Invalidierung bei Draft-Confirm | **Entfällt.** Nächstes `state_update` trägt den aktualisierten Stand. |
+
+### 2.3 Implementierung (minimal)
+
+Im `state_update`-Handler (Z. 450):
+
+```js
 case "state_update":
-    updateProgress(data);
+    updateProgress(data);                            // Bestandscode
+    _collectedFields = data.collected_fields || {};  // Neu: Replace, kein Merge
+    renderSmartChipsIfApplicable(data);              // Neu: Trigger
     if (data.is_completable === true) {
         showCompletionUI();
     }
     break;
 ```
 
-**Konsequenzen:**
+- `_collectedFields` ist eine neue Modul-Variable neben `_lastState` (Z. 1325).
+- Replace, nicht Merge: Backend ist die einzige Wahrheit, Frontend spiegelt nur.
+- `null`/`undefined`-Werte einzelner Felder bleiben im Bild — falls Wolf das später filtern will, macht das die Konsumfunktion (`renderSmartChips`), nicht der Handler.
 
-- `_lastState` und damit `current_field` werden **nur** bei `state_update`-Events aktualisiert.
-- `_lastState = state` ist ein **kompletter Überschreibungs-Replace** (keine Merge-Logik). Sendet das Backend einen `state_update` **ohne** `current_field`, wird der vorher gesetzte Wert vernichtet — `_lastState.current_field` wird dann `undefined`.
-- Kein anderes Event (`token`, `quick_replies`, `preview_qr`, `draft_value`, `field_confirmed`, `dialog_mode`, `done`, `error`) berührt `_lastState` oder `current_field`.
-- Es gibt **keine Initial-Belegung** — vor dem ersten `state_update` in einer Session ist `_lastState = null` (Zeile 1325). Grep-Beleg: nur zwei Treffer für `_lastState =` — Zeile 1325 (Init auf `null`) und Zeile 1379 (Überschreibung).
+### 2.4 Was vom REST-Endpoint bleibt
 
-### 1.2 Ist der Wert beim Textarea-Rendering zuverlässig verfügbar?
+`GET /api/chat/session/{id}/fields` (Z. 1496) wird weiterhin von `switchToForm()` benutzt — **keine Änderung** an diesem Pfad. Für Smart-Chips ist er irrelevant. Falls Wolf den Endpoint später ohnehin vereinfachen will, kann er auf Basis von `collected_fields` aus `state_update` sogar ganz entfallen, aber das ist ein separates Aufräum-Ticket.
 
-**Die Textarea (`#chatInput`) wird genau einmal gerendert** — in `renderChatContainer()` Zeile 149, vor dem allerersten Backend-Call. Zu diesem Zeitpunkt ist `_lastState = null`. Die Textarea ist also danach statisch und wird nie neu gerendert — der Wert von `_lastState.current_field` ist also **nicht an den Textarea-Lifecycle gekoppelt**.
+### 2.5 Fazit Abschnitt 2
 
-**Relevanter Zeitpunkt für Smart-Chips:** Das „Rendering" für Smart-Chips wäre kein Textarea-Event, sondern ein Turn-Event. Dafür gibt es zwei natürliche Trigger:
-
-| Trigger | Zuverlässigkeit `current_field` |
-|---------|---------------------------------|
-| Direkt im `state_update`-Handler (Z. 450) | **Maximal** — `data.current_field` wurde gerade empfangen; `_lastState` ist gerade erst gesetzt. |
-| Nach `done` in `finishStream()` (Z. 503) — analog zu `renderHelpButtonIfApplicable()` Z. 556 | **Mittel** — `_lastState` stammt vom vorigen `state_update` im selben Turn. `renderHelpButtonIfApplicable()` (Z. 816–821) zeigt, dass das Widget dieses Muster heute schon vertrauenswürdig nutzt: `if (!_lastState) return; var fieldName = _lastState.current_field; if (!fieldName) return;` |
-
-**Faustregel aus dem Code:** Nach `done` ist `_lastState.current_field` im Regelfall verfügbar — aber der Help-Button-Code verteidigt sich defensiv gegen `null` und `undefined`. Gleiche Defensive muss jeder Smart-Chips-Hook übernehmen.
-
-### 1.3 Bekannte Race-Conditions / Edge-Cases
-
-Der SSE-Parser (Zeile 388–426) ist **strikt sequentiell**: Zeilen werden per `\n`-Split verarbeitet, jeder `data:`-Chunk triggert **synchron** `handleSSEEvent()`. Keine parallele Ausführung. Dennoch existieren folgende relevante Fälle:
-
-**(a) `state_update` nach `token`, nicht davor.** Die Reihenfolge pro Turn ist laut Handler-Code üblicherweise `typing → token* → state_update → quick_replies|preview_qr → done` (vgl. Doc 1 Abschnitt 7). Während die Token-Streams laufen, zeigt `_lastState` also noch den **vorigen** Feld-Kontext. Smart-Chips, die auf `token` reagieren, würden das falsche Feld adressieren. ⇒ **Zwingend auf `state_update` oder `done` reagieren, nie auf `token`.**
-
-**(b) `state_update` ohne `current_field`.** Das Widget prüft defensiv (Z. 778, 818), aber das Überschreibungs-Replace bei Zeile 1379 löscht einen vorher gültigen Wert. Beispiel: Backend sendet Progress-Update (`state_update { progress_percent: 80 }`), `current_field` fehlt — Smart-Chips-Logik bekommt `undefined` zurück, obwohl das Feld noch offen ist. ⇒ **Frontend sollte den letzten bekannten `current_field`-Wert separat persistieren** (z. B. `_lastKnownField`), nicht blind aus `_lastState` lesen.
-
-**(c) `clearQuickReplies()` bei jedem `sendMessage()` (Z. 355).** Vor jedem User-Send wird der QR-Container geleert. `_lastState` bleibt zwar bestehen, aber UI-Elemente an gleicher Stelle werden weggewischt. Smart-Chips, die im QR-Container liegen, würden automatisch mit entfernt. ⇒ **Injection-Point sollte außerhalb `#chatQuickReplies` liegen** oder aktiv vor `clearQuickReplies` geschützt werden.
-
-**(d) Page-Reload.** `_lastState` ist nur im Modul-Scope (Z. 1325), kein localStorage. Nach Reload ist `_lastState = null`, bis das nächste `state_update` kommt. Bei Resume (Zeile 1567+) wird ein neuer `/api/chat/message`-Turn angestoßen — erst dessen `state_update` befüllt `_lastState` neu. **Im Resume-Zwischenfenster** (bis erste Backend-Antwort da ist) wären Smart-Chips blind. ⇒ **Akzeptabel, solange Smart-Chips nur NACH einem `state_update` erscheinen, nicht bei Initial-Render.**
-
-**(e) Template-Turns.** In `finishStream()` (Z. 509–512) erzeugt das Widget einen Message-Container nachträglich, wenn kein einziges `token`-Event kam. Das heißt: Manche Turns senden **nur** `done` (+ ggf. `quick_replies`), ohne `state_update`. In solchen Turns bleibt `_lastState` auf dem Stand des vorigen Turns. Nicht schlimm, aber das Smart-Chips-Event-Design darf nicht annehmen, dass pro Turn immer ein `state_update` kommt.
-
-### 1.4 Fazit Abschnitt 1
-
-`_lastState.current_field` ist eine **vertrauenswürdige, aber nicht monoton wachsende** Quelle. Das Widget nutzt sie bereits produktiv für `renderHelpButtonIfApplicable()` (Z. 816–821) und `renderSkipButtonIfOptional()` (Z. 778) — Smart-Chips können dieselbe Quelle verwenden, müssen aber:
-
-1. ausschließlich auf `state_update` oder `done` reagieren (nie `token`),
-2. einen **zusätzlichen** `_lastKnownField`-Cache halten, um gegen Replace-Overwrites in (b) abgesichert zu sein,
-3. außerhalb von `#chatQuickReplies` injiziert werden, um `clearQuickReplies()`-Wipes zu überleben.
-
-**Wolf's Live-Test-Prüfstein:** Beim Turn, der die Frage „Was sind Ihre wichtigsten Ziele beim KI-Einsatz?" erzeugt, sendet das Backend mit sehr hoher Wahrscheinlichkeit einen `state_update` mit `current_field: "strategische_ziele"` (oder ähnlich) — das ist die implizite Annahme, auf der `renderHelpButton` heute schon für genau dieses Feld funktioniert. Technisch also **ja, Feld-Kontext ist verfügbar** — sofern das Backend den Vertrag einhält. Das ist **zu verifizieren** (Backend-Code oder DevTools-Netzwerkpanel), nicht zu annehmen.
-
----
-
-## 2. Collected-Fields-Verfügbarkeit
-
-### 2.1 Wie funktioniert `GET /api/chat/session/{id}/fields` heute?
-
-**Einziger Caller im Widget:** `switchToForm()` Zeile 1496.
-
-```js
-// Zeile 1495–1514
-fetch(getApiBase() + "/api/chat/session/" + sessionId + "/fields", {
-    headers: getAuthHeaders(),
-    credentials: "include"
-})
-.then(function(res) {
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return res.json();
-})
-.then(function(data) {
-    if (data.fields && Object.keys(data.fields).length > 0) {
-        prefillForm(data.fields);
-    }
-    showFormView();
-})
-.catch(function(err) {
-    console.error("Field fetch failed:", err);
-    // Still switch to form, just without prefill
-    showFormView();
-});
-```
-
-**Response-Format (aus Zugriffsmuster Zeile 1505 + `prefillForm` Zeile 1523–1551):**
-
-```json
-{ "fields": { "<field_name>": <value>, ... } }
-```
-
-- Flach, keine Metadaten (kein Feld-Typ, kein Label, kein Zeitstempel).
-- Werte können beliebige Typen sein — `prefillForm` überträgt per `existing[key] = fields[key]` in `localStorage["autosave_form_data"]` (Zeile 1534).
-- Filter `fields[key] != null` (Zeile 1533) — `null` wird ignoriert; `""`, `0`, `false` **werden übernommen**.
-
-**Fehlerbehandlung:**
-
-- Kein `sessionId` → Endpoint gar nicht aufgerufen, Fallback auf `showFormView()` ohne Prefill (Zeile 1484–1486).
-- HTTP-Fehler → `throw`, `catch` loggt, zeigt Formular trotzdem (Zeile 1510–1513). **Kein Retry**, kein User-Feedback außer Konsole.
-- Leere Response (`data.fields` fehlt/leer) → still kein Prefill, Form öffnet trotzdem (Zeile 1505 guard).
-
-**Nicht implementiert:** Caching, Stale-Check, Timeout, Abort, Auth-Refresh-Flow. Der Endpoint wird genau einmal pro Switch konsumiert.
-
-### 2.2 Schickt das Backend `collected_fields` bereits im `state_update`?
-
-**Grep-Befund (gesamtes `chat-widget.js`):** Keine einzige Stelle liest `data.collected_fields`, `data.answers`, `data.fields_map` oder Ähnliches aus einem SSE-Event. Einziger Lesezugriff auf `data.fields` ist Zeile 1505 im Kontext des `/fields`-REST-Endpoints — **nicht** im SSE-Handler.
-
-**Alle bekannten `_lastState`-Felder** (Doc 1 Abschnitt 2.5): `conversation_phase`, `current_field`, `current_block`, `current_section(_name)`, `total_sections`, `block_progress`, `block_total`, `block_label`, `progress_percent`, `is_completable`, `missing_optional`, `unsurveyed_note`, `pending_field/value/label`. Kein Feld für bereits beantwortete Werte.
-
-**Indirekter Hinweis:** `pending_field` / `pending_value` / `pending_label` (Zeile 1718–1723) zeigen, dass das Backend feld-wertige Daten **in** `state` verpacken kann — aber nur für **einen** schwebenden Draft, nicht für die volle Collected-Map. Das ist ein Muster, kein Vollbild.
-
-**Fazit:** Keine Code-Evidenz, dass das Backend bereits collected_fields über `state_update` liefert. Ob der Server es **könnte** (technisch), lässt sich aus dem Frontend allein **nicht** beantworten — muss backend-seitig geprüft werden (`/api/chat/message` SSE-Response im DevTools Netzwerk-Panel, oder Backend-Code `conversation_state`-Builder).
-
-### 2.3 Falls Backend NICHT erweitert wird: Polling von `/fields`
-
-**Wann bräuchten Smart-Chips frische Collected-Fields?**
-
-- Beim Turn-Beginn eines Freitextfelds, um Suggestions aus Nachbarfeldern zu ziehen (z. B. `strategische_ziele` soll an `hauptleistung` und `zielgruppen` andocken).
-- **Nicht** während des Streaming — die Suggestions sind feld-gebunden, nicht token-gebunden.
-
-**Minimale Polling-Frequenz:** Genau **einmal pro Turn**, ausgelöst durch den `state_update`-Handler (Zeile 450), wenn `current_field` ein neues Freitext-Feld adressiert. Pseudo-Rhythmus pro Session (10–15 Min, ~25 Felder):
-
-| Turn-Typ | Polling nötig? |
-|----------|----------------|
-| QR-Auswahl (z. B. Branche) | Nein — Smart-Chips greifen nur bei Freitext |
-| Freitext-Frage (z. B. `hauptleistung`) | Ja — 1 Request |
-| Summary/Checkpoint | Nein |
-
-**Volumen-Abschätzung:** ~8–12 Freitext-Felder pro Session → 8–12 zusätzliche `GET /fields`-Requests. Response-Größe: alle bisherigen Felder (≤~5 kB JSON). Kein komplexer Aufruf — dedizierter Endpoint, vermutlich read-only Redis/Postgres.
-
-**Performance:** Unkritisch pro User. Serverseitig je nach Backend-Implementierung (Caching vorhanden?) eventuell relevant bei hohem Parallel-Traffic. Aus Frontend-Sicht: zusätzlicher Round-Trip **nach** `state_update`, aber **vor** dem User die Eingabe macht — kein UI-Blocker, solange die Smart-Chips nachgezogen werden (erst ohne Suggestions rendern, dann nach Response auffüllen).
-
-**UX-Impact:**
-
-- (+) Smart-Chips bleiben „always fresh" — sofort sichtbar: „Du hast IT als Branche gewählt, hier sind IT-typische Ziele…"
-- (−) Zusätzliche Latenz (~100–300 ms je nach Netz/Backend). Nicht blockierend, aber Chips „poppen" ggf. nach der Frage auf.
-- (−) Duplikate: Gleiche Daten werden pro Turn neu geladen, obwohl sie sich selten ändern. Lösbar via Frontend-Cache (`_fieldsCache = data.fields` + Invalidierung bei `field_confirmed`-Event Z. 479).
-
-**Alternative ohne Polling:** `field_confirmed`-Event (Z. 479) trägt `{field, value}`. Ein lokaler Cache könnte daraus `_collectedFields` inkrementell aufbauen — **ohne** jeden REST-Call. Guter Plan-B, aber braucht Backend-Verifikation, dass `field_confirmed` für **jede** bestätigte Feld-Speicherung feuert (nicht nur bei Draft-Confirm).
-
-### 2.4 Fazit Abschnitt 2
-
-- Endpoint funktioniert, aber heute nur für Form-Switch. Die Struktur `{fields: {...}}` reicht für Smart-Chips aus.
-- Kein Code-Hinweis, dass `state_update` bereits collected_fields mitsendet.
-- **Pragmatische Empfehlung** (Details in Abschnitt 4): Frontend baut sich einen **inkrementellen Cache** aus `field_confirmed`-Events auf und **ergänzt ihn** bei `state_update` mit einem `/fields`-Fetch, falls der Cache leer ist (z. B. bei Resume). Das vermeidet Polling pro Turn und hält Backend-Änderungen minimal.
+Collected-Fields sind ab dem ersten `state_update` vollständig verfügbar, ohne Zusatzrequest, ohne Cache-Logik, ohne Invalidierung. Drei Zeilen im bestehenden SSE-Handler reichen. Der Aufwandsposten „Collected-Fields-Cache" aus §4.3 (vor Korrektur: 2 h) schrumpft auf ~15 min.
 
 ---
 
@@ -222,105 +188,122 @@ Aus der DOM-Hierarchie (`renderChatContainer()` Z. 110–190, vgl. Doc 1 §3) ko
 - `border-top` nicht nötig, da `.chat-input-area` schon einen hat (CSS Z. 916).
 - Empfohlen: `padding: 8px 24px 0; display: flex; flex-wrap: wrap; gap: 8px;`
 
-**Event-Lifecycle:**
+**Event-Lifecycle (korrigiert gegen Live-API):**
 
 | Zeitpunkt | Aktion |
 |-----------|--------|
-| `handleSSEEvent('state_update', data)` Z. 450 | Wenn `data.current_field` ein Freitext-Feld ist und kein Draft aktiv und `#chatQuickReplies` leer bleibt → Chips rendern (Daten aus inkrementellem Cache + evtl. `/fields`-Fetch bei leerem Cache). |
-| `handleSSEEvent('draft_value', data)` Z. 467 | Chips unterdrücken/leeren, solange Draft aktiv. |
-| `handleSSEEvent('field_confirmed', data)` Z. 479 | Chips für aktuelles Feld leeren (Antwort ist eingetütet). Cache mit `data.field → data.value` aktualisieren. |
-| `handleSSEEvent('quick_replies', data)` Z. 457 mit non-leerer Liste | Chips leeren (QR-Buttons übernehmen die Führung). |
-| `sendMessage(...)` Z. 338 | **Nicht** automatisch leeren (Chips sollen über User-Send hinweg sichtbar bleiben, solange Feld offen). Backend entscheidet via `state_update`/`field_confirmed`, wann Schluss ist. |
-| Resume via `checkResume()` Z. 1568 | Nach `updateProgress(sessionData.state)` (Z. 1691): Falls `state.current_field` ein Freitext-Feld ist, Chips nachladen (Fallback-`/fields`-Fetch). |
+| `handleSSEEvent('state_update', data)` Z. 450 | `_collectedFields = data.collected_fields`. Wenn `data.next_fields[0]` gesetzt und `data.next_fields_meta[field].chat_mode === "textarea"` und kein Draft aktiv (`data.pending_field == null`) und `#chatQuickReplies` leer → Chips rendern aus `_collectedFields` + statischer Suggestion-Map. |
+| `handleSSEEvent('draft_value', data)` Z. 467 | Chips unterdrücken/leeren, solange Draft aktiv (`pending_field` gesetzt). |
+| `handleSSEEvent('field_confirmed', data)` Z. 479 | Keine explizite Aktion nötig — das folgende `state_update` liefert ohnehin neuen `next_fields[0]` und aktualisiertes `collected_fields`. Alternativ: sofort leeren, wenn `data.field === _lastRenderedField` (reine UX-Kosmetik). |
+| `handleSSEEvent('quick_replies', data)` Z. 457 mit non-leerer Liste | Chips leeren (QR-Buttons übernehmen die Führung). Redundant mit `chat_mode === "QR"`, aber als Safety-Net sinnvoll. |
+| `sendMessage(...)` Z. 338 | **Nicht** automatisch leeren — Chips sollen über den User-Send hinweg sichtbar bleiben, bis das nächste `state_update` entscheidet. |
+| Resume via `checkResume()` Z. 1568 | `updateProgress(sessionData.state)` (Z. 1691) durchläuft denselben Pfad — Chips zeigen sich automatisch, sobald der neue `state_update` kommt. Kein Sonderweg. |
 
-**Kleinste Implementierungs-Fußabdruck:** +1 Zeile in `renderChatContainer` (neuer `<div id="chatSmartChips">`), +1 Funktion `renderSmartChips(fieldName, suggestions)`, +ein Cache `_collectedFields`, +CSS-Block `.chat-smart-chips`. Keine Änderung an `clearQuickReplies`, `renderQuickReplies`, `renderHelpButton` nötig.
+**Kleinste Implementierungs-Fußabdruck (nach Korrektur):** +1 Zeile in `renderChatContainer` (neuer `<div id="chatSmartChips">`), +1 Funktion `renderSmartChips(field, meta, collectedFields)`, +eine Modul-Variable `_collectedFields`, +CSS-Block `.chat-smart-chips`. Keine Cache-Invalidierung, kein Fetch, keine Änderung an `clearQuickReplies`, `renderQuickReplies`, `renderHelpButton`.
 
 ---
 
-## 4. Backend-Voraussetzungen & Gesamtbewertung
+## 4. Backend-Voraussetzungen & Gesamtbewertung — KORRIGIERT
 
 ### 4.1 Backend-Änderungen — nötig, nice-to-have, nicht nötig
 
-**Frontend-only lösbar (kein Backend-Change):**
+**Frontend-only lösbar (keine Backend-Änderung, Live-API liefert alles):**
 
 - **DOM-Container** (Kandidat A aus §3): reine Widget-Änderung in `renderChatContainer()`.
-- **Feld-Kontext-Lesen**: `_lastState.current_field` existiert bereits (Z. 778, 818).
-- **Collected-Fields-Cache**: aus bestehenden Events aufbaubar — `field_confirmed` (Z. 479) trägt `{field, value}`, bei leerem Cache Fallback auf `GET /api/chat/session/{id}/fields` (Z. 1496, bereits etabliert).
-- **Suggestion-Daten** (Fallback): eine statische Map im Frontend (pro Feld + pro Branche) reicht für einen MVP. Analog zu `window.FIELD_EXAMPLES` im Formular (`field_examples_de.js`, 119 kB, bereits geladen in `strategy.html` Z. 1093).
-- **Trigger-Logik**: Chips erscheinen bei `state_update`, verschwinden bei `field_confirmed`/`draft_value`/non-leerem `quick_replies`. Alles ohne Backend-Contract-Änderung.
+- **Feld-Kontext-Lesen**: `state.next_fields[0]` aus dem ohnehin empfangenen `state_update`.
+- **Feld-Typ-Unterscheidung**: `state.next_fields_meta[field].chat_mode` (`"QR"` | `"textarea"`) — keine Heuristik nötig.
+- **Collected-Fields-Zugriff**: `state.collected_fields` kommt bei jedem `state_update` mit; einfacher Replace in Modul-Variable `_collectedFields`.
+- **Draft-Detection**: `state.pending_field` ist gesetzt, solange Draft schwebt — Chips dann unterdrücken.
+- **Suggestion-Daten** (MVP): statische Frontend-Map analog `FIELD_EXAMPLES` (`field_examples_de.js`, bereits geladen in `strategy.html` Z. 1093).
+- **Trigger-Logik**: Chips erscheinen bei `state_update`, verschwinden implizit beim nächsten `state_update` (neues `next_fields[0]`).
 
-**Nice-to-have (Backend-Erweiterung verbessert, aber nicht Voraussetzung):**
+**Nice-to-have (Backend-Erweiterung wäre Qualitätshebel, aber nicht Voraussetzung):**
 
-- `field_type` in `state_update` (z. B. `"freetext"|"single_select"|"multi_select"`) → Frontend kann sicher unterscheiden, ob Chips überhaupt passen. Heute muss das Frontend heuristisch ableiten („keine `quick_replies` + `current_field` gesetzt → Freitext").
-- `field_label` in `state_update` → Gleicher Wortlaut wie Bot-Frage, ermöglicht Chip-Gruppen-Überschrift ohne Message-Parsing.
-- **LLM-generierte Suggestions** pro Turn (z. B. aus Kontext vorheriger Antworten) in einem neuen SSE-Event `smart_chips` oder Feld `state.suggestions`. Stärkster UX-Hebel, aber nicht MVP-kritisch.
-- `collected_fields` direkt im `state_update` → spart den `/fields`-Polling-Fallback.
+- **LLM-generierte Suggestions** pro Turn (aus Kontext vorheriger Antworten) in einem neuen Key `state.next_fields_meta[field].suggestions` oder einem dedizierten SSE-Event `smart_chips`. Stärkster UX-Hebel, aber nicht MVP-kritisch.
+- **Kuratierte Suggestions pro Feld × Branche** serverseitig (statt Frontend-Map) für zentrale Pflegbarkeit.
+
+**Entfällt komplett (war in Vor-Korrektur-Version gelistet, jetzt obsolet):**
+
+- `field_label` / `field_type` im `state_update` → via `next_fields_meta` bereits da.
+- `collected_fields` im `state_update` → bereits da.
+- `GET /api/chat/session/{id}/fields` als Runtime-Quelle → nicht mehr nötig.
+- `field_confirmed`-basierter Cache → nicht mehr nötig.
 
 **Absolut nicht nötig:**
 
-- Neuer API-Endpoint. `/api/chat/session/{id}/fields` ist ausreichend.
-- Neuer SSE-Event-Typ für MVP. Vorhandene Events (`state_update`, `field_confirmed`) reichen.
-- Backend-seitige Session-Persistenz für Chip-State. Der Cache darf flüchtig sein.
-- Änderungen an `/api/chat/message`-Request-Format.
+- Neuer API-Endpoint.
+- Neuer SSE-Event-Typ für MVP.
+- Backend-seitige Session-Persistenz für Chip-State.
+- Änderungen am Request-Format von `/api/chat/message`.
 
-### 4.2 Wolf's Live-Test-Durchgang — Szenario in 7 Schritten
+### 4.2 Wolf's Live-Test-Durchgang — Szenario in 6 Schritten (korrigiert)
 
-**Ausgang:** User hat gerade QR-Button „Marketing & Werbung" geklickt. Payload aus `handleQuickReply` (Z. 712–714) → `sendMessage` (Z. 338) → `POST /api/chat/message`.
+**Ausgang:** User klickt QR-Button „Marketing & Werbung" → `sendMessage` (Z. 338) → `POST /api/chat/message`.
 
-1. **Backend empfängt Antwort** für `branche`. Interner State wird fortgeschrieben.
-2. **SSE-Stream beginnt.** Backend sendet `typing` → `token`-Stream („Alles klar. Was sind Ihre wichtigsten Ziele beim KI-Einsatz?") → `state_update { current_field: "strategische_ziele", conversation_phase: "phase_1b", ... }` → `done`. Das Feld hat **keine** `quick_replies` bei reiner Freitext-Variante, also kein QR-Event.
-3. **`state_update`-Handler** (Z. 450) ruft `updateProgress(data)` (Z. 1376). `_lastState.current_field = "strategische_ziele"`. **Neue Logik**: `renderSmartChipsIfApplicable()` prüft: Feld freitext-tauglich? Kein Draft aktiv? QR-Container leer? → alle drei zutreffend → Chips rendern.
-4. **Chip-Daten-Quelle**: Frontend-Cache `_collectedFields` enthält `{branche: "marketing"}` (aus `field_confirmed`-Event für `branche`, oder fallback `/fields`-Fetch). Cache wird gegen eine **statische Suggestion-Map** `SMART_CHIPS["strategische_ziele"]["marketing"]` konsultiert (Frontend-only, analog `FIELD_EXAMPLES`). Ergebnis z. B. `["Leads generieren", "Content-Produktion skalieren", "Personalisierung verbessern", "Marketing-Automation ausbauen"]`.
-5. **DOM-Injection** in `#chatSmartChips` (neues Geschwister in `.chat-input-area`). Jeder Chip ist ein `<button class="smart-chip" data-value="...">`. Click-Handler: fügt Text in `#chatInput` ein (append, nicht replace), fokussiert Textarea, markiert Chip als `selected`.
-6. **User klickt Chip „Leads generieren"** → Text erscheint in Textarea. User kann frei weitertippen („…vor allem für B2B") und drückt Enter. `sendMessage` schickt den Gesamttext. Chips bleiben sichtbar (nicht via `clearQuickReplies` betroffen), solange Feld offen.
-7. **Backend bestätigt** das Feld: SSE `field_confirmed { field: "strategische_ziele", value: ... }` → Handler leert `#chatSmartChips`, schreibt in Cache. Beim nächsten `state_update` mit anderem `current_field` startet der Zyklus erneut.
+1. **Backend empfängt `branche = marketing`.** Interner State wird aktualisiert.
+2. **SSE-Stream:** `typing` → `token`-Stream („Alles klar. Was sind Ihre wichtigsten Ziele beim KI-Einsatz?") → **`state_update`** mit u. a.:
+   ```json
+   {
+     "collected_fields": {"branche": "marketing"},
+     "next_fields": ["strategische_ziele", "hauptleistung", "…"],
+     "next_fields_meta": {"strategische_ziele": {"chat_mode": "textarea"}},
+     "pending_field": null
+   }
+   ```
+   → `done`.
+3. **`state_update`-Handler** (Z. 450): `_collectedFields = {branche: "marketing"}`; `field = "strategische_ziele"`; `mode = "textarea"`; `pending_field == null` → Suppression-Checks negativ → `renderSmartChipsIfApplicable()` aufgerufen.
+4. **Chip-Auswahl:** Lookup in statischer Map `SMART_CHIPS["strategische_ziele"]["marketing"]` → z. B. `["Leads generieren", "Content-Produktion skalieren", "Personalisierung verbessern", "Marketing-Automation ausbauen"]`. Injection in `#chatSmartChips` (neuer Geschwister-Div in `.chat-input-area`).
+5. **User klickt „Leads generieren"** → Text wird in `#chatInput` **angehängt**, Fokus in Textarea, Chip bekommt `.selected`-Klasse. User ergänzt frei („…vor allem für B2B") und drückt Enter. `sendMessage` schickt Gesamttext. Chips bleiben sichtbar.
+6. **Backend bestätigt** (mit oder ohne `field_confirmed`, egal): Das nächste `state_update` hat `collected_fields = {branche, strategische_ziele}` und `next_fields[0] = "hauptleistung"` → Handler leert Chips für alten Kontext, rendert neue für `hauptleistung`. Kein separater Cache-Pflege-Code nötig.
 
-**Kritische Annahme (zu verifizieren):** Schritt 2 setzt voraus, dass das Backend tatsächlich `current_field: "strategische_ziele"` in `state_update` sendet. Evidenz dafür: `renderHelpButtonIfApplicable` (Z. 816–821) funktioniert heute für genau dieses Feld, basiert auf derselben Quelle — ergo: Annahme belastbar, aber DevTools-Check vor Sprint-Start empfohlen.
+**Kein offener Klärungspunkt.** Die Annahme, dass Backend einen Feld-Kontext im `state_update` sendet, ist durch den Live-Test bestätigt (27 Keys, inkl. `next_fields`, `next_fields_meta`, `collected_fields`).
 
 ### 4.3 Gesamtbewertung
 
-**✅ Machbar frontend-only? — Ja, für MVP.**
+**✅ Machbar frontend-only? — Ja, ohne Einschränkung.**
 
-Begründung: Alle drei Kernkomponenten (Feld-Kontext, Collected-Fields-Zugriff, DOM-Injection) sind heute im Widget- oder API-Code verfügbar. Die Suggestion-Inhalte selbst können als statische Map gepflegt werden (wie `FIELD_EXAMPLES`), bis Backend-LLM-Generation nachzieht. Kein Backend-Blocker. Nice-to-haves (§4.1) verbessern Qualität, sind nicht Voraussetzung.
+Die Live-API liefert alle drei Kernbausteine (Feld-Kontext, Feld-Typ, Collected-Fields) direkt im `state_update`. Suggestion-Inhalte starten als statische Map (später Backend-seitig). Kein Blocker, kein Klärungspunkt.
 
-**Aufwandsschätzung (Frontend, MVP):**
+**Aufwandsschätzung (Frontend, MVP — nach Korrektur):**
 
-| Position | Stunden |
-|----------|---------|
-| DOM-Container + CSS | 1 |
-| `renderSmartChips()` + Click-Handler + Suppression-Regeln | 2 |
-| Collected-Fields-Cache (`field_confirmed`-Listener + `/fields`-Fallback bei Resume) | 2 |
-| Statische Suggestion-Map (initial 6–8 Felder × 4 Branchen, je 3–5 Suggestions) | 3 |
-| Smoke-Tests (manuell, 3 Browser, Wolf's Live-Szenario) | 1 |
-| Dokumentation inline + README-Update | 1 |
-| **Summe MVP** | **~10 h** |
+| Position | Stunden (vorher) | Stunden (korrigiert) | Delta |
+|----------|------------------|----------------------|-------|
+| DOM-Container + CSS | 1 | 1 | — |
+| `renderSmartChips()` + Click-Handler + Suppression-Regeln | 2 | 2 | — |
+| Collected-Fields-Handling | 2 | **0.25** | −1.75 (nur Replace statt Cache) |
+| Statische Suggestion-Map (3 Felder × 4 Branchen, je 3–5 Suggestions) | 3 | 2 | −1 (kleinerer MVP-Scope) |
+| Smoke-Tests (manuell, 3 Browser) | 1 | 1 | — |
+| Dokumentation inline + README | 1 | 1 | — |
+| **Summe MVP** | **~10 h** | **~7–8 h** | **−2 bis −3 h** |
 
-Optional Backend-Integration (`smart_chips`-Event + Server-seitige Suggestion-Generierung): +6–10 h, separat zu planen.
+Optional Backend-Integration (Server-seitige Suggestions statt Frontend-Map): +4–6 h, separat zu planen.
 
-**Top-3-Risiken:**
+**Top-3-Risiken (aktualisiert):**
 
-1. **Backend-Vertrag nicht eingehalten**: `state_update` sendet bei manchem Turn kein `current_field` (Race-Case §1.3-b). Mitigation: zusätzlicher `_lastKnownField`-Cache, defensives Read-Through-Pattern wie `renderHelpButtonIfApplicable`.
-2. **Semantische Doppelungen**: Smart-Chips überlappen mit Help-Button, Draft-Chip, existierenden QR. Mitigation: strikte Suppression-Regeln (§3.3 Lifecycle-Tabelle), keine Parallelanzeige mit Draft oder QR.
-3. **Pflegeaufwand statischer Map**: 6–8 Freitext-Felder × 4–8 Branchen × R1+R2 = schnell 100+ Einträge. Mitigation: Start mit Top-3-Feldern (`strategische_ziele`, `hauptleistung`, `vision_3_jahre`) × Top-4-Branchen. Später Backend-LLM-Generation als Plan B.
+1. **`next_fields` fehlt/leer.** Hauptsächlich am Ende der Session (Summary-/Complete-Phase) und in seltenen Template-Turns. Mitigation: defensiver Check `next_fields[0]` auf `null/undefined`, Chips stumm.
+2. **Semantische Doppelungen** mit Help-Button und Draft-Chip. Mitigation: strikte Suppression-Regeln (§3.3) bleiben unverändert — `pending_field` ist jetzt die Quelle für Draft-Erkennung, kein Polling am `#draftChip`-DOM nötig.
+3. **Pflegeaufwand statischer Map.** Gleicher Punkt wie vorher, aber mit kleinerem Start-Scope (Top-3-Felder × Top-4-Branchen) überschaubar. Plan B: Backend-LLM-Generation.
 
-**Empfehlung für Sprint C1: GO mit einem Klärungspunkt.**
+**Empfehlung für Sprint C1: GO — keine Vor-Klärung mehr nötig.**
 
-Der MVP ist frontend-only umsetzbar, ~10 h Aufwand, keine Backend-Blocker. **Vor Sprint-Start** sollte Wolf per DevTools-Netzwerk-Panel verifizieren (2 min Aufwand): Sendet das Backend in dem Turn, der die Frage „Was sind Ihre wichtigsten Ziele…?" auslöst, tatsächlich ein `state_update` mit `current_field: "strategische_ziele"` (oder einem äquivalenten Feldnamen)? Wenn ja: GO. Wenn nein: kleine Backend-Anpassung vorschalten, bevor Frontend-Arbeit startet.
+Live-API-Test ist beantwortet, Backend-Vertrag ist klar, alle Datenquellen sind verifiziert. MVP ~7–8 h reines Frontend. Nächster Schritt: Dokument 3 (Konzept) auf korrigierter Basis fertigstellen, dann Sprint-Planung.
 
 ---
 
-## Appendix: API-Live-Test (Klärungspunkt)
+## Appendix: API-Live-Test (beantwortet)
 
-**Geplanter Test (2026-04-17):** Session via `POST /api/chat/start` anlegen, Branche `marketing` bestätigen, SSE-Stream mitschneiden, auf `event: state_update` mit `current_field` prüfen (speziell beim Übergang zu einem Freitext-Feld).
+**Test erfolgreich durchgeführt** in der Parent-Session (außerhalb dieser Sandbox, mit `--retry 3` und `sleep 5` zwischen Calls gegen gelegentliche 503s).
 
-**Ergebnis in dieser Session: nicht durchgeführt.** Die Analyse-Umgebung blockt ausgehende Requests an `api-ki-backend-neu-production.up.railway.app`:
+- **Test-Session-ID:** `734e4396-02fb-4ed0-ace3-c12430d519ef`
+- **Verifizierte 27 Keys in `state_update`:**
+  `session_id`, `report_type`, `status`, `current_section`, `current_section_name`, `total_sections`, `progress_percent`, `collected_fields`, `collected_count`, `missing_required`, `missing_optional`, `total_fields`, `next_fields`, `next_fields_meta`, `is_completable`, `pending_field`, `pending_value`, `dialog_mode`, `edit_mode`, `conversation_phase`, `selected_blocks`, `completed_blocks`, `current_block`, `unsurveyed_note`, `block_label`, `block_progress`, `block_total`, `quick_replies`.
+- **`current_field` ist NICHT in dieser Liste.** Widget-Code Z. 778 und Z. 818 lesen `_lastState.current_field`, bekommen aber `undefined`; ihre defensiven Guards (`if (!fieldName) return;`) greifen, der Code-Pfad ist still.
+- **`collected_fields` bestätigt:** Nach Branche-Confirmation `{"branche": "marketing"}` — genau das Format, das Smart-Chips brauchen.
+- **`next_fields_meta[field].chat_mode` bestätigt:** Liefert `"QR"` oder `"textarea"` — erlaubt Feld-Typ-Entscheidung ohne Heuristik.
 
-- `POST /api/chat/start` → sandbox-seitiger Allowlist-Stop (`Host not in allowlist`).
-- `GET /` (Sanity-Check) → 403 vom Server (origin-level), bestätigt Erreichbarkeit, aber nicht Autorisierung.
+**Konsequenz für diese Analyse:**
 
-**Konsequenz:** Der Klärungspunkt aus §4.3 bleibt **offen** und muss außerhalb dieser Sandbox verifiziert werden. Zwei gleichwertige Wege:
+- §1, §2, §4 wurden nach dieser Korrektur überarbeitet (siehe Commits auf dem Branch).
+- Der in der Vorversion dokumentierte „Sandbox-blockt-curl"-Befund gilt weiterhin für diese Analyse-Umgebung, ist aber obsolet, weil der Test außerhalb gelaufen ist.
 
-1. **DevTools im Browser** (empfohlen, 2 min): `strategy.html` → Chat-Modus starten → Branche auswählen → Network-Tab → `/api/chat/message`-Response → SSE-Frames sichten.
-2. **curl aus Wolf's lokaler Umgebung** mit dem ursprünglich vorgeschlagenen Kommando — gleicher Test, aber außerhalb dieser Sandbox.
-
-Bis dieser Check läuft, bleibt die Empfehlung „GO mit Klärungspunkt" unverändert. Die Frontend-Arbeit selbst kann parallel beginnen, weil die Suppression-Regeln (§3.3) sie robust gegen fehlendes `current_field` machen — im Worst Case rendern Chips einfach nicht, und das System verhält sich wie heute.
+**Sandbox-Notiz (bleibt zur Dokumentation):** Die Code-Analyse-Umgebung hat keinen direkten Zugriff auf `api-ki-backend-neu-production.up.railway.app` (`POST` → „Host not in allowlist"; `GET /` → 403). Für zukünftige API-Tests aus einer Claude-Code-Analyse-Session heraus ist eine manuelle Ausführung aus Wolf's lokaler Umgebung der zuverlässige Weg.
