@@ -1176,6 +1176,7 @@
             body: JSON.stringify({
                 session_id: chatState.sessionId,
                 field: currentDraft.field,
+                value: currentDraft.value,
                 action: "confirm"
             })
         })
