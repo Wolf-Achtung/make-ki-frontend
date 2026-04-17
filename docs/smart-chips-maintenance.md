@@ -3,7 +3,35 @@
 ## Überblick
 
 Smart-Chips ergänzen den Chat-Modus um kontextuelle Formulierungs-Vorschläge.
-MVP-Scope: R1-Chat, 3 Felder (`strategische_ziele`, `vision_3_jahre`, `hauptleistung`).
+MVP-Scope (Sprint C1): R1-Chat, 3 Felder (`strategische_ziele`, `vision_3_jahre`, `hauptleistung`).
+Phase-5-Erweiterung: 5 zusätzliche Branchen, Größen-Varianten für `vision_3_jahre`.
+
+## Coverage-Stand
+
+| Feld | Default | Branche-Varianten | Größen-Varianten |
+|------|---------|-------------------|------------------|
+| `hauptleistung` | 5 Chips | — | — |
+| `vision_3_jahre` | 5 Chips | — | `solo`, `kleines_team`, `kmu` (je 5) |
+| `strategische_ziele` | 5 Chips | **8 von 13 Branchen** (je 4) | — |
+
+**Branche-Coverage (strategische_ziele):** `marketing`, `it`, `beratung`, `finanzen`, `bildung`, `verwaltung`, `bau`, `medien`.
+**Fallback auf `default`:** `handel`, `gesundheit`, `industrie`, `logistik`, `gastronomie` — bewusst, weil für diese Branchen noch keine distinkten Formulierungen kuratiert sind (Regel: nur wo spürbar anders).
+
+## Lookup-Priorität
+
+`window.getSmartChips(field, branche, size)` prüft in dieser Reihenfolge:
+
+1. `entry.byBranche[branche]` — wenn matchend, gewinnt immer (auch bei gesetztem `size`).
+2. `entry.bySize[sizeKey]` — wenn keine Branche-Variante passt.
+3. `entry.default` — Fallback.
+
+`sizeKey` wird aus dem Backend-Code via `SIZE_MAP` abgeleitet:
+
+| Backend-Code | interner Key |
+|--------------|--------------|
+| `"1"` | `solo` |
+| `"2-10"` | `kleines_team` |
+| `"11-100"` | `kmu` |
 
 ## Aktivierung / Deaktivierung
 
@@ -31,13 +59,24 @@ Beim Hinzufügen neuer Chips:
 
 ## Branche-Varianten erweitern
 
-Aktuell: `marketing`, `it`, `beratung` für `strategische_ziele`.
+Aktuell abgedeckt: `marketing`, `it`, `beratung`, `finanzen`, `bildung`, `verwaltung`, `bau`, `medien` für `strategische_ziele`.
 
 Weitere Branchen hinzufügen:
 
 1. `byBranche.{branche_key}` analog den existierenden anlegen
-2. Branche-Keys müssen mit Backend-Values matchen (z. B. `"handel"`, `"finanzen"`, `"gesundheit"`)
+2. Branche-Keys müssen mit Backend-Values matchen (z. B. `"handel"`, `"gesundheit"`, `"industrie"`, `"logistik"`, `"gastronomie"`)
 3. 3–5 Chips pro Branche
+4. Nur hinzufügen, wenn spürbar anders als `default` — sonst Pflegeaufwand ohne UX-Nutzen
+
+## Größen-Varianten erweitern
+
+Aktuell: `vision_3_jahre` mit `bySize.solo`, `bySize.kleines_team`, `bySize.kmu` (je 5 Chips).
+
+Weiteres Feld um Größen-Varianten ergänzen:
+
+1. Am Feld-Eintrag einen `bySize`-Block neben `default` anlegen — optional zusätzlich zu `byBranche`, beide koexistieren.
+2. Keys aus der `SIZE_MAP` verwenden (`solo`, `kleines_team`, `kmu`). Falls weitere Größen-Stufen nötig werden, `SIZE_MAP` zentral erweitern.
+3. Beachten: `byBranche` gewinnt immer vor `bySize`. Wenn ein Feld beide Dimensionen gleichzeitig nutzen soll, muss die Priorität bewusst gesetzt werden.
 
 ## Rollback-Plan
 

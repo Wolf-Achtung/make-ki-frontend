@@ -55,6 +55,7 @@
         /* --------------------------------------------------------------
          * vision_3_jahre — Wo wollen Sie in 3 Jahren stehen?
          * Holistisch, NICHT KI-spezifisch — Vision ist breiter.
+         * Größen-Varianten (Phase 5): bySize.solo | kleines_team | kmu.
          * ------------------------------------------------------------ */
         vision_3_jahre: {
             default: [
@@ -63,7 +64,30 @@
                 "Team gezielt auf Kernkompetenzen ausbauen",
                 "Neue Geschäftsfelder erschließen",
                 "Unabhängiger von einzelnen Großkunden werden"
-            ]
+            ],
+            bySize: {
+                solo: [
+                    "Work-Life-Balance halten bei steigendem Umsatz",
+                    "Mehr Kunden betreuen ohne Burnout-Risiko",
+                    "Freiraum für strategisches Denken gewinnen",
+                    "Unabhängig von einzelnen Großaufträgen werden",
+                    "Persönliche Expertise zum Angebot ausbauen"
+                ],
+                kleines_team: [
+                    "Nicht mehr alles selbst machen müssen",
+                    "Team eigenständig entscheiden lassen",
+                    "Wachstum ohne Qualitätsverlust",
+                    "Persönliche Kundenbeziehungen trotz Skalierung",
+                    "Vom Operativen ins Strategische wechseln"
+                ],
+                kmu: [
+                    "Strukturen für echte Skalierung schaffen",
+                    "Mittleres Management stärken und entlasten",
+                    "Datengetriebene Entscheidungskultur etablieren",
+                    "Internationalisierung vorbereiten",
+                    "Nachfolge oder Exit strategisch vorbereiten"
+                ]
+            }
         },
 
         /* --------------------------------------------------------------
@@ -97,6 +121,36 @@
                     "Berichterstellung automatisieren",
                     "Wissensmanagement strukturiert aufbauen",
                     "Kundenkommunikation professionalisieren"
+                ],
+                finanzen: [
+                    "Compliance-Aufwand beherrschbar halten",
+                    "Kunden-Onboarding digitalisieren",
+                    "Berichts- und Meldepflichten automatisieren",
+                    "Risikoanalysen beschleunigen"
+                ],
+                bildung: [
+                    "Lernmaterialien individualisieren",
+                    "Verwaltungsaufwand für Lehrende senken",
+                    "Abschlussquoten und Kundenzufriedenheit steigern",
+                    "Zeit für pädagogische Arbeit zurückgewinnen"
+                ],
+                verwaltung: [
+                    "Bürgeranfragen schneller beantworten",
+                    "Aktenrecherche und Fallprüfung beschleunigen",
+                    "Prozess-Durchlaufzeiten spürbar kürzen",
+                    "Compliance-Anforderungen zuverlässig erfüllen"
+                ],
+                bau: [
+                    "Angebotserstellung beschleunigen",
+                    "Planungszeiten spürbar verkürzen",
+                    "Projektkommunikation zentralisieren",
+                    "Normen und Sicherheits-Compliance sichern"
+                ],
+                medien: [
+                    "Redaktionelle Produktion skalieren",
+                    "Recherche-Zeiten drastisch reduzieren",
+                    "Audience-Insights automatisieren",
+                    "Produktions-Workflows beschleunigen"
                 ]
             }
         }
@@ -107,14 +161,32 @@
      * Lookup-Helper
      *  - field:    Feldname aus state.next_fields[0]
      *  - branche:  Wert aus state.collected_fields.branche (Lowercase-Slug)
+     *  - size:     Wert aus state.collected_fields.unternehmensgroesse
+     *              Backend-Codes: "1" | "2-10" | "11-100" (intern zu
+     *              solo | kleines_team | kmu gemappt, siehe unten).
+     *
+     * Lookup-Priorität: byBranche > bySize > default.
      * Returns: Array von Strings oder null (nichts gefunden = keine Chips).
      * -------------------------------------------------------------------- */
-    window.getSmartChips = function(field, branche) {
+    var SIZE_MAP = {
+        "1":      "solo",
+        "2-10":   "kleines_team",
+        "11-100": "kmu"
+    };
+
+    window.getSmartChips = function(field, branche, size) {
         var entry = window.SMART_CHIPS_DE && window.SMART_CHIPS_DE[field];
         if (!entry) return null;
+
         if (branche && entry.byBranche && entry.byBranche[branche]) {
             return entry.byBranche[branche];
         }
+
+        var sizeKey = SIZE_MAP[size];
+        if (sizeKey && entry.bySize && entry.bySize[sizeKey]) {
+            return entry.bySize[sizeKey];
+        }
+
         return entry.default || null;
     };
 
