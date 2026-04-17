@@ -97,6 +97,36 @@
                     "Berichterstellung automatisieren",
                     "Wissensmanagement strukturiert aufbauen",
                     "Kundenkommunikation professionalisieren"
+                ],
+                finanzen: [
+                    "Compliance-Aufwand beherrschbar halten",
+                    "Kunden-Onboarding digitalisieren",
+                    "Berichts- und Meldepflichten automatisieren",
+                    "Risikoanalysen beschleunigen"
+                ],
+                bildung: [
+                    "Lernmaterialien individualisieren",
+                    "Verwaltungsaufwand für Lehrende senken",
+                    "Lernerfolg messbar und sichtbar machen",
+                    "Zeit für pädagogische Arbeit zurückgewinnen"
+                ],
+                verwaltung: [
+                    "Bürgeranfragen schneller beantworten",
+                    "Aktenrecherche und Fallprüfung beschleunigen",
+                    "Prozess-Durchlaufzeiten spürbar kürzen",
+                    "Amtshandlungen transparenter gestalten"
+                ],
+                bau: [
+                    "Angebotserstellung beschleunigen",
+                    "Planungszeiten spürbar verkürzen",
+                    "Projektkommunikation zentralisieren",
+                    "Normen und Sicherheits-Compliance sichern"
+                ],
+                medien: [
+                    "Redaktionelle Produktion skalieren",
+                    "Recherche-Zeiten drastisch reduzieren",
+                    "Audience-Insights automatisieren",
+                    "Produktions-Workflows beschleunigen"
                 ]
             }
         }
