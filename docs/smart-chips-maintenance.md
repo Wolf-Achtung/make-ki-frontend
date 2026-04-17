@@ -10,9 +10,11 @@ Phase-5-Erweiterung: 5 zusätzliche Branchen, Größen-Varianten für `vision_3_
 
 | Feld | Default | Branche-Varianten | Größen-Varianten |
 |------|---------|-------------------|------------------|
-| `hauptleistung` | 5 Chips | — | — |
+| `hauptleistung` | 5 Chips (strict) | — | — |
 | `vision_3_jahre` | 5 Chips | — | `solo`, `kleines_team`, `kmu` (je 5) |
 | `strategische_ziele` | 5 Chips | **8 von 13 Branchen** (je 4) | — |
+
+> **Hinweis `hauptleistung`:** `strict: true` unterdrückt den default-Fallback. Ohne `byBranche`-Match werden **keine** Chips gezeigt — die Defaults wirken in Branchen wie Bildung oder Bau als Kontextbruch. Siehe Abschnitt „Strict-Modus".
 
 **Branche-Coverage (strategische_ziele):** `marketing`, `it`, `beratung`, `finanzen`, `bildung`, `verwaltung`, `bau`, `medien`.
 **Fallback auf `default`:** `handel`, `gesundheit`, `industrie`, `logistik`, `gastronomie` — bewusst, weil für diese Branchen noch keine distinkten Formulierungen kuratiert sind (Regel: nur wo spürbar anders).
@@ -23,7 +25,8 @@ Phase-5-Erweiterung: 5 zusätzliche Branchen, Größen-Varianten für `vision_3_
 
 1. `entry.byBranche[branche]` — wenn matchend, gewinnt immer (auch bei gesetztem `size`).
 2. `entry.bySize[sizeKey]` — wenn keine Branche-Variante passt.
-3. `entry.default` — Fallback.
+3. `entry.strict === true` → `null` (kein Fallback, keine Chips).
+4. `entry.default` — Fallback, sofern nicht `strict`.
 
 `sizeKey` wird aus dem Backend-Code via `SIZE_MAP` abgeleitet:
 
@@ -77,6 +80,14 @@ Weiteres Feld um Größen-Varianten ergänzen:
 1. Am Feld-Eintrag einen `bySize`-Block neben `default` anlegen — optional zusätzlich zu `byBranche`, beide koexistieren.
 2. Keys aus der `SIZE_MAP` verwenden (`solo`, `kleines_team`, `kmu`). Falls weitere Größen-Stufen nötig werden, `SIZE_MAP` zentral erweitern.
 3. Beachten: `byBranche` gewinnt immer vor `bySize`. Wenn ein Feld beide Dimensionen gleichzeitig nutzen soll, muss die Priorität bewusst gesetzt werden.
+
+## Strict-Modus
+
+`strict: true` am Feld-Eintrag verhindert den `default`-Fallback. Wenn weder eine `byBranche`- noch eine `bySize`-Variante greift, liefert `getSmartChips` `null` → es werden **keine** Chips angezeigt.
+
+**Use-Case:** Felder, bei denen generische Default-Chips in bestimmten Branchen als Kontextbruch wirken würden — z. B. `hauptleistung`: Die Default-Chips („Software- und Web-Entwicklung", „Vertrieb und Handel" …) passen für Bildungs-, Bau- oder Verwaltungs-Geschäftsführer nicht zum Chat-Kontext und wirken peinlich.
+
+**Richtlinie:** `strict` nur setzen, wenn der Kontextbruch durch Defaults größer wiegt als der Nutzen der Chips. `default` dennoch befüllt lassen (dokumentarisch) — so bleibt sichtbar, welche Chips greifen würden, falls `strict` später auf `false` gesetzt wird.
 
 ## Rollback-Plan
 

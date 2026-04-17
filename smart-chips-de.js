@@ -40,9 +40,15 @@
 
         /* --------------------------------------------------------------
          * hauptleistung — Was bietet das Unternehmen an?
-         * Generisch über alle 13 Branchen, kein byBranche.
+         *
+         * strict: true — kein default-Fallback. Ohne byBranche-Match
+         * werden KEINE Chips gezeigt, statt generischer Defaults, die
+         * in anderen Branchen (z. B. Bildung, Bau) als Kontextbruch
+         * wirken. `default` bleibt dokumentarisch erhalten und würde
+         * greifen, falls strict später auf false gesetzt wird.
          * ------------------------------------------------------------ */
         hauptleistung: {
+            strict: true,
             default: [
                 "Beratung und Strategieentwicklung",
                 "Software- und Web-Entwicklung",
@@ -166,6 +172,9 @@
      *              solo | kleines_team | kmu gemappt, siehe unten).
      *
      * Lookup-Priorität: byBranche > bySize > default.
+     * strict: true am Eintrag unterdrückt den default-Fallback, wenn
+     * weder byBranche noch bySize greifen (→ keine Chips statt
+     * kontextbrüchiger Defaults).
      * Returns: Array von Strings oder null (nichts gefunden = keine Chips).
      * -------------------------------------------------------------------- */
     var SIZE_MAP = {
@@ -186,6 +195,8 @@
         if (sizeKey && entry.bySize && entry.bySize[sizeKey]) {
             return entry.bySize[sizeKey];
         }
+
+        if (entry.strict) return null;
 
         return entry.default || null;
     };
