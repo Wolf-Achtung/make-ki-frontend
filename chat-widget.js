@@ -903,8 +903,9 @@
         if (_editMode) return clearSmartChips();
 
         var branche = _collectedFields && _collectedFields.branche;
+        var size = _collectedFields && _collectedFields.unternehmensgroesse;
         var chips = (typeof window.getSmartChips === "function")
-            ? window.getSmartChips(field, branche)
+            ? window.getSmartChips(field, branche, size)
             : null;
         if (!chips || !chips.length) return clearSmartChips();
 
