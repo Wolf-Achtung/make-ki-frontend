@@ -306,3 +306,21 @@ Optional Backend-Integration (`smart_chips`-Event + Server-seitige Suggestion-Ge
 **Empfehlung für Sprint C1: GO mit einem Klärungspunkt.**
 
 Der MVP ist frontend-only umsetzbar, ~10 h Aufwand, keine Backend-Blocker. **Vor Sprint-Start** sollte Wolf per DevTools-Netzwerk-Panel verifizieren (2 min Aufwand): Sendet das Backend in dem Turn, der die Frage „Was sind Ihre wichtigsten Ziele…?" auslöst, tatsächlich ein `state_update` mit `current_field: "strategische_ziele"` (oder einem äquivalenten Feldnamen)? Wenn ja: GO. Wenn nein: kleine Backend-Anpassung vorschalten, bevor Frontend-Arbeit startet.
+
+---
+
+## Appendix: API-Live-Test (Klärungspunkt)
+
+**Geplanter Test (2026-04-17):** Session via `POST /api/chat/start` anlegen, Branche `marketing` bestätigen, SSE-Stream mitschneiden, auf `event: state_update` mit `current_field` prüfen (speziell beim Übergang zu einem Freitext-Feld).
+
+**Ergebnis in dieser Session: nicht durchgeführt.** Die Analyse-Umgebung blockt ausgehende Requests an `api-ki-backend-neu-production.up.railway.app`:
+
+- `POST /api/chat/start` → sandbox-seitiger Allowlist-Stop (`Host not in allowlist`).
+- `GET /` (Sanity-Check) → 403 vom Server (origin-level), bestätigt Erreichbarkeit, aber nicht Autorisierung.
+
+**Konsequenz:** Der Klärungspunkt aus §4.3 bleibt **offen** und muss außerhalb dieser Sandbox verifiziert werden. Zwei gleichwertige Wege:
+
+1. **DevTools im Browser** (empfohlen, 2 min): `strategy.html` → Chat-Modus starten → Branche auswählen → Network-Tab → `/api/chat/message`-Response → SSE-Frames sichten.
+2. **curl aus Wolf's lokaler Umgebung** mit dem ursprünglich vorgeschlagenen Kommando — gleicher Test, aber außerhalb dieser Sandbox.
+
+Bis dieser Check läuft, bleibt die Empfehlung „GO mit Klärungspunkt" unverändert. Die Frontend-Arbeit selbst kann parallel beginnen, weil die Suppression-Regeln (§3.3) sie robust gegen fehlendes `current_field` machen — im Worst Case rendern Chips einfach nicht, und das System verhält sich wie heute.
