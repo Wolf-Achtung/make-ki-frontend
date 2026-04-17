@@ -183,9 +183,6 @@
         var reportType = options.report_type || "r1";
         var briefingId = options.briefing_id || null;
 
-        // Feature-Flag aus HTML lesen — Smart-Chips nur aktiv, wenn data-smart-chips="1" gesetzt ist
-        SMART_CHIPS_ENABLED = !!document.querySelector('[data-smart-chips="1"]');
-
         renderChatContainer();
 
         var payload = {
@@ -1404,7 +1401,7 @@
     /* ── Smart-Chips State (Sprint C1) ── */
     var _collectedFields = {};       // Spiegel von state.collected_fields, replace bei jedem state_update
     var _lastRenderedField = null;   // Idempotenz-Guard: gleiches Feld → kein Re-Render
-    var SMART_CHIPS_ENABLED = false; // HTML-Feature-Flag (data-smart-chips="1"), in initChat gesetzt
+    var SMART_CHIPS_ENABLED = false; // HTML-Feature-Flag (data-smart-chips="1"), in init() gesetzt
 
     function detectPhase(state) {
         // Prefer backend-provided conversation_phase
@@ -1769,6 +1766,12 @@
 
         if (sessionData.state) {
             updateProgress(sessionData.state);
+            // Resume-Path: _collectedFields spiegeln (analog state_update-Handler),
+            // damit getSmartChips branche/size aufliefern kann. Danach Chips rendern.
+            _collectedFields = sessionData.state.collected_fields || {};
+            if (typeof renderSmartChipsIfApplicable === "function") {
+                renderSmartChipsIfApplicable(sessionData.state);
+            }
         }
 
         // Try quick replies from state, then sessionData, then last assistant message
@@ -1850,6 +1853,12 @@
 
     /* ── Init on page load (R1 page only) ── */
     function init() {
+        // Feature-Flag vor dem Early-Return setzen, damit sowohl Start-Flow
+        // (initChat) als auch Resume-Flow (restoreSession) den gleichen Stand
+        // sehen. Ohne diesen Zug bleibt SMART_CHIPS_ENABLED nach Page-Reload
+        // false, und renderSmartChipsIfApplicable short-circuiert.
+        SMART_CHIPS_ENABLED = !!document.querySelector('[data-smart-chips="1"]');
+
         if (!document.getElementById("intake-mode-selector")) return;
 
         var card = document.getElementById("formbuilder-card");
