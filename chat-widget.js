@@ -145,7 +145,7 @@
             + '</div>'
             + '<div class="chat-input-area">'
             + '  <div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
-            + '  <div class="chat-smart-chips" id="chatSmartChips" role="group" aria-label="Formulierungs-Vorschl\u00e4ge" style="display:none;"></div>'
+            + '  <div class="chat-smart-chips" id="chatSmartChips" role="group" aria-label="Formulierungs-Vorschl\u00e4ge"></div>'
             + '  <div class="chat-input-row">'
             + '    <textarea id="chatInput" placeholder="Ihre Antwort oder Frage..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
             + '    <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
@@ -877,7 +877,7 @@
         var container = document.getElementById("chatSmartChips");
         if (container) {
             container.innerHTML = "";
-            container.style.display = "none";
+            container.classList.remove("smart-chips--active");
         }
         _lastRenderedField = null;
     }
@@ -928,7 +928,7 @@
         html += '</div>';
 
         container.innerHTML = html;
-        container.style.display = "";
+        container.classList.add("smart-chips--active");
     }
 
     /* ── Edit-Mode State ── */

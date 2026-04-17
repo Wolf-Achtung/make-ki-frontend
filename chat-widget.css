@@ -1495,3 +1495,73 @@
         padding: 0 16px;
     }
 }
+
+/* ============================================
+   Smart-Chips (Sprint C1, Phase 3)
+   Dezente Vorschlags-Chips über dem Input bei
+   Freitext-Feldern. Sichtbarkeit via
+   .smart-chips--active (vom JS getoggelt).
+   ============================================ */
+
+#chatSmartChips {
+    display: none;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 14px 0;
+    background: transparent;
+}
+
+#chatSmartChips.smart-chips--active {
+    display: flex;
+}
+
+.smart-chip {
+    background: #f0f7ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    line-height: 1.3;
+    white-space: normal;
+    max-width: 100%;
+}
+
+.smart-chip:hover,
+.smart-chip:focus-visible {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+    outline: none;
+}
+
+.smart-chip:focus-visible {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.smart-chip--used {
+    opacity: 0.55;
+    background: #f1f5f9;
+    color: #64748b;
+    border-color: #cbd5e1;
+}
+
+.smart-chip--used:hover {
+    background: #e2e8f0;
+    color: #475569;
+    border-color: #94a3b8;
+}
+
+@media (max-width: 480px) {
+    #chatSmartChips {
+        padding: 8px 12px 0;
+        gap: 4px;
+    }
+    .smart-chip {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+}
