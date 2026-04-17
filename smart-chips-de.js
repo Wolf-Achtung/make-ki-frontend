@@ -157,6 +157,36 @@
                     "Recherche-Zeiten drastisch reduzieren",
                     "Audience-Insights automatisieren",
                     "Produktions-Workflows beschleunigen"
+                ],
+                handel: [
+                    "Produktpräsentation individuell ausspielen",
+                    "Kundenservice rund um die Uhr sicherstellen",
+                    "Sortiment und Bestände präziser steuern",
+                    "Preisgestaltung datenbasiert entwickeln"
+                ],
+                gesundheit: [
+                    "Behandlungsdokumentation konsequent entlasten",
+                    "Praxisabläufe spürbar verschlanken",
+                    "Patientenkommunikation strukturiert führen",
+                    "Abrechnung und Meldepflichten automatisieren"
+                ],
+                industrie: [
+                    "Qualitätskontrolle durchgängig automatisieren",
+                    "Predictive Maintenance strategisch aufbauen",
+                    "Produktionsdaten entscheidungsrelevant nutzen",
+                    "Lieferketten-Transparenz deutlich erhöhen"
+                ],
+                logistik: [
+                    "Routenplanung dynamisch optimieren",
+                    "Disposition entlasten und beschleunigen",
+                    "Sendungsverfolgung durchgängig automatisieren",
+                    "Lagerbestände präziser prognostizieren"
+                ],
+                gastronomie: [
+                    "Personalplanung bedarfsgerecht steuern",
+                    "Einkauf und Wareneinsatz datenbasiert steuern",
+                    "Gästekommunikation professionalisieren",
+                    "Menüplanung und Angebot schärfen"
                 ]
             }
         }
