@@ -1,0 +1,3 @@
+# Coach-Feature: SPA-Style-Rewrite fuer /coach/{briefing_id}
+# 200 = Rewrite (URL bleibt /coach/1017 im Browser sichtbar).
+/coach/*    /coach.html    200
