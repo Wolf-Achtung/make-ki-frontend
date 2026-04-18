@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ihr KI-Coach — KI-Sicherheit.jetzt</title>
+  <meta name="description" content="Individuelle KI-Coaching-Session zu Ihrem Report.">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/coach.css">
+</head>
+<body>
+  <div id="coach-app">
+    <header class="coach-header">
+      <a href="/" class="logo-link" aria-label="Zur Startseite">
+        <img src="/ki-sicherheit-logo.webp" alt="ki-sicherheit.jetzt" class="logo">
+      </a>
+      <div class="header-info">
+        <h1>Ihr KI-Coach</h1>
+        <p class="subtitle">Individuelle Begleitung zu Ihrem Report</p>
+      </div>
+    </header>
+
+    <main id="coach-main">
+      <div id="coach-loading" class="coach-state" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Coach wird vorbereitet...</p>
+      </div>
+
+      <div id="coach-error" class="coach-state hidden" role="alert">
+        <p class="error-message"></p>
+        <a href="/" class="btn-secondary">Zurück zur Startseite</a>
+      </div>
+
+      <div id="coach-chat" class="hidden">
+        <div id="messages" class="messages" role="log" aria-live="polite" aria-label="Chat-Verlauf"></div>
+
+        <div id="input-area" class="input-area">
+          <label for="user-input" class="sr-only">Ihre Nachricht</label>
+          <textarea
+            id="user-input"
+            placeholder="Ihre Frage oder Antwort..."
+            rows="2"
+            maxlength="2000"
+            autocomplete="off"
+          ></textarea>
+          <button id="send-btn" class="btn-primary" type="button">
+            <span class="btn-text">Senden</span>
+            <span class="btn-loading hidden" aria-hidden="true">…</span>
+          </button>
+        </div>
+
+        <footer class="coach-footer">
+          <small>
+            Kostenlos während der Testphase · Gespräche werden nicht gespeichert ·
+            <a href="/datenschutz.html">Datenschutz</a>
+          </small>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script src="/coach-widget.js" defer></script>
+</body>
+</html>
