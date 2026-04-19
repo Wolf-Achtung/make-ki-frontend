@@ -2,6 +2,24 @@
    COACH-STYLESHEET — harmonisch mit --mk-*-Designsystem
    ═══════════════════════════════════════════════════════════ */
 
+/* Locally bundled fonts (CSP-compliant, no Google Fonts CDN).
+   Inter: variable font covers weights 400/500/600/700 used below.
+   Playfair Display: static 700 used for headlines. Latin subset only. */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-var-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/fonts/playfair-700-latin.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --mk-navy-900: #0a1628;
   --mk-navy-800: #0e1e36;
