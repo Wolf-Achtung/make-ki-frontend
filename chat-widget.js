@@ -440,6 +440,7 @@
                         updateProgress(data);
                         _collectedFields = data.collected_fields || {};
                         renderSmartChipsIfApplicable(data);
+                        renderInspirationChipsIfApplicable(data);
                         if (data.is_completable === true) {
                             showCompletionUI();
                         }
@@ -915,6 +916,46 @@
                   + '</button>';
         }
         html += '</div>';
+
+        container.innerHTML = html;
+        container.classList.add("smart-chips--active");
+    }
+
+    /* ──────────────────────────────────────────────────────────────────
+     * Inspiration-Chips (KIS-1138)
+     * Backend liefert bei bestimmten Freetext-Feldern drei Beispieltexte
+     * via state.field_examples. Chips autofüllen das Eingabefeld
+     * (Überschreib-Semantik) und lösen einen Telemetrie-Ping aus.
+     * Teilt den #chatSmartChips-Container mit dem deprecated
+     * Smart-Chips-System (KIS-1164).
+     * ────────────────────────────────────────────────────────────────── */
+
+    function renderInspirationChipsIfApplicable(state) {
+        if (!state) return clearSmartChips();
+
+        var examples = state.field_examples;
+        if (!Array.isArray(examples) || examples.length === 0) return clearSmartChips();
+
+        if (_editMode) return clearSmartChips();
+        if (state.pending_field) return clearSmartChips();
+
+        var field = state.next_fields && state.next_fields[0];
+        if (!field) return clearSmartChips();
+
+        var container = document.getElementById("chatSmartChips");
+        if (!container) return;
+
+        var html = '<div class="inspiration-chips__label">Inspiration</div>';
+        for (var i = 0; i < examples.length; i++) {
+            var text = String(examples[i]);
+            html += '<button type="button" class="smart-chip inspiration-chip"'
+                  + ' data-chip-text="' + escapeHtml(text) + '"'
+                  + ' data-chip-index="' + i + '"'
+                  + ' data-chip-field="' + escapeHtml(field) + '"'
+                  + ' aria-label="Inspiration \u00fcbernehmen: ' + escapeHtml(text) + '">'
+                  + escapeHtml(text)
+                  + '</button>';
+        }
 
         container.innerHTML = html;
         container.classList.add("smart-chips--active");
@@ -1772,6 +1813,9 @@
             if (typeof renderSmartChipsIfApplicable === "function") {
                 renderSmartChipsIfApplicable(sessionData.state);
             }
+            if (typeof renderInspirationChipsIfApplicable === "function") {
+                renderInspirationChipsIfApplicable(sessionData.state);
+            }
         }
 
         // Try quick replies from state, then sessionData, then last assistant message
@@ -1826,6 +1870,42 @@
         announcer.textContent = "";
         setTimeout(function() { announcer.textContent = text; }, 50);
     }
+
+    /* ── Inspiration-Chips Click-Delegation (KIS-1138) ──
+       Registriert VOR dem Smart-Chip-Handler; Inspiration-Chips tragen beide
+       Klassen (smart-chip inspiration-chip), daher stopImmediatePropagation,
+       damit der deprecated Append-Handler nicht zusätzlich feuert. */
+    document.addEventListener("click", function(e) {
+        var chip = e.target.closest && e.target.closest(".inspiration-chip");
+        if (!chip) return;
+        e.stopImmediatePropagation();
+
+        var chipText = chip.dataset.chipText || "";
+        var field = chip.dataset.chipField || "";
+        var index = parseInt(chip.dataset.chipIndex, 10);
+        var input = document.getElementById("chatInput");
+        if (!input) return;
+
+        input.value = chipText;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.focus();
+        try {
+            var end = input.value.length;
+            input.setSelectionRange(end, end);
+        } catch (err) { /* textarea akzeptiert, andere Inputs ggf. nicht */ }
+
+        try {
+            fetch(getApiBase() + "/api/chat/inspiration-click", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    session_id: chatState.sessionId,
+                    field: field,
+                    chip_index: isNaN(index) ? null : index
+                })
+            }).catch(function() {});
+        } catch (err) { /* fire-and-forget */ }
+    });
 
     /* ── Smart-Chips Click-Delegation (Sprint C1) ── */
     document.addEventListener("click", function(e) {
