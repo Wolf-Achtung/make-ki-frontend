@@ -1857,7 +1857,7 @@
         // (initChat) als auch Resume-Flow (restoreSession) den gleichen Stand
         // sehen. Ohne diesen Zug bleibt SMART_CHIPS_ENABLED nach Page-Reload
         // false, und renderSmartChipsIfApplicable short-circuiert.
-        SMART_CHIPS_ENABLED = !!document.querySelector('[data-smart-chips="1"]');
+        SMART_CHIPS_ENABLED = false; // KIS-1164: Smart-Chips deaktiviert; KIS-1138 (Inspiration-Chips) ist einzige aktive Quelle für #chatSmartChips
 
         if (!document.getElementById("intake-mode-selector")) return;
 
