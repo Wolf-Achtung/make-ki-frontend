@@ -1,3 +1,11 @@
+/**
+ * DEPRECATED — 2026-04-20
+ * Dieses System wurde deaktiviert (KIS-1164).
+ * Grund: Dual-System-Konflikt mit KIS-1138 (Inspiration-Chips).
+ * KIS-1138 ist die einzige aktive Quelle für den #chatSmartChips-Container.
+ * Code-Entfernung: separates Cleanup-Ticket (KIS-XXXX).
+ */
+
 /* ========================================================================
  * Smart-Chips Suggestion-Map (DE) — Sprint C1 MVP
  *
