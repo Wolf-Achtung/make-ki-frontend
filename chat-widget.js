@@ -562,6 +562,13 @@
             chatState.isStreaming = false;
             appendMessage("system", "Verbindungsfehler. Bitte versuchen Sie es erneut.");
             console.error("Chat message failed:", err);
+
+            var btnComplete = document.getElementById("btnComplete");
+            if (btnComplete && btnComplete.disabled) {
+                btnComplete.disabled = false;
+                btnComplete.classList.remove("is-submitting");
+                btnComplete.textContent = "Angaben best\u00e4tigen & Report starten";
+            }
         });
     }
 
@@ -1585,7 +1592,8 @@
         var btn = document.getElementById("btnComplete");
         if (btn) {
             btn.disabled = true;
-            btn.textContent = "Wird verarbeitet\u2026";
+            btn.classList.add("is-submitting");
+            btn.innerHTML = 'Wird gesendet<span class="submit-dots"><span></span><span></span><span></span></span>';
         }
 
         sendMessage("Auswertung starten", {

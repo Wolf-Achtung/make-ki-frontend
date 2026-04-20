@@ -390,6 +390,31 @@
     30% { transform: translateY(-6px); opacity: 1; }
 }
 
+/* Loading-State für Submit-Buttons (R1 + Strategy) */
+.is-submitting {
+    pointer-events: none;
+}
+
+.submit-dots {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.submit-dots span {
+    width: 5px;
+    height: 5px;
+    background: currentColor;
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite ease-in-out;
+    opacity: 0.6;
+}
+
+.submit-dots span:nth-child(2) { animation-delay: 0.2s; }
+.submit-dots span:nth-child(3) { animation-delay: 0.4s; }
+
 /* --- Summary Cards --- */
 .summary-cards {
     max-width: 100%;
