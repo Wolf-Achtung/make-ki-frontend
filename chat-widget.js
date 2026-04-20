@@ -439,6 +439,7 @@
                     case "state_update":
                         updateProgress(data);
                         _collectedFields = data.collected_fields || {};
+                        _inspirationFieldName = data.field_examples_for || null;
                         renderSmartChipsIfApplicable(data);
                         renderInspirationChipsIfApplicable(data);
                         if (data.is_completable === true) {
@@ -1442,6 +1443,7 @@
     /* ── Smart-Chips State (Sprint C1) ── */
     var _collectedFields = {};       // Spiegel von state.collected_fields, replace bei jedem state_update
     var _lastRenderedField = null;   // Idempotenz-Guard: gleiches Feld → kein Re-Render
+    var _inspirationFieldName = null; // KIS-1138: autoritatives Feld für Inspiration-Chip-Telemetrie, aus state.field_examples_for
     var SMART_CHIPS_ENABLED = false; // HTML-Feature-Flag (data-smart-chips="1"), in init() gesetzt
 
     function detectPhase(state) {
@@ -1881,7 +1883,6 @@
         e.stopImmediatePropagation();
 
         var chipText = chip.dataset.chipText || "";
-        var field = chip.dataset.chipField || "";
         var index = parseInt(chip.dataset.chipIndex, 10);
         var input = document.getElementById("chatInput");
         if (!input) return;
@@ -1900,7 +1901,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     session_id: chatState.sessionId,
-                    field: field,
+                    field: _inspirationFieldName,
                     chip_index: isNaN(index) ? null : index
                 })
             }).catch(function() {});
