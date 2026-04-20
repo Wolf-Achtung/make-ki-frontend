@@ -1344,7 +1344,8 @@
         // Disable button
         var btn = document.getElementById("btn-submit");
         btn.disabled = true;
-        btn.textContent = "Wird gesendet\u2026";
+        btn.classList.add("is-submitting");
+        btn.innerHTML = 'Wird gesendet<span class="submit-dots"><span></span><span></span><span></span></span>';
 
         // Chain: Questions -> Generate -> Poll
         fetch(API_BASE + "/api/strategy/questions/" + briefingId, {
@@ -1368,6 +1369,7 @@
         })
         .catch(function(err) {
             btn.disabled = false;
+            btn.classList.remove("is-submitting");
             btn.textContent = "Strategiebericht anfordern";
             alert("Fehler: " + err.message);
         });
