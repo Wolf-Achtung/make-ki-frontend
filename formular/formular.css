@@ -246,6 +246,13 @@ button{
   box-shadow: var(--shadow-2);
 }
 .btn-next:disabled{ opacity:.7; cursor: not-allowed; }
+.btn:disabled,
+.btn.submitting{
+  opacity:.6;
+  cursor: not-allowed;
+  filter: grayscale(0.25);
+  pointer-events: none;
+}
 .btn-reset{
   background: #EEF2FF;
   color: var(--brand-700);
