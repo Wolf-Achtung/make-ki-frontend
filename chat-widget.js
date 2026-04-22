@@ -573,6 +573,22 @@
     }
 
     /* ── Quick Replies ── */
+    /**
+     * @typedef {Object} QuickReplyOption
+     * @property {string} value
+     * @property {string} label
+     * @property {string} [style]
+     * @property {string} [description]
+     *
+     * @typedef {Object} QuickReply
+     * @property {string} field
+     * @property {string} label
+     * @property {QuickReplyOption[]} options
+     * @property {boolean} [multi_select]
+     * @property {number|null} [max_select]
+     * @property {boolean} [optional]
+     * @property {string|null} [description]  Optional user-visible help text for the question.
+     */
     function renderQuickReplies(replies, opts) {
         if (_editMode) return; // Preserve edit panel — QR buttons suppressed in edit mode
 
@@ -636,8 +652,23 @@
             label.textContent = labelText;
             container.appendChild(label);
 
+            // Optional user-visible help text. Rendered only when non-empty;
+            // falsy values (undefined / null / "") produce no DOM.
+            var descId = null;
+            if (typeof reply.description === "string" && reply.description.trim() !== "") {
+                var desc = document.createElement("p");
+                desc.className = "qr-description";
+                descId = "qr-desc-" + reply.field;
+                desc.id = descId;
+                desc.textContent = reply.description;
+                container.appendChild(desc);
+            }
+
             var group = document.createElement("div");
             group.className = "qr-group";
+            if (descId) {
+                group.setAttribute("aria-describedby", descId);
+            }
 
             for (var o = 0; o < reply.options.length; o++) {
                 var option = reply.options[o];
