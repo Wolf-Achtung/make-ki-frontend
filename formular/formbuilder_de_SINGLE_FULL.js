@@ -254,6 +254,7 @@ function _collectLabelFor(fieldKey, value){
   }
 
   var SUBMIT_IN_FLIGHT = false;
+  var SUBMIT_IDEMPOTENCY_KEY = "";
 
   function getBaseUrl() {
     try {
@@ -863,7 +864,29 @@ function _collectLabelFor(fieldKey, value){
 
   // --------------------------- Submit ---------------------------
   function submitForm() {
-    if (typeof SUBMIT_IN_FLIGHT !== "undefined" && SUBMIT_IN_FLIGHT) return;
+    if (SUBMIT_IN_FLIGHT) return;
+
+    // Lock immediately so any already-queued second click is a no-op.
+    SUBMIT_IN_FLIGHT = true;
+    var submitBtn = document.getElementById("btn-submit");
+    var submitBtnLabel = submitBtn ? submitBtn.textContent : "Absenden";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.setAttribute("aria-busy", "true");
+      submitBtn.classList.add("submitting");
+      submitBtn.textContent = "Wird gesendet …";
+    }
+
+    function releaseSubmitLock() {
+      SUBMIT_IN_FLIGHT = false;
+      var b = document.getElementById("btn-submit");
+      if (b) {
+        b.disabled = false;
+        b.removeAttribute("aria-busy");
+        b.classList.remove("submitting");
+        b.textContent = submitBtnLabel || "Absenden";
+      }
+    }
 
     // collect all values (only visible fields per block)
     for (var bi=0; bi<blocks.length; bi++) {
@@ -884,6 +907,7 @@ function _collectLabelFor(fieldKey, value){
     if (formData.datenschutz !== true) {
       var msg = document.getElementById("fb-msg");
       if (msg) { msg.textContent = "Bitte bestätigen Sie die Datenschutzhinweise."; msg.setAttribute("role","alert"); }
+      releaseSubmitLock();
       return;
     }
 
@@ -928,9 +952,11 @@ function _collectLabelFor(fieldKey, value){
     } catch(_) {}
 
     var url = getBaseUrl() + SUBMIT_PATH;
-    var idem = (Date.now().toString(36) + Math.random().toString(16).slice(2));
-
-    try { SUBMIT_IN_FLIGHT = true; } catch(_) {}
+    // Stable idempotency key for this page load so browser/network retries of
+    // the same submission dedupe on the backend. Regenerated after a final
+    // error so the user can try again.
+    var idem = SUBMIT_IDEMPOTENCY_KEY || (Date.now().toString(36) + Math.random().toString(16).slice(2));
+    SUBMIT_IDEMPOTENCY_KEY = idem;
 
     var userEmailForStatus = "";
     try { userEmailForStatus = localStorage.getItem("ki_user_email") || ""; } catch(_) {}
@@ -959,8 +985,27 @@ function _collectLabelFor(fieldKey, value){
             window.location.href = statusUrl;
           }
         }).catch(function() {});
+      } else {
+        // Non-OK response: surface error and allow a fresh retry with a new key.
+        SUBMIT_IDEMPOTENCY_KEY = "";
+        showSubmitError("Beim Absenden ist ein Fehler aufgetreten. Bitte Seite neu laden und erneut versuchen.");
       }
-    }).catch(function(){}).finally(function(){ try { SUBMIT_IN_FLIGHT = false; } catch(_) {} });
+    }).catch(function(){
+      SUBMIT_IDEMPOTENCY_KEY = "";
+      showSubmitError("Keine Verbindung zum Server. Bitte Seite neu laden und erneut versuchen.");
+    });
+    // Note: intentionally NO .finally that clears SUBMIT_IN_FLIGHT. On success
+    // we redirect; on failure we show an error state and expect a page reload.
+    // Re-enabling the flag here would re-open the double-submit window.
+  }
+
+  function showSubmitError(text) {
+    var root = document.getElementById("formbuilder");
+    if (!root) return;
+    root.innerHTML = '<section class="fb-section"><h2>Etwas ist schiefgelaufen</h2>'
+      + '<div class="form-error">' + text + '</div>'
+      + '<nav class="form-nav"><button type="button" class="btn btn-primary" onclick="window.location.reload()">Seite neu laden</button></nav>'
+      + '</section>';
   }
 
   var autosaveKey = STORAGE_PREFIX + "data";
