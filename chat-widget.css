@@ -697,6 +697,14 @@
     margin: 4px 0 6px;
 }
 
+.qr-description {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #666;
+    margin: 4px 0 8px;
+    font-weight: 400;
+}
+
 .qr-group {
     display: flex;
     flex-wrap: wrap;
