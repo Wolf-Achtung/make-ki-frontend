@@ -966,12 +966,11 @@ function _collectLabelFor(fieldKey, value){
           }
         }).catch(function() {});
       } else {
-        // Non-OK response: surface error and allow a fresh retry with a new key.
-        _submitLock.resetIdempotency();
+        // Transient error: keep the idempotency key so a reload-retry within
+        // the 30-min window dedupes on the backend (see submit-lock.js).
         showSubmitError("Beim Absenden ist ein Fehler aufgetreten. Bitte Seite neu laden und erneut versuchen.");
       }
     }).catch(function(){
-      _submitLock.resetIdempotency();
       showSubmitError("Keine Verbindung zum Server. Bitte Seite neu laden und erneut versuchen.");
     });
     // Note: intentionally NO release on success/failure. Success redirects;

@@ -827,11 +827,11 @@ function _collectLabelFor(fieldKey, value){
           }
         }).catch(function() {});
       } else {
-        _submitLock.resetIdempotency();
+        // Transient error: keep the idempotency key so a reload-retry within
+        // the 30-min window dedupes on the backend (see submit-lock.js).
         showSubmitError("Something went wrong while sending. Please reload the page and try again.");
       }
     }).catch(function(){
-      _submitLock.resetIdempotency();
       showSubmitError("Cannot reach the server. Please reload the page and try again.");
     });
     // Note: intentionally NO release on success/failure. Success redirects;
