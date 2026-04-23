@@ -28,21 +28,26 @@
  *     fetch(url, { headers: { "Idempotency-Key": idem }, ... })
  *       .then(onSuccess)            // success: UI redirects, do NOT release
  *       .catch(function() {
- *         lock.resetIdempotency();  // final error: allow fresh retry on reload
- *         showErrorScreen();
+ *         lock.release();           // transient error: retry reuses the key
+ *         showError();
  *       });
  *   }
  *
  * Notes:
  *   - Do not call release() in the success path; the UI should redirect or
  *     replace the form. Releasing would reopen the double-submit window.
- *   - Do not call release() on network-fail either; surface an error screen
- *     that requires a reload. Call resetIdempotency() so the fresh page gets
- *     a new key.
+ *   - On transient errors (network blips, 5xx, SSE stream failures) call
+ *     release() — but NOT resetIdempotency(). The stored key must survive the
+ *     retry so the backend can dedupe an in-flight duplicate within the 30-min
+ *     window. This is the core dedupe contract.
  *   - The idempotency key survives an accidental page reload via
  *     sessionStorage, so a reload+retry still dedupes at the backend.
  *   - After 30 min (configurable) the stored key is considered stale and a
  *     new one is generated on the next acquire().
+ *   - resetIdempotency() is ONLY for terminal cases that invalidate the
+ *     in-flight intent: explicit user abort/cancel, auth change that makes
+ *     the old submission no longer meaningful, or a successful completion
+ *     that clears session state. Never call it from a generic error path.
  *
  * Exposes: window.SubmitLock.create(options) -> controller
  */
@@ -144,6 +149,10 @@
       savedHtml = null;
     }
 
+    // Terminal-only: clears the stored idempotency key. Do NOT call from
+    // generic error handlers — doing so breaks the in-flight dedupe contract
+    // because an immediate retry would get a fresh key. Reserve for user
+    // abort, auth change that invalidates the intent, or post-success cleanup.
     function resetIdempotency() {
       clearStoredKey(storageKey);
     }

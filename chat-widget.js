@@ -573,7 +573,6 @@
 
             if (_completeSubmitLock && _completeSubmitLock.isLocked()) {
                 _completeSubmitLock.release();
-                _completeSubmitLock.resetIdempotency();
             }
         });
     }

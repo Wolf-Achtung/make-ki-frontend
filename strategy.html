@@ -1382,10 +1382,10 @@
             pollStatus();
         })
         .catch(function(err) {
-            // Final error: release lock + reset idempotency so user can retry with
-            // a fresh key after reviewing the error.
+            // Transient error: release the lock so the user can retry, but keep
+            // the idempotency key so a retry (even across reload) dedupes on
+            // the backend within the 30-min window.
             _submitLock.release();
-            _submitLock.resetIdempotency();
             alert("Fehler: " + err.message);
         });
     });
