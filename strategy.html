@@ -1089,6 +1089,7 @@
   </div>
 </div>
 
+<script src="/js/submit-lock.js"></script>
 <script src="/chat-widget.js"></script>
 <script src="/field_examples_de.js"></script>
 <script>
@@ -1098,6 +1099,14 @@
     var API_BASE = "https://api-ki-backend-neu-production.up.railway.app";
     var params = new URLSearchParams(window.location.search);
     var briefingId = params.get("briefing_id");
+
+    // Submit-Lock for "Strategiebericht anfordern" (KIS-1140 pattern)
+    var _submitLock = (window.SubmitLock && window.SubmitLock.create({
+        buttonSelector: "#btn-submit",
+        busyHtml: 'Wird gesendet<span class="submit-dots"><span></span><span></span><span></span></span>',
+        busyClass: "is-submitting",
+        idempotencyStorageKey: "submit-lock.strategy"
+    })) || null;
 
     if (!briefingId) {
         document.getElementById("error-section").style.display = "block";
@@ -1267,6 +1276,11 @@
     document.getElementById("strategy-form").addEventListener("submit", function(e) {
         e.preventDefault();
 
+        if (!_submitLock) { console.error("SubmitLock not loaded"); return; }
+        // Acquire as FIRST sync action so a double-click / double-submit is a no-op.
+        var idem = _submitLock.acquire();
+        if (!idem) return;
+
         // Clear previous invalid states
         document.querySelectorAll(".mk-question-group.invalid").forEach(function(el) {
             el.classList.remove("invalid");
@@ -1294,6 +1308,7 @@
             });
             var first = document.querySelector(".invalid");
             if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+            _submitLock.release();
             return;
         }
 
@@ -1341,16 +1356,12 @@
         if (s5other && s5other.value.trim()) s5checked.push(s5other.value.trim());
         if (s5checked.length > 0) data.s5_software = s5checked.join(", ");
 
-        // Disable button
-        var btn = document.getElementById("btn-submit");
-        btn.disabled = true;
-        btn.classList.add("is-submitting");
-        btn.innerHTML = 'Wird gesendet<span class="submit-dots"><span></span><span></span><span></span></span>';
-
         // Chain: Questions -> Generate -> Poll
+        // Idempotency-Key is stable per page load (and across reloads within 30 min)
+        // so transparent browser/network retries dedupe on the backend.
         fetch(API_BASE + "/api/strategy/questions/" + briefingId, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "Idempotency-Key": idem },
             body: JSON.stringify(data)
         })
         .then(function(res) {
@@ -1358,19 +1369,23 @@
             return res.json();
         })
         .then(function() {
-            return fetch(API_BASE + "/api/strategy/generate/" + briefingId, { method: "POST" });
+            return fetch(API_BASE + "/api/strategy/generate/" + briefingId, {
+                method: "POST",
+                headers: { "Idempotency-Key": idem }
+            });
         })
         .then(function(res) {
             if (!res.ok) throw new Error("HTTP " + res.status);
-            // Form -> Status
+            // Form -> Status (success: UI redirects, do NOT release lock)
             document.getElementById("form-section").style.display = "none";
             document.getElementById("status-section").style.display = "block";
             pollStatus();
         })
         .catch(function(err) {
-            btn.disabled = false;
-            btn.classList.remove("is-submitting");
-            btn.textContent = "Strategiebericht anfordern";
+            // Final error: release lock + reset idempotency so user can retry with
+            // a fresh key after reviewing the error.
+            _submitLock.release();
+            _submitLock.resetIdempotency();
             alert("Fehler: " + err.message);
         });
     });

@@ -12,6 +12,14 @@
         isStreaming: false
     };
 
+    /* ── Submit-Lock for the "Angaben bestätigen & Report starten" button (KIS-1140) ── */
+    var _completeSubmitLock = (window.SubmitLock && window.SubmitLock.create({
+        buttonSelector: "#btnComplete",
+        busyHtml: 'Wird gesendet<span class="submit-dots"><span></span><span></span><span></span></span>',
+        busyClass: "is-submitting",
+        idempotencyStorageKey: "submit-lock.chat-intake"
+    })) || null;
+
     /* ── Phase + Block Constants ── */
     var BLOCK_LABELS = {
         "block_a": "F\u00f6rdermittel & Budget",
@@ -563,11 +571,9 @@
             appendMessage("system", "Verbindungsfehler. Bitte versuchen Sie es erneut.");
             console.error("Chat message failed:", err);
 
-            var btnComplete = document.getElementById("btnComplete");
-            if (btnComplete && btnComplete.disabled) {
-                btnComplete.disabled = false;
-                btnComplete.classList.remove("is-submitting");
-                btnComplete.textContent = "Angaben best\u00e4tigen & Report starten";
+            if (_completeSubmitLock && _completeSubmitLock.isLocked()) {
+                _completeSubmitLock.release();
+                _completeSubmitLock.resetIdempotency();
             }
         });
     }
@@ -1620,12 +1626,9 @@
     }
 
     function submitComplete() {
-        var btn = document.getElementById("btnComplete");
-        if (btn) {
-            btn.disabled = true;
-            btn.classList.add("is-submitting");
-            btn.innerHTML = 'Wird gesendet<span class="submit-dots"><span></span><span></span><span></span></span>';
-        }
+        if (!_completeSubmitLock) { console.error("SubmitLock not loaded"); return; }
+        // Acquire as FIRST sync action so any already-queued second click is a no-op.
+        if (!_completeSubmitLock.acquire()) return;
 
         sendMessage("Auswertung starten", {
             quick_reply_field: "__summary_action__",
