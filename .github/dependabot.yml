@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Static-Site ohne package.json/requirements.txt — nur GitHub-Actions
+  # auto-updaten. Bei Einführung von npm/pip hier weitere Ecosystems
+  # ergänzen (npm, pip).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      actions-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
