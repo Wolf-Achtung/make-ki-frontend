@@ -1,0 +1,47 @@
+# Secrets / env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# Node / npm (falls künftig Build-Tooling hinzukommt)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Python (falls künftig Tools/Scripts dazukommen)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Build-Outputs
+dist/
+build/
+.next/
+.cache/
+.parcel-cache/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# Logs
+logs/
+*.log
+
+# Audit-Artefakte (nie committen)
+.audit-temp/
+audit-report-*.json
+gitleaks-report.json

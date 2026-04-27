@@ -43,7 +43,11 @@
 
             out.innerHTML = html;
         } catch(e) {
-            out.innerHTML = `<p class="err">❌ Fehler: ${e}</p>`;
+            out.textContent = "";
+            const p = document.createElement("p");
+            p.className = "err";
+            p.textContent = "❌ Fehler: " + (e && e.message ? e.message : String(e));
+            out.appendChild(p);
         }
     }
     </script>

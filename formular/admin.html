@@ -40,6 +40,8 @@
     <tbody></tbody>
   </table>
 
+  <!-- SEC-H1 (2026-04-27): DOMPurify vor jedem innerHTML mit Backend-Daten. -->
+  <script src="/js/vendor/purify.min.js"></script>
   <script>
     const token = localStorage.getItem("jwt");
     if (!token) window.location.href = "/login.html";
@@ -59,13 +61,15 @@
       if (!res.ok) return alert("Nicht berechtigt oder Serverfehler.");
       const data = await res.json();
       const tbody = document.querySelector("#stats-table tbody");
-      tbody.innerHTML = data.map(row => `
+      // SEC-H1: User-supplied row.email durch DOMPurify schicken.
+      const html = data.map(row => `
         <tr>
           <td>${row.email}</td>
           <td>${row.total}</td>
           <td>${row.last_use || ""}</td>
         </tr>
       `).join("");
+      tbody.innerHTML = DOMPurify.sanitize(html);
     }
 
     async function loadFeedback() {
@@ -76,13 +80,49 @@
       if (!res.ok) return console.error("Fehler beim Laden der Feedback-Logs");
       const data = await res.json();
       const tbody = document.querySelector("#feedback-table tbody");
-      tbody.innerHTML = data.map(row => `
+      // SEC-H1: row.email + row.feedback_data sind user-controlled.
+      // JSON.stringify schützt nicht gegen XSS — DOMPurify danach ist Pflicht.
+      const html = data.map(row => `
         <tr>
           <td>${row.email}</td>
           <td><pre style="white-space:pre-wrap;font-size:0.9em">${JSON.stringify(row.feedback_data, null, 2)}</pre></td>
           <td>${row.created_at}</td>
         </tr>
       `).join("");
+      tbody.innerHTML = DOMPurify.sanitize(html);
+    }
+
+    // SEC-H3 (2026-04-27): JWT war als ?token=… URL-Parameter übergeben.
+    // → landet in Browser-History, Referer, Server-Access-Logs, Proxies.
+    // Jetzt: Authorization-Header + fetch().blob() + clientseitiger
+    // Download via blob-URL.
+    //
+    // BACKEND-VORAUSSETZUNG: Endpoints /api/export-logs und
+    // /api/export-feedback müssen Authorization-Header akzeptieren
+    // (vorher reichte ggf. nur ?token=…). Falls noch nicht: separate
+    // Cross-Repo-Issue im api-ki-backend-neu, bis dahin schlägt der
+    // Download mit 401 fehl — das ist sichtbarer als ein stiller
+    // Token-Leak.
+    async function downloadCsv(url, filename) {
+      const t = localStorage.getItem("jwt");
+      if (!t) { alert("Nicht eingeloggt."); return; }
+      try {
+        const response = await fetch(url, {
+          headers: { Authorization: `Bearer ${t}` }
+        });
+        if (!response.ok) throw new Error(`Export failed: ${response.status}`);
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = objectUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(objectUrl);
+      } catch (e) {
+        alert("Download fehlgeschlagen: " + (e && e.message ? e.message : e));
+      }
     }
 
     function exportCSV() {
@@ -93,11 +133,14 @@
       if (start) params.push(`start=${start}`);
       if (end) params.push(`end=${end}`);
       if (params.length) url += "?" + params.join("&");
-      window.open(url + `&token=${token}`, "_blank");
+      const ts = new Date().toISOString().replace(/[:T]/g, "-").split(".")[0];
+      downloadCsv(url, `usage-logs-${ts}.csv`);
     }
 
     function exportFeedbackCSV() {
-      window.open(`https://make-ki-backend-neu-production.up.railway.app/api/export-feedback?token=${token}`, "_blank");
+      const url = "https://make-ki-backend-neu-production.up.railway.app/api/export-feedback";
+      const ts = new Date().toISOString().replace(/[:T]/g, "-").split(".")[0];
+      downloadCsv(url, `feedback-logs-${ts}.csv`);
     }
 
   </script>

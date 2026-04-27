@@ -45,7 +45,15 @@
 
       <section id="tab-analysis" class="tabpane">
         <div class="analysis-host">
-          <iframe id="analysis-frame" title="Analyse Vorschau"></iframe>
+          <!--
+            SEC-H4 (2026-04-27): sandbox ohne allow-same-origin — Iframe-Inhalt
+            kann weder auf parent-cookies/localStorage zugreifen noch Skripte
+            ausführen. Falls künftig Links/Forms im Report nötig:
+            sandbox="allow-popups allow-popups-to-escape-sandbox" ergänzen.
+            allow-same-origin NIEMALS hinzufügen — würde DOMPurify-Schutz
+            entwerten (Iframe wäre dann effektiv same-origin → kann Token klauen).
+          -->
+          <iframe id="analysis-frame" title="Analyse Vorschau" sandbox=""></iframe>
         </div>
       </section>
 
@@ -58,6 +66,7 @@
   <!-- Toast container (toaster) -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <script src="/js/vendor/purify.min.js"></script>
   <script src="/js/config.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/api.js"></script>

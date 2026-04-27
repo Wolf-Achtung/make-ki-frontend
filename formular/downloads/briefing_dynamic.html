@@ -22,6 +22,9 @@
     <section id="beratungsempfehlung" class="rubrik"><h2>Empfohlene nächsten Schritte</h2><div></div></section>
     <section id="vision" class="rubrik"><h2>Visionärer Ausblick</h2><div></div></section>
 
+    <!-- SEC-H5 (2026-04-27): Backend-HTML wird vor innerHTML durch DOMPurify
+         gejagt. Kein direkter HTML-Inject mehr aus Response. -->
+    <script src="/js/vendor/purify.min.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id') || 'demo'; // Fallback auf demo
@@ -41,12 +44,16 @@
                 rubriken.forEach(key => {
                     const section = document.getElementById(key);
                     if (section && data[key]) {
-                        section.querySelector('div').innerHTML = data[key];
+                        section.querySelector('div').innerHTML = DOMPurify.sanitize(data[key]);
                     }
                 });
             })
             .catch(error => {
-                document.body.innerHTML += '<p style="color:red;">Fehler beim Laden des Briefings.</p>';
+                // SEC-H5: statisches Error-HTML, kein User-/Backend-Input
+                const p = document.createElement('p');
+                p.style.color = 'red';
+                p.textContent = 'Fehler beim Laden des Briefings.';
+                document.body.appendChild(p);
                 console.error('Fehler beim Laden:', error);
             });
     </script>

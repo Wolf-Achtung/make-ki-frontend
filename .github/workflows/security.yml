@@ -1,0 +1,60 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'  # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  security-events: write
+
+jobs:
+  gitleaks:
+    name: Secret Scanning (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Static-Site mit nur HTML/JS/CSS — npm/pip-audit greifen erst, wenn
+  # package.json oder requirements.txt eingeführt werden. Die Conditionals
+  # halten die Jobs schon mal vor.
+  npm-audit:
+    name: npm audit (production deps)
+    if: hashFiles('package.json') != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: npm audit (prod, fails on high+)
+        run: npm audit --omit=dev --audit-level=high
+      - name: npm audit (dev, warning only)
+        run: npm audit --include=dev --audit-level=high || true
+
+  pip-audit:
+    name: pip-audit
+    if: hashFiles('requirements.txt') != '' || hashFiles('pyproject.toml') != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: pip-audit
+        run: |
+          pip install pip-audit
+          if [ -f requirements.txt ]; then pip-audit -r requirements.txt --strict; fi
+          if [ -f pyproject.toml ]; then pip-audit --strict; fi
