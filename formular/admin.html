@@ -92,6 +92,39 @@
       tbody.innerHTML = DOMPurify.sanitize(html);
     }
 
+    // SEC-H3 (2026-04-27): JWT war als ?token=… URL-Parameter übergeben.
+    // → landet in Browser-History, Referer, Server-Access-Logs, Proxies.
+    // Jetzt: Authorization-Header + fetch().blob() + clientseitiger
+    // Download via blob-URL.
+    //
+    // BACKEND-VORAUSSETZUNG: Endpoints /api/export-logs und
+    // /api/export-feedback müssen Authorization-Header akzeptieren
+    // (vorher reichte ggf. nur ?token=…). Falls noch nicht: separate
+    // Cross-Repo-Issue im api-ki-backend-neu, bis dahin schlägt der
+    // Download mit 401 fehl — das ist sichtbarer als ein stiller
+    // Token-Leak.
+    async function downloadCsv(url, filename) {
+      const t = localStorage.getItem("jwt");
+      if (!t) { alert("Nicht eingeloggt."); return; }
+      try {
+        const response = await fetch(url, {
+          headers: { Authorization: `Bearer ${t}` }
+        });
+        if (!response.ok) throw new Error(`Export failed: ${response.status}`);
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = objectUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(objectUrl);
+      } catch (e) {
+        alert("Download fehlgeschlagen: " + (e && e.message ? e.message : e));
+      }
+    }
+
     function exportCSV() {
       const start = document.getElementById("start").value;
       const end = document.getElementById("end").value;
@@ -100,11 +133,14 @@
       if (start) params.push(`start=${start}`);
       if (end) params.push(`end=${end}`);
       if (params.length) url += "?" + params.join("&");
-      window.open(url + `&token=${token}`, "_blank");
+      const ts = new Date().toISOString().replace(/[:T]/g, "-").split(".")[0];
+      downloadCsv(url, `usage-logs-${ts}.csv`);
     }
 
     function exportFeedbackCSV() {
-      window.open(`https://make-ki-backend-neu-production.up.railway.app/api/export-feedback?token=${token}`, "_blank");
+      const url = "https://make-ki-backend-neu-production.up.railway.app/api/export-feedback";
+      const ts = new Date().toISOString().replace(/[:T]/g, "-").split(".")[0];
+      downloadCsv(url, `feedback-logs-${ts}.csv`);
     }
 
   </script>
