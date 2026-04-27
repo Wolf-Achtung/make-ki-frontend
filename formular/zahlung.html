@@ -20,12 +20,14 @@
       const result = await res.json();
       sessionStorage.setItem("pdf_url", result.pdf_url);
 
-      // Webhook zur E-Mail-Zustellung (Dummy aktuell)
-      await fetch("https://hook.eu2.make.com/8tihhrgevougjt8ljm6fb9ony7upnryh", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ pdf_url: result.pdf_url, email: data.email })
-      });
+      // SEC-H2 (2026-04-27): Make.com-Webhook aus Client-Code entfernt.
+      // Die URL war hardcoded und damit faktisch ein Bearer-Token,
+      // jeder Anrufer konnte beliebige Mails triggern. Make.com-Scenario
+      // wird Wolf-seitig deaktiviert, Webhook-URL rotiert.
+      // TODO: Vor Go-Live durch Backend-Proxy ersetzen — siehe
+      //   https://github.com/Wolf-Achtung/make-ki-frontend/issues  (Backend-Proxy für Make.com)
+      // Pseudocode:
+      //   await API.post('/notify/zahlung', { pdf_url: result.pdf_url, email: data.email });
 
       window.location.href = "danke.html";
     });
