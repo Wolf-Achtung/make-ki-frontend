@@ -27,21 +27,17 @@
     setTimeout(function(){ toastEl.classList.remove('show'); }, 3500);
   }
 
-  // --- Minimal Sanitizer (not a full DOMPurify replacement) ---
+  // SEC-H4 (2026-04-27): Selbst-gestrickter Regex-Sanitizer durch
+  // DOMPurify (vendored unter /js/vendor/purify.min.js) ersetzt.
+  // Iframe in admin/detail.html hat zusätzlich sandbox="" (kein
+  // allow-same-origin) — Defense in Depth, falls DOMPurify mal Bypass hat.
   function sanitizeHTML(html){
     if (!SANITIZE || !html) return html || '';
-    try{
-      // strip scripts & iframes
-      html = html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
-      html = html.replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, '');
-      // remove on* handlers
-      html = html.replace(/ on[a-z]+="[^"]*"/gi, '');
-      html = html.replace(/ on[a-z]+='[^']*'/gi, '');
-      // neutralize javascript: URLs
-      html = html.replace(/href\s*=\s*"(javascript:.*?)"/gi, 'href="#"');
-      html = html.replace(/href\s*=\s*'(javascript:.*?)'/gi, "href='#'");
-      return html;
-    }catch(e){ return html; }
+    if (typeof DOMPurify === 'undefined' || !DOMPurify.sanitize) {
+      console.error('SEC-H4: DOMPurify not loaded — refusing to render unsanitized HTML.');
+      return '';
+    }
+    return DOMPurify.sanitize(html);
   }
 
   function setupTabs(){
