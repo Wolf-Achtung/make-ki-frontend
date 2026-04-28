@@ -21,7 +21,6 @@
     <label>Start-Datum: <input type="date" id="start"></label>
     <label>End-Datum: <input type="date" id="end"></label>
     <button onclick="loadStats()">Filter anwenden</button>
-    <button onclick="exportCSV()">CSV exportieren (Nutzung)</button>
   </div>
 
   <table id="stats-table">
@@ -32,7 +31,6 @@
   </table>
 
   <h2 style="margin-top:40px;">Feedback Logs</h2>
-  <button onclick="exportFeedbackCSV()">CSV exportieren (Feedback)</button>
   <table id="feedback-table">
     <thead>
       <tr><th>Email</th><th>Feedback</th><th>Datum</th></tr>
@@ -83,21 +81,6 @@
           <td>${row.created_at}</td>
         </tr>
       `).join("");
-    }
-
-    function exportCSV() {
-      const start = document.getElementById("start").value;
-      const end = document.getElementById("end").value;
-      let url = "https://make-ki-backend-neu-production.up.railway.app/api/export-logs";
-      const params = [];
-      if (start) params.push(`start=${start}`);
-      if (end) params.push(`end=${end}`);
-      if (params.length) url += "?" + params.join("&");
-      window.open(url + `&token=${token}`, "_blank");
-    }
-
-    function exportFeedbackCSV() {
-      window.open(`https://make-ki-backend-neu-production.up.railway.app/api/export-feedback?token=${token}`, "_blank");
     }
 
   </script>
