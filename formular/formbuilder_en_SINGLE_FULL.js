@@ -278,10 +278,10 @@ function _collectLabelFor(fieldKey, value){
       ],
       description: "(So recommendations and budgets are realistically scaled to your company size.)"
     },
-    { key: "business_type", label: "Business type (for solo)", type: "select",
+    { key: "selbststaendig", label: "Business type (for solo)", type: "select",
       options: [
-        { value: "freelancer", label: "Freelancer" }, { value: "sole_proprietor", label: "Sole Proprietor" },
-        { value: "limited_company", label: "Limited Company (1-person)" }, { value: "other", label: "Other" }
+        { value: "freiberufler", label: "Freelancer / self-employed professional" }, { value: "kapitalgesellschaft", label: "Corporation (e.g. GmbH/Ltd/Inc)" },
+        { value: "einzelunternehmer", label: "Sole proprietor" }, { value: "sonstiges", label: "Other" }
       ],
       description: "(So legal form dependencies in obligations and contracts are correctly considered.)",
       showIf: function (data) { return data.unternehmensgroesse === "1"; }
@@ -532,7 +532,7 @@ function _collectLabelFor(fieldKey, value){
   ];
 
   var blocks = [
-    { title: "Company Data & Industry", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "business_type", "country", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
+    { title: "Company Data & Industry", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "country", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
     { title: "Goals & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategy & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
@@ -694,7 +694,7 @@ function _collectLabelFor(fieldKey, value){
     var optional = {
       "jahresumsatz":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
-      "vision_prioritaet":1,"business_type":1,"hauptleistung":0,
+      "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0,
       "ki_projekte":1,"geschaeftsmodell_evolution":1,"vision_3_jahre":1,"ki_guardrails":1,
       "bisherige_foerdermittel":1,"interesse_foerderung":1
     };
