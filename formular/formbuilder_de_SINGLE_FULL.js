@@ -764,10 +764,10 @@ function _collectLabelFor(fieldKey, value){
 
     // Conditionals: re-render, damit showIf greift
     if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country")) {
-      // Update bundesland options when country changes
+      // Update bundesland options when country changes (region value is cleared after
+      // the collect-all loop below, see Fix #2b).
       if (e.target.id === "country") {
         updateBundeslandField(e.target.value);
-        formData.bundesland = "";
       }
       // CRITICAL: Save ALL current form values before re-render to prevent data loss
       var targetId = e.target.id;
@@ -800,6 +800,15 @@ function _collectLabelFor(fieldKey, value){
       // changes (DE-specific) — only an unternehmensgroesse change to non-solo should clear.
       if (e.target.id === "unternehmensgroesse" && e.target.value !== "1") {
         delete formData.selbststaendig;
+      }
+
+      // Fix #2b: clear bundesland on a country change. Same reasoning as the selbststaendig
+      // clear above — placed AFTER the collect-all loop, which re-reads the still-rendered
+      // <select id="bundesland"> and would otherwise restore the orphaned value (leaking it
+      // via Phase 2 of submit for non-region countries like FR). A country change always
+      // means a new regional context, so the previous region is cleared in every case.
+      if (e.target.id === "country") {
+        formData.bundesland = "";
       }
 
       saveAutosave();
