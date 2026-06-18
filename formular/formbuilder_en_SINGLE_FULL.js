@@ -662,6 +662,16 @@ function _collectLabelFor(fieldKey, value){
           }
         }
       }
+
+      // Clear selbststaendig when switching away from solo (field hidden via showIf).
+      // Placed AFTER the collect-all loop above: that loop re-reads the still-rendered
+      // <select id="selbststaendig"> from the DOM (re-render hasn't run yet) and would
+      // otherwise restore the orphaned value, which Phase 2 of submitForm sends regardless
+      // of showIf. Deleting here ensures the value is gone before saveAutosave/renderStep.
+      if (e.target.value !== "1") {
+        delete formData.selbststaendig;
+      }
+
       saveAutosave();
 
       // Re-render step (needed for showIf conditionals)
