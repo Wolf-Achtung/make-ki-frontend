@@ -769,10 +769,6 @@ function _collectLabelFor(fieldKey, value){
         updateBundeslandField(e.target.value);
         formData.bundesland = "";
       }
-      // Clear selbststaendig when not solo (field hidden via showIf)
-      if (e.target.id === "unternehmensgroesse" && e.target.value !== "1") {
-        delete formData.selbststaendig;
-      }
       // CRITICAL: Save ALL current form values before re-render to prevent data loss
       var targetId = e.target.id;
       var scrollY = window.scrollY || window.pageYOffset;
@@ -795,6 +791,17 @@ function _collectLabelFor(fieldKey, value){
           }
         }
       }
+
+      // Fix #1c: clear selbststaendig when switching away from solo (analog to #1b / EN
+      // commit 260cef5). Placed AFTER the collect-all loop above: that loop re-reads the
+      // still-rendered <select id="selbststaendig"> from the DOM (re-render hasn't run yet)
+      // and would otherwise restore the orphaned value, which Phase 2 of submitForm sends
+      // regardless of showIf. The id-guard is kept because this block also handles country
+      // changes (DE-specific) — only an unternehmensgroesse change to non-solo should clear.
+      if (e.target.id === "unternehmensgroesse" && e.target.value !== "1") {
+        delete formData.selbststaendig;
+      }
+
       saveAutosave();
 
       // Re-render step (needed for showIf conditionals)
