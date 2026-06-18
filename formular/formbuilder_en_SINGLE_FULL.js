@@ -443,7 +443,9 @@ function _collectLabelFor(fieldKey, value){
     { key: "regulierte_branche", label: "Regulated industry", type: "checkbox",
       options: [
         { value: "gesundheit", label: "Healthcare & Medicine" }, { value: "finanzen", label: "Finance & Insurance" },
-        { value: "oeffentlich", label: "Public sector" }, { value: "recht", label: "Legal services" }, { value: "keine", label: "None of these industries" }
+        { value: "oeffentlich", label: "Public sector" }, { value: "recht", label: "Legal services" },
+        { value: "vertraulich_nda", label: "Confidential client data / NDA material", hint: "(e.g., unreleased products, protected content, client/mandate data)" },
+        { value: "keine", label: "None of these industries" }
       ],
       description: "(Some AI applications are subject to strict legal requirements. Please select if relevant.)" },
     { key: "trainings_interessen", label: "Interesting AI training topics", type: "checkbox",
