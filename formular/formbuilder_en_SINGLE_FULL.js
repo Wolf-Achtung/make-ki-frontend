@@ -50,6 +50,54 @@ function _collectLabelFor(fieldKey, value){
     }catch(_){}
   }
 
+  // --------------------------- Region options (bundesland) ---------------------------
+  // Region values + labels are kept byte-identical to the DE builder (proper nouns +
+  // funding-context coupling). Only the per-country field label (REGION_LABELS) is localized.
+  var REGION_OPTIONS = {
+    DE: [
+      { value: "bw", label: "Baden-Württemberg" }, { value: "by", label: "Bayern" }, { value: "be", label: "Berlin" },
+      { value: "bb", label: "Brandenburg" }, { value: "hb", label: "Bremen" }, { value: "hh", label: "Hamburg" },
+      { value: "he", label: "Hessen" }, { value: "mv", label: "Mecklenburg-Vorpommern" }, { value: "ni", label: "Niedersachsen" },
+      { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
+      { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
+    ],
+    CH: [
+      { value: "zh", label: "Zürich" }, { value: "be_ch", label: "Bern" }, { value: "lu", label: "Luzern" },
+      { value: "ur", label: "Uri" }, { value: "sz", label: "Schwyz" }, { value: "ow", label: "Obwalden" },
+      { value: "nw_ch", label: "Nidwalden" }, { value: "gl", label: "Glarus" }, { value: "zg", label: "Zug" },
+      { value: "fr", label: "Freiburg" }, { value: "so", label: "Solothurn" }, { value: "bs", label: "Basel-Stadt" },
+      { value: "bl", label: "Basel-Landschaft" }, { value: "sh_ch", label: "Schaffhausen" }, { value: "ar", label: "Appenzell Ausserrhoden" },
+      { value: "ai", label: "Appenzell Innerrhoden" }, { value: "sg", label: "St. Gallen" }, { value: "gr", label: "Graubünden" },
+      { value: "ag", label: "Aargau" }, { value: "tg", label: "Thurgau" }, { value: "ti", label: "Tessin" },
+      { value: "vd", label: "Waadt" }, { value: "vs", label: "Wallis" }, { value: "ne", label: "Neuenburg" },
+      { value: "ge", label: "Genf" }, { value: "ju", label: "Jura" }
+    ],
+    AT: [
+      { value: "wi", label: "Wien" }, { value: "noe", label: "Niederösterreich" }, { value: "ooe", label: "Oberösterreich" },
+      { value: "sbg", label: "Salzburg" }, { value: "tir", label: "Tirol" }, { value: "vbg", label: "Vorarlberg" },
+      { value: "ktn", label: "Kärnten" }, { value: "stm", label: "Steiermark" }, { value: "bgl", label: "Burgenland" }
+    ],
+    GB: [
+      { value: "eng", label: "England" }, { value: "sco", label: "Scotland" },
+      { value: "wal", label: "Wales" }, { value: "nir", label: "Northern Ireland" }
+    ]
+  };
+
+  var REGION_LABELS = {
+    DE: "Federal state (regional funding opportunities)",
+    CH: "Canton (regional funding opportunities)",
+    AT: "Federal state (regional funding opportunities)",
+    GB: "Region (regional funding opportunities)"
+  };
+
+  function updateBundeslandField(country) {
+    var f = findField("bundesland");
+    if (!f) return;
+    var c = (country && REGION_OPTIONS[country]) ? country : "DE";
+    f.options = REGION_OPTIONS[c];
+    f.label = REGION_LABELS[c] || "Region (regional funding opportunities)";
+  }
+
   // --------------------------- Helper Functions ---------------------------
   function findField(k) {
     for (var i=0; i<fields.length; i++) {
@@ -308,6 +356,17 @@ function _collectLabelFor(fieldKey, value){
       options: [],
       description: "(So regional regulations and requirements can be considered.)"
     },
+    { key: "bundesland", label: "Federal state (regional funding opportunities)", type: "select",
+      options: [
+        { value: "bw", label: "Baden-Württemberg" }, { value: "by", label: "Bayern" }, { value: "be", label: "Berlin" },
+        { value: "bb", label: "Brandenburg" }, { value: "hb", label: "Bremen" }, { value: "hh", label: "Hamburg" },
+        { value: "he", label: "Hessen" }, { value: "mv", label: "Mecklenburg-Vorpommern" }, { value: "ni", label: "Niedersachsen" },
+        { value: "nw", label: "Nordrhein-Westfalen" }, { value: "rp", label: "Rheinland-Pfalz" }, { value: "sl", label: "Saarland" },
+        { value: "sn", label: "Sachsen" }, { value: "st", label: "Sachsen-Anhalt" }, { value: "sh", label: "Schleswig-Holstein" }, { value: "th", label: "Thüringen" }
+      ],
+      description: "(So regional programs, contacts, and quotas are automatically considered.)",
+      showIf: function (data) { var c = data.country; return !c || c === "DE" || c === "CH" || c === "AT" || c === "GB"; }
+    },
     { key: "hauptleistung", label: "What is your main service or most important product?", type: "textarea",
       placeholder: "In 2-3 sentences or bullet points: What do you offer - and what sets you apart?",
       description: "(So we can understand your value creation and identify AI potential along your main services. Keywords are fine.)"
@@ -532,7 +591,7 @@ function _collectLabelFor(fieldKey, value){
   ];
 
   var blocks = [
-    { title: "Company Data & Industry", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "country", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
+    { title: "Company Data & Industry", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
     { title: "Goals & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategy & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
@@ -639,7 +698,12 @@ function _collectLabelFor(fieldKey, value){
     saveAutosave();
 
     // Conditionals: re-render so showIf takes effect
-    if (e && e.target && e.target.id === "unternehmensgroesse") {
+    if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country")) {
+      // Update bundesland options when country changes (and reset the stale region value)
+      if (e.target.id === "country") {
+        updateBundeslandField(e.target.value);
+        formData.bundesland = "";
+      }
       // CRITICAL: Save ALL current form values before re-render to prevent data loss
       var targetId = e.target.id;
       var scrollY = window.scrollY || window.pageYOffset;
@@ -668,7 +732,9 @@ function _collectLabelFor(fieldKey, value){
       // <select id="selbststaendig"> from the DOM (re-render hasn't run yet) and would
       // otherwise restore the orphaned value, which Phase 2 of submitForm sends regardless
       // of showIf. Deleting here ensures the value is gone before saveAutosave/renderStep.
-      if (e.target.value !== "1") {
+      // The id-guard is required because this block now also handles country changes
+      // (bundesland re-render) — only an unternehmensgroesse change to non-solo should clear.
+      if (e.target.id === "unternehmensgroesse" && e.target.value !== "1") {
         delete formData.selbststaendig;
       }
 
@@ -798,6 +864,7 @@ function _collectLabelFor(fieldKey, value){
     payload.branche = data.branche || payload.branche || "";
     payload.unternehmensgroesse = data.unternehmensgroesse || payload.unternehmensgroesse || "";
     payload.country = data.country || payload.country || "";
+    payload.bundesland = data.bundesland || payload.bundesland || "";
     payload.hauptleistung = data.hauptleistung || payload.hauptleistung || "";
     if (email && payload.answers && typeof payload.answers === "object") {
       payload.answers.email = email;
@@ -887,6 +954,7 @@ function _collectLabelFor(fieldKey, value){
       if (formData[k]===undefined) formData[k] = '';
     }
     clampStep && clampStep();
+    updateBundeslandField(formData.country || "DE");
     renderStep();
     scrollToStepTop(true);
   }
@@ -953,6 +1021,7 @@ function robustSubmitForm(){
     payload.branche = data.branche || "";
     payload.unternehmensgroesse = data.unternehmensgroesse || data.company_size || "";
     payload.country = data.country || "";
+    payload.bundesland = data.bundesland || data.bundesland_code || "";
     payload.hauptleistung = data.hauptleistung || data.main_service || "";
 
     // Moat fields from URL params (passed through from Schnell-Check)
@@ -969,6 +1038,7 @@ function robustSubmitForm(){
     try{ payload.branche_label = _collectLabelFor("branche", payload.branche); }catch(_){}
     try{ payload.unternehmensgroesse_label = _collectLabelFor("unternehmensgroesse", payload.unternehmensgroesse); }catch(_){}
     try{ payload.country_label = _collectLabelFor("country", payload.country); }catch(_){}
+    try{ payload.bundesland_label = _collectLabelFor("bundesland", payload.bundesland); }catch(_){}
     try{ payload.jahresumsatz_label = _collectLabelFor("jahresumsatz", data.jahresumsatz || ""); }catch(_){}
 
     // Build URL
