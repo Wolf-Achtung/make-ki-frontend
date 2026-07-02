@@ -905,11 +905,21 @@
      * docs/sprints/sprint-c1-smart-chips-briefing.md
      * ────────────────────────────────────────────────────────────────── */
 
+    // KIS-UX: Placeholder-Texte für den Freitext-Weg neben den Vorschlägen.
+    var DEFAULT_PLACEHOLDER = "Ihre Antwort oder Frage...";
+    var INSPIRATION_PLACEHOLDER = "Oder eigene Antwort eingeben …";
+
     function clearSmartChips() {
         var container = document.getElementById("chatSmartChips");
         if (container) {
             container.innerHTML = "";
             container.classList.remove("smart-chips--active");
+        }
+        // KIS-UX: nur den Inspirations-Placeholder zurücksetzen — HELP-/Edit-Mode-
+        // Placeholder (eigene Texte) bleiben dadurch unangetastet.
+        var _input = document.getElementById("chatInput");
+        if (_input && _input.placeholder === INSPIRATION_PLACEHOLDER) {
+            _input.placeholder = DEFAULT_PLACEHOLDER;
         }
         _lastRenderedField = null;
     }
@@ -989,20 +999,27 @@
         var container = document.getElementById("chatSmartChips");
         if (!container) return;
 
-        var html = '<div class="inspiration-chips__label">Inspiration</div>';
+        // KIS-UX: handlungsklares Label \u2014 ein Klick sendet direkt ab.
+        var html = '<div class="inspiration-chips__label">Passende Antwort? Ein Klick gen\u00fcgt:</div>';
         for (var i = 0; i < examples.length; i++) {
             var text = String(examples[i]);
             html += '<button type="button" class="smart-chip inspiration-chip"'
                   + ' data-chip-text="' + escapeHtml(text) + '"'
                   + ' data-chip-index="' + i + '"'
                   + ' data-chip-field="' + escapeHtml(field) + '"'
-                  + ' aria-label="Inspiration \u00fcbernehmen: ' + escapeHtml(text) + '">'
+                  + ' aria-label="Antwort direkt senden: ' + escapeHtml(text) + '">'
                   + escapeHtml(text)
                   + '</button>';
         }
+        // KIS-UX: klarer Hinweis auf den Freitext-Weg f\u00fcr abweichende Antworten.
+        html += '<div class="inspiration-chips__hint">Oder unten eine eigene Antwort eingeben.</div>';
 
         container.innerHTML = html;
         container.classList.add("smart-chips--active");
+
+        // KIS-UX: Placeholder betont den Alternativweg, solange Vorschl\u00e4ge sichtbar sind.
+        var _inspInput = document.getElementById("chatInput");
+        if (_inspInput) _inspInput.placeholder = INSPIRATION_PLACEHOLDER;
     }
 
     /* ── Edit-Mode State ── */
@@ -1925,17 +1942,9 @@
 
         var chipText = chip.dataset.chipText || "";
         var index = parseInt(chip.dataset.chipIndex, 10);
-        var input = document.getElementById("chatInput");
-        if (!input) return;
 
-        input.value = chipText;
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-        input.focus();
-        try {
-            var end = input.value.length;
-            input.setSelectionRange(end, end);
-        } catch (err) { /* textarea akzeptiert, andere Inputs ggf. nicht */ }
-
+        // Telemetrie (fire-and-forget) VOR dem Senden auslösen, solange
+        // _inspirationFieldName noch das aktuelle Feld referenziert.
         try {
             fetch(getApiBase() + "/api/chat/inspiration-click", {
                 method: "POST",
@@ -1947,6 +1956,13 @@
                 })
             }).catch(function() {});
         } catch (err) { /* fire-and-forget */ }
+
+        // KIS-UX: Ein Klick auf einen Vorschlag sendet die Antwort direkt ab
+        // (vorher: Text nur ins Feld füllen → separater "Senden"-Klick nötig).
+        // sendMessage guardet selbst gegen Doppel-Sends während des Streamings.
+        if (typeof sendMessage === "function") {
+            sendMessage(chipText);
+        }
     });
 
     /* ── Smart-Chips Click-Delegation (Sprint C1) ── */
