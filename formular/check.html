@@ -21,7 +21,7 @@
         const out = document.getElementById('output');
         out.innerHTML = "⏳ Lade...";
         try {
-            const res = await fetch("https://make-ki-backend-neu-production.up.railway.app/sync-check");
+            const res = await fetch("https://api-ki-backend-neu-production.up.railway.app/sync-check");
             const json = await res.json();
             let html = "<h2>Ergebnis</h2>";
             html += `<p class="ok">Status: ${json.status}</p>`;
