@@ -121,7 +121,7 @@
 </div>
 
 <script>
-  const ENDPOINTS = ["https://make-ki-backend-neu-production.up.railway.app/feedback", "https://make-ki-backend-neu-production.up.railway.app/api/feedback", "https://make-ki-backend-neu-production.up.railway.app/v1/feedback"];
+  const ENDPOINTS = ["https://api-ki-backend-neu-production.up.railway.app/feedback", "https://api-ki-backend-neu-production.up.railway.app/api/feedback", "https://api-ki-backend-neu-production.up.railway.app/v1/feedback"];
   function getToken(){ try{ return localStorage.getItem("jwt") || ""; }catch(e){ return ""; } }
   function getEmailFromJWT(t){ try{ const p=JSON.parse(atob(t.split(".")[1])); return p.email||p.sub||null; }catch(e){ return null; } }
   function qs(n){ return new URLSearchParams(location.search).get(n); }
