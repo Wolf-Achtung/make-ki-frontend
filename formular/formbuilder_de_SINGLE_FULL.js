@@ -226,7 +226,7 @@ function _collectLabelFor(fieldKey, value){
   var WICHTIG_FIELDS = {"hauptleistung":1,"ki_projekte":1,"zeitersparnis_prioritaet":1,"vision_3_jahre":1,"ki_guardrails":1,"strategische_ziele":1};
 
   // Optionale Felder (kein Pflicht-Sternchen)
-  var OPTIONAL_FIELDS = {"jahresumsatz":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,"zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,"vision_prioritaet":1,"selbststaendig":1,"geschaeftsmodell_evolution":1};
+  var OPTIONAL_FIELDS = {"jahresumsatz":1,"projekte_pro_monat":1,"durchschnittshonorar":1,"top_zeitfresser":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,"zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,"vision_prioritaet":1,"selbststaendig":1,"geschaeftsmodell_evolution":1};
 
   // FIELD_EXAMPLES Lookup: branche+size → branche+"default" → "default"+size → "default"+"default"
   function getFieldExample(fieldKey) {
@@ -437,6 +437,23 @@ function _collectLabelFor(fieldKey, value){
       ],
       description: "(Damit Benchmarks, Förderobergrenzen und ROI-Rechnungen belastbar abgeleitet werden.)"
     },
+    /* KIS-1235-P3: Wirtschafts-Kontext für präzisere Business Cases */
+    { key: "projekte_pro_monat", label: "Wie viele Projekte/Aufträge bearbeiten Sie üblicherweise pro Monat?", type: "select",
+      options: [
+        { value: "unter_2", label: "Unter 2" }, { value: "2_5", label: "2–5" },
+        { value: "6_10", label: "6–10" }, { value: "ueber_10", label: "Über 10" },
+        { value: "keine_angabe", label: "Schwankt stark / keine Angabe" }
+      ],
+      description: "(Damit Zeitersparnis und Kapazitätsgewinn realistisch in Umsatzpotenzial übersetzt werden können.)"
+    },
+    { key: "durchschnittshonorar", label: "Durchschnittliches Honorar / Auftragswert pro Projekt", type: "select",
+      options: [
+        { value: "unter_1k", label: "Unter 1.000 €" }, { value: "1k_5k", label: "1.000–5.000 €" },
+        { value: "5k_20k", label: "5.000–20.000 €" }, { value: "ueber_20k", label: "Über 20.000 €" },
+        { value: "keine_angabe", label: "Keine Angabe" }
+      ],
+      description: "(Damit der Business Case mit Ihren realen Auftragswerten statt Branchendurchschnitten rechnet.)"
+    },
     { key: "it_infrastruktur", label: "Wie ist Ihre IT-Infrastruktur organisiert?", type: "select",
       options: [
         { value: "cloud", label: "Cloud-basiert (z. B. Microsoft 365, Google Cloud)" },
@@ -505,6 +522,10 @@ function _collectLabelFor(fieldKey, value){
       description: "(Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen.)" },
     { key: "zeitersparnis_prioritaet", label: "Wo frisst heute am meisten Zeit oder Nerven?", type: "textarea",
       placeholder: "In welchen Bereichen verlieren Sie heute am meisten Zeit? (z. B. E-Mails, Angebote, Dokumentation)", description: "(Damit wir sehr konkrete Quick-Win-Empfehlungen zur Entlastung ableiten können – mit spürbarer Zeitersparnis im Alltag.)" },
+    /* KIS-1235-P3: konkrete Zeitfresser als Quick-Win-Anker */
+    { key: "top_zeitfresser", label: "Welche zwei, drei Aufgaben kosten Sie am meisten Zeit?", type: "textarea",
+      placeholder: "z. B. Angebote und Proposals schreiben; E-Mail-Korrespondenz und Terminabstimmung; Dokumentation nach Projektabschluss",
+      description: "(Je konkreter die Aufgaben, desto direkter treffen die Quick Wins Ihren Alltag.)" },
     { key: "pilot_bereich", label: "Bester Bereich für nächstes KI-Projekt", type: "select",
       options: [
         { value: "kundenservice", label: "Kundenservice" }, { value: "marketing", label: "Marketing / Content" },
@@ -636,9 +657,9 @@ function _collectLabelFor(fieldKey, value){
   ];
 
   var blocks = [
-    { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
+    { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "projekte_pro_monat", "durchschnittshonorar", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
-    { title: "Ziele & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
+    { title: "Ziele & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "top_zeitfresser", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategie & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
     { title: "Ressourcen & Präferenzen", intro: BLOCK_INTRO[4], keys: ["zeitbudget", "vorhandene_tools", "regulierte_branche", "trainings_interessen", "vision_prioritaet"] },
     { title: "Rechtliches & Compliance", intro: BLOCK_INTRO[5], keys: ["datenschutzbeauftragter", "technische_massnahmen", "folgenabschaetzung", "meldewege", "loeschregeln", "ai_act_kenntnis", "ki_hemmnisse"] },
