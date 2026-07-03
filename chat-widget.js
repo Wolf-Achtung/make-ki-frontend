@@ -357,6 +357,7 @@
         var fullResponse = "";
         var currentEvent = null;
         var buffer = "";
+        var doneReceived = false; // KIS-1235: Stream-Abriss ohne done-Event erkennen
 
         // Build request body, stripping internal flags (prefixed with _)
         var body = { session_id: chatState.sessionId, message: message };
@@ -488,6 +489,7 @@
                         break;
 
                     case "done":
+                        doneReceived = true;
                         finishStream(data);
                         break;
 
@@ -506,6 +508,17 @@
             function finishStream(doneData) {
                 hideTypingIndicator();
                 chatState.isStreaming = false;
+
+                // KIS-1235: Der Server hat die Verbindung beendet, ohne den
+                // done-Event zu senden — die Antwort blieb ggf. mitten im
+                // Wort stehen ("… Bei K"). Nutzer informieren statt still
+                // einzufrieren.
+                if (!doneData && !doneReceived && !(extra && extra._resumeTrigger)) {
+                    appendMessage("system",
+                        "Die Verbindung wurde kurz unterbrochen — die letzte Antwort "
+                        + "ist möglicherweise unvollständig. Schreiben Sie einfach "
+                        + "„weiter“, um fortzufahren.");
+                }
 
                 // Template-Turn: No token events were sent, so streamDiv was never created.
                 // Create the bot message container now so the done text can be rendered.
