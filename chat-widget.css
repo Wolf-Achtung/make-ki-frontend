@@ -190,6 +190,8 @@
     height: calc(100vh - 180px);
     min-height: 500px;
     max-height: 800px;
+    /* KIS-1235: sauber am Kartenrand clippen statt unsichtbar überzulaufen. */
+    overflow: hidden;
 }
 
 /* --- Header --- */
@@ -309,6 +311,10 @@
 /* --- Messages --- */
 .chat-messages {
     flex: 1;
+    /* KIS-1235: erlaubt dem Nachrichtenbereich zu schrumpfen, wenn
+       Chips/Quick-Replies wachsen — sonst wird die Eingabezeile samt
+       Senden-Button aus dem fix hohen Container gedrückt. */
+    min-height: 0;
     overflow-y: auto;
     padding: 24px 24px 8px;
     display: flex;
@@ -680,8 +686,11 @@
 .chat-quick-replies {
     padding: 12px 24px 0;
     flex-shrink: 0;
-    max-height: 200px;
+    /* KIS-1235: 200px schnitt beim Checkpoint (7 Buttons + Bestätigen)
+       den Bestätigen-Button ab; mehr Raum + sticky Bestätigen unten. */
+    max-height: min(340px, 40vh);
     overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .chat-quick-replies:empty {
@@ -837,6 +846,10 @@
     cursor: pointer;
     font-family: inherit;
     transition: all 0.2s;
+    /* KIS-1235: Bestätigen bleibt beim Scrollen der Optionsliste sichtbar. */
+    position: sticky;
+    bottom: 0;
+    box-shadow: 0 -8px 12px -6px rgba(14, 21, 37, 0.18);
 }
 
 .qr-confirm-btn:hover:not(:disabled) {
