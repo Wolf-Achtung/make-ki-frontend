@@ -348,6 +348,10 @@
     color: #fff;
     border-radius: 16px 16px 4px 16px;
     padding: 12px 18px;
+    /* KIS-1235: Zeilenumbrüche mehrzeiliger Antworten erhalten — Listen
+       ("Kurzfristig: - … Mittelfristig: - …") liefen sonst als ein
+       Textblock zusammen (Strategie-Fragebogen, Screenshot 1). */
+    white-space: pre-wrap;
 }
 
 .chat-message-assistant {
