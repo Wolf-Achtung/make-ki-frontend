@@ -781,6 +781,21 @@
     background: #2563eb !important;
     color: #fff !important;
     border-color: #2563eb !important;
+    /* KIS-1241: Auswahl muss auch auf bereits blauen (primary) Chips
+       erkennbar sein — Haken + Ring statt nur Farbwechsel. */
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+}
+.qr-btn-selected::after {
+    content: " \2713";
+    font-weight: 700;
+}
+.qr-btn--primary.qr-btn-selected {
+    background: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+}
+/* KIS-1241: Zeitangabe auf blauen Chips lesbar (war grau auf blau). */
+.qr-btn--primary .qr-btn-time {
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .qr-btn-disabled {
