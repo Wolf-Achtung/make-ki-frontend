@@ -21,18 +21,22 @@
     })) || null;
 
     /* ── Phase + Block Constants ── */
+    /* KIS-1240: Keys an die Backend-QR-Values angeglichen (A-D, ALL) —
+       vorher "block_a" etc., dadurch feuerten Zeit-Badges und
+       Meta-Styling der Checkpoint-Chips nie. */
     var BLOCK_LABELS = {
-        "block_a": "F\u00f6rdermittel & Budget",
-        "block_b": "KI-Strategie & Roadmap",
-        "block_c": "Tools & Automatisierung",
-        "block_d": "Recht & Datenschutz"
+        "A": "F\u00f6rdermittel & Budget",
+        "B": "KI-Strategie & Roadmap",
+        "C": "Tools & Automatisierung",
+        "D": "Recht & Datenschutz"
     };
 
     var BLOCK_TIME_ESTIMATES = {
-        "block_a": "~2 Min",
-        "block_b": "~3 Min",
-        "block_c": "~4 Min",
-        "block_d": "~2 Min"
+        "A": "~2 Min",
+        "B": "~3 Min",
+        "C": "~4 Min",
+        "D": "~2 Min",
+        "ALL": "~10 Min"
     };
 
     /* ── Summary Marker (backend contract, mirrors SUMMARY_MARKER in backend) ── */
