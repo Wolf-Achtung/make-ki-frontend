@@ -156,6 +156,49 @@
     });
   }
 
+  // --- KIS-1259: Voll-Replay (R1 + KPA + Strategie) ---
+  // Kopiert das Briefing inkl. FB2-Antworten in ein neues Briefing
+  // (source=admin_replay) und triggert die komplette Kette. Der Endpoint
+  // verlangt den STRATEGY_ADMIN_KEY — er wird einmal abgefragt und nur
+  // für diese Browser-Sitzung gemerkt (sessionStorage).
+  function onReplay(){
+    var btn = document.getElementById('btn-replay');
+    if (!btn) return;
+    btn.addEventListener('click', async function(){
+      var briefingId = qs('briefing', '');
+      if (!briefingId) return;
+      var key = sessionStorage.getItem('strategy_admin_key') || '';
+      if (!key){
+        key = prompt('STRATEGY_ADMIN_KEY für den Voll-Replay:') || '';
+        if (!key) return;
+        sessionStorage.setItem('strategy_admin_key', key);
+      }
+      if (!confirm('Voll-Replay von Briefing ' + briefingId + ' starten?\n' +
+                   'Erzeugt ein NEUES Briefing und alle 4 Dokumente (R1 + KPA + Briefing-PDF + Strategie).')) return;
+      btn.disabled = true;
+      try{
+        var res = await api('/admin/testrun/replay/' + briefingId +
+                            '?admin_key=' + encodeURIComponent(key) + '&force=true',
+                            { method: 'POST', body: '{}' });
+        var newId = res && (res.new_briefing_id || res.briefing_id);
+        toast('🚀 Voll-Replay gestartet — neues Briefing #' + (newId || '?') +
+              (res && res.fb2_copied === false ? ' (ohne FB2 → keine Strategie)' : ''));
+        if (newId){
+          var link = location.pathname + '?briefing=' + newId;
+          if (confirm('Zur Detailansicht des neuen Briefings #' + newId + ' wechseln?')){
+            location.href = link;
+          }
+        }
+      }catch(e){
+        // Bei 401/403 gespeicherten Key verwerfen, damit neu gefragt wird.
+        sessionStorage.removeItem('strategy_admin_key');
+        toast('Fehler beim Voll-Replay: ' + (e.message||e), 'err');
+      }finally{
+        btn.disabled = false;
+      }
+    });
+  }
+
   // Guard & init
   if (window.AUTH && !window.AUTH.hasAuthCookie()) { location.href='/login.html'; return; }
   (function init(){
@@ -171,5 +214,6 @@
     });
     loadAll().catch(function(e){ console.error(e); toast('Ladevorgang fehlgeschlagen: ' + (e.message||e), 'err'); });
     onRerun();
+    onReplay();
   })();
 })();
