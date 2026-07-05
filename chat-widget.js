@@ -644,7 +644,10 @@
         // Route meta-action QRs (e.g. __summary_action__) to dedicated completion UI
         for (var m = 0; m < replies.length; m++) {
             if (replies[m].field && replies[m].field === "__summary_action__") {
-                showCompletionUI();
+                // KIS-1255: suppress after the report was already started
+                if (!_reportStartRequested) {
+                    showCompletionUI();
+                }
                 return;
             }
         }
@@ -1042,6 +1045,11 @@
     /* ── Edit-Mode State ── */
     var _editMode = false;
     var _summaryFields = []; // Parsed summary sections stored for edit mode
+    // KIS-1255: Once the user clicked "Angaben bestätigen & Report starten",
+    // the completion CTA must never render again — older backends re-sent the
+    // __summary_action__ quick replies with the confirmation message, which
+    // stacked a second start button under the first (runs 1121/1123).
+    var _reportStartRequested = false;
 
     /* ── Draft-Chip State ── */
     var currentDraft = null;
@@ -1662,6 +1670,10 @@
         if (!_completeSubmitLock) { console.error("SubmitLock not loaded"); return; }
         // Acquire as FIRST sync action so any already-queued second click is a no-op.
         if (!_completeSubmitLock.acquire()) return;
+
+        _reportStartRequested = true; // KIS-1255: CTA darf nie erneut erscheinen
+        var _ctaContainer = document.getElementById("chatQuickReplies");
+        if (_ctaContainer) _ctaContainer.innerHTML = "";
 
         sendMessage("Auswertung starten", {
             quick_reply_field: "__summary_action__",
