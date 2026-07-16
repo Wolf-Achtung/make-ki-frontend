@@ -103,7 +103,7 @@
           var data = await readJsonSafe(res);
 
           if(res.status === 404 && data && data.error === 'unknown_email'){
-            setText('err','Diese E‑Mail ist nicht freigeschaltet.',true);
+            setText('err','Diese E‑Mail ist nicht freigeschaltet. Zugang anfragen: support@ki-sicherheit.jetzt',true);
             err('Diese E‑Mail ist nicht freigeschaltet.');
             return;
           }
@@ -205,7 +205,11 @@
           setText('msg','Erfolg. Weiterleitung …',false);
           ok('Anmeldung erfolgreich.');
           var _params = new URLSearchParams(window.location.search);
-          window.location.href = '/formular/index.html' + (_params.toString() ? '?' + _params.toString() : '');
+          // KIS-1269: EN-Login fuehrte immer in den DE-Fragebogen — login_lang respektieren
+          var _lang = '';
+          try { _lang = sessionStorage.getItem('login_lang') || ''; } catch(e) {}
+          var _target = (_lang === 'en') ? '/formular/index_en.html' : '/formular/index.html';
+          window.location.href = _target + (_params.toString() ? '?' + _params.toString() : '');
         }catch(e){
           setText('err','Login fehlgeschlagen. ' + (e && e.message ? e.message : ''), true);
           err('Login fehlgeschlagen.');
@@ -215,6 +219,18 @@
           IN_FLIGHT_LOGIN = false;
         }
       })();
+    });
+  }
+})();
+
+// KIS-1269: "Code erneut senden" — delegiert an den bestehenden Anforder-Flow
+(function(){
+  var resend = document.getElementById('btn-resend');
+  var btnReq = document.getElementById('btn-request');
+  if (resend && btnReq) {
+    resend.addEventListener('click', function(ev){
+      ev.preventDefault();
+      btnReq.click();
     });
   }
 })();

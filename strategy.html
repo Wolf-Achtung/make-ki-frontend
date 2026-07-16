@@ -537,7 +537,7 @@
   <div id="chat-container" style="display:none"></div>
   <div class="mk-card mk-card--wide" id="strategy-card">
     <header class="mk-card-header">
-      <h1 class="mk-brand-title">KI-Sicherheit.jetzt</h1>
+      <h1 class="mk-brand-title"><a href="/" style="color:inherit;text-decoration:none;">KI-Sicherheit.jetzt</a></h1>
     </header>
 
     <div class="mk-card-body">
@@ -557,7 +557,7 @@
         <div class="mk-strategy-intro">
           <h2>Ihr persönlicher KI-Strategiebericht</h2>
           <p>Auf Basis Ihrer KI-Readiness-Analyse erstellen wir Ihren individuellen Implementierungsfahrplan. Dafür benötigen wir noch wenige Angaben zu Ihrer <strong>konkreten Umsetzungsplanung</strong> — einige Punkte kennen wir bereits aus Ihrer Analyse, hier geht es um die strategische Priorisierung.</p>
-          <p style="font-size:0.85rem; color:var(--mk-text-muted); margin-top:0.5rem;">10 Fragen · 3 Minuten · maßgeschneiderter Strategiefahrplan · Pflichtfelder mit <strong style="color:#dc2626;">*</strong></p>
+          <p style="font-size:0.85rem; color:var(--mk-text-muted); margin-top:0.5rem;">10 Fragen · 3–5 Minuten · maßgeschneiderter Strategiefahrplan · Pflichtfelder mit <strong style="color:#dc2626;">*</strong></p>
         </div>
 
         <form id="strategy-form" novalidate>
@@ -1043,7 +1043,7 @@
       </div>
 
       <!-- Status section -->
-      <div id="status-section" class="mk-status-section">
+      <div id="status-section" class="mk-status-section" aria-live="polite">
         <div id="status-generating">
           <div class="mk-spinner"></div>
           <div class="mk-status-title">Ihr KI-Strategiebericht wird erstellt&hellip;</div>
@@ -1386,15 +1386,45 @@
             // the idempotency key so a retry (even across reload) dedupes on
             // the backend within the 30-min window.
             _submitLock.release();
-            alert("Fehler: " + err.message);
+            // KIS-1269: alert("HTTP 500") war technisch und blockierend —
+            // Inline-Fehlerbox mit verstaendlichem Text + Support-Kontakt.
+            var _errBox = document.getElementById("submit-error");
+            if (!_errBox) {
+                _errBox = document.createElement("div");
+                _errBox.id = "submit-error";
+                _errBox.setAttribute("role", "alert");
+                _errBox.style.cssText = "margin-top:12px;padding:12px 16px;background:#fef2f2;" +
+                    "border-left:4px solid #dc2626;border-radius:6px;color:#7f1d1d;font-size:0.9rem;";
+                var _btn = document.getElementById("btn-submit");
+                if (_btn && _btn.parentNode) _btn.parentNode.insertBefore(_errBox, _btn.nextSibling);
+                else document.getElementById("form-section").appendChild(_errBox);
+            }
+            _errBox.innerHTML = "Das Absenden hat leider nicht geklappt. Bitte versuchen Sie es " +
+                "in einem Moment erneut \u2014 Ihre Angaben bleiben erhalten. Falls das Problem " +
+                "bestehen bleibt: <a href=\"mailto:support@ki-sicherheit.jetzt\">support@ki-sicherheit.jetzt</a>";
+            _errBox.scrollIntoView({ behavior: "smooth", block: "center" });
+            console.error("Strategy submit failed:", err);
         });
     });
 
     function pollStatus() {
+        // KIS-1269: vorher Endlos-Spinner ohne Obergrenze + Silent-Fail im catch.
+        // Max. 180 Versuche a 5 s (= 15 Min) bzw. 12 Netzfehler in Folge.
+        var attempts = 0, netErrors = 0;
         var interval = setInterval(function() {
+            attempts += 1;
+            if (attempts > 180) {
+                clearInterval(interval);
+                var g = document.getElementById("status-generating");
+                if (g) g.querySelector(".mk-status-text").innerHTML =
+                    "Die Erstellung dauert ungew\u00f6hnlich lange. Sie erhalten Ihren Bericht " +
+                    "per E-Mail, sobald er fertig ist \u2014 Sie k\u00f6nnen diese Seite schlie\u00dfen.";
+                return;
+            }
             fetch(API_BASE + "/api/strategy/status/" + briefingId)
             .then(function(res) { return res.json(); })
             .then(function(data) {
+                netErrors = 0;
                 if (data.status === "completed") {
                     clearInterval(interval);
                     document.getElementById("status-generating").style.display = "none";
@@ -1404,7 +1434,16 @@
                     document.getElementById("status-generating").style.display = "none";
                     document.getElementById("status-failed").style.display = "block";
                 }
-            }).catch(function() {});
+            }).catch(function() {
+                netErrors += 1;
+                if (netErrors >= 12) {
+                    clearInterval(interval);
+                    var g = document.getElementById("status-generating");
+                    if (g) g.querySelector(".mk-status-text").innerHTML =
+                        "Verbindung unterbrochen. Keine Sorge: Ihr Bericht wird trotzdem erstellt " +
+                        "und kommt per E-Mail. Sie k\u00f6nnen diese Seite schlie\u00dfen.";
+                }
+            });
         }, 5000);
     }
 

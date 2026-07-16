@@ -206,13 +206,19 @@
             payload.briefing_id = briefingId;
         }
 
+        // KIS-1269: Timeout — ohne AbortController stand der Typing-Indicator
+        // bei haengendem Backend unbegrenzt (Sichtbarkeit des Systemstatus).
+        var _startCtrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        var _startTimer = _startCtrl ? setTimeout(function(){ _startCtrl.abort(); }, 30000) : null;
         fetch(getApiBase() + "/api/chat/start", {
             method: "POST",
             headers: getAuthHeaders(),
             credentials: "include",
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal: _startCtrl ? _startCtrl.signal : undefined
         })
         .then(function(res) {
+            if (_startTimer) clearTimeout(_startTimer);
             if (!res.ok) throw new Error("HTTP " + res.status);
             return res.json();
         })
@@ -235,7 +241,11 @@
             if (input) input.focus();
         })
         .catch(function(err) {
-            appendMessage("system", "Verbindungsfehler. Bitte laden Sie die Seite neu.");
+            if (_startTimer) clearTimeout(_startTimer);
+            var _msg = (err && err.name === "AbortError")
+                ? "Der Server antwortet gerade nicht (Zeit\u00fcberschreitung). Bitte laden Sie die Seite in einem Moment neu."
+                : "Verbindungsfehler. Bitte laden Sie die Seite neu.";
+            appendMessage("system", _msg);
             console.error("Chat start failed:", err);
         });
     }
@@ -329,6 +339,8 @@
     function handleReportRedirect(data) {
         if (!data || !data.redirect_url) return;
         try { localStorage.removeItem("chat_session_id"); } catch(e) {}
+        // KIS-1269: 2 Sekunden ohne jede Rueckmeldung = Blindmoment
+        appendMessage("system", "Einen Moment \u2014 Ihre Auswertung wird gestartet \u2026");
         setTimeout(function() {
             window.location.href = data.redirect_url;
         }, 2000);
@@ -373,13 +385,18 @@
             }
         }
 
+        // KIS-1269: Timeout bis zum Antwort-Beginn (Streaming danach unbegrenzt ok)
+        var _msgCtrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        var _msgTimer = _msgCtrl ? setTimeout(function(){ _msgCtrl.abort(); }, 30000) : null;
         fetch(getApiBase() + "/api/chat/message", {
             method: "POST",
             headers: getAuthHeaders(),
             credentials: "include",
-            body: JSON.stringify(body)
+            body: JSON.stringify(body),
+            signal: _msgCtrl ? _msgCtrl.signal : undefined
         })
         .then(function(response) {
+            if (_msgTimer) clearTimeout(_msgTimer);
             if (!response.ok) {
                 throw new Error("HTTP " + response.status);
             }
