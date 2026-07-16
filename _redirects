@@ -1,3 +1,11 @@
 # Coach-Feature: SPA-Style-Rewrite fuer /coach/{briefing_id}
 # 200 = Rewrite (URL bleibt /coach/1017 im Browser sichtbar).
 /coach/*    /coach.html    200
+
+# KIS-1269: Legacy-Seiten entfernt — alte URLs sauber umleiten
+/formular/feedback.html      /feedback/feedback.html       301
+/formular/feedback_en.html   /feedback/feedback_en.html    301
+/formular/report.html        /formular/index.html          301
+/formular/zahlung.html       /                             301
+/formular/danke.html         /                             301
+/formular/admin.html         /login.html                   301

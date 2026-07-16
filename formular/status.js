@@ -184,6 +184,13 @@
       '<div class="analysis-hint">' +
         "&#128203; Ihre <strong>KI-Potenzial-Analyse</strong> wird gerade erstellt und " +
         "kommt in wenigen Minuten als separate E-Mail." +
+      "</div>" +
+      '<div class="info-box" style="margin-top:16px;">' +
+        "<p><strong>Wie geht es weiter?</strong> Sie erhalten zus\u00e4tzlich eine E-Mail " +
+        "mit dem Link zu Ihrem <strong>KI-Strategiebericht</strong> \u2014 ein kurzer " +
+        "Zusatz-Fragebogen (ca. 5 Minuten) macht daraus Ihre 12-Monats-Strategie.</p>" +
+        '<p style="margin-top:8px;"><a href="/feedback/feedback.html">Feedback geben</a> &middot; ' +
+        '<a href="/">Zur Startseite</a></p>' +
       "</div>"
     );
   }

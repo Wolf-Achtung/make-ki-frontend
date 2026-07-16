@@ -20,7 +20,7 @@
 <div class="mk-page-wrapper">
   <div class="mk-card">
     <header class="mk-card-header">
-      <h1 class="mk-brand-title">AI-Security.now</h1>
+      <h1 class="mk-brand-title"><a href="/" style="color:inherit;text-decoration:none;">AI-Security.now</a></h1>
     </header>
 
     <div class="mk-card-body">
@@ -47,9 +47,12 @@
         <div id="code-area" style="display:none">
           <div class="mk-form-group" style="margin-top:1.25rem">
             <label class="mk-form-label" for="code">Confirmation code</label>
-            <input type="text" id="code" name="code" class="mk-form-input" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="4" maxlength="16">
+            <input type="text" id="code" name="code" class="mk-form-input" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" minlength="6" maxlength="6">
           </div>
           <button type="button" id="btn-login" class="mk-btn-primary">Log in</button>
+          <p style="margin-top:0.6rem;font-size:0.85rem;">
+            <a href="#" id="btn-resend" style="color:#1d4e89;">Resend code</a>
+          </p>
         </div>
 
         <p id="msg" class="mk-message" role="status" aria-live="polite"></p>
@@ -106,5 +109,12 @@
   } catch(_){}
 })();
 </script>
+
+<footer style="margin-top:48px;padding:20px 16px;text-align:center;font-size:13px;color:#64748b;border-top:1px solid #e2e8f0;">
+  <a href="/impressum.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Legal Notice</a>&middot;
+  <a href="/formular/privacy.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Privacy</a>&middot;
+  <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:#64748b;margin:0 10px;text-decoration:none;">Contact</a>
+</footer>
+<script src="/js/analytics.js"></script>
 </body>
 </html>
