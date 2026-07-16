@@ -368,6 +368,7 @@
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       // Show success message
+      try { if (window.kisTrack) window.kisTrack('feedback_submitted'); } catch(e) {}
       form.style.display = 'none';
       successBox.style.display = 'block';
       successBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -475,5 +476,6 @@
   <a href="/formular/datenschutz.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Datenschutz</a>&middot;
   <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:#64748b;margin:0 10px;text-decoration:none;">Kontakt</a>
 </footer>
+<script src="/js/analytics.js"></script>
 </body>
 </html>

@@ -202,6 +202,7 @@
               console.error('Failed to store token:', e);
             }
           }
+          try { if (window.kisTrack) window.kisTrack('login_success'); } catch(e) {}
           setText('msg','Erfolg. Weiterleitung …',false);
           ok('Anmeldung erfolgreich.');
           var _params = new URLSearchParams(window.location.search);

@@ -92,12 +92,18 @@
         var chatCard = document.getElementById("mode-chat");
         var formCard = document.getElementById("mode-form");
 
-        chatCard.addEventListener("click", startChatMode);
+        chatCard.addEventListener("click", function(){
+            try { if (window.kisTrack) window.kisTrack("mode_chat"); } catch(e) {}
+            startChatMode();
+        });
         chatCard.addEventListener("keydown", function(e) {
             if (e.key === "Enter" || e.key === " ") { e.preventDefault(); startChatMode(); }
         });
 
-        formCard.addEventListener("click", startFormMode);
+        formCard.addEventListener("click", function(){
+            try { if (window.kisTrack) window.kisTrack("mode_form"); } catch(e) {}
+            startFormMode();
+        });
         formCard.addEventListener("keydown", function(e) {
             if (e.key === "Enter" || e.key === " ") { e.preventDefault(); startFormMode(); }
         });
@@ -210,6 +216,7 @@
         // bei haengendem Backend unbegrenzt (Sichtbarkeit des Systemstatus).
         var _startCtrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
         var _startTimer = _startCtrl ? setTimeout(function(){ _startCtrl.abort(); }, 30000) : null;
+        try { if (window.kisTrack) window.kisTrack("q1_started"); } catch(e) {}
         fetch(getApiBase() + "/api/chat/start", {
             method: "POST",
             headers: getAuthHeaders(),
@@ -340,6 +347,7 @@
         if (!data || !data.redirect_url) return;
         try { localStorage.removeItem("chat_session_id"); } catch(e) {}
         // KIS-1269: 2 Sekunden ohne jede Rueckmeldung = Blindmoment
+        try { if (window.kisTrack) window.kisTrack("q1_completed"); } catch(e) {}
         appendMessage("system", "Einen Moment \u2014 Ihre Auswertung wird gestartet \u2026");
         setTimeout(function() {
             window.location.href = data.redirect_url;

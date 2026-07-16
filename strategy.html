@@ -1379,6 +1379,7 @@
             // Form -> Status (success: UI redirects, do NOT release lock)
             document.getElementById("form-section").style.display = "none";
             document.getElementById("status-section").style.display = "block";
+            try { if (window.kisTrack) window.kisTrack("strategy_submitted"); } catch(e) {}
             pollStatus();
         })
         .catch(function(err) {
@@ -1563,5 +1564,6 @@
   <a href="/formular/datenschutz.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Datenschutz</a>&middot;
   <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:#64748b;margin:0 10px;text-decoration:none;">Kontakt</a>
 </footer>
+<script src="/js/analytics.js"></script>
 </body>
 </html>
