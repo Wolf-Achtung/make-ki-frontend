@@ -349,6 +349,16 @@ function _collectLabelFor(fieldKey, value){
       ],
       description: "(So we can assign industry-specific examples and compliance requirements correctly.)"
     },
+    { key: "medien_sparte", label: "Segment (media & creative industries)", type: "select",
+      options: [
+        { value: "produktion", label: "Film/TV production" }, { value: "post_vfx", label: "Post-production / VFX / animation" },
+        { value: "games", label: "Games / interactive" }, { value: "verlag_publishing", label: "Publishing / editorial" },
+        { value: "musik_audio", label: "Music / audio / podcast" }, { value: "agentur_design", label: "Agency / design / advertising" },
+        { value: "content_creation", label: "Content creation / social media" }
+      ],
+      description: "Helps us tailor recommendations and funding programmes more precisely to your field.",
+      showIf: function (data) { return data.branche === "medien"; }
+    },
     { key: "unternehmensgroesse", label: "How large is your company?", type: "select",
       options: [
         { value: "1", label: "1 (Solo/Freelancer)" }, { value: "2–10", label: "2–10 (Small Team)" }, { value: "11–100", label: "11–100 (SME)" }
@@ -620,7 +630,7 @@ function _collectLabelFor(fieldKey, value){
   ];
 
   var blocks = [
-    { title: "Company Data & Industry", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
+    { title: "Company Data & Industry", intro: BLOCK_INTRO[0], keys: ["branche", "medien_sparte", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
     { title: "Goals & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategy & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
@@ -727,7 +737,7 @@ function _collectLabelFor(fieldKey, value){
     saveAutosave();
 
     // Conditionals: re-render so showIf takes effect
-    if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country")) {
+    if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country" || e.target.id === "branche")) {
       // Update bundesland options when country changes (region value is cleared after
       // the collect-all loop below, see Fix #2b).
       if (e.target.id === "country") {
@@ -765,6 +775,13 @@ function _collectLabelFor(fieldKey, value){
       // (bundesland re-render) — only an unternehmensgroesse change to non-solo should clear.
       if (e.target.id === "unternehmensgroesse" && e.target.value !== "1") {
         delete formData.selbststaendig;
+      }
+
+      // Analogous to the selbststaendig clear: drop medien_sparte when the industry
+      // changes away from "medien" (field hidden via showIf). Placed AFTER the
+      // collect-all loop so the orphaned value is not restored from the DOM.
+      if (e.target.id === "branche" && e.target.value !== "medien") {
+        delete formData.medien_sparte;
       }
 
       // Fix #2b: clear bundesland on a country change. Same reasoning as the selbststaendig
@@ -810,7 +827,7 @@ function _collectLabelFor(fieldKey, value){
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
       "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0,
       "ki_projekte":1,"geschaeftsmodell_evolution":1,"vision_3_jahre":1,"ki_guardrails":1,
-      "bisherige_foerdermittel":1,"interesse_foerderung":1
+      "bisherige_foerdermittel":1,"interesse_foerderung":1,"medien_sparte":1
     };
     var missing = [];
     var block = blocks[currentBlock];
