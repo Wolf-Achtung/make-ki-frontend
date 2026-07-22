@@ -1,7 +1,16 @@
 (function () {
   "use strict";
 
-  const API_BASE = "https://api-ki-backend-neu-production.up.railway.app";
+  const API_BASE = (function () {
+    try {
+      var meta = document.querySelector('meta[name="api-base"]');
+      var base = (meta && meta.content) ||
+        (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "";
+      if (base) return String(base).replace(/\/+$/, "").replace(/\/api$/, "");
+    } catch (e) {}
+    /* Fallback, kanonische Quelle: js/config.js */
+    return "https://api-ki-backend-neu-production.up.railway.app";
+  })();
 
   const state = {
     initialized: false,

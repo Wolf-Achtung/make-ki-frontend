@@ -12,6 +12,8 @@
   function apiBase() {
     var meta = document.querySelector('meta[name="api-base"]');
     return (meta && meta.content) ||
+      (window.APP_CONFIG && window.APP_CONFIG.API_BASE) ||
+      /* Fallback, kanonische Quelle: js/config.js */
       "https://api-ki-backend-neu-production.up.railway.app";
   }
 

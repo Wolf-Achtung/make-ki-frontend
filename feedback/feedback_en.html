@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Feedback for the AI Readiness Check</title>
 <meta name="robots" content="noindex, nofollow"/>
+<script src="/js/config.js"></script>
 <style>
   :root{ --bg:#0c1b2a; --card:#0f2538; --muted:#9eb5c7; --text:#e7f0f7; --accent:#2e6fce; --accent2:#1b9aaa; --ok:#21c07a; --border:rgba(255,255,255,.12); }
   *{ box-sizing:border-box }
@@ -121,7 +122,10 @@
 </div>
 
 <script>
-  const ENDPOINTS = ["https://api-ki-backend-neu-production.up.railway.app/feedback", "https://api-ki-backend-neu-production.up.railway.app/api/feedback", "https://api-ki-backend-neu-production.up.railway.app/v1/feedback"];
+  // Basis-URL aus zentraler Konfiguration (js/config.js, im <head> geladen);
+  // ohne "/api"-Suffix, da die Endpoint-Pfade unten eigene Präfixe tragen.
+  const API_ROOT = String((window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "").replace(/\/api\/?$/, "");
+  const ENDPOINTS = [API_ROOT + "/feedback", API_ROOT + "/api/feedback", API_ROOT + "/v1/feedback"];
   function getToken(){ try{ return localStorage.getItem("jwt") || ""; }catch(e){ return ""; } }
   function getEmailFromJWT(t){ try{ const p=JSON.parse(atob(t.split(".")[1])); return p.email||p.sub||null; }catch(e){ return null; } }
   function qs(n){ return new URLSearchParams(location.search).get(n); }

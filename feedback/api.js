@@ -8,7 +8,7 @@
     const fromMeta = meta && meta.content ? meta.content : null;
     const fromWindow = (typeof window !== 'undefined' && window.__BACKEND_URL__) ? window.__BACKEND_URL__ : null;
     const fromAppConfig = (typeof window !== 'undefined' && window.APP_CONFIG && window.APP_CONFIG.API_BASE) ? window.APP_CONFIG.API_BASE : null;
-    const fallback = 'https://api-ki-backend-neu-production.up.railway.app/api';
+    const fallback = '/api'; // kanonische Quelle der Backend-URL: js/config.js (window.APP_CONFIG.API_BASE)
     const decided = (fromAppConfig || fromWindow || fromMeta || fallback).trim().replace(/\/$/, '');
     return decided;
   }
