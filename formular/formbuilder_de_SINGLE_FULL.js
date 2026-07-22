@@ -250,7 +250,7 @@ function _collectLabelFor(fieldKey, value){
   var WICHTIG_FIELDS = {"hauptleistung":1,"ki_projekte":1,"zeitersparnis_prioritaet":1,"vision_3_jahre":1,"ki_guardrails":1,"strategische_ziele":1};
 
   // Optionale Felder (kein Pflicht-Sternchen)
-  var OPTIONAL_FIELDS = {"jahresumsatz":1,"projekte_pro_monat":1,"top_zeitfresser":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,"zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,"vision_prioritaet":1,"selbststaendig":1,"geschaeftsmodell_evolution":1};
+  var OPTIONAL_FIELDS = {"jahresumsatz":1,"projekte_pro_monat":1,"top_zeitfresser":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,"zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,"vision_prioritaet":1,"selbststaendig":1,"geschaeftsmodell_evolution":1,"medien_sparte":1};
 
   // FIELD_EXAMPLES Lookup: branche+size → branche+"default" → "default"+size → "default"+"default"
   function getFieldExample(fieldKey) {
@@ -397,6 +397,16 @@ function _collectLabelFor(fieldKey, value){
         { value: "gastronomie", label: "Gastronomie & Tourismus (z.\u00A0B. Restaurant, Hotel, Catering)" }
       ],
       description: "(Damit wir branchenspezifische Beispiele, Förderung und Compliance korrekt zuordnen.)"
+    },
+    { key: "medien_sparte", label: "Sparte (Medien & Kreativwirtschaft)", type: "select",
+      options: [
+        { value: "produktion", label: "Film-/TV-Produktion" }, { value: "post_vfx", label: "Postproduktion / VFX / Animation" },
+        { value: "games", label: "Games / Interactive" }, { value: "verlag_publishing", label: "Verlag / Publishing / Redaktion" },
+        { value: "musik_audio", label: "Musik / Audio / Podcast" }, { value: "agentur_design", label: "Agentur / Design / Werbung" },
+        { value: "content_creation", label: "Content Creation / Social Media" }
+      ],
+      description: "Hilft uns, Empfehlungen und Förderprogramme genauer auf Ihren Bereich zuzuschneiden.",
+      showIf: function (data) { return data.branche === "medien"; }
     },
     { key: "unternehmensgroesse", label: "Wie groß ist Ihr Unternehmen?", type: "select",
       options: [
@@ -678,7 +688,7 @@ function _collectLabelFor(fieldKey, value){
   ];
 
   var blocks = [
-    { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "projekte_pro_monat", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
+    { title: "Firmendaten & Branche", intro: BLOCK_INTRO[0], keys: ["branche", "medien_sparte", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "projekte_pro_monat", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
     { title: "Ziele & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "top_zeitfresser", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategie & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
@@ -805,7 +815,7 @@ function _collectLabelFor(fieldKey, value){
     saveAutosave();
 
     // Conditionals: re-render, damit showIf greift
-    if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country")) {
+    if (e && e.target && (e.target.id === "unternehmensgroesse" || e.target.id === "country" || e.target.id === "branche")) {
       // Update bundesland options when country changes (region value is cleared after
       // the collect-all loop below, see Fix #2b).
       if (e.target.id === "country") {
@@ -842,6 +852,13 @@ function _collectLabelFor(fieldKey, value){
       // changes (DE-specific) — only an unternehmensgroesse change to non-solo should clear.
       if (e.target.id === "unternehmensgroesse" && e.target.value !== "1") {
         delete formData.selbststaendig;
+      }
+
+      // Analog zu Fix #1c: medien_sparte leeren, wenn die Branche von "medien" weg
+      // wechselt (Feld wird via showIf ausgeblendet). Nach der Collect-All-Schleife
+      // platziert, damit der verwaiste Wert nicht aus dem DOM restauriert wird.
+      if (e.target.id === "branche" && e.target.value !== "medien") {
+        delete formData.medien_sparte;
       }
 
       // Fix #2b: clear bundesland on a country change. Same reasoning as the selbststaendig
@@ -886,7 +903,8 @@ function _collectLabelFor(fieldKey, value){
       "jahresumsatz":1,"it_infrastruktur":1,"interne_ki_kompetenzen":1,"datenquellen":1,
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
       "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0,
-      "ki_projekte":0,"geschaeftsmodell_evolution":1,"vision_3_jahre":0,"ki_guardrails":0
+      "ki_projekte":0,"geschaeftsmodell_evolution":1,"vision_3_jahre":0,"ki_guardrails":0,
+      "medien_sparte":1
     };
     // Felder die für die Report-Qualität besonders wichtig sind
     var wichtig = {"hauptleistung":1,"ki_projekte":1,"zeitersparnis_prioritaet":1,"vision_3_jahre":1,"ki_guardrails":1,"strategische_ziele":1};
