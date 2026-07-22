@@ -49,7 +49,11 @@
             if (meta && meta.content) {
                 return meta.content.replace(/\/api\/?$/, "");
             }
+            if (window.APP_CONFIG && window.APP_CONFIG.API_BASE) {
+                return String(window.APP_CONFIG.API_BASE).replace(/\/api\/?$/, "");
+            }
         } catch(e) {}
+        /* Fallback, kanonische Quelle: js/config.js */
         return "https://api-ki-backend-neu-production.up.railway.app";
     }
 

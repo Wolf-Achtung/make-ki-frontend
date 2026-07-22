@@ -11,8 +11,14 @@
 
   function apiBase() {
     var meta = document.querySelector('meta[name="api-base"]');
-    return (meta && meta.content) ||
+    var base = (meta && meta.content) ||
+      (window.APP_CONFIG && window.APP_CONFIG.API_BASE) ||
+      /* Fallback, kanonische Quelle: js/config.js */
       "https://api-ki-backend-neu-production.up.railway.app";
+    // Meta/Config liefern die Basis meist MIT "/api"-Suffix; der
+    // Endpoint-Pfad unten bringt "/api" selbst mit — daher hier strippen,
+    // sonst entsteht ".../api/api/metrics/event" (Beacon läuft ins Leere).
+    return base.replace(/\/+$/, "").replace(/\/api$/, "");
   }
 
   function payload(eventName) {

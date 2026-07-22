@@ -264,7 +264,8 @@
   document.getElementById("btn-de").addEventListener("click", () => setLang("de"));
   document.getElementById("btn-en").addEventListener("click", () => setLang("en"));
 
-  const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) ?? window.ENV_BACKEND ?? 'https://api-ki-backend-neu-production.up.railway.app/api';
+  // Basis-URL aus zentraler Konfiguration (js/config.js, im <head> geladen).
+  const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) ?? window.ENV_BACKEND ?? '/api';
   const form = document.getElementById("feedback-form");
   const statusEl = document.getElementById("status");
   const successBox = document.getElementById("success-message");

@@ -1089,6 +1089,7 @@
   </div>
 </div>
 
+<script src="/js/config.js"></script>
 <script src="/js/submit-lock.js"></script>
 <script src="/chat-widget.js"></script>
 <script src="/field_examples_de.js"></script>
@@ -1096,7 +1097,9 @@
 (function() {
     "use strict";
 
-    var API_BASE = "https://api-ki-backend-neu-production.up.railway.app";
+    // Basis-URL aus zentraler Konfiguration (js/config.js); ohne "/api"-Suffix,
+    // da die Pfade unten bereits mit "/api/..." beginnen.
+    var API_BASE = String((window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "").replace(/\/api\/?$/, "");
     var params = new URLSearchParams(window.location.search);
     var briefingId = params.get("briefing_id");
 
