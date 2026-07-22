@@ -24,5 +24,12 @@
     window.APP_CONFIG.API_BASE = base;
     window.__CONFIG__ = window.__CONFIG__ || {};
     window.__CONFIG__.API_BASE = base;
+
+    // Sichtbare Branchen im Fragebogen (Allowlist der option-values des
+    // branche-Selects). Leeres Array oder Weglassen = alle Branchen sichtbar;
+    // hier lässt sich die Sichtbarkeit jederzeit zurückdrehen.
+    if (!window.APP_CONFIG.VISIBLE_BRANCHES) {
+      window.APP_CONFIG.VISIBLE_BRANCHES = ['medien'];
+    }
   }catch(_){}
 })();

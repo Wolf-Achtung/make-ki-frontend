@@ -109,6 +109,25 @@ function _collectLabelFor(fieldKey, value){
     return f ? (f.label || k) : k;
   }
 
+  // Config-gesteuerte Sichtbarkeit NUR für das branche-Feld:
+  // window.APP_CONFIG.VISIBLE_BRANCHES (Allowlist der option-values, s. js/config.js).
+  // Fail-open: fehlende/leere Allowlist oder ein Filterergebnis ohne Treffer
+  // liefert die vollständige Optionsliste — der Fragebogen darf nie kaputt sein.
+  // Die ausgeblendeten Branchen bleiben in der fields-Definition vollständig erhalten.
+  function visibleOptionsFor(f) {
+    var opts = (f && f.options) || [];
+    if (!f || f.key !== "branche") return opts;
+    try {
+      var allow = window.APP_CONFIG && window.APP_CONFIG.VISIBLE_BRANCHES;
+      if (!allow || !allow.length || typeof allow.indexOf !== "function") return opts;
+      var filtered = [];
+      for (var i=0; i<opts.length; i++){
+        if (allow.indexOf(String(opts[i].value)) !== -1) filtered.push(opts[i]);
+      }
+      return filtered.length ? filtered : opts;
+    } catch (_) { return opts; }
+  }
+
   function renderInput(f) {
     if (f.type === "select") {
       var current = (formData && formData[f.key] != null) ? String(formData[f.key]) : "";
@@ -125,9 +144,14 @@ function _collectLabelFor(fieldKey, value){
           opts += "</optgroup>";
         }
       } else {
-        for (var i=0; i<f.options.length; i++){
-          var v = String(f.options[i].value);
-          opts += "<option value='" + v + "'" + (v === current ? " selected" : "") + ">" + f.options[i].label + "</option>";
+        var selOptions = visibleOptionsFor(f);
+        // Genau eine sichtbare Branche => direkt vorauswählen
+        if (f.key === "branche" && selOptions.length === 1) {
+          current = String(selOptions[0].value);
+        }
+        for (var i=0; i<selOptions.length; i++){
+          var v = String(selOptions[i].value);
+          opts += "<option value='" + v + "'" + (v === current ? " selected" : "") + ">" + selOptions[i].label + "</option>";
         }
       }
       return "<select id='" + f.key + "' name='" + f.key + "'>" + opts + "</select>";
