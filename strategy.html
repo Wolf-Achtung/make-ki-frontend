@@ -6,6 +6,18 @@
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <title>KI-Strategie – KI-Sicherheit.jetzt</title>
   <meta name="description" content="KI-Strategiebericht: 10 Zusatzfragen für Ihren individuellen KI-Strategieplan.">
+  <script>
+    // KIS-1251: Sprache so früh wie möglich aus dem URL-Param setzen —
+    // chat-widget.js liest document.documentElement.lang bereits beim Script-Load.
+    (function () {
+      try {
+        var m = /[?&]lang=([^&]+)/.exec(window.location.search);
+        if (m && /^en/i.test(decodeURIComponent(m[1]))) {
+          document.documentElement.lang = "en";
+        }
+      } catch (_) {}
+    })();
+  </script>
   <link rel="icon" href="/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,6 +72,11 @@
       font-size: 0.8rem;
       font-weight: 500;
       color: #dc2626;
+    }
+
+    /* KIS-1251: EN-Variante des CSS-generierten Pflichtfeld-Hinweises */
+    html[lang="en"] .mk-question-group.invalid .mk-question-label::after {
+      content: " — Please complete";
     }
 
     .mk-question-label {
@@ -959,7 +976,7 @@
           </div>
 
           <!-- Strategische Einschätzung (Moat-Felder, optional) -->
-          <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+          <div id="moat-intro" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
             <h3 style="font-family: 'Playfair Display', Georgia, serif; font-weight: 700; color: var(--mk-text-primary); font-size: 1.3rem; margin: 0 0 0.5rem 0;">Strategische Einschätzung (optional)</h3>
             <p style="font-size: 0.9rem; color: var(--mk-text-secondary); margin: 0 0 1.5rem 0;">Diese Angaben helfen uns, Ihren Strategiebericht mit einer Wettbewerbsanalyse zu ergänzen.</p>
           </div>
@@ -1103,10 +1120,370 @@
     var params = new URLSearchParams(window.location.search);
     var briefingId = params.get("briefing_id");
 
+    // ── KIS-1251: I18N ─────────────────────────────────────────────────────
+    // Sprach-Erkennung: 1. URL-Param ?lang=en (im <head> bereits auf
+    // documentElement.lang gespiegelt, damit chat-widget.js es beim Laden
+    // sieht), 2. Feld "lang" aus GET /api/briefings/{id}, 3. Fallback de.
+    // DE-Texte wortgleich zur bisherigen Version. Options-VALUES bleiben
+    // unverändert (werden ans Backend geschickt) — nur Labels sind übersetzt.
+    // Key-Konventionen für applyEnglishStatic():
+    //   q_<field>    → [data-field=<field>] .mk-question-label (innerHTML)
+    //   hint_<field> → [data-field=<field>] .mk-question-hint  (innerHTML)
+    //   opt_<id>     → label[for=<id>]                         (innerHTML)
+    var LANG = /^en/i.test(document.documentElement.lang || "") ? "en" : "de";
+    var langLockedByUrl = /[?&]lang=/.test(window.location.search);
+
+    var I18N = {
+        de: {
+            pageTitle: "KI-Strategie – KI-Sicherheit.jetzt",
+            metaDescription: "KI-Strategiebericht: 10 Zusatzfragen für Ihren individuellen KI-Strategieplan.",
+            busy: "Wird gesendet",
+            errNoIdTitle: "Keine Briefing-ID gefunden",
+            errNoIdText: "Bitte nutzen Sie den Link aus Ihrer E-Mail, um auf diese Seite zuzugreifen.",
+            introTitle: "Ihr persönlicher KI-Strategiebericht",
+            introText: "Auf Basis Ihrer KI-Readiness-Analyse erstellen wir Ihren individuellen Implementierungsfahrplan. Dafür benötigen wir noch wenige Angaben zu Ihrer <strong>konkreten Umsetzungsplanung</strong> — einige Punkte kennen wir bereits aus Ihrer Analyse, hier geht es um die strategische Priorisierung.",
+            introMeta: '10 Fragen · 3–5 Minuten · maßgeschneiderter Strategiefahrplan · Pflichtfelder mit <strong style="color:#dc2626;">*</strong>',
+            modeChatTitle: "KI-gestütztes Gespräch",
+            modeChatText: "Lassen Sie sich Schritt für Schritt durch die Strategiefragen führen. Die KI erklärt Hintergründe und hilft bei der Einordnung.",
+            modeChatBadge: "Empfohlen · ca. 5 Min.",
+            modeFormTitle: "Fragebogen direkt ausfüllen",
+            modeFormText: "Klassischer Fragebogen zum selbst Ausfüllen — für alle, die es lieber strukturiert mögen.",
+            modeFormTime: "ca. 3 Min.",
+            q_s1_budget: '<span class="mk-section-number">S1</span> Wie hoch ist Ihr geplantes Budget speziell für die KI-Implementierung der nächsten 12 Monate? <span class="mk-required">*</span>',
+            hint_s1_budget: "Falls abweichend von Ihrer früheren Angabe — hier geht es um das konkrete Umsetzungsbudget.",
+            opt_s1_1: "Unter 2.000 €",
+            opt_s1_2: "2.000 – 10.000 €",
+            opt_s1_3: "10.000 – 50.000 €",
+            opt_s1_4: "Über 50.000 €",
+            opt_s1_5: "Noch unklar",
+            q_s2_zeitrahmen: '<span class="mk-section-number">S2</span> In welchem Zeitraum wollen Sie erste KI-Maßnahmen umsetzen? <span class="mk-required">*</span>',
+            opt_s2_1: "Sofort (1-3 Monate)",
+            opt_s2_2: "Kurzfristig (3-6 Monate)",
+            opt_s2_3: "Mittelfristig (6-12 Monate)",
+            opt_s2_4: "Langfristig (12-18 Monate)",
+            q_s3_prioritaeten: '<span class="mk-section-number">S3</span> Was sind Ihre wichtigsten Prioritäten beim KI-Einsatz? <span class="mk-required">*</span>',
+            hint_s3_prioritaeten: "Für den Strategiebericht priorisieren wir auf maximal 3 Ziele — bitte wählen Sie die wichtigsten für die nächsten 6–12 Monate.",
+            opt_s3_1: "Kosten senken",
+            opt_s3_2: "Umsatz steigern",
+            opt_s3_3: "Qualität verbessern",
+            opt_s3_4: "Geschwindigkeit erhöhen",
+            opt_s3_5: "Compliance sichern",
+            opt_s3_6: "Neue Geschäftsfelder",
+            opt_s3_7: "Fachkräftemangel kompensieren",
+            opt_s3_8: "Kundenerlebnis verbessern",
+            q_s4_engpass: '<span class="mk-section-number">S4</span> Was ist aktuell der größte Engpass für Ihre KI-Einführung? <span class="mk-required">*</span>',
+            hint_s4_engpass: "Welcher einzelne Engpass blockiert die Umsetzung am stärksten? (Hier wählen Sie bewusst nur einen — den wichtigsten.)",
+            opt_s4_1: "Zu wenig Know-how",
+            opt_s4_2: "Kein Budget",
+            opt_s4_3: "Fehlende Daten",
+            opt_s4_4: "Innere Widerstände / Unsicherheit",
+            opt_s4_5: "Regulatorische Unsicherheit",
+            opt_s4_6: "Kein klarer Use Case",
+            opt_s4_7: "Andere",
+            q_s5_software: '<span class="mk-section-number">S5</span> Welche Software und Tools nutzen Sie aktuell im Tagesgeschäft?',
+            toolCategories: ["Produktivität & Office", "Projektmanagement & Kollaboration", "KI-Tools", "Entwicklung & Infrastruktur", "CRM & Marketing"],
+            opt_s5_tools_other: "Weitere Tools (optional):",
+            toolsOtherPlaceholder: "z. B. SAP, DATEV, Figma, Shopify...",
+            q_s5_vision: '<span class="mk-section-number">S5b</span> Wie sieht Ihre persönliche KI-Vision für Ihr Unternehmen aus?',
+            hint_s5_vision: "Optional — beschreiben Sie in eigenen Worten, wo Sie mit KI hinwollen.",
+            visionPlaceholder: "Was wäre für Sie der größte Gewinn durch KI? Wo soll Ihr Unternehmen in 2–3 Jahren stehen?",
+            q_s6_foerderinteresse: '<span class="mk-section-number">S6</span> Sind Fördermittel für Ihre KI-Investitionen interessant? <span class="mk-required">*</span>',
+            hint_s6_foerderinteresse: "Damit wir passende Förderprogramme im Strategiebericht gezielt berücksichtigen können.",
+            opt_s6_1: "Ja, dringend",
+            opt_s6_2: "Ja, wenn passend",
+            opt_s6_3: "Nein, eigenes Budget",
+            opt_s6_4: "Weiß nicht",
+            q_s7_entscheidung: '<span class="mk-section-number">S7</span> Wie werden bei Ihnen KI-Investitionsentscheidungen getroffen? <span class="mk-required">*</span>',
+            opt_s7_1: "Entscheide allein",
+            opt_s7_2: "Brauche Vorlage für Geschäftsleitung",
+            opt_s7_3: "Muss Gesellschafter überzeugen",
+            opt_s7_4: "Muss Aufsichtsrat/Beirat informieren",
+            q_s8_erfahrung: '<span class="mk-section-number">S8</span> Wie schätzen Sie Ihre bisherige Erfahrung mit KI ein?',
+            hint_s8_erfahrung: "Optional — hilft für die richtige Tiefe der strategischen Empfehlungen.",
+            opt_s8_1: "Noch keine",
+            opt_s8_2: "Experimentiert",
+            opt_s8_3: "Erste Tools im Einsatz",
+            opt_s8_4: "Fortgeschritten",
+            q_s9_ansatz: '<span class="mk-section-number">S9</span> Welchen Infrastruktur-Ansatz bevorzugen Sie?',
+            hint_s9_ansatz: "Optional — beeinflusst Tool-Empfehlungen und Architektur-Vorschläge im Strategiebericht.",
+            opt_s9_1: '<span class="mk-radio-label-content"><strong>Cloud-SaaS</strong><span class="mk-option-hint">Software läuft beim Anbieter im Internet — Sie brauchen keine eigenen Server. Beispiele: Microsoft 365, Google Workspace, Salesforce</span></span>',
+            opt_s9_2: '<span class="mk-radio-label-content"><strong>On-Premise</strong><span class="mk-option-hint">Software läuft auf Ihren eigenen Servern — volle Kontrolle über die Daten. Beispiele: Lokaler Exchange-Server, eigene Datenbanken</span></span>',
+            opt_s9_3: '<span class="mk-radio-label-content"><strong>Hybrid</strong><span class="mk-option-hint">Mix aus Cloud und eigener Infrastruktur. Häufigste Wahl bei KMU mit Datenschutz-Anforderungen.</span></span>',
+            opt_s9_4: '<span class="mk-radio-label-content"><strong>Noch unklar / Egal</strong><span class="mk-option-hint">Sie haben keine Präferenz oder möchten sich beraten lassen.</span></span>',
+            q_s10_datenschutz: '<span class="mk-section-number">S10</span> Wie hoch ist Ihre Datenschutz-Priorität?',
+            hint_s10_datenschutz: "Optional — bestimmt die Tiefe der Compliance-Empfehlungen im Strategiebericht.",
+            opt_s10_1: "Hoch",
+            opt_s10_2: "Mittel",
+            opt_s10_3: "Niedrig",
+            moatTitle: "Strategische Einschätzung (optional)",
+            moatText: "Diese Angaben helfen uns, Ihren Strategiebericht mit einer Wettbewerbsanalyse zu ergänzen.",
+            q_wettbewerber_anzahl: "Wie viele direkte Wettbewerber haben Sie in Ihrem Kernmarkt?",
+            opt_moat_w1: "Wenige (1–3)",
+            opt_moat_w2: "Mehrere (4–10)",
+            opt_moat_w3: "Viele (mehr als 10)",
+            opt_moat_w4: "Schwer einzuschätzen",
+            q_kundenbindung_typ: "Wie würden Sie Ihre Kundenbeziehungen beschreiben?",
+            opt_moat_k1: "Überwiegend Einmalkunden / Projektgeschäft",
+            opt_moat_k2: "Wiederkehrende Kunden / Verträge / Abos",
+            opt_moat_k3: "Mischung aus beidem",
+            q_datenreife: "Verfügt Ihr Unternehmen über eigene Datenbestände, die für KI nutzbar wären?",
+            hint_datenreife: "z.B. Kundendaten, Projekthistorien, Produktionsdaten, Branchenwissen in strukturierter Form",
+            opt_moat_d1: "Kaum / keine strukturierten Daten",
+            opt_moat_d2: "Grundlegende Daten (CRM, Buchhaltung)",
+            opt_moat_d3: "Umfangreiche eigene Datenbestände",
+            opt_moat_d4: "Bin mir nicht sicher",
+            submitBtn: 'Strategiebericht anfordern <span class="arrow">&rarr;</span>',
+            statusGeneratingTitle: "Ihr KI-Strategiebericht wird erstellt…",
+            statusGeneratingText: "Dies kann einige Minuten dauern. Bitte lassen Sie diese Seite geöffnet.",
+            statusDoneTitle: "Strategiebericht fertig!",
+            statusDoneText: "Ihr individueller KI-Strategiebericht wurde erfolgreich erstellt. Sie erhalten ihn in Kürze per E-Mail.",
+            statusFailedTitle: "Fehler bei der Erstellung",
+            statusFailedText: 'Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie <a href="mailto:support@ki-sicherheit.jetzt" style="color:inherit;font-weight:600;">support@ki-sicherheit.jetzt</a>.',
+            pollTimeout: "Die Erstellung dauert ungewöhnlich lange. Sie erhalten Ihren Bericht per E-Mail, sobald er fertig ist — Sie können diese Seite schließen.",
+            pollOffline: "Verbindung unterbrochen. Keine Sorge: Ihr Bericht wird trotzdem erstellt und kommt per E-Mail. Sie können diese Seite schließen.",
+            submitError: "Das Absenden hat leider nicht geklappt. Bitte versuchen Sie es in einem Moment erneut — Ihre Angaben bleiben erhalten. Falls das Problem bestehen bleibt: <a href=\"mailto:support@ki-sicherheit.jetzt\">support@ki-sicherheit.jetzt</a>",
+            exampleShow: "💡 Beispiel anzeigen",
+            exampleHide: "💡 Beispiel ausblenden",
+            exampleAdopt: "«als Vorlage übernehmen»",
+            exampleConfirm: "Das Feld enthält bereits Text. Möchten Sie den Beispieltext als Vorlage übernehmen? Der bisherige Text wird ersetzt.",
+            tuvLine: "TÜV-zertifiziertes KI-Management - Wolf Hohl",
+            altDsgvo: "DSGVO konform",
+            altEuAi: "EU AI Act Ready",
+            altKiReady: "KI-Ready 2025",
+            altTuv: "TÜV zertifiziert",
+            footerImprint: "Impressum",
+            footerPrivacy: "Datenschutz",
+            footerContact: "Kontakt",
+            privacyHref: "/formular/datenschutz.html"
+        },
+        en: {
+            pageTitle: "AI Strategy – KI-Sicherheit.jetzt",
+            metaDescription: "AI Strategy Report: 10 follow-up questions for your individual AI strategy plan.",
+            busy: "Sending",
+            errNoIdTitle: "No briefing ID found",
+            errNoIdText: "Please use the link from your email to access this page.",
+            introTitle: "Your personal AI Strategy Report",
+            introText: "Based on your AI readiness analysis, we create your individual implementation roadmap. We just need a few more details about your <strong>specific implementation planning</strong> — some points we already know from your analysis; this is about strategic prioritisation.",
+            introMeta: '10 questions · 3–5 minutes · tailored strategy roadmap · required fields marked with <strong style="color:#dc2626;">*</strong>',
+            modeChatTitle: "AI-guided conversation",
+            modeChatText: "Let the AI guide you step by step through the strategy questions. It explains the background and helps you put things into context.",
+            modeChatBadge: "Recommended · approx. 5 min",
+            modeFormTitle: "Fill in the questionnaire directly",
+            modeFormText: "A classic questionnaire to complete yourself — for everyone who prefers a structured approach.",
+            modeFormTime: "approx. 3 min",
+            q_s1_budget: '<span class="mk-section-number">S1</span> What is your planned budget specifically for AI implementation over the next 12 months? <span class="mk-required">*</span>',
+            hint_s1_budget: "If different from your earlier answer — this is about the concrete implementation budget.",
+            opt_s1_1: "Under €2,000",
+            opt_s1_2: "€2,000 – €10,000",
+            opt_s1_3: "€10,000 – €50,000",
+            opt_s1_4: "Over €50,000",
+            opt_s1_5: "Not yet clear",
+            q_s2_zeitrahmen: '<span class="mk-section-number">S2</span> In what timeframe do you want to implement your first AI measures? <span class="mk-required">*</span>',
+            opt_s2_1: "Immediately (1-3 months)",
+            opt_s2_2: "Short term (3-6 months)",
+            opt_s2_3: "Medium term (6-12 months)",
+            opt_s2_4: "Long term (12-18 months)",
+            q_s3_prioritaeten: '<span class="mk-section-number">S3</span> What are your most important priorities for using AI? <span class="mk-required">*</span>',
+            hint_s3_prioritaeten: "For the strategy report we prioritise a maximum of 3 goals — please choose the most important ones for the next 6–12 months.",
+            opt_s3_1: "Reduce costs",
+            opt_s3_2: "Increase revenue",
+            opt_s3_3: "Improve quality",
+            opt_s3_4: "Increase speed",
+            opt_s3_5: "Ensure compliance",
+            opt_s3_6: "New business areas",
+            opt_s3_7: "Compensate for the skills shortage",
+            opt_s3_8: "Improve customer experience",
+            q_s4_engpass: '<span class="mk-section-number">S4</span> What is currently the biggest bottleneck for your AI adoption? <span class="mk-required">*</span>',
+            hint_s4_engpass: "Which single bottleneck is blocking implementation the most? (Deliberately pick just one — the most important.)",
+            opt_s4_1: "Too little know-how",
+            opt_s4_2: "No budget",
+            opt_s4_3: "Missing data",
+            opt_s4_4: "Internal resistance / uncertainty",
+            opt_s4_5: "Regulatory uncertainty",
+            opt_s4_6: "No clear use case",
+            opt_s4_7: "Other",
+            q_s5_software: '<span class="mk-section-number">S5</span> Which software and tools do you currently use in your day-to-day business?',
+            toolCategories: ["Productivity & Office", "Project Management & Collaboration", "AI Tools", "Development & Infrastructure", "CRM & Marketing"],
+            opt_s5_tools_other: "Other tools (optional):",
+            toolsOtherPlaceholder: "e.g. SAP, DATEV, Figma, Shopify...",
+            q_s5_vision: '<span class="mk-section-number">S5b</span> What is your personal AI vision for your company?',
+            hint_s5_vision: "Optional — describe in your own words where you want to go with AI.",
+            visionPlaceholder: "What would be the biggest win for you through AI? Where should your company be in 2–3 years?",
+            q_s6_foerderinteresse: '<span class="mk-section-number">S6</span> Are funding programmes of interest for your AI investments? <span class="mk-required">*</span>',
+            hint_s6_foerderinteresse: "So that we can specifically consider suitable funding programmes in your strategy report.",
+            opt_s6_1: "Yes, urgently",
+            opt_s6_2: "Yes, if suitable",
+            opt_s6_3: "No, own budget",
+            opt_s6_4: "Don't know",
+            q_s7_entscheidung: '<span class="mk-section-number">S7</span> How are AI investment decisions made in your company? <span class="mk-required">*</span>',
+            opt_s7_1: "I decide alone",
+            opt_s7_2: "I need a proposal for the management board",
+            opt_s7_3: "I need to convince the shareholders",
+            opt_s7_4: "I need to inform the supervisory/advisory board",
+            q_s8_erfahrung: '<span class="mk-section-number">S8</span> How would you rate your experience with AI so far?',
+            hint_s8_erfahrung: "Optional — helps us choose the right depth for the strategic recommendations.",
+            opt_s8_1: "None yet",
+            opt_s8_2: "Experimented",
+            opt_s8_3: "First tools in use",
+            opt_s8_4: "Advanced",
+            q_s9_ansatz: '<span class="mk-section-number">S9</span> Which infrastructure approach do you prefer?',
+            hint_s9_ansatz: "Optional — influences the tool recommendations and architecture proposals in your strategy report.",
+            opt_s9_1: '<span class="mk-radio-label-content"><strong>Cloud SaaS</strong><span class="mk-option-hint">Software runs at the provider over the internet — you do not need your own servers. Examples: Microsoft 365, Google Workspace, Salesforce</span></span>',
+            opt_s9_2: '<span class="mk-radio-label-content"><strong>On-premise</strong><span class="mk-option-hint">Software runs on your own servers — full control over your data. Examples: local Exchange server, your own databases</span></span>',
+            opt_s9_3: '<span class="mk-radio-label-content"><strong>Hybrid</strong><span class="mk-option-hint">A mix of cloud and your own infrastructure. The most common choice for SMEs with data protection requirements.</span></span>',
+            opt_s9_4: '<span class="mk-radio-label-content"><strong>Not sure yet / No preference</strong><span class="mk-option-hint">You have no preference or would like to get advice.</span></span>',
+            q_s10_datenschutz: '<span class="mk-section-number">S10</span> How high is your data protection priority?',
+            hint_s10_datenschutz: "Optional — determines the depth of the compliance recommendations in your strategy report.",
+            opt_s10_1: "High",
+            opt_s10_2: "Medium",
+            opt_s10_3: "Low",
+            moatTitle: "Strategic assessment (optional)",
+            moatText: "This information helps us complement your strategy report with a competitive analysis.",
+            q_wettbewerber_anzahl: "How many direct competitors do you have in your core market?",
+            opt_moat_w1: "Few (1–3)",
+            opt_moat_w2: "Several (4–10)",
+            opt_moat_w3: "Many (more than 10)",
+            opt_moat_w4: "Hard to estimate",
+            q_kundenbindung_typ: "How would you describe your customer relationships?",
+            opt_moat_k1: "Mostly one-off customers / project business",
+            opt_moat_k2: "Recurring customers / contracts / subscriptions",
+            opt_moat_k3: "A mix of both",
+            q_datenreife: "Does your company have its own data assets that could be used for AI?",
+            hint_datenreife: "e.g. customer data, project histories, production data, industry knowledge in structured form",
+            opt_moat_d1: "Hardly any / no structured data",
+            opt_moat_d2: "Basic data (CRM, accounting)",
+            opt_moat_d3: "Extensive own data assets",
+            opt_moat_d4: "Not sure",
+            submitBtn: 'Request strategy report <span class="arrow">&rarr;</span>',
+            statusGeneratingTitle: "Your AI Strategy Report is being generated…",
+            statusGeneratingText: "This can take a few minutes. Please keep this page open.",
+            statusDoneTitle: "Strategy report ready!",
+            statusDoneText: "Your individual AI Strategy Report has been generated successfully. You will receive it shortly by email.",
+            statusFailedTitle: "Report generation failed",
+            statusFailedText: 'Unfortunately an error occurred. Please try again later or contact <a href="mailto:support@ki-sicherheit.jetzt" style="color:inherit;font-weight:600;">support@ki-sicherheit.jetzt</a>.',
+            pollTimeout: "Generation is taking unusually long. You will receive your report by email as soon as it is ready — you can close this page.",
+            pollOffline: "Connection lost. Don't worry: your report is still being generated and will arrive by email. You can close this page.",
+            submitError: "Unfortunately, sending did not work. Please try again in a moment — your answers are preserved. If the problem persists: <a href=\"mailto:support@ki-sicherheit.jetzt\">support@ki-sicherheit.jetzt</a>",
+            exampleShow: "💡 Show example",
+            exampleHide: "💡 Hide example",
+            exampleAdopt: "«use as template»",
+            exampleConfirm: "The field already contains text. Would you like to use the example text as a template? Your current text will be replaced.",
+            tuvLine: "TÜV-certified AI management - Wolf Hohl",
+            altDsgvo: "GDPR compliant",
+            altEuAi: "EU AI Act Ready",
+            altKiReady: "AI-Ready 2025",
+            altTuv: "TÜV certified",
+            footerImprint: "Legal Notice",
+            footerPrivacy: "Privacy",
+            footerContact: "Contact",
+            privacyHref: "/formular/privacy.html"
+        }
+    };
+
+    function t(key) {
+        var table = I18N[LANG] || I18N.de;
+        return (key in table) ? table[key] : I18N.de[key];
+    }
+
+    // Übersetzt die statischen (im HTML deutschen) Texte nach EN.
+    // Wird NUR für EN aufgerufen — DE bleibt unangetastet (Regression-frei).
+    // Options-VALUES werden nicht verändert, nur die sichtbaren Labels.
+    function applyEnglishStatic() {
+        var T = I18N.en;
+        try { document.documentElement.lang = "en"; } catch (_) {}
+        document.title = T.pageTitle;
+        var md = document.querySelector('meta[name="description"]');
+        if (md) md.setAttribute("content", T.metaDescription);
+
+        function setHtml(sel, html) {
+            var el = document.querySelector(sel);
+            if (el && typeof html === "string") el.innerHTML = html;
+        }
+
+        // Konventions-Keys: q_<field>, hint_<field>, opt_<id>
+        Object.keys(T).forEach(function (key) {
+            if (key.indexOf("opt_") === 0) {
+                setHtml("label[for='" + key.slice(4) + "']", T[key]);
+            } else if (key.indexOf("q_") === 0) {
+                setHtml("[data-field='" + key.slice(2) + "'] .mk-question-label", T[key]);
+            } else if (key.indexOf("hint_") === 0) {
+                setHtml("[data-field='" + key.slice(5) + "'] .mk-question-hint", T[key]);
+            }
+        });
+
+        // Fehlerseite (keine Briefing-ID)
+        setHtml("#error-section .mk-status-title", T.errNoIdTitle);
+        setHtml("#error-section .mk-status-text", T.errNoIdText);
+
+        // Intro
+        setHtml(".mk-strategy-intro h2", T.introTitle);
+        var introPs = document.querySelectorAll(".mk-strategy-intro p");
+        if (introPs[0]) introPs[0].innerHTML = T.introText;
+        if (introPs[1]) introPs[1].innerHTML = T.introMeta;
+
+        // S5 Tool-Kategorien (Reihenfolge wie im Markup)
+        var cats = document.querySelectorAll(".mk-tool-category");
+        T.toolCategories.forEach(function (label, i) {
+            if (cats[i]) cats[i].textContent = label;
+        });
+
+        // Platzhalter
+        var toolsOther = document.getElementById("s5_tools_other");
+        if (toolsOther) toolsOther.setAttribute("placeholder", T.toolsOtherPlaceholder);
+        var vision = document.getElementById("s5_vision");
+        if (vision) vision.setAttribute("placeholder", T.visionPlaceholder);
+
+        // Moat-Intro
+        setHtml("#moat-intro h3", T.moatTitle);
+        setHtml("#moat-intro p", T.moatText);
+
+        // Submit-Button (nur wenn nicht gerade im Busy-Zustand)
+        var btn = document.getElementById("btn-submit");
+        if (btn && !btn.classList.contains("is-submitting")) btn.innerHTML = T.submitBtn;
+
+        // Status-Sektion
+        setHtml("#status-generating .mk-status-title", T.statusGeneratingTitle);
+        setHtml("#status-generating .mk-status-text", T.statusGeneratingText);
+        setHtml("#status-completed .mk-status-title", T.statusDoneTitle);
+        setHtml("#status-completed .mk-status-text", T.statusDoneText);
+        setHtml("#status-failed .mk-status-title", T.statusFailedTitle);
+        setHtml("#status-failed .mk-status-text", T.statusFailedText);
+
+        // Badges + TÜV-Zeile + Footer
+        var altMap = { "dsgvo": T.altDsgvo, "eu-ai": T.altEuAi, "ki-ready-2025": T.altKiReady, "tuev-logo": T.altTuv };
+        Object.keys(altMap).forEach(function (frag) {
+            var img = document.querySelector('.mk-logo-bar img[src*="' + frag + '"]');
+            if (img) img.setAttribute("alt", altMap[frag]);
+        });
+        setHtml(".mk-logo-bar span", T.tuvLine);
+        var footerLinks = document.querySelectorAll("footer a");
+        if (footerLinks.length >= 3) {
+            footerLinks[0].textContent = T.footerImprint;
+            footerLinks[1].textContent = T.footerPrivacy;
+            footerLinks[1].setAttribute("href", T.privacyHref);
+            footerLinks[2].textContent = T.footerContact;
+        }
+    }
+
+    if (LANG === "en") applyEnglishStatic();
+
+    // Sekundäre Sprach-Erkennung über GET /api/briefings/{id}: greift nur,
+    // wenn kein ?lang-URL-Param gesetzt ist. Hinweis: chat-widget.js hat seine
+    // Sprache dann bereits beim Script-Load (de) gelesen — der Fragebogen und
+    // alle Seiten-Texte schalten aber vollständig um.
+    function switchToEnglishLate() {
+        if (LANG === "en") return;
+        LANG = "en";
+        applyEnglishStatic();
+        var modeSel = document.getElementById("strategy-mode-selector");
+        if (modeSel && modeSel.innerHTML) renderModeSelector();
+    }
+    // ── Ende I18N ──────────────────────────────────────────────────────────
+
     // Submit-Lock for "Strategiebericht anfordern" (KIS-1140 pattern)
     var _submitLock = (window.SubmitLock && window.SubmitLock.create({
         buttonSelector: "#btn-submit",
-        busyHtml: 'Wird gesendet<span class="submit-dots"><span></span><span></span><span></span></span>',
+        busyHtml: t("busy") + '<span class="submit-dots"><span></span><span></span><span></span></span>',
         busyClass: "is-submitting",
         idempotencyStorageKey: "submit-lock.strategy"
     })) || null;
@@ -1114,6 +1491,18 @@
     if (!briefingId) {
         document.getElementById("error-section").style.display = "block";
         return;
+    }
+
+    // Sprache aus dem Briefing nachladen (nur ohne ?lang-Param nötig)
+    if (!langLockedByUrl) {
+        fetch(API_BASE + "/api/briefings/" + briefingId)
+            .then(function (res) { return res.ok ? res.json() : null; })
+            .then(function (briefing) {
+                if (briefing && /^en/i.test(String(briefing.lang || ""))) {
+                    switchToEnglishLate();
+                }
+            })
+            .catch(function () {});
     }
 
     // If redirected back with status=generating, show status section directly
@@ -1125,36 +1514,39 @@
 
     // Show mode selector (chat vs form)
     var modeSelector = document.getElementById("strategy-mode-selector");
+
+    function renderModeSelector() {
+        modeSelector.innerHTML = ''
+            + '<div class="mode-selector" style="margin:20px 0;padding:0;">'
+            + '  <div class="mode-card mode-primary" id="strategy-mode-chat" tabindex="0" role="button">'
+            + '    <div class="mode-icon" aria-hidden="true">💬</div>'
+            + '    <h3>' + t("modeChatTitle") + '</h3>'
+            + '    <p>' + t("modeChatText") + '</p>'
+            + '    <span class="mode-badge">' + t("modeChatBadge") + '</span>'
+            + '  </div>'
+            + '  <div class="mode-card mode-secondary" id="strategy-mode-form" tabindex="0" role="button">'
+            + '    <div class="mode-icon" aria-hidden="true">📋</div>'
+            + '    <h3>' + t("modeFormTitle") + '</h3>'
+            + '    <p>' + t("modeFormText") + '</p>'
+            + '    <span class="mode-time">' + t("modeFormTime") + '</span>'
+            + '  </div>'
+            + '</div>';
+
+        document.getElementById("strategy-mode-chat").addEventListener("click", function() {
+            modeSelector.style.display = "none";
+            document.getElementById("strategy-card").style.display = "none";
+            document.getElementById("chat-container").style.display = "flex";
+            window.initChat({ report_type: "strategy", briefing_id: briefingId });
+        });
+
+        document.getElementById("strategy-mode-form").addEventListener("click", function() {
+            modeSelector.style.display = "none";
+            document.getElementById("form-section").style.display = "block";
+        });
+    }
+
     modeSelector.style.display = "block";
-    modeSelector.innerHTML = ''
-        + '<div class="mode-selector" style="margin:20px 0;padding:0;">'
-        + '  <div class="mode-card mode-primary" id="strategy-mode-chat" tabindex="0" role="button">'
-        + '    <div class="mode-icon" aria-hidden="true">💬</div>'
-        + '    <h3>KI-gestütztes Gespräch</h3>'
-        + '    <p>Lassen Sie sich Schritt für Schritt durch die Strategiefragen '
-        + '       führen. Die KI erklärt Hintergründe und hilft bei der Einordnung.</p>'
-        + '    <span class="mode-badge">Empfohlen · ca. 5 Min.</span>'
-        + '  </div>'
-        + '  <div class="mode-card mode-secondary" id="strategy-mode-form" tabindex="0" role="button">'
-        + '    <div class="mode-icon" aria-hidden="true">📋</div>'
-        + '    <h3>Fragebogen direkt ausfüllen</h3>'
-        + '    <p>Klassischer Fragebogen zum selbst Ausfüllen — '
-        + '       für alle, die es lieber strukturiert mögen.</p>'
-        + '    <span class="mode-time">ca. 3 Min.</span>'
-        + '  </div>'
-        + '</div>';
-
-    document.getElementById("strategy-mode-chat").addEventListener("click", function() {
-        modeSelector.style.display = "none";
-        document.getElementById("strategy-card").style.display = "none";
-        document.getElementById("chat-container").style.display = "flex";
-        window.initChat({ report_type: "strategy", briefing_id: briefingId });
-    });
-
-    document.getElementById("strategy-mode-form").addEventListener("click", function() {
-        modeSelector.style.display = "none";
-        document.getElementById("form-section").style.display = "block";
-    });
+    renderModeSelector();
 
     // Checkbox max-3 logic for s3_prioritaeten
     function setupMaxCheckboxes(name, max) {
@@ -1403,9 +1795,7 @@
                 if (_btn && _btn.parentNode) _btn.parentNode.insertBefore(_errBox, _btn.nextSibling);
                 else document.getElementById("form-section").appendChild(_errBox);
             }
-            _errBox.innerHTML = "Das Absenden hat leider nicht geklappt. Bitte versuchen Sie es " +
-                "in einem Moment erneut \u2014 Ihre Angaben bleiben erhalten. Falls das Problem " +
-                "bestehen bleibt: <a href=\"mailto:support@ki-sicherheit.jetzt\">support@ki-sicherheit.jetzt</a>";
+            _errBox.innerHTML = t("submitError");
             _errBox.scrollIntoView({ behavior: "smooth", block: "center" });
             console.error("Strategy submit failed:", err);
         });
@@ -1420,9 +1810,7 @@
             if (attempts > 180) {
                 clearInterval(interval);
                 var g = document.getElementById("status-generating");
-                if (g) g.querySelector(".mk-status-text").innerHTML =
-                    "Die Erstellung dauert ungew\u00f6hnlich lange. Sie erhalten Ihren Bericht " +
-                    "per E-Mail, sobald er fertig ist \u2014 Sie k\u00f6nnen diese Seite schlie\u00dfen.";
+                if (g) g.querySelector(".mk-status-text").innerHTML = t("pollTimeout");
                 return;
             }
             fetch(API_BASE + "/api/strategy/status/" + briefingId)
@@ -1443,9 +1831,7 @@
                 if (netErrors >= 12) {
                     clearInterval(interval);
                     var g = document.getElementById("status-generating");
-                    if (g) g.querySelector(".mk-status-text").innerHTML =
-                        "Verbindung unterbrochen. Keine Sorge: Ihr Bericht wird trotzdem erstellt " +
-                        "und kommt per E-Mail. Sie k\u00f6nnen diese Seite schlie\u00dfen.";
+                    if (g) g.querySelector(".mk-status-text").innerHTML = t("pollOffline");
                 }
             });
         }, 5000);
@@ -1505,14 +1891,14 @@
 
         var toggle = document.createElement("div");
         toggle.className = "fe-toggle";
-        toggle.textContent = "\uD83D\uDCA1 Beispiel anzeigen";
+        toggle.textContent = t("exampleShow");
 
         var panel = document.createElement("div");
         panel.className = "fe-panel";
         var html = "";
         if (data.hint) html += "<div class='fe-hint'>" + data.hint + "</div>";
         if (data.example) html += "<div class='fe-example-box'>" + data.example + "</div>";
-        if (data.example) html += "<button type='button' class='fe-adopt-btn'>\u00ABals Vorlage \u00fcbernehmen\u00BB</button>";
+        if (data.example) html += "<button type='button' class='fe-adopt-btn'>" + t("exampleAdopt") + "</button>";
         panel.innerHTML = html;
 
         group.appendChild(toggle);
@@ -1521,7 +1907,7 @@
         toggle.addEventListener("click", function() {
             var isOpen = panel.classList.contains("fe-open");
             panel.classList.toggle("fe-open");
-            toggle.textContent = isOpen ? "\uD83D\uDCA1 Beispiel anzeigen" : "\uD83D\uDCA1 Beispiel ausblenden";
+            toggle.textContent = isOpen ? t("exampleShow") : t("exampleHide");
         });
 
         var adoptBtn = panel.querySelector(".fe-adopt-btn");
@@ -1530,17 +1916,19 @@
                 var ta = document.getElementById("s5_vision");
                 if (!ta) return;
                 if (ta.value.trim() !== "") {
-                    if (!confirm("Das Feld enth\u00e4lt bereits Text. M\u00f6chten Sie den Beispieltext als Vorlage \u00fcbernehmen? Der bisherige Text wird ersetzt.")) return;
+                    if (!confirm(t("exampleConfirm"))) return;
                 }
                 ta.value = data.example;
                 ta.dispatchEvent(new Event("change", { bubbles: true }));
                 panel.classList.remove("fe-open");
-                toggle.textContent = "\uD83D\uDCA1 Beispiel anzeigen";
+                toggle.textContent = t("exampleShow");
             });
         }
     }
 
-    // Fetch briefing data to get branche and unternehmensgroesse
+    // Fetch briefing data to get branche and unternehmensgroesse.
+    // KIS-1251: Die Beispieltexte (field_examples_de.js) sind deutschsprachig —
+    // bei EN werden sie deshalb nicht injiziert (LANG-Check zur Injektionszeit).
     if (briefingId && window.FIELD_EXAMPLES) {
         fetch(API_BASE + "/api/briefings/" + briefingId, {
             credentials: "include"
@@ -1548,6 +1936,7 @@
         .then(function(res) { return res.ok ? res.json() : null; })
         .then(function(briefing) {
             if (!briefing) return;
+            if (LANG === "en" || /^en/i.test(String(briefing.lang || ""))) return;
             var branche = briefing.branche || "default";
             var sizeRaw = briefing.unternehmensgroesse || "";
             var size = mapSize(sizeRaw);
@@ -1555,6 +1944,7 @@
         })
         .catch(function() {
             // Fallback: show default examples
+            if (LANG === "en") return;
             injectVisionExample("default", "default");
         });
     }

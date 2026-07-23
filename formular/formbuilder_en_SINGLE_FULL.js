@@ -957,6 +957,7 @@ function _collectLabelFor(fieldKey, value){
             try { localStorage.removeItem(STORAGE_PREFIX + "data"); localStorage.removeItem(STORAGE_PREFIX + "step"); } catch(_) {}
             var statusUrl = "/formular/status.html?id=" + encodeURIComponent(bid);
             if (userEmailForStatus) statusUrl += "&email=" + encodeURIComponent(userEmailForStatus);
+            statusUrl += "&lang=en"; // KIS-1251: Status-Seite direkt englisch rendern
             window.location.href = statusUrl;
           }
         }).catch(function() {});
