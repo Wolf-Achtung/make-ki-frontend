@@ -1,0 +1,77 @@
+[
+  {
+    "icon": "⚖️",
+    "category": "EU AI Act",
+    "text": "The EU AI Act has been in force since February 2025. Your report includes your individual risk-class analysis."
+  },
+  {
+    "icon": "📊",
+    "category": "AI in Germany",
+    "text": "Only 18% of German SMEs use AI productively (Bitkom 2025). Your report shows where you stand in comparison."
+  },
+  {
+    "icon": "💰",
+    "category": "Funding",
+    "text": "Through BAFA programmes, solo self-employed professionals can receive up to €4,000 in funding for AI consulting. You will find the details in your report."
+  },
+  {
+    "icon": "🔒",
+    "category": "Data Protection",
+    "text": "78% of German companies see GDPR compliance as the biggest hurdle for AI adoption. Your vendor audit checks this for you."
+  },
+  {
+    "icon": "⏱️",
+    "category": "Time Savings",
+    "text": "Companies that use AI in a structured way save an average of 20% of their working time on administrative tasks."
+  },
+  {
+    "icon": "🎯",
+    "category": "Quick Win",
+    "text": "The fastest way to start with AI: automate email drafts and meeting minutes. Your report includes copy-paste prompts for this."
+  },
+  {
+    "icon": "🏆",
+    "category": "Best Practice",
+    "text": "Successful AI adoption starts with a single workflow — not with ten tools at once."
+  },
+  {
+    "icon": "📋",
+    "category": "Your Report",
+    "text": "Your report includes a 30-day challenge that guides you step by step towards productive AI use."
+  },
+  {
+    "icon": "🇪🇺",
+    "category": "EU AI Act",
+    "text": "From February 2025, companies must demonstrate AI competence (Art. 4). Your report shows your current status."
+  },
+  {
+    "icon": "🔍",
+    "category": "Vendor Check",
+    "text": "Your report includes an AI vendor audit: a data protection and compliance check of all the AI tools you use."
+  },
+  {
+    "icon": "📈",
+    "category": "ROI",
+    "text": "Your report calculates your individual ROI — including a 3-scenario analysis with conservative caps."
+  },
+  {
+    "icon": "💡",
+    "category": "Did you know?",
+    "text": "ChatGPT, Claude and Perplexity have different strengths. Your report recommends the best tools for your use case."
+  },
+  {
+    "icon": "📄",
+    "category": "Bonus",
+    "text": "In addition to this report, you will automatically receive your AI Potential Analysis — a strategic deep dive by separate email."
+  },
+  {
+    "icon": "🛡️",
+    "category": "Security",
+    "text": "This platform does not permanently store customer data and uses no tracking. GDPR-compliant by design."
+  },
+  {
+    "icon": "🚀",
+    "category": "Starter Kit",
+    "text": "Your report includes a tailored starter kit with recommended tools, setup times and funding programmes."
+  }
+]
