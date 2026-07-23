@@ -5,6 +5,211 @@
 (function() {
     "use strict";
 
+    /* ── Language Detection (i18n) ──
+       Zentrale Sprach-Erkennung: <html lang="…">, Fallback ?lang-URL-Param,
+       Fallback "de". "en" nur bei en/en-GB/en-US etc., sonst immer "de". */
+    var WIDGET_LANG = (function() {
+        var lang = "";
+        try {
+            lang = (document.documentElement && document.documentElement.lang) || "";
+            if (!lang && window.location && window.location.search) {
+                var m = /[?&]lang=([^&]+)/.exec(window.location.search);
+                if (m) lang = decodeURIComponent(m[1]);
+            }
+        } catch (e) {}
+        return /^en/i.test(String(lang)) ? "en" : "de";
+    })();
+
+    /* ── Translation Table (i18n) ──
+       Alle user-sichtbaren Strings. Deutsch = bisheriger Wortlaut (unverändert).
+       Templates nutzen {platzhalter}, aufgelöst via tf(). */
+    var I18N = {
+        de: {
+            busySending: "Wird gesendet",
+            blockLabels: {
+                "A": "Fördermittel & Budget",
+                "B": "KI-Strategie & Roadmap",
+                "C": "Tools & Automatisierung",
+                "D": "Recht & Datenschutz"
+            },
+            blockTimes: {
+                "A": "~2 Min",
+                "B": "~3 Min",
+                "C": "~4 Min",
+                "D": "~2 Min",
+                "ALL": "~10 Min"
+            },
+            summaryMarker: "**Zusammenfassung Ihrer Angaben:**",
+            modeChatAria: "KI-gestuetztes Gespraech starten",
+            modeChatTitle: "KI-gestütztes Gespräch",
+            modeChatDesc: "Lassen Sie sich Schritt für Schritt durch die Bestandsaufnahme führen. Die KI erklärt Fachbegriffe und hilft bei Unsicherheiten.",
+            modeChatBadge: "Empfohlen · ca. 10–15 Min.",
+            modeFormAria: "Fragebogen direkt ausfuellen",
+            modeFormTitle: "Fragebogen direkt ausfüllen",
+            modeFormDesc: "Klassischer Fragebogen zum selbst Ausfüllen — für alle, die es lieber strukturiert mögen.",
+            modeFormTime: "ca. 10–15 Min.",
+            chatTitle: "KI-Bestandsaufnahme",
+            progressAria: "Fortschritt",
+            phaseBasics: "Grunddaten",
+            phaseDeepDive: "Vertiefung",
+            phaseSummary: "Zusammenfassung",
+            switchToFormBtn: "Zum Formular wechseln",
+            chatLogAria: "Chat-Verlauf",
+            draftLabel: "Erkannt",
+            draftConfirmBtn: "✓ Übernehmen",
+            draftEditBtn: "✏️ Ändern",
+            draftConfirmedText: "✓ Übernommen",
+            quickRepliesAria: "Schnellantworten",
+            smartChipsAria: "Formulierungs-Vorschläge",
+            inputPlaceholder: "Ihre Antwort oder Frage...",
+            inputAria: "Ihre Antwort eingeben",
+            sendBtn: "Senden",
+            sendAria: "Nachricht senden",
+            errTimeout: "Der Server antwortet gerade nicht (Zeitüberschreitung). Bitte laden Sie die Seite in einem Moment neu.",
+            errConnectionReload: "Verbindungsfehler. Bitte laden Sie die Seite neu.",
+            errConnectionRetry: "Verbindungsfehler. Bitte versuchen Sie es erneut.",
+            errGeneric: "Ein Fehler ist aufgetreten.",
+            streamInterrupted: "Die Verbindung wurde kurz unterbrochen — die letzte Antwort ist möglicherweise unvollständig. Schreiben Sie einfach „weiter“, um fortzufahren.",
+            srNewMessage: "Neue Nachricht vom Assistenten",
+            reportStarting: "Einen Moment — Ihre Auswertung wird gestartet …",
+            qrMaxSelect: " (max. {n} auswählen)",
+            qrMultiHint: " (mehrere möglich)",
+            qrTimeUnit: "Min",
+            qrConfirmSelected: "{n} ausgewählt{time} — Bestätigen ✓",
+            qrConfirmEmpty: "Bitte mindestens eine Option wählen",
+            skipBtn: "Überspringen →",
+            skipMessage: "weiter",
+            helpBtn: "💡 Was ist hier gemeint?",
+            helpRequested: "💡 Erklärung angefordert",
+            smartChipsLabel: "Vorschläge — klicken zum Übernehmen, frei ergänzbar:",
+            smartChipAria: "Vorschlag übernehmen: {text}",
+            inspLabel: "Passende Antwort? Ein Klick genügt:",
+            inspAria: "Antwort direkt senden: {text}",
+            inspHint: "Oder unten eine eigene Antwort eingeben.",
+            inspPlaceholder: "Oder eigene Antwort eingeben …",
+            dialogActivePlaceholder: "Ihre Frage wird beantwortet — tippen Sie gerne weiter…",
+            editDraftPlaceholder: "Bitte geben Sie Ihre Antwort nochmal ein…",
+            summaryHeader: "Zusammenfassung Ihrer Angaben",
+            summaryFooter: "Sind alle Angaben korrekt? Dann starte ich die Auswertung.",
+            editHeader: "Welches Feld möchten Sie ändern?",
+            editFieldBtn: "Ändern",
+            editFieldMsg: "Ich möchte \"{field}\" ändern.",
+            editCompleteBtn: "Fertig — Auswertung starten",
+            btnCompleteHtml: "Angaben bestätigen &amp; Report starten",
+            btnEditLabel: "Angaben korrigieren",
+            msgCorrectRequest: "Ich möchte einige Angaben korrigieren.",
+            msgStartReport: "Auswertung starten",
+            switchLoading: "Wird geladen…",
+            prefillToast: "{n} Angaben aus dem Chat übernommen",
+            resumeTitle: "Sie haben ein offenes Gespräch",
+            resumeProgress: "({p}% abgeschlossen)",
+            resumeBtn: "Fortsetzen",
+            restartBtn: "Neu starten"
+        },
+        en: {
+            busySending: "Sending",
+            blockLabels: {
+                "A": "Funding & Budget",
+                "B": "AI Strategy & Roadmap",
+                "C": "Tools & Automation",
+                "D": "Legal & Data Protection"
+            },
+            blockTimes: {
+                "A": "~2 min",
+                "B": "~3 min",
+                "C": "~4 min",
+                "D": "~2 min",
+                "ALL": "~10 min"
+            },
+            summaryMarker: "**Summary of your information:**",
+            modeChatAria: "Start AI-guided conversation",
+            modeChatTitle: "AI-guided conversation",
+            modeChatDesc: "Let the AI guide you step by step through the assessment. It explains technical terms and helps whenever you are unsure.",
+            modeChatBadge: "Recommended · approx. 10–15 min.",
+            modeFormAria: "Fill in the questionnaire directly",
+            modeFormTitle: "Fill in the questionnaire directly",
+            modeFormDesc: "Classic questionnaire to complete on your own — for everyone who prefers a structured approach.",
+            modeFormTime: "approx. 10–15 min.",
+            chatTitle: "AI Readiness Assessment",
+            progressAria: "Progress",
+            phaseBasics: "Basics",
+            phaseDeepDive: "Deep dive",
+            phaseSummary: "Summary",
+            switchToFormBtn: "Switch to the form",
+            chatLogAria: "Chat history",
+            draftLabel: "Detected",
+            draftConfirmBtn: "✓ Apply",
+            draftEditBtn: "✏️ Change",
+            draftConfirmedText: "✓ Applied",
+            quickRepliesAria: "Quick replies",
+            smartChipsAria: "Phrasing suggestions",
+            inputPlaceholder: "Your answer or question...",
+            inputAria: "Enter your answer",
+            sendBtn: "Send",
+            sendAria: "Send message",
+            errTimeout: "The server is not responding right now (timeout). Please reload the page in a moment.",
+            errConnectionReload: "Connection error. Please reload the page.",
+            errConnectionRetry: "Connection error. Please try again.",
+            errGeneric: "An error occurred.",
+            streamInterrupted: "The connection was briefly interrupted — the last reply may be incomplete. Simply type “continue” to carry on.",
+            srNewMessage: "New message from the assistant",
+            reportStarting: "One moment — your report is being started …",
+            qrMaxSelect: " (select up to {n})",
+            qrMultiHint: " (multiple possible)",
+            qrTimeUnit: "min",
+            qrConfirmSelected: "{n} selected{time} — Confirm ✓",
+            qrConfirmEmpty: "Please select at least one option",
+            skipBtn: "Skip →",
+            skipMessage: "continue",
+            helpBtn: "💡 What does this mean?",
+            helpRequested: "💡 Explanation requested",
+            smartChipsLabel: "Suggestions — click to apply, freely editable:",
+            smartChipAria: "Apply suggestion: {text}",
+            inspLabel: "Fitting answer? One click is all it takes:",
+            inspAria: "Send answer directly: {text}",
+            inspHint: "Or type your own answer below.",
+            inspPlaceholder: "Or type your own answer …",
+            dialogActivePlaceholder: "Your question is being answered — feel free to keep typing…",
+            editDraftPlaceholder: "Please enter your answer again…",
+            summaryHeader: "Summary of your information",
+            summaryFooter: "Is everything correct? Then I will start the analysis.",
+            editHeader: "Which field would you like to change?",
+            editFieldBtn: "Change",
+            editFieldMsg: "I would like to change \"{field}\".",
+            editCompleteBtn: "Done — start the analysis",
+            btnCompleteHtml: "Confirm details &amp; start report",
+            btnEditLabel: "Correct details",
+            msgCorrectRequest: "I would like to correct some of my details.",
+            msgStartReport: "Start analysis",
+            switchLoading: "Loading…",
+            prefillToast: "{n} answers transferred from the chat",
+            resumeTitle: "You have an open conversation",
+            resumeProgress: "({p}% completed)",
+            resumeBtn: "Resume",
+            restartBtn: "Start over"
+        }
+    };
+
+    /* i18n-Zugriffs-Helper: t(key) → String/Objekt der aktiven Sprache,
+       Fallback auf Deutsch bei fehlendem Key. */
+    function t(key) {
+        var table = I18N[WIDGET_LANG] || I18N.de;
+        var value = table[key];
+        if (value == null) value = I18N.de[key];
+        return value;
+    }
+
+    /* Template-Helper: ersetzt {name}-Platzhalter. */
+    function tf(key, vars) {
+        var s = String(t(key));
+        for (var k in vars) {
+            if (vars.hasOwnProperty(k)) {
+                s = s.split("{" + k + "}").join(String(vars[k]));
+            }
+        }
+        return s;
+    }
+
     /* ── State ── */
     var chatState = {
         sessionId: null,
@@ -15,7 +220,7 @@
     /* ── Submit-Lock for the "Angaben bestätigen & Report starten" button (KIS-1140) ── */
     var _completeSubmitLock = (window.SubmitLock && window.SubmitLock.create({
         buttonSelector: "#btnComplete",
-        busyHtml: 'Wird gesendet<span class="submit-dots"><span></span><span></span><span></span></span>',
+        busyHtml: t("busySending") + '<span class="submit-dots"><span></span><span></span><span></span></span>',
         busyClass: "is-submitting",
         idempotencyStorageKey: "submit-lock.chat-intake"
     })) || null;
@@ -24,23 +229,14 @@
     /* KIS-1240: Keys an die Backend-QR-Values angeglichen (A-D, ALL) —
        vorher "block_a" etc., dadurch feuerten Zeit-Badges und
        Meta-Styling der Checkpoint-Chips nie. */
-    var BLOCK_LABELS = {
-        "A": "F\u00f6rdermittel & Budget",
-        "B": "KI-Strategie & Roadmap",
-        "C": "Tools & Automatisierung",
-        "D": "Recht & Datenschutz"
-    };
+    var BLOCK_LABELS = t("blockLabels");
 
-    var BLOCK_TIME_ESTIMATES = {
-        "A": "~2 Min",
-        "B": "~3 Min",
-        "C": "~4 Min",
-        "D": "~2 Min",
-        "ALL": "~10 Min"
-    };
+    var BLOCK_TIME_ESTIMATES = t("blockTimes");
 
     /* ── Summary Marker (backend contract, mirrors SUMMARY_MARKER in backend) ── */
-    var SUMMARY_MARKER = "**Zusammenfassung Ihrer Angaben:**";
+    var SUMMARY_MARKER = t("summaryMarker");
+    /* Abgeleiteter Abschnitts-Titel (Marker ohne "**"), für parseSummary(). */
+    var SUMMARY_MARKER_TITLE = SUMMARY_MARKER.replace(/\*\*/g, "");
 
     /* ── API helpers ── */
     function getApiBase() {
@@ -77,19 +273,17 @@
 
         selector.innerHTML = ''
             + '<div class="mode-selector">'
-            + '  <div class="mode-card mode-primary" id="mode-chat" tabindex="0" role="button" aria-label="KI-gestuetztes Gespraech starten">'
+            + '  <div class="mode-card mode-primary" id="mode-chat" tabindex="0" role="button" aria-label="' + escapeHtml(t("modeChatAria")) + '">'
             + '    <div class="mode-icon" aria-hidden="true">💬</div>'
-            + '    <h3>KI-gestütztes Gespräch</h3>'
-            + '    <p>Lassen Sie sich Schritt für Schritt durch die Bestandsaufnahme '
-            + '       führen. Die KI erklärt Fachbegriffe und hilft bei Unsicherheiten.</p>'
-            + '    <span class="mode-badge">Empfohlen · ca. 10–15 Min.</span>'
+            + '    <h3>' + escapeHtml(t("modeChatTitle")) + '</h3>'
+            + '    <p>' + escapeHtml(t("modeChatDesc")) + '</p>'
+            + '    <span class="mode-badge">' + escapeHtml(t("modeChatBadge")) + '</span>'
             + '  </div>'
-            + '  <div class="mode-card mode-secondary" id="mode-form" tabindex="0" role="button" aria-label="Fragebogen direkt ausfuellen">'
+            + '  <div class="mode-card mode-secondary" id="mode-form" tabindex="0" role="button" aria-label="' + escapeHtml(t("modeFormAria")) + '">'
             + '    <div class="mode-icon" aria-hidden="true">📋</div>'
-            + '    <h3>Fragebogen direkt ausfüllen</h3>'
-            + '    <p>Klassischer Fragebogen zum selbst Ausfüllen — '
-            + '       für alle, die es lieber strukturiert mögen.</p>'
-            + '    <span class="mode-time">ca. 10–15 Min.</span>'
+            + '    <h3>' + escapeHtml(t("modeFormTitle")) + '</h3>'
+            + '    <p>' + escapeHtml(t("modeFormDesc")) + '</p>'
+            + '    <span class="mode-time">' + escapeHtml(t("modeFormTime")) + '</span>'
             + '  </div>'
             + '</div>';
 
@@ -134,43 +328,43 @@
         container.innerHTML = ''
             + '<div class="chat-header">'
             + '  <div class="chat-header-left">'
-            + '    <span class="chat-title">KI-Bestandsaufnahme</span>'
+            + '    <span class="chat-title">' + escapeHtml(t("chatTitle")) + '</span>'
             + '  </div>'
-            + '  <div class="phase-indicator" id="phaseIndicator" role="navigation" aria-label="Fortschritt">'
+            + '  <div class="phase-indicator" id="phaseIndicator" role="navigation" aria-label="' + escapeHtml(t("progressAria")) + '">'
             + '    <div class="phase-segment phase-active" data-phase="grunddaten">'
-            + '      <span class="phase-dot"></span><span class="phase-label">Grunddaten</span>'
+            + '      <span class="phase-dot"></span><span class="phase-label">' + escapeHtml(t("phaseBasics")) + '</span>'
             + '    </div>'
             + '    <div class="phase-connector"></div>'
             + '    <div class="phase-segment" data-phase="vertiefung">'
-            + '      <span class="phase-dot"></span><span class="phase-label">Vertiefung</span>'
+            + '      <span class="phase-dot"></span><span class="phase-label">' + escapeHtml(t("phaseDeepDive")) + '</span>'
             + '    </div>'
             + '    <div class="phase-connector"></div>'
             + '    <div class="phase-segment" data-phase="zusammenfassung">'
-            + '      <span class="phase-dot"></span><span class="phase-label">Zusammenfassung</span>'
+            + '      <span class="phase-dot"></span><span class="phase-label">' + escapeHtml(t("phaseSummary")) + '</span>'
             + '    </div>'
             + '  </div>'
             + '  <div class="chat-header-right">'
-            + '    <button class="chat-switch-btn" id="chatSwitchToForm">Zum Formular wechseln</button>'
+            + '    <button class="chat-switch-btn" id="chatSwitchToForm">' + escapeHtml(t("switchToFormBtn")) + '</button>'
             + '  </div>'
             + '</div>'
-            + '<div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat-Verlauf"></div>'
+            + '<div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="' + escapeHtml(t("chatLogAria")) + '"></div>'
             + '<div class="draft-chip" id="draftChip" style="display:none;">'
             + '  <div class="draft-chip-header">'
             + '    <span class="draft-chip-icon">\uD83D\uDCDD</span>'
-            + '    <span class="draft-chip-label" id="draftChipLabel">Erkannt</span>'
+            + '    <span class="draft-chip-label" id="draftChipLabel">' + escapeHtml(t("draftLabel")) + '</span>'
             + '  </div>'
             + '  <div class="draft-chip-value" id="draftChipValue"></div>'
             + '  <div class="draft-chip-actions" id="draftChipActions">'
-            + '    <button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
-            + '    <button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>'
+            + '    <button class="draft-confirm-btn" id="draftConfirmBtn">' + escapeHtml(t("draftConfirmBtn")) + '</button>'
+            + '    <button class="draft-edit-btn" id="draftEditBtn">' + escapeHtml(t("draftEditBtn")) + '</button>'
             + '  </div>'
             + '</div>'
             + '<div class="chat-input-area">'
-            + '  <div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="Schnellantworten"></div>'
-            + '  <div class="chat-smart-chips" id="chatSmartChips" role="group" aria-label="Formulierungs-Vorschl\u00e4ge"></div>'
+            + '  <div class="chat-quick-replies" id="chatQuickReplies" role="group" aria-label="' + escapeHtml(t("quickRepliesAria")) + '"></div>'
+            + '  <div class="chat-smart-chips" id="chatSmartChips" role="group" aria-label="' + escapeHtml(t("smartChipsAria")) + '"></div>'
             + '  <div class="chat-input-row">'
-            + '    <textarea id="chatInput" placeholder="Ihre Antwort oder Frage..." rows="1" aria-label="Ihre Antwort eingeben"></textarea>'
-            + '    <button id="chatSend" disabled aria-label="Nachricht senden">Senden</button>'
+            + '    <textarea id="chatInput" placeholder="' + escapeHtml(t("inputPlaceholder")) + '" rows="1" aria-label="' + escapeHtml(t("inputAria")) + '"></textarea>'
+            + '    <button id="chatSend" disabled aria-label="' + escapeHtml(t("sendAria")) + '">' + escapeHtml(t("sendBtn")) + '</button>'
             + '  </div>'
             + '</div>';
 
@@ -209,7 +403,7 @@
 
         var payload = {
             report_type: reportType,
-            lang: "de",
+            lang: WIDGET_LANG,
             consent_report: true
         };
         if (briefingId) {
@@ -254,8 +448,8 @@
         .catch(function(err) {
             if (_startTimer) clearTimeout(_startTimer);
             var _msg = (err && err.name === "AbortError")
-                ? "Der Server antwortet gerade nicht (Zeit\u00fcberschreitung). Bitte laden Sie die Seite in einem Moment neu."
-                : "Verbindungsfehler. Bitte laden Sie die Seite neu.";
+                ? t("errTimeout")
+                : t("errConnectionReload");
             appendMessage("system", _msg);
             console.error("Chat start failed:", err);
         });
@@ -281,7 +475,7 @@
         chatState.messages.push({ role: role, content: content });
 
         if (role === "assistant") {
-            announceForScreenReader("Neue Nachricht vom Assistenten");
+            announceForScreenReader(t("srNewMessage"));
         }
 
         return msgDiv;
@@ -352,7 +546,7 @@
         try { localStorage.removeItem("chat_session_id"); } catch(e) {}
         // KIS-1269: 2 Sekunden ohne jede Rueckmeldung = Blindmoment
         try { if (window.kisTrack) window.kisTrack("q1_completed"); } catch(e) {}
-        appendMessage("system", "Einen Moment \u2014 Ihre Auswertung wird gestartet \u2026");
+        appendMessage("system", t("reportStarting"));
         setTimeout(function() {
             window.location.href = data.redirect_url;
         }, 2000);
@@ -532,7 +726,7 @@
 
                     case "error":
                         hideTypingIndicator();
-                        appendMessage("system", data.message || "Ein Fehler ist aufgetreten.");
+                        appendMessage("system", data.message || t("errGeneric"));
                         chatState.isStreaming = false;
                         break;
                 }
@@ -547,10 +741,7 @@
                 // Wort stehen ("… Bei K"). Nutzer informieren statt still
                 // einzufrieren.
                 if (!doneData && !doneReceived && !(extra && extra._resumeTrigger)) {
-                    appendMessage("system",
-                        "Die Verbindung wurde kurz unterbrochen — die letzte Antwort "
-                        + "ist möglicherweise unvollständig. Schreiben Sie einfach "
-                        + "„weiter“, um fortzufahren.");
+                    appendMessage("system", t("streamInterrupted"));
                 }
 
                 // Template-Turn: No token events were sent, so streamDiv was never created.
@@ -580,7 +771,7 @@
 
                 if (fullResponse) {
                     chatState.messages.push({ role: "assistant", content: fullResponse });
-                    announceForScreenReader("Neue Nachricht vom Assistenten");
+                    announceForScreenReader(t("srNewMessage"));
                     // Check if response is a summary and render as cards
                     if (fullResponse.indexOf(SUMMARY_MARKER) !== -1 && streamDiv) {
                         console.info("[EditMode] Summary marker detected, rendering cards");
@@ -614,7 +805,7 @@
         .catch(function(err) {
             hideTypingIndicator();
             chatState.isStreaming = false;
-            appendMessage("system", "Verbindungsfehler. Bitte versuchen Sie es erneut.");
+            appendMessage("system", t("errConnectionRetry"));
             console.error("Chat message failed:", err);
 
             if (_completeSubmitLock && _completeSubmitLock.isLocked()) {
@@ -700,8 +891,8 @@
             var labelText = reply.label;
             if (isMulti) {
                 labelText += maxSelect
-                    ? " (max. " + maxSelect + " auswählen)"
-                    : " (mehrere möglich)";
+                    ? tf("qrMaxSelect", { n: maxSelect })
+                    : t("qrMultiHint");
             }
             label.textContent = labelText;
             container.appendChild(label);
@@ -786,12 +977,12 @@
                                         var tEst = BLOCK_TIME_ESTIMATES[selBtns[k].dataset.value];
                                         if (tEst) totalMins += parseInt(tEst.replace(/[^0-9]/g, ""), 10) || 0;
                                     }
-                                    var timeInfo = totalMins > 0 ? " (~" + totalMins + " Min)" : "";
+                                    var timeInfo = totalMins > 0 ? " (~" + totalMins + " " + t("qrTimeUnit") + ")" : "";
                                     confirmEl.disabled = false;
-                                    confirmEl.textContent = selectedCount + " ausgew\u00e4hlt" + timeInfo + " \u2014 Best\u00e4tigen \u2713";
+                                    confirmEl.textContent = tf("qrConfirmSelected", { n: selectedCount, time: timeInfo });
                                 } else {
                                     confirmEl.disabled = true;
-                                    confirmEl.textContent = "Bitte mindestens eine Option w\u00e4hlen";
+                                    confirmEl.textContent = t("qrConfirmEmpty");
                                 }
                             }
                         };
@@ -822,7 +1013,7 @@
             if (isMulti) {
                 var confirmBtn = document.createElement("button");
                 confirmBtn.className = "qr-confirm-btn";
-                confirmBtn.textContent = "Bitte mindestens eine Option w\u00e4hlen";
+                confirmBtn.textContent = t("qrConfirmEmpty");
                 confirmBtn.disabled = true;
                 confirmBtn.addEventListener("click", (function(groupEl) {
                     return function() {
@@ -870,9 +1061,9 @@
 
         var skipBtn = document.createElement("button");
         skipBtn.className = "qr-skip-btn";
-        skipBtn.textContent = "\u00dcberspringen \u2192";
+        skipBtn.textContent = t("skipBtn");
         skipBtn.addEventListener("click", function() {
-            sendMessage("weiter");
+            sendMessage(t("skipMessage"));
         });
         container.appendChild(skipBtn);
         scrollToBottom();
@@ -889,11 +1080,11 @@
 
         var helpBtn = document.createElement("div");
         helpBtn.className = "help-trigger";
-        helpBtn.innerHTML = "\uD83D\uDCA1 Was ist hier gemeint?";
+        helpBtn.innerHTML = escapeHtml(t("helpBtn"));
         helpBtn.addEventListener("click", function handler() {
             helpBtn.classList.add("help-trigger--used");
             helpBtn.removeEventListener("click", handler);
-            appendMessage("user", "\uD83D\uDCA1 Erkl\u00e4rung angefordert");
+            appendMessage("user", t("helpRequested"));
             sendMessage("__HELP_REQUEST__", { _hideUserMessage: true });
         });
 
@@ -955,8 +1146,8 @@
      * ────────────────────────────────────────────────────────────────── */
 
     // KIS-UX: Placeholder-Texte für den Freitext-Weg neben den Vorschlägen.
-    var DEFAULT_PLACEHOLDER = "Ihre Antwort oder Frage...";
-    var INSPIRATION_PLACEHOLDER = "Oder eigene Antwort eingeben …";
+    var DEFAULT_PLACEHOLDER = t("inputPlaceholder");
+    var INSPIRATION_PLACEHOLDER = t("inspPlaceholder");
 
     function clearSmartChips() {
         var container = document.getElementById("chatSmartChips");
@@ -988,6 +1179,12 @@
         if (state.pending_field) return clearSmartChips();
         if (_editMode) return clearSmartChips();
 
+        // i18n: Die Vorschlags-Map ist sprachspezifisch (window.SMART_CHIPS_DE /
+        // window.SMART_CHIPS_EN). Fehlt die Map der aktiven Sprache, werden
+        // keine Chips gerendert (statt deutscher Chips im EN-Modus).
+        var langMap = (WIDGET_LANG === "en") ? window.SMART_CHIPS_EN : window.SMART_CHIPS_DE;
+        if (!langMap) return clearSmartChips();
+
         var branche = _collectedFields && _collectedFields.branche;
         var size = _collectedFields && _collectedFields.unternehmensgroesse;
         var chips = (typeof window.getSmartChips === "function")
@@ -1007,13 +1204,13 @@
         var container = document.getElementById("chatSmartChips");
         if (!container) return;
 
-        var html = '<div class="smart-chips-label">Vorschl\u00e4ge — klicken zum \u00dcbernehmen, frei erg\u00e4nzbar:</div>';
+        var html = '<div class="smart-chips-label">' + escapeHtml(t("smartChipsLabel")) + '</div>';
         html += '<div class="smart-chips-group" data-field="' + escapeHtml(fieldKey) + '">';
         for (var i = 0; i < chips.length; i++) {
             var text = String(chips[i]);
             html += '<button type="button" class="smart-chip"'
                   + ' data-chip-text="' + escapeHtml(text) + '"'
-                  + ' aria-label="Vorschlag \u00fcbernehmen: ' + escapeHtml(text) + '"'
+                  + ' aria-label="' + escapeHtml(tf("smartChipAria", { text: text })) + '"'
                   + ' aria-pressed="false">'
                   + '+ ' + escapeHtml(text)
                   + '</button>';
@@ -1049,19 +1246,19 @@
         if (!container) return;
 
         // KIS-UX: handlungsklares Label \u2014 ein Klick sendet direkt ab.
-        var html = '<div class="inspiration-chips__label">Passende Antwort? Ein Klick gen\u00fcgt:</div>';
+        var html = '<div class="inspiration-chips__label">' + escapeHtml(t("inspLabel")) + '</div>';
         for (var i = 0; i < examples.length; i++) {
             var text = String(examples[i]);
             html += '<button type="button" class="smart-chip inspiration-chip"'
                   + ' data-chip-text="' + escapeHtml(text) + '"'
                   + ' data-chip-index="' + i + '"'
                   + ' data-chip-field="' + escapeHtml(field) + '"'
-                  + ' aria-label="Antwort direkt senden: ' + escapeHtml(text) + '">'
+                  + ' aria-label="' + escapeHtml(tf("inspAria", { text: text })) + '">'
                   + escapeHtml(text)
                   + '</button>';
         }
         // KIS-UX: klarer Hinweis auf den Freitext-Weg f\u00fcr abweichende Antworten.
-        html += '<div class="inspiration-chips__hint">Oder unten eine eigene Antwort eingeben.</div>';
+        html += '<div class="inspiration-chips__hint">' + escapeHtml(t("inspHint")) + '</div>';
 
         container.innerHTML = html;
         container.classList.add("smart-chips--active");
@@ -1097,12 +1294,12 @@
         chip.innerHTML = ''
             + '<div class="draft-chip-header">'
             + '  <span class="draft-chip-icon">\uD83D\uDCDD</span>'
-            + '  <span class="draft-chip-label" id="draftChipLabel">Erkannt</span>'
+            + '  <span class="draft-chip-label" id="draftChipLabel">' + escapeHtml(t("draftLabel")) + '</span>'
             + '</div>'
             + '<div class="draft-chip-value" id="draftChipValue"></div>'
             + '<div class="draft-chip-actions" id="draftChipActions">'
-            + '  <button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
-            + '  <button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>'
+            + '  <button class="draft-confirm-btn" id="draftConfirmBtn">' + escapeHtml(t("draftConfirmBtn")) + '</button>'
+            + '  <button class="draft-edit-btn" id="draftEditBtn">' + escapeHtml(t("draftEditBtn")) + '</button>'
             + '</div>';
 
         if (inputArea) {
@@ -1142,7 +1339,7 @@
         var value = document.getElementById("draftChipValue");
         var actions = document.getElementById("draftChipActions");
 
-        if (label) label.textContent = data.label || "Erkannt";
+        if (label) label.textContent = data.label || t("draftLabel");
 
         if (value) {
             if (Array.isArray(data.value)) {
@@ -1155,8 +1352,8 @@
         chip.classList.remove("draft-confirmed", "draft-confirming");
         if (actions) {
             actions.innerHTML = ''
-                + '<button class="draft-confirm-btn" id="draftConfirmBtn">\u2713 \u00dcbernehmen</button>'
-                + '<button class="draft-edit-btn" id="draftEditBtn">\u270f\ufe0f \u00c4ndern</button>';
+                + '<button class="draft-confirm-btn" id="draftConfirmBtn">' + escapeHtml(t("draftConfirmBtn")) + '</button>'
+                + '<button class="draft-edit-btn" id="draftEditBtn">' + escapeHtml(t("draftEditBtn")) + '</button>';
         }
 
         chip.classList.add("draft-active");
@@ -1188,7 +1385,7 @@
 
         var actions = document.getElementById("draftChipActions");
         if (actions) {
-            actions.innerHTML = '<span class="draft-confirmed-text">\u2713 \u00dcbernommen</span>';
+            actions.innerHTML = '<span class="draft-confirmed-text">' + escapeHtml(t("draftConfirmedText")) + '</span>';
         }
 
         setTimeout(function() {
@@ -1204,10 +1401,10 @@
 
         if (data.active) {
             if (qrContainer) qrContainer.style.display = "none";
-            if (input) input.placeholder = "Ihre Frage wird beantwortet \u2014 tippen Sie gerne weiter\u2026";
+            if (input) input.placeholder = t("dialogActivePlaceholder");
         } else {
             if (qrContainer) qrContainer.style.display = "";
-            if (input) input.placeholder = "Ihre Antwort oder Frage...";
+            if (input) input.placeholder = DEFAULT_PLACEHOLDER;
         }
     }
 
@@ -1281,7 +1478,7 @@
             var input = document.getElementById("chatInput");
             if (input) {
                 input.focus();
-                input.placeholder = "Bitte geben Sie Ihre Antwort nochmal ein\u2026";
+                input.placeholder = t("editDraftPlaceholder");
             }
         })
         .catch(function(err) {
@@ -1310,7 +1507,7 @@
 
             // Section header: **Title**
             var sectionMatch = line.match(/^\*\*([^*]+)\*\*$/);
-            if (sectionMatch && sectionMatch[1] !== "Zusammenfassung Ihrer Angaben:") {
+            if (sectionMatch && sectionMatch[1] !== SUMMARY_MARKER_TITLE) {
                 currentSection = { title: sectionMatch[1], fields: [] };
                 sections.push(currentSection);
                 continue;
@@ -1360,7 +1557,7 @@
         }
 
         var html = '<div class="summary-cards">';
-        html += '<div class="summary-header">Zusammenfassung Ihrer Angaben</div>';
+        html += '<div class="summary-header">' + escapeHtml(t("summaryHeader")) + '</div>';
 
         var cardIndex = 0;
         for (var i = 0; i < sections.length; i++) {
@@ -1398,7 +1595,7 @@
                 + '</div>';
         }
 
-        html += '<div class="summary-footer">Sind alle Angaben korrekt? Dann starte ich die Auswertung.</div>';
+        html += '<div class="summary-footer">' + escapeHtml(t("summaryFooter")) + '</div>';
 
         container.innerHTML = html;
 
@@ -1438,7 +1635,7 @@
 
         var header = document.createElement("div");
         header.className = "edit-mode-header";
-        header.textContent = "Welches Feld m\u00f6chten Sie \u00e4ndern?";
+        header.textContent = t("editHeader");
         panel.appendChild(header);
 
         for (var i = 0; i < _summaryFields.length; i++) {
@@ -1465,7 +1662,7 @@
 
                 var btn = document.createElement("button");
                 btn.className = "edit-field-btn";
-                btn.textContent = "\u00c4ndern";
+                btn.textContent = t("editFieldBtn");
                 btn.dataset.fieldLabel = field.label;
                 btn.addEventListener("click", (function(fieldLabel) {
                     return function() {
@@ -1476,7 +1673,7 @@
                         }
                         this.closest(".edit-field-row").classList.add("edit-field-active");
 
-                        sendMessage('Ich m\u00f6chte "' + fieldLabel + '" \u00e4ndern.');
+                        sendMessage(tf("editFieldMsg", { field: fieldLabel }));
                     };
                 })(field.label));
 
@@ -1493,7 +1690,7 @@
 
         var completeBtn = document.createElement("button");
         completeBtn.className = "edit-mode-complete-btn";
-        completeBtn.textContent = "Fertig \u2014 Auswertung starten";
+        completeBtn.textContent = t("editCompleteBtn");
         completeBtn.addEventListener("click", function() {
             exitEditMode();
             submitComplete();
@@ -1679,9 +1876,9 @@
         container.innerHTML = ''
             + '<div class="chat-completion">'
             + '  <button class="btn-complete" id="btnComplete">'
-            + '    Angaben best\u00e4tigen &amp; Report starten'
+            + '    ' + t("btnCompleteHtml")
             + '  </button>'
-            + '  <button class="btn-edit" id="btnEdit">Angaben korrigieren</button>'
+            + '  <button class="btn-edit" id="btnEdit">' + escapeHtml(t("btnEditLabel")) + '</button>'
             + '</div>';
 
         document.getElementById("btnComplete").addEventListener("click", submitComplete);
@@ -1689,7 +1886,7 @@
             if (!_summaryFields.length) return;
             _editMode = true;
             renderEditMode();
-            sendMessage("Ich m\u00f6chte einige Angaben korrigieren.", { _hideUserMessage: true });
+            sendMessage(t("msgCorrectRequest"), { _hideUserMessage: true });
         });
 
         scrollToBottom();
@@ -1704,7 +1901,7 @@
         var _ctaContainer = document.getElementById("chatQuickReplies");
         if (_ctaContainer) _ctaContainer.innerHTML = "";
 
-        sendMessage("Auswertung starten", {
+        sendMessage(t("msgStartReport"), {
             quick_reply_field: "__summary_action__",
             quick_reply_value: "__start_report__",
             _hideUserMessage: true
@@ -1725,7 +1922,7 @@
         // Loading state on button
         if (btn) {
             btn.disabled = true;
-            btn.textContent = "Wird geladen\u2026";
+            btn.textContent = t("switchLoading");
         }
 
         // Fetch collected fields from backend
@@ -1789,7 +1986,7 @@
     function showPrefillToast(count) {
         var toast = document.createElement("div");
         toast.className = "prefill-toast";
-        toast.textContent = count + " Angaben aus dem Chat \u00fcbernommen";
+        toast.textContent = tf("prefillToast", { n: count });
         document.body.appendChild(toast);
 
         setTimeout(function() {
@@ -1863,11 +2060,11 @@
         var resumeDiv = document.createElement("div");
         resumeDiv.className = "chat-resume-banner";
         resumeDiv.innerHTML = ''
-            + '<p><strong>Sie haben ein offenes Gespr\u00e4ch</strong><br>'
-            + '(' + progress + '% abgeschlossen)</p>'
+            + '<p><strong>' + escapeHtml(t("resumeTitle")) + '</strong><br>'
+            + escapeHtml(tf("resumeProgress", { p: progress })) + '</p>'
             + '<div class="resume-actions">'
-            + '  <button class="btn-resume" id="btnResume">Fortsetzen</button>'
-            + '  <button class="btn-restart" id="btnRestart">Neu starten</button>'
+            + '  <button class="btn-resume" id="btnResume">' + escapeHtml(t("resumeBtn")) + '</button>'
+            + '  <button class="btn-restart" id="btnRestart">' + escapeHtml(t("restartBtn")) + '</button>'
             + '</div>';
 
         selector.insertBefore(resumeDiv, selector.firstChild);
