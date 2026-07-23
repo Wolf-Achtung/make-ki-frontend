@@ -353,7 +353,7 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "produktion", label: "Film/TV production" }, { value: "post_vfx", label: "Post-production / VFX / animation" },
         { value: "games", label: "Games / interactive" }, { value: "verlag_publishing", label: "Publishing / editorial" },
-        { value: "musik_audio", label: "Music / audio / podcast" }, { value: "agentur_design", label: "Agency / design / advertising" },
+        { value: "musik_audio", label: "Music / audio / recording studio / podcast" }, { value: "agentur_design", label: "Agency / advertising / PR / web design" },
         { value: "content_creation", label: "Content creation / social media" }
       ],
       description: "Helps us tailor recommendations and funding programmes more precisely to your field.",
