@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/chat-widget.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -304,7 +305,9 @@
 <body>
 <div class="page-wrapper">
   <div class="app-shell">
-    <div class="premium-card">
+    <div id="intake-mode-selector"></div>
+    <div id="chat-container" style="display:none"></div>
+    <div class="premium-card" id="formbuilder-card">
       <header class="card-header">
         <h1 class="brand-title"><a href="/" style="color:inherit;text-decoration:none;">KI-Sicherheit.jetzt</a></h1>
       </header>
@@ -344,6 +347,10 @@
     el.textContent = 'Step ' + e.detail.step + ' / ' + e.detail.total;
   });
 </script>
+
+<!-- Chat Widget (i18n: picks up lang="en" from <html>; no smart-chips map on EN —
+     the deprecated smart-chips system is disabled and the widget degrades safely) -->
+<script src="/chat-widget.js"></script>
 
 <script src="formbuilder_en_SINGLE_FULL.js"></script>
 
