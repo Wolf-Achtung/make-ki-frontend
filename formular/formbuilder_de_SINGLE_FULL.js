@@ -402,7 +402,7 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "produktion", label: "Film-/TV-Produktion" }, { value: "post_vfx", label: "Postproduktion / VFX / Animation" },
         { value: "games", label: "Games / Interactive" }, { value: "verlag_publishing", label: "Verlag / Publishing / Redaktion" },
-        { value: "musik_audio", label: "Musik / Audio / Podcast" }, { value: "agentur_design", label: "Agentur / Design / Werbung" },
+        { value: "musik_audio", label: "Musik / Audio / Tonstudio / Podcast" }, { value: "agentur_design", label: "Agentur / Werbung / PR / Webdesign" },
         { value: "content_creation", label: "Content Creation / Social Media" }
       ],
       description: "Hilft uns, Empfehlungen und Förderprogramme genauer auf Ihren Bereich zuzuschneiden.",
