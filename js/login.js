@@ -23,6 +23,39 @@
   function err(m){ toast('error','Fehler', m || 'Es ist ein Fehler aufgetreten.'); }
 
   // ---------- helpers ----------
+  // KIS-1250: page language (login_en.html sets login_lang + <html lang="en">)
+  function pageLang(){
+    try{
+      var l = sessionStorage.getItem('login_lang') || document.documentElement.lang || 'de';
+      return String(l).toLowerCase().indexOf('en') === 0 ? 'en' : 'de';
+    }catch(_){ return 'de'; }
+  }
+  var EN = pageLang() === 'en';
+  var T = EN ? {
+    sending: 'Sending code …', invalidEmail: 'Please enter a valid e-mail address.',
+    notWhitelisted: 'This e-mail is not registered for access. Please contact support@ki-sicherheit.jetzt to get access.',
+    notWhitelistedShort: 'This e-mail is not registered.',
+    rateLimited: function(m){ return 'Too many attempts. Please try again in ' + m + ' minutes.'; },
+    rateLimitedShort: 'Too many attempts. Please try again later.',
+    sendFailed: 'Sending failed. Please try again later.', sendFailedShort: 'Sending failed.',
+    codeSent: 'Code sent. Please check your inbox.', codeSentShort: 'Code sent. Please check your e-mail.',
+    loggingIn: 'Signing in …', enterBoth: 'Enter e-mail and code.',
+    invalidCode: 'Code is invalid or expired.',
+    loginFailed: function(s){ return 'Login failed (' + s + ').'; },
+    loginFailedPlain: 'Login failed.', success: 'Success. Redirecting …', successShort: 'Signed in successfully.'
+  } : {
+    sending: 'Sende Code …', invalidEmail: 'Bitte gültige E‑Mail eingeben.',
+    notWhitelisted: 'Diese E-Mail-Adresse ist nicht für den Zugang registriert. Bitte kontaktieren Sie support@ki-sicherheit.jetzt für eine Freischaltung.',
+    notWhitelistedShort: 'Diese E‑Mail ist nicht freigeschaltet.',
+    rateLimited: function(m){ return 'Zu viele Versuche. Bitte in ' + m + ' Minuten erneut versuchen.'; },
+    rateLimitedShort: 'Zu viele Versuche. Bitte später erneut versuchen.',
+    sendFailed: 'Senden fehlgeschlagen. Bitte versuchen Sie es später erneut.', sendFailedShort: 'Senden fehlgeschlagen.',
+    codeSent: 'Code gesendet. Bitte Posteingang prüfen.', codeSentShort: 'Code gesendet. Bitte E‑Mail prüfen.',
+    loggingIn: 'Anmeldung …', enterBoth: 'E‑Mail und Code eingeben.',
+    invalidCode: 'Code ist ungültig oder abgelaufen.',
+    loginFailed: function(s){ return 'Login fehlgeschlagen (' + s + ').'; },
+    loginFailedPlain: 'Login fehlgeschlagen.', success: 'Erfolg. Weiterleitung …', successShort: 'Anmeldung erfolgreich.'
+  };
   function apiBase(){
     try{
       var meta = document.querySelector('meta[name="api-base"]');
@@ -75,9 +108,9 @@
       if (IN_FLIGHT_REQ) return;
       IN_FLIGHT_REQ = true;
       (async function(){
-        setText('msg','Sende Code …',false);
+        setText('msg',T.sending,false);
         var email = (EMAIL.value||'').trim().toLowerCase();
-        if(!email || email.indexOf('@')===-1){ setText('err','Bitte gültige E‑Mail eingeben.',true); warn('Bitte gültige E‑Mail eingeben.'); IN_FLIGHT_REQ=false; return; }
+        if(!email || email.indexOf('@')===-1){ setText('err',T.invalidEmail,true); warn(T.invalidEmail); IN_FLIGHT_REQ=false; return; }
         try{ localStorage.setItem('ki_email', email); }catch(_){}
         disable(BTN_REQ, true);
 
@@ -95,7 +128,7 @@
               'Idempotency-Key': idem,
               'X-Idempotency-Key': idem
             },
-            body: JSON.stringify({ email: email }),
+            body: JSON.stringify({ email: email, lang: pageLang() }),
             signal: controller.signal,
             keepalive: true,
             credentials: 'include'
@@ -103,32 +136,32 @@
           var data = await readJsonSafe(res);
 
           if(res.status === 404 && data && data.error === 'unknown_email'){
-            setText('err','Diese E‑Mail ist nicht freigeschaltet. Zugang anfragen: support@ki-sicherheit.jetzt',true);
-            err('Diese E‑Mail ist nicht freigeschaltet.');
+            setText('err',T.notWhitelisted,true);
+            err(T.notWhitelistedShort);
             return;
           }
           if(res.status === 429 && data && data.error === 'rate_limited'){
             var secs = Number(data.retry_after_sec || 300);
-            setText('err','Zu viele Versuche. Bitte in ' + minutes(secs) + ' Minuten erneut versuchen.', true);
-            warn('Zu viele Versuche. Bitte später erneut versuchen.');
+            setText('err',T.rateLimited(minutes(secs)), true);
+            warn(T.rateLimitedShort);
             return;
           }
           if(res.status === 403){
-            setText('err','Diese E-Mail-Adresse ist nicht für den Zugang registriert. Bitte kontaktieren Sie support@ki-sicherheit.jetzt für eine Freischaltung.', true);
+            setText('err',T.notWhitelisted, true);
             return;
           }
           if(!res.ok){
-            setText('err','Senden fehlgeschlagen. Bitte versuchen Sie es später erneut.', true);
+            setText('err',T.sendFailed, true);
             return;
           }
 
-          setText('msg','Code gesendet. Bitte Posteingang prüfen.',false);
-          ok('Code gesendet. Bitte E‑Mail prüfen.');
+          setText('msg',T.codeSent,false);
+          ok(T.codeSentShort);
           CODE_AREA.style.display = 'block';
           if(CODE) CODE.focus();
         }catch(e){
-          setText('err','Senden fehlgeschlagen. ' + (e && e.message ? e.message : ''), true);
-          err('Senden fehlgeschlagen.');
+          setText('err',T.sendFailedShort + ' ' + (e && e.message ? e.message : ''), true);
+          err(T.sendFailedShort);
         }finally{
           clearTimeout(timer);
           disable(BTN_REQ, false);
@@ -145,10 +178,10 @@
       if (IN_FLIGHT_LOGIN) return;
       IN_FLIGHT_LOGIN = true;
       (async function(){
-        setText('msg','Anmeldung …',false);
+        setText('msg',T.loggingIn,false);
         var email = (EMAIL.value||'').trim().toLowerCase();
         var code = (CODE.value||'').trim();
-        if(!email || !code){ setText('err','E‑Mail und Code eingeben.',true); warn('E‑Mail und Code eingeben.'); IN_FLIGHT_LOGIN=false; return; }
+        if(!email || !code){ setText('err',T.enterBoth,true); warn(T.enterBoth); IN_FLIGHT_LOGIN=false; return; }
         try{ localStorage.setItem('ki_email', email); }catch(_){}
         disable(BTN_LOGIN, true);
 
@@ -172,24 +205,24 @@
           var data = await readJsonSafe(res);
 
           if(res.status === 404 && data && data.error === 'unknown_email'){
-            setText('err','Diese E‑Mail ist nicht freigeschaltet.', true);
-            err('Diese E‑Mail ist nicht freigeschaltet.');
+            setText('err',T.notWhitelistedShort, true);
+            err(T.notWhitelistedShort);
             return;
           }
           if(res.status === 429 && data && data.error === 'rate_limited'){
             var secs = Number(data.retry_after_sec || 300);
-            setText('err','Zu viele Versuche. Bitte in ' + minutes(secs) + ' Minuten erneut versuchen.', true);
-            warn('Zu viele Versuche. Bitte später erneut versuchen.');
+            setText('err',T.rateLimited(minutes(secs)), true);
+            warn(T.rateLimitedShort);
             return;
           }
           if(res.status === 400 && data && data.error === 'invalid_code'){
-            setText('err','Code ist ungültig oder abgelaufen.', true);
-            err('Code ist ungültig oder abgelaufen.');
+            setText('err',T.invalidCode, true);
+            err(T.invalidCode);
             return;
           }
           if(!res.ok){
-            setText('err','Login fehlgeschlagen (' + res.status + ').', true);
-            err('Login fehlgeschlagen (' + res.status + ').');
+            setText('err',T.loginFailed(res.status), true);
+            err(T.loginFailed(res.status));
             return;
           }
 
@@ -203,8 +236,8 @@
             }
           }
           try { if (window.kisTrack) window.kisTrack('login_success'); } catch(e) {}
-          setText('msg','Erfolg. Weiterleitung …',false);
-          ok('Anmeldung erfolgreich.');
+          setText('msg',T.success,false);
+          ok(T.successShort);
           var _params = new URLSearchParams(window.location.search);
           // KIS-1269: EN-Login fuehrte immer in den DE-Fragebogen — login_lang respektieren
           var _lang = '';
@@ -212,8 +245,8 @@
           var _target = (_lang === 'en') ? '/formular/index_en.html' : '/formular/index.html';
           window.location.href = _target + (_params.toString() ? '?' + _params.toString() : '');
         }catch(e){
-          setText('err','Login fehlgeschlagen. ' + (e && e.message ? e.message : ''), true);
-          err('Login fehlgeschlagen.');
+          setText('err',T.loginFailedPlain + ' ' + (e && e.message ? e.message : ''), true);
+          err(T.loginFailedPlain);
         }finally{
           clearTimeout(timer);
           disable(BTN_LOGIN, false);
