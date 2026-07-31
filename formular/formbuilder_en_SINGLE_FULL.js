@@ -325,14 +325,14 @@ function _collectLabelFor(fieldKey, value){
 
   // --------------------------- Content ---------------------------
   var BLOCK_INTRO = [
-    "We collect basic data (industry, size, location). No documents needed - rough estimates are fine. This helps us personalize your report and check relevant compliance requirements.",
-    "Current status of processes, data, and existing AI usage. Goal: quick, achievable wins and a pragmatic starting roadmap - even for small teams.",
-    "Goals & key use cases: What should AI specifically achieve? We focus on actionable measures with visible benefits.",
-    "Strategy & Governance: simple, sustainable guidelines for long-term AI deployment without bureaucratic overhead.",
-    "Resources & Preferences (time, tool landscape). We adapt recommendations to feasibility, budget, and pace.",
-    "Legal & Compliance: Please briefly review your current data protection level and existing obligations.",
-    "Investment framework: We assess realistic steps and budget considerations for your AI journey.",
-    "Privacy & Submit: Confirm consent and start your personalized report."
+    "We collect basic data (industry, size, location). No documents needed - rough estimates are fine. This helps us personalize your report and check relevant compliance requirements. <strong>(approx. 3 minutes)</strong>",
+    "Current status of processes, data, and existing AI usage. Goal: quick, achievable wins and a pragmatic starting roadmap - even for small teams. <strong>(approx. 2 minutes)</strong>",
+    "Goals & key use cases: What should AI specifically achieve? We focus on actionable measures with visible benefits. <strong>(approx. 4 minutes)</strong><br><br>💡 <em>The more specific your answers in the text fields, the more specific and useful your report will be. Keywords and short sentences are perfectly fine - but empty fields lead to generic recommendations.</em>",
+    "Strategy & Governance: simple, sustainable guidelines for long-term AI deployment without bureaucratic overhead. <strong>(approx. 3 minutes)</strong><br><br>💡 <em>Here too, your specific details make the difference between a generic report and genuinely actionable recommendations for your company.</em>",
+    "Resources & Preferences (time, tool landscape). We adapt recommendations to feasibility, budget, and pace. <strong>(approx. 1 minute)</strong>",
+    "Don't worry - most small companies are just getting started here. Honest answers help us realistically assess where action is actually needed. 'No' is a perfectly valid answer. <strong>(approx. 2 minutes)</strong>",
+    "Investment framework: We assess realistic steps and budget considerations for your AI journey. <strong>(approx. 1 minute)</strong>",
+    "Almost done! Confirm consent and start your personalized report. <strong>(30 seconds)</strong>"
   ];
 
   // Fields (with friendly, concrete microcopy)
@@ -356,7 +356,7 @@ function _collectLabelFor(fieldKey, value){
         { value: "musik_audio", label: "Music / audio / recording studio / podcast" }, { value: "agentur_design", label: "Agency / advertising / PR / web design" },
         { value: "content_creation", label: "Content creation / social media" }
       ],
-      description: "Helps us tailor recommendations and funding programmes more precisely to your field.",
+      description: "Helps us tailor recommendations more precisely to your field.",
       showIf: function (data) { return data.branche === "medien"; }
     },
     { key: "unternehmensgroesse", label: "How large is your company?", type: "select",
@@ -494,7 +494,7 @@ function _collectLabelFor(fieldKey, value){
       ],
       description: "(So we can choose suitable entry points with high benefit and low complexity.)" },
     { key: "zeitersparnis_prioritaet", label: "Where does most time or frustration go today?", type: "textarea",
-      placeholder: "In which areas do you lose the most time today? (e.g., emails, proposals, documentation)", description: "(So we can derive very specific quick-win recommendations for relief - with noticeable time savings in daily work.)" },
+      placeholder: "e.g., email overload, writing proposals, coordination and approval loops, documentation, invoicing...", description: "(So we can derive very specific quick-win recommendations for relief - with noticeable time savings in daily work.)" },
     { key: "pilot_bereich", label: "Best area for pilot project", type: "select",
       options: [
         { value: "kundenservice", label: "Customer service" }, { value: "marketing", label: "Marketing / Content" },
@@ -505,9 +505,9 @@ function _collectLabelFor(fieldKey, value){
     { key: "geschaeftsmodell_evolution", label: "Do you have ideas how AI could change or complement your business model?", type: "textarea",
       placeholder: "e.g., new digital products, services, consulting offerings, data-driven additional services...", description: "(So we can identify potential for real business innovation alongside pure efficiency gains and make it visible in the report.)" },
     { key: "vision_3_jahre", label: "How should your company work with AI in 2-3 years?", type: "textarea",
-      placeholder: "How should your company work in 2-3 years? Brief description.", description: "(So we understand your medium to long-term vision and can show how AI can lead there step by step.)" },
+      placeholder: "e.g., Which routine tasks will run automatically? What will you have more time for? Any new offerings? 2-3 sentences are fine.", description: "(So we understand your medium to long-term vision and can show how AI can lead there step by step.)" },
 
-    { key: "strategische_ziele", label: "What should AI specifically improve for you in the next 6-12 months?", type: "textarea", placeholder: "What should AI improve in the next 6-12 months? (Keywords are fine)", description: "(So we can consistently align your AI strategy with your business goals - instead of just starting nice-to-have projects.)" },
+    { key: "strategische_ziele", label: "What should AI specifically improve for you in the next 6-12 months?", type: "textarea", placeholder: "e.g., create proposals in half the time, answer standard enquiries automatically, reports at the push of a button... (keywords are fine)", description: "(So we can consistently align your AI strategy with your business goals - instead of just starting nice-to-have projects.)" },
     { key: "ki_guardrails", label: "Are there no-gos or sensitive topics when using AI?", type: "textarea",
       placeholder: "e.g., no communication about layoffs, careful handling with works council/team, no health predictions, special data protection requirements...",
       description: "(So we can steer recommendations and formulations to match your values, culture, and legal requirements.)" },
