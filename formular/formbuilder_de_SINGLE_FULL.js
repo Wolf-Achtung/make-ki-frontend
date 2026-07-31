@@ -552,7 +552,7 @@ function _collectLabelFor(fieldKey, value){
       ],
       description: "(Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen.)" },
     { key: "zeitersparnis_prioritaet", label: "Wo frisst heute am meisten Zeit oder Nerven?", type: "textarea",
-      placeholder: "In welchen Bereichen verlieren Sie heute am meisten Zeit? (z. B. E-Mails, Angebote, Dokumentation)", description: "(Damit wir sehr konkrete Quick-Win-Empfehlungen zur Entlastung ableiten können – mit spürbarer Zeitersparnis im Alltag.)" },
+      placeholder: "z. B. E-Mail-Flut, Angebote schreiben, Abstimmungs- und Freigabeschleifen, Dokumentation, Rechnungsstellung …", description: "(Damit wir sehr konkrete Quick-Win-Empfehlungen zur Entlastung ableiten können – mit spürbarer Zeitersparnis im Alltag.)" },
     /* KIS-1235-P3: konkrete Zeitfresser als Quick-Win-Anker */
     { key: "top_zeitfresser", label: "Welche zwei, drei Aufgaben kosten Sie am meisten Zeit?", type: "textarea",
       placeholder: "z. B. Angebote und Proposals schreiben; E-Mail-Korrespondenz und Terminabstimmung; Dokumentation nach Projektabschluss",
@@ -567,9 +567,9 @@ function _collectLabelFor(fieldKey, value){
     { key: "geschaeftsmodell_evolution", label: "Haben Sie Ideen, wie KI Ihr Geschäftsmodell verändern oder ergänzen könnte?", type: "textarea",
       placeholder: "z. B. neue digitale Produkte, Services, Beratungsangebote, datengetriebene Zusatzleistungen …", description: "(Damit wir Potenziale für echte Business-Innovation neben der reinen Effizienzsteigerung erkennen und im Report sichtbar machen.)" },
     { key: "vision_3_jahre", label: "Wie soll Ihr Unternehmen in 2–3 Jahren mit KI arbeiten?", type: "textarea",
-      placeholder: "Wie soll Ihr Unternehmen in 2–3 Jahren arbeiten? Kurzbeschreibung.", description: "(Damit wir Ihre mittel- bis langfristige Vision verstehen und zeigen können, wie KI Schritt für Schritt dorthin führen kann.)" },
+      placeholder: "z. B. Welche Routineaufgaben laufen dann automatisiert? Wofür ist mehr Zeit da? Gibt es neue Angebote? 2–3 Sätze reichen.", description: "(Damit wir Ihre mittel- bis langfristige Vision verstehen und zeigen können, wie KI Schritt für Schritt dorthin führen kann.)" },
 
-    { key: "strategische_ziele", label: "Was soll KI in den nächsten 6–12 Monaten konkret für Sie verbessern?", type: "textarea", placeholder: "Was soll KI in den nächsten 6–12 Monaten verbessern? (Stichworte reichen)", description: "(Damit wir Ihre KI-Strategie konsequent an Ihren Unternehmenszielen ausrichten können – statt nur nice-to-have-Projekte zu starten.)" },
+    { key: "strategische_ziele", label: "Was soll KI in den nächsten 6–12 Monaten konkret für Sie verbessern?", type: "textarea", placeholder: "z. B. Angebote in der halben Zeit erstellen, Standardanfragen automatisch beantworten, Berichte auf Knopfdruck … (Stichworte reichen)", description: "(Damit wir Ihre KI-Strategie konsequent an Ihren Unternehmenszielen ausrichten können – statt nur nice-to-have-Projekte zu starten.)" },
     { key: "ki_guardrails", label: "Gibt es No-Gos oder sensible Themen beim Einsatz von KI?", type: "textarea",
       placeholder: "z. B. keine Kommunikation zu Personalabbau, vorsichtiger Umgang mit Betriebsrat/Team, keine Gesundheitsprognosen, besondere Datenschutzanforderungen …",
       description: "(Damit wir Empfehlungen und Formulierungen so steuern können, dass sie zu Ihren Werten, Ihrer Kultur und rechtlichen Anforderungen passen.)" },
