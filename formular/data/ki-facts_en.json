@@ -2,7 +2,7 @@
   {
     "icon": "⚖️",
     "category": "EU AI Act",
-    "text": "The EU AI Act has been in force since February 2025. Your report includes your individual risk-class analysis."
+    "text": "On 2 August 2026, the core obligations of the EU AI Act become applicable — including high-risk requirements and transparency rules for chatbots. Your report maps your AI use cases to the risk classes."
   },
   {
     "icon": "📊",
@@ -42,7 +42,7 @@
   {
     "icon": "🇪🇺",
     "category": "EU AI Act",
-    "text": "From February 2025, companies must demonstrate AI competence (Art. 4). Your report shows your current status."
+    "text": "Since February 2025, Art. 4 of the EU AI Act has required demonstrable AI competence in your team. Your report shows your current status — including a skill plan."
   },
   {
     "icon": "🔍",
@@ -73,5 +73,25 @@
     "icon": "🚀",
     "category": "Starter Kit",
     "text": "Your report includes a tailored starter kit with recommended tools, setup times and funding programmes."
+  },
+  {
+    "icon": "💶",
+    "category": "Fines",
+    "text": "Violations of the EU AI Act can be fined with up to €35 million or 7% of global annual turnover — the penalty rules have applied since August 2025."
+  },
+  {
+    "icon": "🧪",
+    "category": "AI Sandboxes",
+    "text": "By 2 August 2026, every EU member state must operate at least one AI regulatory sandbox — a protected test environment explicitly open to SMEs as well."
+  },
+  {
+    "icon": "🤖",
+    "category": "AI Models",
+    "text": "Since August 2025, transparency and copyright obligations apply to providers of large AI models (GPAI). Your vendor check shows what this means for your tools."
+  },
+  {
+    "icon": "🔭",
+    "category": "Outlook 2027",
+    "text": "From August 2027, the EU AI Act will also cover AI in regulated products such as machinery or medical devices. Documenting today saves compliance stress later."
   }
 ]
