@@ -2,7 +2,7 @@
   {
     "icon": "⚖️",
     "category": "EU AI Act",
-    "text": "Seit Februar 2025 gilt die KI-Verordnung der EU. Ihr Report enthält Ihre individuelle Risikoklassen-Analyse."
+    "text": "Zum 2. August 2026 werden die zentralen Pflichten des EU AI Act anwendbar — u. a. für Hochrisiko-Systeme und Transparenz bei Chatbots. Ihr Report ordnet Ihre KI-Anwendungen den Risikoklassen zu."
   },
   {
     "icon": "📊",
@@ -42,7 +42,7 @@
   {
     "icon": "🇪🇺",
     "category": "EU AI Act",
-    "text": "Ab Februar 2025 müssen Unternehmen KI-Kompetenz nachweisen (Art. 4). Ihr Report zeigt Ihren aktuellen Stand."
+    "text": "Bereits seit Februar 2025 verlangt Art. 4 EU AI Act nachweisbare KI-Kompetenz im Team. Ihr Report zeigt Ihren aktuellen Stand — inklusive Skill-Plan."
   },
   {
     "icon": "🔍",
@@ -73,5 +73,25 @@
     "icon": "🚀",
     "category": "Starter-Kit",
     "text": "Ihr Report enthält ein maßgeschneidertes Starter-Kit mit empfohlenen Tools, Setup-Zeiten und Förderprogrammen."
+  },
+  {
+    "icon": "💶",
+    "category": "Bußgelder",
+    "text": "Verstöße gegen den EU AI Act können mit bis zu 35 Mio. € oder 7 % des Weltjahresumsatzes geahndet werden — die Bußgeldregeln gelten bereits seit August 2025."
+  },
+  {
+    "icon": "🧪",
+    "category": "KI-Reallabore",
+    "text": "Bis zum 2. August 2026 richtet jeder EU-Mitgliedstaat mindestens ein KI-Reallabor (Regulatory Sandbox) ein — ein geschützter Testraum, den ausdrücklich auch KMU nutzen können."
+  },
+  {
+    "icon": "🤖",
+    "category": "KI-Modelle",
+    "text": "Seit August 2025 gelten Transparenz- und Urheberrechts-Pflichten für Anbieter großer KI-Modelle (GPAI). Ihr Vendor-Check zeigt, was das für Ihre Tools bedeutet."
+  },
+  {
+    "icon": "🔭",
+    "category": "Ausblick 2027",
+    "text": "Ab August 2027 greift der EU AI Act auch für KI in regulierten Produkten wie Maschinen oder Medizintechnik. Wer heute dokumentiert, spart sich später den Nachweis-Stress."
   }
 ]
