@@ -100,7 +100,9 @@
       statusLabelProcessing: "Analysis in progress",
       statusLabelAccepted: "Request received",
       processingTitle: "Your AI Readiness Report is being generated...",
-      processingText: "Thank you for your input! Your individual report is now being generated. This usually takes <strong>about 10 minutes</strong>.",
+      // KIS-1283: EN-Läufe durchlaufen zusätzlich das Übersetzungs-Sprachgate
+      // und dauern real länger als DE-Läufe — ehrliche Spanne statt "10 min".
+      processingText: "Thank you for your input! Your individual report is now being generated. This usually takes <strong>10–15 minutes</strong>.",
       emailToLabel: "You will receive your report by email at:",
       startedElapsed: function (elapsed) { return "Started " + elapsed; },
       infoEmailWhenDone: "You will receive an email as soon as your report is ready.",
