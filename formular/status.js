@@ -16,7 +16,9 @@
 
   // --- Config ---
   var POLL_INTERVAL_MS = 5000;
-  var POLL_MAX_ATTEMPTS = 120; // 10 Minuten bei 5s Intervall
+  // KIS-1280: 120 (10 min) → 240 (20 min). Der EN-Lauf 1138 brauchte >10 min;
+  // nach Ablauf zeigte die Seite fälschlich den Verbindungsfehler-Zustand.
+  var POLL_MAX_ATTEMPTS = 240; // 20 Minuten bei 5s Intervall
   var CONSECUTIVE_ERROR_MAX = 8; // Nach 8 aufeinanderfolgenden Fehlern aufgeben
 
   // --- State ---
@@ -79,6 +81,8 @@
       loadErrorHint: function (email) { return "Falls Ihr Report bereits fertig ist, prüfen Sie bitte Ihr E-Mail-Postfach: <strong>" + email + "</strong>"; },
       loadErrorTitle: "Status konnte nicht geladen werden.",
       loadErrorText: "Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+      stillWorkingTitle: "Die Erstellung dauert etwas länger als üblich.",
+      stillWorkingText: "Ihr Report wird weiterhin erstellt. Sie erhalten eine E-Mail, sobald er fertig ist — Sie können diese Seite jetzt schließen oder den Status erneut prüfen.",
       btnRetry: "&#128260; Erneut versuchen",
       noIdTitle: "Kein Report angegeben.",
       noIdText: "Es wurde keine Report-ID übergeben. Bitte starten Sie ein neues Assessment."
@@ -121,6 +125,8 @@
       loadErrorHint: function (email) { return "If your report is already finished, please check your email inbox: <strong>" + email + "</strong>"; },
       loadErrorTitle: "Status could not be loaded.",
       loadErrorText: "Please check your internet connection and try again.",
+      stillWorkingTitle: "Generation is taking a little longer than usual.",
+      stillWorkingText: "Your report is still being generated. You will receive an email as soon as it is ready — you can close this page now or check the status again.",
       btnRetry: "&#128260; Try again",
       noIdTitle: "No report specified.",
       noIdText: "No report ID was provided. Please start a new assessment."
@@ -392,6 +398,40 @@
     }
   }
 
+  // KIS-1280: Poll-Budget erschöpft, aber der Report generiert noch —
+  // ehrlicher Zustand statt des Verbindungsfehler-Texts (der EN-Lauf 1138
+  // lief >10 min; die Seite behauptete danach ein Netzwerkproblem).
+  function renderStillWorking() {
+    var emailHint = "";
+    if (userEmail) {
+      emailHint =
+        '<div class="info-box" style="margin-top: 16px;">' +
+          "<p>" + t("loadErrorHint")(escapeHtml(userEmail)) + "</p>" +
+        "</div>";
+    }
+    render(
+      '<div class="status-icon">&#9203;</div>' +
+      '<h2 class="status-title">' + t("stillWorkingTitle") + "</h2>" +
+      '<p class="status-text">' + t("stillWorkingText") + "</p>" +
+      emailHint +
+      '<div class="btn-row">' +
+        '<button id="retry-btn" class="btn btn-primary">' +
+          t("btnRecheck") +
+        "</button>" +
+      "</div>"
+    );
+
+    var retryBtn = document.getElementById("retry-btn");
+    if (retryBtn) {
+      retryBtn.addEventListener("click", function () {
+        consecutiveErrors = 0;
+        pollCount = 0;
+        renderProcessing({ status: "accepted", created_at: null });
+        startPolling();
+      });
+    }
+  }
+
   // Keine Briefing-ID
   function renderNoId() {
     render(
@@ -596,7 +636,9 @@
       pollCount++;
       if (pollCount >= POLL_MAX_ATTEMPTS) {
         stopPolling();
-        renderLoadError();
+        // KIS-1280: Budget-Ende ist KEIN Netzwerkfehler — der Report wird
+        // serverseitig weiter erstellt.
+        renderStillWorking();
         return;
       }
       fetchStatus();
