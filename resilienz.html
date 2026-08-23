@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>KI-Resilienz-Check · ki-sicherheit.jetzt</title>
+<style>
+  :root {
+    --ink: #1c2733; --muted: #5b6770; --line: #e3e7ea;
+    --blau: #1e5aa0; --blau-dunkel: #163f70; --bg: #f6f8fa;
+    --rot: #c0392b; --gruen: #1e7d46;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: var(--ink);
+         background: var(--bg); font-size: 16px; line-height: 1.55; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
+  header h1 { font-size: 26px; margin: 8px 0 4px; }
+  .kicker { color: var(--blau); text-transform: uppercase; letter-spacing: 1px; font-size: 12px; font-weight: 600; }
+  .intro { color: var(--muted); margin-bottom: 8px; }
+  .hinweis { font-size: 13px; color: var(--muted); }
+  .progress { position: sticky; top: 0; background: var(--bg); padding: 10px 0; z-index: 5; }
+  .progress-bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--blau); transition: width .25s; }
+  .progress-text { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  section.block { background: #fff; border: 1px solid var(--line); border-radius: 10px;
+                  padding: 18px 20px; margin: 18px 0; }
+  section.block h2 { font-size: 18px; margin: 0 0 4px; color: var(--blau-dunkel); }
+  .frage { border-top: 1px solid var(--line); padding: 14px 0 6px; }
+  .frage:first-of-type { border-top: none; }
+  .frage p.qtext { font-weight: 600; margin: 0 0 8px; }
+  label.stufe { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px;
+                border: 1px solid var(--line); border-radius: 8px; margin: 6px 0;
+                cursor: pointer; font-size: 14px; background: #fff; }
+  label.stufe:hover { border-color: var(--blau); }
+  label.stufe input { margin-top: 3px; }
+  label.stufe.checked { border-color: var(--blau); background: #eef4fb; }
+  .actions { margin-top: 22px; }
+  button.primary { background: var(--blau); color: #fff; border: 0; border-radius: 8px;
+                   padding: 12px 22px; font-size: 16px; font-weight: 600; cursor: pointer; }
+  button.primary:disabled { background: #9db4cc; cursor: not-allowed; }
+  .fehler { color: var(--rot); font-size: 14px; margin-top: 10px; min-height: 20px; }
+  #result { display: none; background: #fff; border: 1px solid var(--line); border-radius: 10px;
+            padding: 22px; margin-top: 22px; text-align: center; }
+  #result h2 { margin-top: 0; }
+  a.button { display: inline-block; background: var(--blau); color: #fff; text-decoration: none;
+             border-radius: 8px; padding: 12px 22px; font-weight: 600; margin-top: 10px; }
+  .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid var(--line);
+             border-top-color: var(--blau); border-radius: 50%; animation: spin 1s linear infinite;
+             vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  footer { margin-top: 30px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">ki-sicherheit.jetzt</div>
+    <h1>KI-Resilienz-Check</h1>
+    <p class="intro">Wie schnell kann Ihre Organisation entscheiden, wenn ein KI-gestützter
+    Angriff läuft? 22 Fragen, etwa 10–12 Minuten, beantwortbar ohne technisches Wissen.
+    Ergebnis: Ihre geschätzte Reaktionslücke als PDF-Report.</p>
+    <p class="hinweis">Selbstauskunft, keine Sicherheitsprüfung. Ein Firmenname wird nicht erhoben.</p>
+  </header>
+
+  <div class="progress">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 von 22 Fragen beantwortet</div>
+  </div>
+
+  <form id="checkForm"><div id="blocks"><p><span class="spinner"></span>Fragen werden geladen …</p></div>
+    <div class="actions">
+      <button type="submit" class="primary" id="submitBtn" disabled>Auswertung starten</button>
+      <div class="fehler" id="fehler"></div>
+    </div>
+  </form>
+
+  <div id="result"></div>
+
+  <footer>
+    Der Report bewertet Ihre Angaben, nicht Ihre Systeme. Er ist keine Sicherheitsprüfung,
+    kein Penetrationstest und keine Rechtsberatung.
+  </footer>
+</div>
+
+<script src="/js/config.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/analytics.js"></script>
+<script>
+(function () {
+  "use strict";
+  var STORAGE_KEY = "resilienz_form_data";
+  var API = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "/api";
+  var katalog = null;
+  var totalQuestions = 0;
+  var started = false;
+
+  // Zugang: hinter dem Login (Whitelist-Testphase)
+  if (!(window.AUTH && window.AUTH.hasAuthCookie && window.AUTH.hasAuthCookie())) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  function authHeaders(extra) {
+    var h = (window.AUTH && window.AUTH.getAuthHeaders) ? window.AUTH.getAuthHeaders() : {};
+    if (extra) { for (var k in extra) h[k] = extra[k]; }
+    return h;
+  }
+
+  function loadSaved() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+    catch (_) { return {}; }
+  }
+  function save(answers) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); } catch (_) {}
+  }
+  function currentAnswers() {
+    var answers = {};
+    document.querySelectorAll('input[type="radio"]:checked').forEach(function (el) {
+      answers[el.name] = parseInt(el.value, 10);
+    });
+    return answers;
+  }
+
+  function updateProgress() {
+    var n = Object.keys(currentAnswers()).length;
+    document.getElementById("progressFill").style.width = (100 * n / totalQuestions) + "%";
+    document.getElementById("progressText").textContent = n + " von " + totalQuestions + " Fragen beantwortet";
+    document.getElementById("submitBtn").disabled = (n !== totalQuestions);
+    if (!started && n > 0) {
+      started = true;
+      if (window.kisTrack) window.kisTrack("resilienz_started");
+    }
+  }
+
+  function render(kat) {
+    var saved = loadSaved();
+    var host = document.getElementById("blocks");
+    host.innerHTML = "";
+    kat.blocks.forEach(function (block) {
+      var sec = document.createElement("section");
+      sec.className = "block";
+      sec.innerHTML = "<h2>Block " + block.id + " · " + block.titel + "</h2>";
+      block.questions.forEach(function (q) {
+        var f = document.createElement("div");
+        f.className = "frage";
+        var html = '<p class="qtext">' + q.text + "</p>";
+        q.stufen.forEach(function (stufe, idx) {
+          var val = idx + 1;
+          var checked = saved[q.id] === val ? " checked" : "";
+          html += '<label class="stufe' + (checked ? " checked" : "") + '">' +
+            '<input type="radio" name="' + q.id + '" value="' + val + '"' + checked + ">" +
+            "<span>" + stufe + "</span></label>";
+        });
+        f.innerHTML = html;
+        sec.appendChild(f);
+      });
+      host.appendChild(sec);
+    });
+    host.addEventListener("change", function (ev) {
+      if (ev.target && ev.target.type === "radio") {
+        var group = document.querySelectorAll('input[name="' + ev.target.name + '"]');
+        group.forEach(function (el) { el.closest("label").classList.toggle("checked", el.checked); });
+        save(currentAnswers());
+        updateProgress();
+      }
+    });
+    updateProgress();
+  }
+
+  function showResult(html) {
+    var box = document.getElementById("result");
+    box.innerHTML = html;
+    box.style.display = "block";
+    box.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function pollStatus(bid, attempt) {
+    attempt = attempt || 0;
+    if (attempt > 60) { // 5 Minuten
+      showResult("<h2>Das dauert gerade länger als geplant</h2><p>Ihr Report wird weiter erstellt " +
+        "und kommt per E-Mail. Sie können diese Seite schließen.</p>");
+      return;
+    }
+    fetch(API + "/resilienz/status/" + bid, { credentials: "include", headers: authHeaders() })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j.status === "done") {
+          if (window.kisTrack) window.kisTrack("resilienz_completed");
+          try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+          showResult("<h2>Ihr Resilienz-Check ist fertig</h2>" +
+            "<p>Der Report kommt zusätzlich per E-Mail als PDF.</p>" +
+            '<a class="button" href="' + API + "/resilienz/pdf/" + bid + '">Report als PDF öffnen</a>');
+        } else if (j.status === "failed") {
+          showResult("<h2>Das hat nicht geklappt</h2><p>Bitte senden Sie den Check erneut ab. " +
+            "Ihre Antworten sind noch gespeichert.</p>");
+          document.getElementById("submitBtn").disabled = false;
+        } else {
+          setTimeout(function () { pollStatus(bid, attempt + 1); }, 5000);
+        }
+      })
+      .catch(function () { setTimeout(function () { pollStatus(bid, attempt + 1); }, 5000); });
+  }
+
+  document.getElementById("checkForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var answers = currentAnswers();
+    var btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    document.getElementById("fehler").textContent = "";
+    showResult('<h2><span class="spinner"></span>Ihr Report wird erstellt …</h2>' +
+      "<p>Das dauert in der Regel unter zwei Minuten.</p>");
+    fetch(API + "/resilienz/submit", {
+      method: "POST",
+      credentials: "include",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ lang: "de", answers: answers }),
+    })
+      .then(function (r) {
+        if (r.status === 401) { window.location.href = "/login.html"; throw new Error("auth"); }
+        if (!r.ok) { throw new Error("submit " + r.status); }
+        return r.json();
+      })
+      .then(function (j) { pollStatus(j.briefing_id, 0); })
+      .catch(function (e) {
+        if (String(e.message) === "auth") return;
+        document.getElementById("result").style.display = "none";
+        document.getElementById("fehler").textContent =
+          "Senden fehlgeschlagen — bitte erneut versuchen. Ihre Antworten sind gespeichert.";
+        btn.disabled = false;
+      });
+  });
+
+  fetch(API + "/resilienz/katalog", { credentials: "include", headers: authHeaders() })
+    .then(function (r) {
+      if (r.status === 401) { window.location.href = "/login.html"; throw new Error("auth"); }
+      if (!r.ok) throw new Error("katalog " + r.status);
+      return r.json();
+    })
+    .then(function (kat) {
+      katalog = kat;
+      totalQuestions = kat.blocks.reduce(function (n, b) { return n + b.questions.length; }, 0);
+      render(kat);
+    })
+    .catch(function (e) {
+      if (String(e.message) === "auth") return;
+      document.getElementById("blocks").innerHTML =
+        '<p class="fehler">Die Fragen konnten nicht geladen werden. Bitte Seite neu laden.</p>';
+    });
+})();
+</script>
+</body>
+</html>
