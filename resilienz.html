@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>KI-Resilienz-Check · ki-sicherheit.jetzt</title>
+<title>Cyberangriffs-Check · ki-sicherheit.jetzt</title>
 <style>
   :root {
     --ink: #1c2733; --muted: #5b6770; --line: #e3e7ea;
@@ -56,9 +56,9 @@
 <div class="wrap">
   <header>
     <div class="kicker">ki-sicherheit.jetzt</div>
-    <h1>KI-Resilienz-Check</h1>
-    <p class="intro">Wie schnell kann Ihre Organisation entscheiden, wenn ein KI-gestützter
-    Angriff läuft? 22 Fragen, etwa 10–12 Minuten, beantwortbar ohne technisches Wissen.
+    <h1>Cyberangriffs-Check</h1>
+    <p class="intro">Wie schnell kann Ihre Organisation entscheiden, wenn ein automatisierter
+    Cyber-Angriff läuft? 22 Fragen, etwa 10–12 Minuten, beantwortbar ohne technisches Wissen.
     Ergebnis: Ihre geschätzte Reaktionslücke als PDF-Report.</p>
     <p class="hinweis">Selbstauskunft, keine Sicherheitsprüfung. Ein Firmenname wird nicht erhoben.</p>
   </header>
@@ -188,7 +188,7 @@
         if (j.status === "done") {
           if (window.kisTrack) window.kisTrack("resilienz_completed");
           try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-          showResult("<h2>Ihr Resilienz-Check ist fertig</h2>" +
+          showResult("<h2>Ihr Cyberangriffs-Check ist fertig</h2>" +
             "<p>Der Report kommt zusätzlich per E-Mail als PDF.</p>" +
             '<a class="button" href="' + API + "/resilienz/pdf/" + bid + '">Report als PDF öffnen</a>');
         } else if (j.status === "failed") {
