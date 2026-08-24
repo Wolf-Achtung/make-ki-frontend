@@ -1,0 +1,175 @@
+/* ═══════════════════════════════════════════════════════════════
+   KI-Sicherheit.jetzt — zentrale Marken-Tokens
+   Eine Quelle für alle Nutzer-Oberflächen des App-Frontends:
+   Fragebogen, Warteseite, Cyberangriffs-Check, Chats, Feedback.
+   Vorher lag dieselbe Palette dreifach kopiert in
+   formular/index.html, formular/status.html und assets/coach.css.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Lokale Fonts (CSP-konform, kein Google-CDN, DSGVO-freundlich).
+   Inter: Variable Font, deckt 400–700 ab.
+   Share Tech Mono: Markenschrift für Titel (wie auf ki-sicherheit.jetzt).
+   Playfair Display: statisch 700 für Serifen-Akzente. */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-var-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Share Tech Mono';
+  src: url('/fonts/share-tech-mono-v15-latin-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('/fonts/playfair-700-latin.woff2') format('woff2');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Navy-Palette */
+  --navy-900: #0a1628;
+  --navy-800: #0e1e36;
+  --navy-700: #132744;
+  --navy-600: #1a3a5c;
+  --navy-500: #1e4a6f;
+  --navy-400: #2a6a9e;
+  --navy-300: #4a8cc4;
+  --navy-200: #7eb3dc;
+  --navy-100: #c5ddf0;
+  --navy-50:  #e8f2fa;
+
+  /* Warmton-Akzent (Gold) */
+  --warm-600: #a68921;
+  --warm-500: #c9a227;
+  --warm-400: #d4b33d;
+  --warm-300: #e0c65a;
+  --warm-200: #f0dfa0;
+  --warm-100: #faf4dc;
+
+  /* Semantik */
+  --text-primary: #0e1525;
+  --text-secondary: #3d4f63;
+  --text-muted: #566578;
+  --bg-page: #f8fafb;
+  --bg-card: #ffffff;
+  --bg-subtle: #f3f4f6;
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+
+  /* Status */
+  --success-green: #059669;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --error-red: #dc2626;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+
+  /* Ampel (Cyberangriffs-Check) */
+  --ampel-rot: #dc2626;
+  --ampel-gelb: #b8860b;
+  --ampel-gruen: #059669;
+
+  /* Schatten */
+  --shadow-sm: 0 1px 2px rgba(14,21,37,0.04);
+  --shadow-md: 0 4px 12px rgba(14,21,37,0.08);
+  --shadow-lg: 0 8px 24px rgba(14,21,37,0.12);
+
+  /* Übergänge */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+
+  /* Schrift-Stapel */
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+/* Dunkelmodus — identisch zu den bisherigen Blöcken in
+   formular/index.html und formular/status.html. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: #e8eef6;
+    --text-secondary: #a8b5c4;
+    --text-muted: #8b9bb0;
+    --bg-page: #0a1628;
+    --bg-card: #0e1e36;
+    --bg-subtle: #132744;
+    --border-light: #1f3350;
+    --border-medium: #2a4a6a;
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+    --success-bg: rgba(5,150,105,0.15);
+    --success-border: rgba(5,150,105,0.3);
+    --error-bg: rgba(220,38,38,0.15);
+    --error-border: rgba(220,38,38,0.3);
+    --ampel-rot: #ef4444;
+    --ampel-gelb: #d4a017;
+    --ampel-gruen: #34d399;
+  }
+}
+
+/* ── Aliasse für das --mk-*-Schema (assets/coach.css, strategy.html).
+   strategy.html nutzte --mk-* bisher ohne Definition — dieser Block
+   schließt die Lücke. ── */
+:root {
+  --mk-navy-900: var(--navy-900);
+  --mk-navy-800: var(--navy-800);
+  --mk-navy-700: var(--navy-700);
+  --mk-navy-600: var(--navy-600);
+  --mk-navy-500: var(--navy-500);
+  --mk-navy-400: var(--navy-400);
+  --mk-navy-300: var(--navy-300);
+  --mk-navy-200: var(--navy-200);
+  --mk-navy-100: var(--navy-100);
+  --mk-navy-50:  var(--navy-50);
+  --mk-warm-600: var(--warm-600);
+  --mk-warm-500: var(--warm-500);
+  --mk-warm-400: var(--warm-400);
+  --mk-warm-100: var(--warm-100);
+  --mk-text-primary: var(--text-primary);
+  --mk-text-secondary: var(--text-secondary);
+  --mk-text-muted: var(--text-muted);
+  --mk-border-light: var(--border-light);
+  --mk-border-medium: var(--border-medium);
+  --mk-bg-card: var(--bg-card);
+  --mk-bg-subtle: var(--bg-subtle);
+  --mk-bg-page: var(--bg-page);
+  --mk-shadow-sm: var(--shadow-sm);
+  --mk-shadow-md: var(--shadow-md);
+  --mk-shadow-lg: var(--shadow-lg);
+  --mk-transition-fast: var(--transition-fast);
+  --mk-transition-base: var(--transition-base);
+  --mk-error: var(--error-red);
+}
+
+/* ── Formbuilder-Tokens (formular/formbuilder_*.js nutzt
+   var(--mk-form-*, Fallback) — hier bekommen die Variablen
+   erstmals zentrale Werte; vorher galten die Tailwind-Fallbacks). ── */
+:root {
+  --mk-form-primary: var(--navy-500);
+  --mk-form-primary-light: var(--navy-400);
+  --mk-form-on-primary: #ffffff;
+  --mk-form-heading: var(--navy-600);
+  --mk-form-text: var(--text-primary);
+  --mk-form-text-muted: var(--text-secondary);
+  --mk-form-text-subtle: var(--text-muted);
+  --mk-form-soft-bg: var(--navy-50);
+  --mk-form-accent-soft: var(--navy-100);
+  --mk-form-accent-tint: var(--navy-50);
+  --mk-form-error: var(--error-red);
+  --mk-form-error-bg: var(--error-bg);
+  --mk-form-success-accent: var(--success-green);
+  --mk-form-success-text: var(--success-green);
+  --mk-form-success-bg: var(--success-bg);
+  --mk-form-success-border: var(--success-border);
+  --mk-form-warn-bg: var(--warm-100);
+  --mk-form-warn-accent: var(--warm-500);
+  --mk-form-warn-text: var(--warm-600);
+}

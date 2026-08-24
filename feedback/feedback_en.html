@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="stylesheet" href="/brand.css">
 <title>Feedback for the AI Readiness Check</title>
 <meta name="robots" content="noindex, nofollow"/>
 <script src="/js/config.js"></script>
 <style>
-  :root{ --bg:#0c1b2a; --card:#0f2538; --muted:#9eb5c7; --text:#e7f0f7; --accent:#2e6fce; --accent2:#1b9aaa; --ok:#21c07a; --border:rgba(255,255,255,.12); }
+  :root{ --bg:var(--navy-900); --card:var(--navy-800); --muted:#8b9bb0; --text:#e8eef6; --accent:var(--navy-300); --accent2:var(--warm-400); --ok:#34d399; --border:rgba(255,255,255,.12); }
   *{ box-sizing:border-box }
-  body{ margin:0; padding:24px; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial }
+  body{ margin:0; padding:24px; background:var(--bg); color:var(--text); font-family: var(--font-body) }
   .wrap{ max-width:840px; margin:0 auto; }
   header h1{ margin:0 0 .25rem; font-size:clamp(1.4rem,2.6vw,1.9rem) }
   header p{ margin:.25rem 0 1rem; color:var(--muted) }
@@ -204,10 +205,10 @@
   });
 </script>
 
-<footer style="margin-top:48px;padding:20px 16px;text-align:center;font-size:13px;color:#64748b;border-top:1px solid #e2e8f0;">
-  <a href="/impressum.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Legal Notice</a>&middot;
-  <a href="/formular/privacy.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Privacy</a>&middot;
-  <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:#64748b;margin:0 10px;text-decoration:none;">Contact</a>
+<footer style="margin-top:48px;padding:20px 16px;text-align:center;font-size:13px;color:var(--text-muted);border-top:1px solid var(--border-light);">
+  <a href="/impressum.html" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Legal Notice</a>&middot;
+  <a href="/formular/privacy.html" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Privacy</a>&middot;
+  <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Contact</a>
 </footer>
 </body>
 </html>

@@ -4,58 +4,81 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<link rel="stylesheet" href="/brand.css">
 <title>Cyberangriffs-Check · ki-sicherheit.jetzt</title>
 <style>
   :root {
-    --ink: #1c2733; --muted: #5b6770; --line: #e3e7ea;
-    --blau: #1e5aa0; --blau-dunkel: #163f70; --bg: #f6f8fa;
-    --rot: #c0392b; --gruen: #1e7d46;
+    --ink: var(--text-primary); --muted: var(--text-muted); --line: var(--border-light);
+    --blau: var(--navy-500); --blau-dunkel: var(--navy-600); --bg: var(--bg-page);
+    --rot: var(--ampel-rot); --gruen: var(--ampel-gruen);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: var(--ink);
+  body { margin: 0; font-family: var(--font-body); color: var(--ink);
          background: var(--bg); font-size: 16px; line-height: 1.55; }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
-  header h1 { font-size: 26px; margin: 8px 0 4px; }
-  .kicker { color: var(--blau); text-transform: uppercase; letter-spacing: 1px; font-size: 12px; font-weight: 600; }
-  .intro { color: var(--muted); margin-bottom: 8px; }
+  body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+                 background-image: radial-gradient(circle at 1px 1px, rgba(26,58,92,0.06) 1px, transparent 0);
+                 background-size: 20px 20px; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; position: relative; z-index: 1; }
+  .marke { margin-bottom: 16px; }
+  .marke a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+  .marke img { height: 30px; width: auto; display: block; }
+  .marke span { font-family: var(--font-mono); font-size: 17px; color: var(--ink); letter-spacing: .5px; }
+  @media (prefers-color-scheme: dark) {
+    .marke img { background: #fff; border-radius: 6px; padding: 2px; }
+  }
+  header h1 { font-family: var(--font-mono); font-weight: 400; font-size: 27px;
+              line-height: 1.25; margin: 8px 0 4px; letter-spacing: .3px; }
+  a { color: var(--navy-400); }
+  .kicker { color: var(--warm-600); text-transform: uppercase; letter-spacing: 1px;
+            font-size: 12px; font-weight: 600; }
+  .intro { color: var(--text-secondary); margin-bottom: 8px; }
   .hinweis { font-size: 13px; color: var(--muted); }
   .progress { position: sticky; top: 0; background: var(--bg); padding: 10px 0; z-index: 5; }
   .progress-bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
-  .progress-fill { height: 100%; width: 0%; background: var(--blau); transition: width .25s; }
+  .progress-fill { height: 100%; width: 0%; transition: width .25s;
+                   background: linear-gradient(90deg, var(--navy-500), var(--navy-400)); }
   .progress-text { font-size: 13px; color: var(--muted); margin-top: 4px; }
-  section.block { background: #fff; border: 1px solid var(--line); border-radius: 10px;
-                  padding: 18px 20px; margin: 18px 0; }
+  section.block { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px;
+                  padding: 18px 20px; margin: 18px 0; box-shadow: var(--shadow-sm); }
   section.block h2 { font-size: 18px; margin: 0 0 4px; color: var(--blau-dunkel); }
   .frage { border-top: 1px solid var(--line); padding: 14px 0 6px; }
   .frage:first-of-type { border-top: none; }
   .frage p.qtext { font-weight: 600; margin: 0 0 8px; }
   label.stufe { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px;
-                border: 1px solid var(--line); border-radius: 8px; margin: 6px 0;
-                cursor: pointer; font-size: 14px; background: #fff; }
-  label.stufe:hover { border-color: var(--blau); }
+                border: 1px solid var(--line); border-radius: 10px; margin: 6px 0;
+                cursor: pointer; font-size: 14px; background: var(--bg-card);
+                transition: border-color var(--transition-fast), background var(--transition-fast); }
+  label.stufe:hover { border-color: var(--navy-400); }
   label.stufe input { margin-top: 3px; }
-  label.stufe.checked { border-color: var(--blau); background: #eef4fb; }
+  label.stufe.checked { border-color: var(--navy-400); background: var(--bg-subtle); }
   .actions { margin-top: 22px; }
-  button.primary { background: var(--blau); color: #fff; border: 0; border-radius: 8px;
-                   padding: 12px 22px; font-size: 16px; font-weight: 600; cursor: pointer; }
-  button.primary:disabled { background: #9db4cc; cursor: not-allowed; }
-  .fehler { color: var(--rot); font-size: 14px; margin-top: 10px; min-height: 20px; }
-  #result { display: none; background: #fff; border: 1px solid var(--line); border-radius: 10px;
-            padding: 22px; margin-top: 22px; text-align: center; }
+  button.primary { background: var(--blau); color: #fff; border: 0; border-radius: 10px;
+                   padding: 12px 22px; font-size: 16px; font-weight: 600; cursor: pointer;
+                   font-family: inherit; transition: background var(--transition-fast); }
+  button.primary:hover { background: var(--blau-dunkel); }
+  button.primary:disabled { background: var(--border-medium); cursor: not-allowed; }
+  .fehler { color: var(--error-red); font-size: 14px; margin-top: 10px; min-height: 20px; }
+  #result { display: none; background: var(--bg-card); border: 1px solid var(--line);
+            border-radius: 12px; padding: 22px; margin-top: 22px; text-align: center;
+            box-shadow: var(--shadow-sm); }
   #result h2 { margin-top: 0; }
   a.button { display: inline-block; background: var(--blau); color: #fff; text-decoration: none;
-             border-radius: 8px; padding: 12px 22px; font-weight: 600; margin-top: 10px; }
+             border-radius: 10px; padding: 12px 22px; font-weight: 600; margin-top: 10px;
+             transition: background var(--transition-fast); }
+  a.button:hover { background: var(--blau-dunkel); }
   .spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid var(--line);
              border-top-color: var(--blau); border-radius: 50%; animation: spin 1s linear infinite;
              vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  footer { margin-top: 30px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+  footer { margin-top: 30px; font-size: 12px; color: var(--muted);
+           border-top: 1px solid var(--line); padding-top: 12px; }
+  footer a { color: var(--muted); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="kicker">ki-sicherheit.jetzt</div>
+    <div class="marke"><a href="/"><img src="/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" height="30"><span>KI-Sicherheit.jetzt</span></a></div>
     <h1>Cyberangriffs-Check</h1>
     <p class="intro">Wie schnell kann Ihre Organisation entscheiden, wenn ein automatisierter
     Cyber-Angriff läuft? 22 Fragen, etwa 10–12 Minuten, beantwortbar ohne technisches Wissen.

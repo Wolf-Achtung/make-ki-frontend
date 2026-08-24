@@ -2,62 +2,10 @@
    COACH-STYLESHEET — harmonisch mit --mk-*-Designsystem
    ═══════════════════════════════════════════════════════════ */
 
-/* Locally bundled fonts (CSP-compliant, no Google Fonts CDN).
-   Inter: variable font covers weights 400/500/600/700 used below.
-   Playfair Display: static 700 used for headlines. Latin subset only. */
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/inter-var-latin.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Playfair Display';
-  src: url('/fonts/playfair-700-latin.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/* Fonts + geteilte Tokens kommen aus /brand.css (in coach.html davor eingebunden). */
 
 :root {
-  --mk-navy-900: #0a1628;
-  --mk-navy-800: #0e1e36;
-  --mk-navy-700: #132744;
-  --mk-navy-600: #1a3a5c;
-  --mk-navy-500: #1e4a6f;
-  --mk-navy-400: #2a6a9e;
-  --mk-navy-300: #4a8cc4;
-  --mk-navy-200: #7eb3dc;
-  --mk-navy-100: #c5ddf0;
-  --mk-navy-50:  #e8f2fa;
-
-  --mk-warm-600: #a68921;
-  --mk-warm-500: #c9a227;
-  --mk-warm-400: #d4b33d;
-  --mk-warm-100: #faf4dc;
-
-  --mk-text-primary:   #0e1525;
-  --mk-text-secondary: #3d4f63;
-  --mk-text-muted:     #566578;
-
-  --mk-border-light:  #e2e8f0;
-  --mk-border-medium: #cbd5e1;
-
-  --mk-bg-card:   #ffffff;
-  --mk-bg-subtle: #f3f4f6;
-  --mk-bg-page:   #f5f8fc;
-
-  --mk-shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --mk-shadow-md: 0 4px 12px rgba(0,0,0,0.07);
-  --mk-shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.07);
-
-  --mk-transition-fast: 0.15s ease;
-  --mk-transition-base: 0.25s ease;
-
-  --mk-error: #dc2626;
-
-  /* Chat-spezifisch, im gleichen Namens-Schema */
+  /* Chat-spezifisch — geteilte --mk-*-Tokens liefert /brand.css */
   --mk-chat-user-bg:        var(--mk-navy-800);
   --mk-chat-user-text:      #ffffff;
   --mk-chat-assistant-bg:   var(--mk-bg-subtle);
@@ -264,7 +212,7 @@ body::before {
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--mk-text-primary);
-  background: #ffffff;
+  background: var(--mk-bg-card);
   resize: none;
   outline: none;
   transition: border-color var(--mk-transition-fast), box-shadow var(--mk-transition-fast);

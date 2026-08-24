@@ -715,7 +715,7 @@ function _collectLabelFor(fieldKey, value){
       if (typeof f.showIf === "function" && !f.showIf(formData)) continue;
 
       var wichtigBadge = WICHTIG_FIELDS[k] ? "<span class='badge-wichtig'>✦ Wichtig für Ihren Report</span>" : "";
-      var requiredMark = (!OPTIONAL_FIELDS[k] && f.type !== "privacy") ? "<span style='color:#dc2626;margin-left:3px'>*</span>" : "";
+      var requiredMark = (!OPTIONAL_FIELDS[k] && f.type !== "privacy") ? "<span style='color:var(--error-red,#dc2626);margin-left:3px'>*</span>" : "";
       html += "<div class='form-group' data-key='" + k + "'><label for='" + f.key + "'>" + f.label + requiredMark + wichtigBadge + "</label>";
       if (f.description) html += "<div class='guidance'>" + f.description + "</div>";
       // Add guidance for required checkbox groups
