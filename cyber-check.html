@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyberangriffs-Check · ki-sicherheit.jetzt</title>
+<meta name="description" content="Wie schnell könnte Ihr Betrieb einen automatisierten Cyber-Angriff stoppen? Fünf Fragen, sofortiges Ergebnis.">
+<style>
+  :root {
+    --ink: #1c2733; --muted: #5b6770; --line: #e3e7ea;
+    --blau: #1e5aa0; --blau-dunkel: #163f70; --bg: #f6f8fa;
+    --rot: #c0392b; --gelb: #d4a017; --gruen: #1e7d46;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: var(--ink);
+         background: var(--bg); font-size: 16px; line-height: 1.55; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 80px; }
+  .kicker { color: var(--blau); text-transform: uppercase; letter-spacing: 1px;
+            font-size: 12px; font-weight: 600; }
+  h1 { font-size: 27px; margin: 8px 0 6px; }
+  h2 { font-size: 20px; margin: 0 0 8px; color: var(--blau-dunkel); }
+  .intro { color: var(--muted); }
+  .hinweis { font-size: 13px; color: var(--muted); }
+  .karte { background: #fff; border: 1px solid var(--line); border-radius: 10px;
+           padding: 20px; margin: 18px 0; }
+  .frage p.qtext { font-weight: 600; margin: 0 0 10px; font-size: 17px; }
+  .stufen button { display: block; width: 100%; text-align: left; background: #fff;
+                   border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;
+                   margin: 8px 0; font-size: 15px; font-family: inherit; color: inherit;
+                   cursor: pointer; line-height: 1.4; }
+  .stufen button:hover { border-color: var(--blau); background: #eef4fb; }
+  .schritt { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .zahl { font-size: 32px; font-weight: 700; margin: 6px 0 2px; }
+  .balken { margin: 16px 0; }
+  .balken div.zeile { margin: 8px 0; }
+  .balken span.leiste { display: inline-block; height: 16px; border-radius: 4px;
+                        vertical-align: middle; }
+  label.feld { display: block; font-weight: 600; margin: 14px 0 6px; font-size: 15px; }
+  input[type=email] { width: 100%; padding: 11px 12px; border: 1px solid var(--line);
+                      border-radius: 8px; font-size: 16px; font-family: inherit; }
+  .zustimmung { display: flex; gap: 10px; align-items: flex-start; margin: 14px 0;
+                font-size: 14px; color: var(--muted); }
+  button.primary { background: var(--blau); color: #fff; border: 0; border-radius: 8px;
+                   padding: 13px 24px; font-size: 16px; font-weight: 600; cursor: pointer;
+                   font-family: inherit; }
+  button.primary:disabled { background: #9db4cc; cursor: not-allowed; }
+  button.link { background: none; border: 0; color: var(--blau); text-decoration: underline;
+                cursor: pointer; font-size: 14px; font-family: inherit; padding: 0; }
+  .fehler { color: var(--rot); font-size: 14px; margin-top: 10px; min-height: 20px; }
+  .progress-bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--blau); transition: width .25s; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  footer { margin-top: 30px; font-size: 12px; color: var(--muted);
+           border-top: 1px solid var(--line); padding-top: 12px; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid var(--line);
+             border-top-color: var(--blau); border-radius: 50%; animation: spin 1s linear infinite;
+             vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">ki-sicherheit.jetzt</div>
+  <h1>Wie schnell könnte Ihr Betrieb einen Cyber-Angriff stoppen?</h1>
+  <p class="intro">Ein automatisierter Angriff ist in rund 15 Minuten durch. Fünf Fragen
+  zeigen Ihnen, wie lange Ihre Organisation bis zur ersten Entscheidung braucht.
+  Keine Anmeldung, kein Firmenname.</p>
+
+  <div id="bereich"><p class="karte"><span class="spinner"></span>Wird geladen …</p></div>
+
+  <footer>
+    Selbstauskunft, keine Sicherheitsprüfung: Der Check bewertet Ihre Angaben, nicht Ihre
+    Systeme. Er ist kein Penetrationstest und keine Rechtsberatung.
+    <a href="/datenschutz.html">Datenschutz</a> · <a href="/impressum.html">Impressum</a>
+  </footer>
+</div>
+
+<script src="/js/config.js"></script>
+<script>
+(function () {
+  "use strict";
+  var API = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || "/api";
+  var bereich = document.getElementById("bereich");
+  var gestartet = Date.now();
+
+  var kurzFragen = [];      // die 5 Treiberfragen
+  var kurzAntworten = {};   // {B2: 3, ...}
+  var index = 0;
+  var ergebnis = null;      // Antwort von /kurzcheck
+  var vollKatalog = null;   // alle 6 Bloecke
+  var vollAntworten = {};
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function zeige(html) { bereich.innerHTML = html; }
+
+  function ampelFarbe(a) {
+    return a === "gruen" ? "var(--gruen)" : (a === "gelb" ? "var(--gelb)" : "var(--rot)");
+  }
+
+  // --- Stufe 1: fuenf Fragen, eine pro Bildschirm -------------------------
+
+  function ladeKurzfragen() {
+    fetch(API + "/cyber/kurzfragen")
+      .then(function (r) { if (!r.ok) throw new Error("laden"); return r.json(); })
+      .then(function (d) { kurzFragen = d.questions; zeigeKurzfrage(); })
+      .catch(function () {
+        zeige('<div class="karte"><p>Der Check ist gerade nicht erreichbar. ' +
+              "Bitte versuchen Sie es später noch einmal.</p></div>");
+      });
+  }
+
+  function zeigeKurzfrage() {
+    var q = kurzFragen[index];
+    var anteil = Math.round((index / kurzFragen.length) * 100);
+    var html =
+      '<div class="karte">' +
+        '<div class="progress-bar"><div class="progress-fill" style="width:' + anteil + '%"></div></div>' +
+        '<p class="schritt">Frage ' + (index + 1) + " von " + kurzFragen.length + "</p>" +
+        '<div class="frage"><p class="qtext">' + esc(q.text) + "</p>" +
+        '<div class="stufen">';
+    q.stufen.forEach(function (text, i) {
+      html += '<button type="button" data-stufe="' + (i + 1) + '">' + esc(text) + "</button>";
+    });
+    html += "</div></div></div>";
+    zeige(html);
+
+    bereich.querySelectorAll("button[data-stufe]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        kurzAntworten[q.id] = parseInt(b.getAttribute("data-stufe"), 10);
+        index += 1;
+        if (index < kurzFragen.length) { zeigeKurzfrage(); } else { werteKurzAus(); }
+      });
+    });
+  }
+
+  function werteKurzAus() {
+    zeige('<div class="karte"><p><span class="spinner"></span>Wird ausgewertet …</p></div>');
+    fetch(API + "/cyber/kurzcheck", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers: kurzAntworten, hp: "", ms: Date.now() - gestartet }),
+    })
+      .then(function (r) { if (!r.ok) throw new Error("kurzcheck"); return r.json(); })
+      .then(function (d) { ergebnis = d; zeigeErgebnis(); })
+      .catch(function () {
+        zeige('<div class="karte"><p>Die Auswertung hat nicht geklappt. ' +
+              'Bitte laden Sie die Seite neu.</p></div>');
+      });
+  }
+
+  function zeigeErgebnis() {
+    var breiteBench = 60;
+    var breiteIhr = ergebnis.min_stufe === 4 ? 70
+      : (ergebnis.min_stufe === 3 ? 150 : (ergebnis.min_stufe === 2 ? 250 : 340));
+    var treiber = ergebnis.treiber.map(function (t) {
+      return "<li>" + esc(t.text) + " <em>" + esc(t.antwort) + "</em></li>";
+    }).join("");
+
+    zeige(
+      '<div class="karte">' +
+        "<h2>Ihre Reaktionslücke</h2>" +
+        '<div class="zahl" style="color:' + ampelFarbe(ergebnis.ampel) + '">' +
+          esc(ergebnis.label) + "</div>" +
+        '<p class="hinweis">' + esc(ergebnis.ehrlichkeitsregel) + "</p>" +
+        '<div class="balken">' +
+          '<div class="zeile"><span class="leiste" style="width:' + breiteBench +
+            'px;background:var(--rot)"></span> <strong>~' + ergebnis.benchmark_minuten +
+            " Minuten</strong> — automatisierter Angriff</div>" +
+          '<div class="zeile"><span class="leiste" style="width:' + breiteIhr +
+            'px;background:#5b6770"></span> <strong>' + esc(ergebnis.label) +
+            "</strong> — Ihre Organisation</div>" +
+        "</div>" +
+        "<p><strong>" + esc(ergebnis.aussage) + "</strong></p>" +
+        "<p>Bestimmend ist Ihre langsamste Stelle, nicht der Durchschnitt:</p>" +
+        "<ul>" + treiber + "</ul>" +
+      "</div>" +
+      '<div class="karte">' +
+        "<h2>Den vollständigen Report anfordern</h2>" +
+        "<p>17 weitere Fragen ergänzen das Bild: Kernsysteme, Erkennen, Wiederherstellen, " +
+        "Üben und Pflichtenlage. Sie bekommen einen PDF-Report mit Ihrem Profil, den " +
+        "Befunden und den ersten Schritten — kostenfrei.</p>" +
+        '<button type="button" class="primary" id="weiterBtn">Weiter zum vollständigen Check</button>' +
+        '<p class="hinweis" style="margin-top:10px">Dauer: etwa 8 weitere Minuten.</p>' +
+      "</div>"
+    );
+    document.getElementById("weiterBtn").addEventListener("click", ladeVollKatalog);
+  }
+
+  // --- Stufe 2: restliche Fragen + E-Mail ---------------------------------
+
+  function ladeVollKatalog() {
+    zeige('<div class="karte"><p><span class="spinner"></span>Fragen werden geladen …</p></div>');
+    fetch(API + "/cyber/fragen")
+      .then(function (r) { if (!r.ok) throw new Error("laden"); return r.json(); })
+      .then(function (d) {
+        vollKatalog = d;
+        Object.keys(kurzAntworten).forEach(function (k) { vollAntworten[k] = kurzAntworten[k]; });
+        zeigeVollformular();
+      })
+      .catch(function () {
+        zeige('<div class="karte"><p>Die Fragen ließen sich nicht laden. ' +
+              "Bitte versuchen Sie es später noch einmal.</p></div>");
+      });
+  }
+
+  function zeigeVollformular() {
+    var html = '<form id="vollForm">';
+    vollKatalog.blocks.forEach(function (b) {
+      var offen = b.questions.filter(function (q) { return !(q.id in kurzAntworten); });
+      if (!offen.length) return;
+      html += '<div class="karte"><h2>' + esc(b.id) + " · " + esc(b.titel) + "</h2>";
+      offen.forEach(function (q) {
+        html += '<div class="frage"><p class="qtext">' + esc(q.text) + "</p>";
+        q.stufen.forEach(function (text, i) {
+          html += '<label style="display:block;padding:6px 0;font-size:15px">' +
+            '<input type="radio" name="' + esc(q.id) + '" value="' + (i + 1) + '"> ' +
+            esc(text) + "</label>";
+        });
+        html += "</div>";
+      });
+      html += "</div>";
+    });
+    html +=
+      '<div class="karte">' +
+        "<h2>Wohin sollen wir den Report schicken?</h2>" +
+        '<label class="feld" for="email">Ihre E-Mail-Adresse</label>' +
+        '<input type="email" id="email" required autocomplete="email" placeholder="name@firma.de">' +
+        '<div class="hp"><label>Bitte frei lassen<input type="text" id="hp" tabindex="-1" autocomplete="off"></label></div>' +
+        '<div class="zustimmung">' +
+          '<input type="checkbox" id="einwilligung">' +
+          '<label for="einwilligung">Ich bin damit einverstanden, dass meine Angaben zur ' +
+          "Erstellung des Reports verarbeitet werden und der Report an diese Adresse geht. " +
+          'Details in der <a href="/datenschutz.html">Datenschutzerklärung</a>.</label>' +
+        "</div>" +
+        '<p class="hinweis">Sie erhalten zuerst eine E-Mail mit einem Bestätigungslink. ' +
+        "Erst danach erstellen wir den Report — so kann niemand fremde Adressen eintragen.</p>" +
+        '<p style="margin-top:14px"><button type="submit" class="primary" id="sendBtn">Report anfordern</button></p>' +
+        '<div class="fehler" id="fehler"></div>' +
+      "</div></form>";
+    zeige(html);
+    document.getElementById("vollForm").addEventListener("submit", absenden);
+  }
+
+  function absenden(ev) {
+    ev.preventDefault();
+    var fehler = document.getElementById("fehler");
+    var btn = document.getElementById("sendBtn");
+    fehler.textContent = "";
+
+    var antworten = {};
+    Object.keys(vollAntworten).forEach(function (k) { antworten[k] = vollAntworten[k]; });
+    var offen = [];
+    vollKatalog.blocks.forEach(function (b) {
+      b.questions.forEach(function (q) {
+        if (q.id in antworten) return;
+        var gewaehlt = document.querySelector('input[name="' + q.id + '"]:checked');
+        if (gewaehlt) { antworten[q.id] = parseInt(gewaehlt.value, 10); } else { offen.push(q.id); }
+      });
+    });
+    if (offen.length) {
+      fehler.textContent = "Bitte beantworten Sie noch " + offen.length +
+        (offen.length === 1 ? " Frage." : " Fragen.");
+      return;
+    }
+    if (!document.getElementById("einwilligung").checked) {
+      fehler.textContent = "Ohne Ihr Einverständnis können wir den Report nicht senden.";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Wird gesendet …";
+    fetch(API + "/cyber/anfordern", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        answers: antworten,
+        email: document.getElementById("email").value.trim(),
+        einwilligung: true,
+        hp: document.getElementById("hp").value,
+        ms: Date.now() - gestartet,
+      }),
+    })
+      .then(function (r) {
+        if (r.status === 429) throw new Error("zu_oft");
+        if (!r.ok) throw new Error("senden");
+        return r.json();
+      })
+      .then(function () {
+        zeige(
+          '<div class="karte">' +
+            "<h2>Bitte prüfen Sie Ihr Postfach</h2>" +
+            "<p>Wir haben Ihnen eine E-Mail mit einem Bestätigungslink geschickt. " +
+            "Ein Klick darauf, und Ihr Report wird erstellt — er kommt dann innerhalb " +
+            "von etwa zwei Minuten als PDF.</p>" +
+            '<p class="hinweis">Nichts angekommen? Sehen Sie im Spam-Ordner nach. ' +
+            "Der Link gilt sieben Tage.</p>" +
+          "</div>"
+        );
+      })
+      .catch(function (e) {
+        btn.disabled = false;
+        btn.textContent = "Report anfordern";
+        fehler.textContent = String(e.message) === "zu_oft"
+          ? "Zu viele Anfragen von diesem Anschluss. Bitte versuchen Sie es später erneut."
+          : "Das Senden hat nicht geklappt. Bitte versuchen Sie es erneut.";
+      });
+  }
+
+  ladeKurzfragen();
+})();
+</script>
+</body>
+</html>
