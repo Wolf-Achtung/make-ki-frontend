@@ -247,6 +247,26 @@
 
   // --- Zustands-Renderer ---
 
+  // KIS-1262: Die Wartezeit ist der beste Moment fuer den zweiten Check —
+  // der Report braucht rund 10 Minuten, der Cyberangriffs-Check rund 10.
+  // Nur DE, weil der Check V1 deutschsprachig ist. Nur waehrend der
+  // Generierung, nie auf der Fertig-Seite (dort zaehlt der Report).
+  function cyberCtaHtml() {
+    if (LANG !== "de") return "";
+    return (
+      '<div class="info-box" style="border-left:4px solid #2B6CB0">' +
+        "<p><strong>Solange Sie warten: Wie schnell könnte Ihr Betrieb einen " +
+        "automatisierten Cyber-Angriff stoppen?</strong></p>" +
+        "<p>Der Cyberangriffs-Check ermittelt Ihre Reaktionslücke — 22 Fragen, " +
+        "gut 10 Minuten, ohne technisches Wissen zu beantworten. " +
+        'Sie bekommen einen eigenen PDF-Report.</p>' +
+        '<p><a href="/resilienz.html" style="display:inline-block;background:#2B6CB0;' +
+        'color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;' +
+        'font-weight:600">Reaktionslücke ermitteln →</a></p>' +
+      "</div>"
+    );
+  }
+
   // Zustand 1: Generierung läuft
   function renderProcessing(data) {
     var created = data && data.created_at;
@@ -275,6 +295,7 @@
         "<p>" + t("infoEmailWhenDone") + "</p>" +
         "<p>" + t("infoCanClose") + "</p>" +
       "</div>" +
+      cyberCtaHtml() +
       factsCardHtml()
     );
 
