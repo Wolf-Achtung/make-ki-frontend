@@ -175,6 +175,34 @@
     box.scrollIntoView({ behavior: "smooth" });
   }
 
+  // KIS-1261: Ein direkter <a href> auf die API-Domain schickt weder den
+  // Bearer-Header noch (cross-site) das Auth-Cookie mit — der PDF-Klick
+  // endete im Testlauf mit 401. Deshalb per fetch holen und als Blob oeffnen.
+  function downloadPdf(bid) {
+    var hint = document.getElementById("pdfHint");
+    var btn = document.getElementById("pdfBtn");
+    if (hint) hint.textContent = "PDF wird erzeugt …";
+    if (btn) btn.disabled = true;
+    fetch(API + "/resilienz/pdf/" + bid, { credentials: "include", headers: authHeaders() })
+      .then(function (r) {
+        if (r.status === 401) { window.location.href = "/login.html"; throw new Error("auth"); }
+        if (!r.ok) { throw new Error("pdf " + r.status); }
+        return r.blob();
+      })
+      .then(function (blob) {
+        var url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+        setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+        if (hint) hint.textContent = "";
+        if (btn) btn.disabled = false;
+      })
+      .catch(function (e) {
+        if (String(e.message) === "auth") return;
+        if (hint) hint.textContent = "Das PDF ließ sich nicht öffnen. Es liegt auch in Ihrer E-Mail.";
+        if (btn) btn.disabled = false;
+      });
+  }
+
   function pollStatus(bid, attempt) {
     attempt = attempt || 0;
     if (attempt > 60) { // 5 Minuten
@@ -190,7 +218,11 @@
           try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
           showResult("<h2>Ihr Cyberangriffs-Check ist fertig</h2>" +
             "<p>Der Report kommt zusätzlich per E-Mail als PDF.</p>" +
-            '<a class="button" href="' + API + "/resilienz/pdf/" + bid + '">Report als PDF öffnen</a>');
+            '<button class="button" id="pdfBtn" type="button">Report als PDF öffnen</button>' +
+            '<p class="hinweis" id="pdfHint"></p>');
+          document.getElementById("pdfBtn").addEventListener("click", function () {
+            downloadPdf(bid);
+          });
         } else if (j.status === "failed") {
           showResult("<h2>Das hat nicht geklappt</h2><p>Bitte senden Sie den Check erneut ab. " +
             "Ihre Antworten sind noch gespeichert.</p>");
