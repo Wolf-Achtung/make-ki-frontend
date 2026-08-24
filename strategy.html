@@ -19,9 +19,7 @@
     })();
   </script>
   <link rel="icon" href="/favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/brand.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="/chat-widget.css">
   <style>
@@ -71,7 +69,7 @@
       content: " — Bitte ausfüllen";
       font-size: 0.8rem;
       font-weight: 500;
-      color: #dc2626;
+      color: var(--error-red);
     }
 
     /* KIS-1251: EN-Variante des CSS-generierten Pflichtfeld-Hinweises */
@@ -89,7 +87,7 @@
     }
 
     .mk-question-label .mk-required {
-      color: #dc2626;
+      color: var(--error-red);
       margin-left: 0.15rem;
     }
 
@@ -125,7 +123,7 @@
       padding: 0.75rem 1rem;
       border: 2px solid var(--mk-border-light);
       border-radius: 10px;
-      background: #fafbfc;
+      background: var(--bg-page);
       cursor: pointer;
       font-size: 0.92rem;
       color: var(--mk-text-primary);
@@ -145,19 +143,19 @@
 
     .mk-radio-card label:hover {
       border-color: var(--mk-navy-300);
-      background: #ffffff;
+      background: var(--bg-card);
     }
 
     .mk-radio-card input[type="radio"]:checked + label {
       border-color: var(--mk-navy-500);
-      background: #ffffff;
+      background: var(--bg-card);
       box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
     }
 
     .mk-radio-card input[type="radio"]:checked + label::before {
       border-color: var(--mk-navy-500);
       background: var(--mk-navy-500);
-      box-shadow: inset 0 0 0 3px #ffffff;
+      box-shadow: inset 0 0 0 3px var(--bg-card);
     }
 
     /* Checkbox card */
@@ -185,7 +183,7 @@
       padding: 0.75rem 1rem;
       border: 2px solid var(--mk-border-light);
       border-radius: 10px;
-      background: #fafbfc;
+      background: var(--bg-page);
       cursor: pointer;
       font-size: 0.92rem;
       color: var(--mk-text-primary);
@@ -205,19 +203,19 @@
 
     .mk-check-card label:hover {
       border-color: var(--mk-navy-300);
-      background: #ffffff;
+      background: var(--bg-card);
     }
 
     .mk-check-card input[type="checkbox"]:checked + label {
       border-color: var(--mk-navy-500);
-      background: #ffffff;
+      background: var(--bg-card);
       box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
     }
 
     .mk-check-card input[type="checkbox"]:checked + label::before {
       border-color: var(--mk-navy-500);
       background: var(--mk-navy-500);
-      box-shadow: inset 0 0 0 2px #ffffff;
+      box-shadow: inset 0 0 0 2px var(--bg-card);
     }
 
     .mk-check-card input[type="checkbox"]:disabled + label {
@@ -227,7 +225,7 @@
 
     .mk-check-card input[type="checkbox"]:disabled + label:hover {
       border-color: var(--mk-border-light);
-      background: #fafbfc;
+      background: var(--bg-page);
     }
 
     /* Tool category headings (S5) */
@@ -259,7 +257,7 @@
       padding: 0.75rem 1rem;
       border-radius: 10px;
       border: 2px solid var(--mk-border-light);
-      background: #fafbfc;
+      background: var(--bg-page);
       color: var(--mk-text-primary);
       outline: none;
       transition: var(--mk-transition-fast);
@@ -272,7 +270,7 @@
 
     .mk-form-text-input:focus {
       border-color: var(--mk-navy-400);
-      background: #ffffff;
+      background: var(--bg-card);
       box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
     }
 
@@ -294,7 +292,7 @@
 
     .mk-option-hint {
       display: block;
-      color: #6b7280;
+      color: var(--text-muted);
       font-size: 0.82em;
       font-weight: 400;
       margin-top: 3px;
@@ -309,7 +307,7 @@
       padding: 0.875rem 1rem;
       border-radius: 10px;
       border: 2px solid var(--mk-border-light);
-      background: #fafbfc;
+      background: var(--bg-page);
       color: var(--mk-text-primary);
       outline: none;
       resize: vertical;
@@ -324,7 +322,7 @@
 
     .mk-form-textarea:focus {
       border-color: var(--mk-navy-400);
-      background: #ffffff;
+      background: var(--bg-card);
       box-shadow: 0 0 0 3px rgba(42,106,158,0.1);
     }
 
@@ -372,21 +370,21 @@
     }
 
     .mk-status-success {
-      color: #065f46;
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
+      color: var(--success-green);
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
       border-radius: 10px;
       padding: 1.5rem;
     }
 
     .mk-status-success .mk-status-title {
-      color: #065f46;
+      color: var(--success-green);
     }
 
     .mk-status-error {
       color: #991b1b;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
       border-radius: 10px;
       padding: 1.5rem;
     }
@@ -480,7 +478,7 @@
       }
 
       .mk-option-hint {
-        color: #9ca3af;
+        color: var(--text-muted);
       }
 
       .mk-tool-category {
@@ -512,11 +510,11 @@
       .mk-status-success {
         background: rgba(16,185,129,0.15);
         border-color: rgba(16,185,129,0.3);
-        color: #6ee7b7;
+        color: var(--success-border);
       }
 
       .mk-status-success .mk-status-title {
-        color: #6ee7b7;
+        color: var(--success-border);
       }
 
       .mk-status-error {
@@ -574,7 +572,7 @@
         <div class="mk-strategy-intro">
           <h2>Ihr persönlicher KI-Strategiebericht</h2>
           <p>Auf Basis Ihrer KI-Readiness-Analyse erstellen wir Ihren individuellen Implementierungsfahrplan. Dafür benötigen wir noch wenige Angaben zu Ihrer <strong>konkreten Umsetzungsplanung</strong> — einige Punkte kennen wir bereits aus Ihrer Analyse, hier geht es um die strategische Priorisierung.</p>
-          <p style="font-size:0.85rem; color:var(--mk-text-muted); margin-top:0.5rem;">10 Fragen · 3–5 Minuten · maßgeschneiderter Strategiefahrplan · Pflichtfelder mit <strong style="color:#dc2626;">*</strong></p>
+          <p style="font-size:0.85rem; color:var(--mk-text-muted); margin-top:0.5rem;">10 Fragen · 3–5 Minuten · maßgeschneiderter Strategiefahrplan · Pflichtfelder mit <strong style="color:var(--error-red);">*</strong></p>
         </div>
 
         <form id="strategy-form" novalidate>
@@ -1098,7 +1096,7 @@
         </div>
         <div style="display: flex; flex-direction: column; align-items: center; background: transparent; border: none; box-shadow: none;">
           <img src="badges/ki-sicherheit-logo.webp" alt="KI-Sicherheit.jetzt" style="height: 70px; width: auto;" onerror="this.parentElement.style.display='none'">
-          <span style="font-size: 0.75rem; color: #1e3a5f; margin-top: 0.5rem; font-weight: 600;">TÜV-zertifiziertes KI-Management - Wolf Hohl</span>
+          <span style="font-size: 0.75rem; color: var(--navy-600); margin-top: 0.5rem; font-weight: 600;">TÜV-zertifiziertes KI-Management - Wolf Hohl</span>
         </div>
       </div>
 
@@ -1142,7 +1140,7 @@
             errNoIdText: "Bitte nutzen Sie den Link aus Ihrer E-Mail, um auf diese Seite zuzugreifen.",
             introTitle: "Ihr persönlicher KI-Strategiebericht",
             introText: "Auf Basis Ihrer KI-Readiness-Analyse erstellen wir Ihren individuellen Implementierungsfahrplan. Dafür benötigen wir noch wenige Angaben zu Ihrer <strong>konkreten Umsetzungsplanung</strong> — einige Punkte kennen wir bereits aus Ihrer Analyse, hier geht es um die strategische Priorisierung.",
-            introMeta: '10 Fragen · 3–5 Minuten · maßgeschneiderter Strategiefahrplan · Pflichtfelder mit <strong style="color:#dc2626;">*</strong>',
+            introMeta: '10 Fragen · 3–5 Minuten · maßgeschneiderter Strategiefahrplan · Pflichtfelder mit <strong style="color:var(--error-red);">*</strong>',
             modeChatTitle: "KI-gestütztes Gespräch",
             modeChatText: "Lassen Sie sich Schritt für Schritt durch die Strategiefragen führen. Die KI erklärt Hintergründe und hilft bei der Einordnung.",
             modeChatBadge: "Empfohlen · ca. 5 Min.",
@@ -1264,7 +1262,7 @@
             errNoIdText: "Please use the link from your email to access this page.",
             introTitle: "Your personal AI Strategy Report",
             introText: "Based on your AI readiness analysis, we create your individual implementation roadmap. We just need a few more details about your <strong>specific implementation planning</strong> — some points we already know from your analysis; this is about strategic prioritisation.",
-            introMeta: '10 questions · 3–5 minutes · tailored strategy roadmap · required fields marked with <strong style="color:#dc2626;">*</strong>',
+            introMeta: '10 questions · 3–5 minutes · tailored strategy roadmap · required fields marked with <strong style="color:var(--error-red);">*</strong>',
             modeChatTitle: "AI-guided conversation",
             modeChatText: "Let the AI guide you step by step through the strategy questions. It explains the background and helps you put things into context.",
             modeChatBadge: "Recommended · approx. 5 min",
@@ -1789,8 +1787,8 @@
                 _errBox = document.createElement("div");
                 _errBox.id = "submit-error";
                 _errBox.setAttribute("role", "alert");
-                _errBox.style.cssText = "margin-top:12px;padding:12px 16px;background:#fef2f2;" +
-                    "border-left:4px solid #dc2626;border-radius:6px;color:#7f1d1d;font-size:0.9rem;";
+                _errBox.style.cssText = "margin-top:12px;padding:12px 16px;background:var(--error-bg);" +
+                    "border-left:4px solid var(--error-red);border-radius:6px;color:#7f1d1d;font-size:0.9rem;";
                 var _btn = document.getElementById("btn-submit");
                 if (_btn && _btn.parentNode) _btn.parentNode.insertBefore(_errBox, _btn.nextSibling);
                 else document.getElementById("form-section").appendChild(_errBox);
@@ -1878,13 +1876,13 @@
             var css = document.createElement("style");
             css.id = "fe-strategy-css";
             css.textContent = ""
-                + ".fe-toggle{cursor:pointer;color:#4CAF50;font-size:0.9em;margin-top:8px;display:inline-block;user-select:none;transition:opacity 0.2s}"
+                + ".fe-toggle{cursor:pointer;color:var(--success-green);font-size:0.9em;margin-top:8px;display:inline-block;user-select:none;transition:opacity 0.2s}"
                 + ".fe-toggle:hover{opacity:0.8}"
                 + ".fe-panel{display:none;margin-top:8px}"
                 + ".fe-panel.fe-open{display:block}"
                 + ".fe-hint{font-style:italic;color:#999;font-size:0.85em;margin-bottom:8px;line-height:1.5}"
-                + ".fe-example-box{background:rgba(255,255,255,0.05);border-left:3px solid #4CAF50;padding:12px;border-radius:4px;font-size:0.9em;color:var(--mk-text-secondary,#475569);line-height:1.6;margin-bottom:10px}"
-                + ".fe-adopt-btn{border:0;border-radius:8px;padding:8px 16px;font-size:0.85em;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#4CAF50,#66BB6A);color:#fff;transition:all 0.2s}"
+                + ".fe-example-box{background:rgba(255,255,255,0.05);border-left:3px solid var(--success-green);padding:12px;border-radius:4px;font-size:0.9em;color:var(--mk-text-secondary,#475569);line-height:1.6;margin-bottom:10px}"
+                + ".fe-adopt-btn{border:0;border-radius:8px;padding:8px 16px;font-size:0.85em;font-weight:600;cursor:pointer;background:linear-gradient(135deg,var(--success-green),var(--success-green));color:#fff;transition:all 0.2s}"
                 + ".fe-adopt-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(76,175,80,0.3)}";
             document.head.appendChild(css);
         }
@@ -1952,10 +1950,10 @@
 </script>
 
 
-<footer style="margin-top:48px;padding:20px 16px;text-align:center;font-size:13px;color:#64748b;border-top:1px solid #e2e8f0;">
-  <a href="/impressum.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Impressum</a>&middot;
-  <a href="/formular/datenschutz.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Datenschutz</a>&middot;
-  <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:#64748b;margin:0 10px;text-decoration:none;">Kontakt</a>
+<footer style="margin-top:48px;padding:20px 16px;text-align:center;font-size:13px;color:var(--text-muted);border-top:1px solid var(--border-light);">
+  <a href="/impressum.html" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Impressum</a>&middot;
+  <a href="/formular/datenschutz.html" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Datenschutz</a>&middot;
+  <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Kontakt</a>
 </footer>
 <script src="/js/analytics.js"></script>
 </body>

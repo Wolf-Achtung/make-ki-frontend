@@ -254,13 +254,13 @@
   function cyberCtaHtml() {
     if (LANG !== "de") return "";
     return (
-      '<div class="info-box" style="border-left:4px solid #2B6CB0">' +
+      '<div class="info-box" style="border-left:4px solid var(--navy-500,#1e4a6f)">' +
         "<p><strong>Solange Sie warten: Wie schnell könnte Ihr Betrieb einen " +
         "automatisierten Cyber-Angriff stoppen?</strong></p>" +
         "<p>Der Cyberangriffs-Check ermittelt Ihre Reaktionslücke — 22 Fragen, " +
         "gut 10 Minuten, ohne technisches Wissen zu beantworten. " +
         'Sie bekommen einen eigenen PDF-Report.</p>' +
-        '<p><a href="/resilienz.html" style="display:inline-block;background:#2B6CB0;' +
+        '<p><a href="/resilienz.html" style="display:inline-block;background:var(--navy-500,#1e4a6f);' +
         'color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;' +
         'font-weight:600">Reaktionslücke ermitteln →</a></p>' +
       "</div>"
