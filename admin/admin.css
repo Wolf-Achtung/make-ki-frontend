@@ -1,3 +1,18 @@
+/* Admin-Detailansicht — internes Werkzeug.
+   Diese Regeln standen bis 2026-08 in der gemeinsamen styles.css und
+   wirkten dort auf jede Seite ohne .mk-background. Sie sind hierher
+   gezogen, damit die Admin-Ansicht unveraendert bleibt und die
+   gemeinsame styles.css keine Fremdfarben mehr traegt. */
+:root {
+  --bg: #0b1220;
+  --fg: #e8eef6;
+  --border: #1f2636;
+  --acc: #61dafb;
+}
+body { margin: 0; background: var(--bg); color: var(--fg);
+       font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+a { color: var(--acc); }
+
 /* admin/admin.css additions for Auto-Refresh & Toast */
 .toast{
   position: fixed;

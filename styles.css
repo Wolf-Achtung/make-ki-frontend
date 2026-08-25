@@ -1,52 +1,9 @@
-:root{--bg:#0b1220;--fg:#e8eef6;--muted:#9aa3ab;--card:#141a2a;--border:#1f2636;--acc:#61dafb}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-a{color:var(--acc)}
-.popup-container{background:rgba(0,0,0,.55)}
-.popup{background:#0f1626;color:var(--fg);border:1px solid var(--border)}
-.popup input{background:#0b1220;color:var(--fg)}
-.popup button{background:#2e7d32}
-.msg.info{background:#0e1b2b;border-color:#264b7c;color:#cfe7ff}
-.msg.err{background:#2b1111;border-color:#5e2a2a;color:#ffdede}
-
 /* =========================================
-   V19 – Shared Layout for make index + login
+   Gemeinsames Layout fuer make index + login
+   Farben und Schriften kommen aus /brand.css.
    ========================================= */
 
-:root {
-  --mk-navy-900: #0a1628;
-  --mk-navy-800: #0e1e36;
-  --mk-navy-700: #132744;
-  --mk-navy-600: #1a3a5c;
-  --mk-navy-500: #1e4a6f;
-  --mk-navy-400: #2a6a9e;
-  --mk-navy-300: #4a8cc4;
-  --mk-navy-200: #7eb3dc;
-  --mk-navy-100: #c5ddf0;
-  --mk-navy-50: #e8f2fa;
-
-  --mk-warm-600: #a68921;
-  --mk-warm-500: #c9a227;
-  --mk-warm-400: #d4b33d;
-  --mk-warm-300: #e0c65a;
-  --mk-warm-200: #f0dfa0;
-  --mk-warm-100: #faf4dc;
-
-  --mk-text-primary: #0e1525;
-  --mk-text-secondary: #3d4f63;
-  --mk-text-muted: #566578;
-  --mk-border-light: #e2e8f0;
-  --mk-border-medium: #cbd5e1;
-  --mk-bg-card: #ffffff;
-
-  --mk-shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --mk-shadow-md: 0 4px 12px rgba(0,0,0,0.07);
-  --mk-shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.07);
-
-  --mk-transition-fast: 0.15s ease;
-  --mk-transition-base: 0.25s ease;
-}
+/* Design-Tokens zentral: /brand.css (vor dieser Datei einbinden) */
 
 /* Hintergrund: Gradient + Dot-Matrix – analog report */
 body.mk-background {
@@ -549,13 +506,7 @@ body.mk-background::after {
   body.mk-background {
     background: linear-gradient(135deg, var(--mk-navy-900) 0%, #0c1a2e 50%, var(--mk-navy-900) 100%);
   }
-  :root {
-    --mk-text-primary: #e8eef6;
-    --mk-text-secondary: #a8b5c4;
-    --mk-bg-card: #0e1e36;
-    --mk-border-light: #1f3350;
-    --mk-border-medium: #2a4a6a;
-  }
+  /* Dunkelmodus-Tokens zentral: /brand.css */
   .mk-card-body h1,
   .mk-card-body h2.mk-title {
     color: var(--mk-navy-100);

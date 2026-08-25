@@ -6,9 +6,7 @@
   <meta name="api-base" content="https://api-ki-backend-neu-production.up.railway.app/api">
   <title>AI Check Pro — AI-Security.now</title>
   <meta name="description" content="AI Status Report: GDPR compliant, EU AI Act ready — start your full check now.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/brand.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="preload" href="/js/config.js" as="script">
 </head>
@@ -24,9 +22,9 @@
     </header>
     <div class="mk-card-body">
       <div class="mk-lang-switch" style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-bottom: 1rem;">
-        <a href="index.html" style="font-size: 0.85rem; color: #1e3a5f; text-decoration: none;">DE</a>
-        <span style="color: #6b7a8c;">|</span>
-        <a href="index_en.html" style="font-size: 0.85rem; color: #1e3a5f; text-decoration: none; font-weight: 700;">EN</a>
+        <a href="index.html" style="font-size: 0.85rem; color: var(--navy-600); text-decoration: none;">DE</a>
+        <span style="color: var(--text-muted);">|</span>
+        <a href="index_en.html" style="font-size: 0.85rem; color: var(--navy-600); text-decoration: none; font-weight: 700;">EN</a>
       </div>
 
       <h1>Certified.<br>Documented.<br>AI-Compliant.</h1>
@@ -85,7 +83,7 @@
         <!-- Lower row: AI-Security -->
         <div style="display: flex; flex-direction: column; align-items: center; background: transparent; border: none; box-shadow: none;">
           <img src="badges/ki-sicherheit-logo.webp" alt="AI-Security.now" style="height: 70px; width: auto;" onerror="this.parentElement.style.display='none'">
-          <span style="font-size: 0.75rem; color: #1e3a5f; margin-top: 0.5rem; font-weight: 600;">TÜV-certified AI Management - Wolf Hohl</span>
+          <span style="font-size: 0.75rem; color: var(--navy-600); margin-top: 0.5rem; font-weight: 600;">TÜV-certified AI Management - Wolf Hohl</span>
         </div>
       </div>
     </div>
@@ -133,10 +131,10 @@ setInterval(showTestimonial, 4000);
 </script>
 
 
-<footer style="margin-top:48px;padding:20px 16px;text-align:center;font-size:13px;color:#64748b;border-top:1px solid #e2e8f0;">
-  <a href="/impressum.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Legal Notice</a>&middot;
-  <a href="/formular/privacy.html" style="color:#64748b;margin:0 10px;text-decoration:none;">Privacy</a>&middot;
-  <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:#64748b;margin:0 10px;text-decoration:none;">Contact</a>
+<footer style="margin-top:48px;padding:20px 16px;text-align:center;font-size:13px;color:var(--text-muted);border-top:1px solid var(--border-light);">
+  <a href="/impressum.html" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Legal Notice</a>&middot;
+  <a href="/formular/privacy.html" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Privacy</a>&middot;
+  <a href="mailto:kontakt@ki-sicherheit.jetzt" style="color:var(--text-muted);margin:0 10px;text-decoration:none;">Contact</a>
 </footer>
 <script src="/js/analytics.js"></script>
 </body>
