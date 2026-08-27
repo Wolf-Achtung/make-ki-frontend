@@ -436,6 +436,13 @@
                 renderQuickReplies(data.state.quick_replies);
             }
 
+            // Symmetrie zu SSE- und Resume-Pfad: Inspiration-Chips auch
+            // beim Sitzungsstart rendern, falls der Server welche liefert.
+            if (data.state) {
+                _inspirationFieldName = data.state.field_examples_for || null;
+                renderInspirationChipsIfApplicable(data.state);
+            }
+
             updateProgress(data.state);
 
             try {
@@ -2129,6 +2136,7 @@
                 renderSmartChipsIfApplicable(sessionData.state);
             }
             if (typeof renderInspirationChipsIfApplicable === "function") {
+                _inspirationFieldName = sessionData.state.field_examples_for || null;
                 renderInspirationChipsIfApplicable(sessionData.state);
             }
         }
