@@ -263,6 +263,13 @@
         '<p><a href="/resilienz.html" style="display:inline-block;background:var(--navy-500,#1e4a6f);' +
         'color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;' +
         'font-weight:600">Reaktionslücke ermitteln →</a></p>' +
+        // KIS-1267: Der Check darf nicht als Bedingung wirken. Wolf-Feedback
+        // 03.09.2026: hier muss stehen, dass der Status-Report unabhaengig
+        // davon per Mail kommt — sonst fuellt jemand den Check nur aus Sorge
+        // aus, seinen Report sonst nicht zu bekommen.
+        '<p style="margin-bottom:0"><strong>Unabhängig davon:</strong> ' +
+        "Ihr KI-Status-Report wird gerade erstellt und kommt per E-Mail — " +
+        "ob Sie den Cyberangriffs-Check ausfüllen oder nicht.</p>" +
       "</div>"
     );
   }
