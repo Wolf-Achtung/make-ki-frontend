@@ -192,6 +192,21 @@
 
     <label for="report_comment">Ergänzung zur Report-Qualität? (optional)</label>
     <textarea name="report_comment" id="report_comment" maxlength="500" placeholder="Was war stark, was verbesserungswürdig?"></textarea>
+
+    <!-- KIS-1281 Stufe 4: Welche Empfehlung hat getragen?
+         Freitext mit Absicht — eine Auswahlliste würde die Antwort auf
+         das begrenzen, was der Report vorgeschlagen hat. Gerade die
+         Werkzeuge, die jemand STATT der Empfehlung genommen hat, sind
+         die interessanten. Beide Felder freiwillig: Eine Pflichtfrage
+         senkt die Rücklaufquote der ganzen Umfrage.
+         Auswertung: scripts/empfehlungs_resonanz.py im Backend. -->
+    <label for="tools_adopted">Welche Werkzeuge haben Sie seither eingeführt? (optional)</label>
+    <textarea name="tools_adopted" id="tools_adopted" maxlength="500"
+      placeholder="Auch solche, die nicht im Report standen — genau die interessieren uns."></textarea>
+
+    <label for="funding_applied">Haben Sie ein Förderprogramm beantragt? (optional)</label>
+    <textarea name="funding_applied" id="funding_applied" maxlength="500"
+      placeholder="Name des Programms, gern auch: geprüft und verworfen."></textarea>
   </div>
 
   <!-- Block D: Gesamteindruck & Ausblick -->
