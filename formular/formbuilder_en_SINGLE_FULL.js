@@ -427,6 +427,16 @@ function _collectLabelFor(fieldKey, value){
       ],
       description: "(So benchmarks, limits, and ROI calculations can be reliably derived.)"
     },
+    // KIS-1290: Existed in the German form since the business-case rework, was
+    // never added here — the English report lacked the volume figure.
+    { key: "projekte_pro_monat", label: "How many projects/orders do you typically handle per month?", type: "select",
+      options: [
+        { value: "unter_2", label: "Under 2" }, { value: "2_5", label: "2–5" },
+        { value: "6_10", label: "6–10" }, { value: "ueber_10", label: "Over 10" },
+        { value: "keine_angabe", label: "Varies a lot / prefer not to say" }
+      ],
+      description: "(So time savings and capacity gains can be translated realistically into revenue potential.)"
+    },
     { key: "it_infrastruktur", label: "How is your IT infrastructure organized?", type: "select",
       options: [
         { value: "cloud", label: "Cloud-based (e.g., Microsoft 365, Google Cloud)" },
@@ -495,6 +505,10 @@ function _collectLabelFor(fieldKey, value){
       description: "(So we can choose suitable entry points with high benefit and low complexity.)" },
     { key: "zeitersparnis_prioritaet", label: "Where does most time or frustration go today?", type: "textarea",
       placeholder: "e.g., email overload, writing proposals, coordination and approval loops, documentation, invoicing...", description: "(So we can derive very specific quick-win recommendations for relief - with noticeable time savings in daily work.)" },
+    // KIS-1290: see projekte_pro_monat — same gap.
+    { key: "top_zeitfresser", label: "Which two or three tasks cost you the most time?", type: "textarea",
+      placeholder: "e.g., writing quotes and proposals; email correspondence and scheduling; documentation after project completion",
+      description: "(The more concrete the tasks, the more directly the quick wins hit your daily work.)" },
     { key: "pilot_bereich", label: "Best area for pilot project", type: "select",
       options: [
         { value: "kundenservice", label: "Customer service" }, { value: "marketing", label: "Marketing / Content" },
@@ -630,9 +644,9 @@ function _collectLabelFor(fieldKey, value){
   ];
 
   var blocks = [
-    { title: "Company Data & Industry", intro: BLOCK_INTRO[0], keys: ["branche", "medien_sparte", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
+    { title: "Company Data & Industry", intro: BLOCK_INTRO[0], keys: ["branche", "medien_sparte", "unternehmensgroesse", "selbststaendig", "country", "bundesland", "hauptleistung", "zielgruppen", "jahresumsatz", "projekte_pro_monat", "it_infrastruktur", "interne_ki_kompetenzen", "datenquellen"] },
     { title: "Status Quo", intro: BLOCK_INTRO[1], keys: ["digitalisierungsgrad", "prozesse_papierlos", "automatisierungsgrad", "ki_einsatz", "ki_kompetenz"] },
-    { title: "Goals & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
+    { title: "Goals & Use Cases", intro: BLOCK_INTRO[2], keys: ["ki_ziele", "ki_projekte", "anwendungsfaelle", "zeitersparnis_prioritaet", "top_zeitfresser", "pilot_bereich", "geschaeftsmodell_evolution", "vision_3_jahre"] },
     { title: "Strategy & Governance", intro: BLOCK_INTRO[3], keys: ["strategische_ziele", "ki_guardrails", "massnahmen_komplexitaet", "roadmap_vorhanden", "governance_richtlinien", "change_management"] },
     { title: "Resources & Preferences", intro: BLOCK_INTRO[4], keys: ["zeitbudget", "vorhandene_tools", "regulierte_branche", "trainings_interessen", "vision_prioritaet"] },
     { title: "Legal & Compliance", intro: BLOCK_INTRO[5], keys: ["datenschutzbeauftragter", "technische_massnahmen", "folgenabschaetzung", "meldewege", "loeschregeln", "ai_act_kenntnis", "ki_hemmnisse"] },
@@ -827,7 +841,8 @@ function _collectLabelFor(fieldKey, value){
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
       "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0,
       "ki_projekte":1,"geschaeftsmodell_evolution":1,"vision_3_jahre":1,"ki_guardrails":1,
-      "bisherige_foerdermittel":1,"interesse_foerderung":1,"medien_sparte":1
+      "bisherige_foerdermittel":1,"interesse_foerderung":1,"medien_sparte":1,
+      "projekte_pro_monat":1,"top_zeitfresser":1
     };
     var missing = [];
     var block = blocks[currentBlock];
