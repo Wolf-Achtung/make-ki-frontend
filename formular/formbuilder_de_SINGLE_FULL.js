@@ -256,11 +256,14 @@ function _collectLabelFor(fieldKey, value){
   function getFieldExample(fieldKey) {
     if (typeof FIELD_EXAMPLES === "undefined") return null;
     var branche = (formData && formData.branche) || "default";
+    var sparte = (formData && formData.medien_sparte) || "";
     var rawSize = (formData && formData.unternehmensgroesse) || "default";
     var size = (rawSize === "1") ? "solo" : (rawSize === "2–10" || rawSize === "2-10") ? "team" : (rawSize === "11–100" || rawSize === "11-100") ? "kmu" : "default";
     var candidates = [
       [branche, size], [branche, "default"], ["default", size], ["default", "default"]
     ];
+    // KIS-1291: Sparte zuerst (medien/games, medien/verlag_publishing, …)
+    if (sparte) candidates = [[branche + "/" + sparte, size], [branche + "/" + sparte, "default"]].concat(candidates);
     for (var i = 0; i < candidates.length; i++) {
       var b = candidates[i][0], s = candidates[i][1];
       if (FIELD_EXAMPLES[b] && FIELD_EXAMPLES[b][s] && FIELD_EXAMPLES[b][s][fieldKey]) {
@@ -501,7 +504,10 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "kundendaten", label: "Kundendaten (CRM, Service)" }, { value: "verkaufsdaten", label: "Verkaufs-/Bestelldaten" },
         { value: "produktionsdaten", label: "Produktions-/Betriebsdaten" }, { value: "personaldaten", label: "Personal-/HR-Daten" },
-        { value: "marketingdaten", label: "Marketing-/Kampagnendaten" }, { value: "sonstige", label: "Sonstige Datenquellen" }
+        { value: "marketingdaten", label: "Marketing-/Kampagnendaten" },
+        { value: "rohmaterial_archiv", label: "Rohmaterial / Archiv" }, { value: "rechte_lizenzen", label: "Rechte- und Lizenzdaten" },
+        { value: "manuskripte_texte", label: "Manuskripte / Texte" }, { value: "nutzungsdaten", label: "Nutzungsdaten (Streaming, Store)" },
+        { value: "sonstige", label: "Sonstige Datenquellen" }
       ],
       description: "(Damit wir sinnvolle, datengestützte Use-Cases ohne aufwendige Vorprojekte finden.)"
     },
@@ -522,7 +528,8 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "chatbots", label: "Chatbots / Kundenservice" }, { value: "marketing", label: "Marketing & Content" },
         { value: "vertrieb", label: "Vertrieb & CRM" }, { value: "datenanalyse", label: "Datenanalyse" },
-        { value: "produktion", label: "Produktion / Logistik" }, { value: "hr", label: "Personalmanagement" },
+        { value: "produktion", label: "Produktion / Postproduktion" }, { value: "redaktion", label: "Redaktion / Lektorat" },
+        { value: "studio_audio", label: "Studio / Audio" }, { value: "hr", label: "Personalmanagement" },
         { value: "andere", label: "Andere Bereiche" }, { value: "noch_keine", label: "Noch keine Nutzung" }
       ],
       description: "(Damit vorhandene Lösungen berücksichtigt und Doppelarbeiten konsequent vermieden werden.)" },
@@ -548,6 +555,9 @@ function _collectLabelFor(fieldKey, value){
         { value: "chatbots", label: "Chatbots / FAQ-Automatisierung" }, { value: "content_generation", label: "Content-Generierung" },
         { value: "datenanalyse", label: "Datenanalyse & Reporting" }, { value: "dokumentation", label: "Dokumentation & Wissen" },
         { value: "prozess_automation", label: "Prozessautomation" }, { value: "personalisierung", label: "Personalisierung" },
+        { value: "transkription_untertitel", label: "Transkription / Untertitel" }, { value: "archiv_verschlagwortung", label: "Archiv-Verschlagwortung" },
+        { value: "synchron_dubbing", label: "Synchron / Dubbing" }, { value: "lokalisierung", label: "Lokalisierung" },
+        { value: "vorlektorat", label: "Vorlektorat" },
         { value: "andere", label: "Andere" }, { value: "keine_angabe", label: "Noch unklar" }
       ],
       description: "(Damit wir passende Einstiege mit hohem Nutzen und geringer Komplexität wählen.)" },
@@ -561,7 +571,8 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "kundenservice", label: "Kundenservice" }, { value: "marketing", label: "Marketing / Content" },
         { value: "vertrieb", label: "Vertrieb" }, { value: "verwaltung", label: "Verwaltung / Backoffice" },
-        { value: "produktion", label: "Produktion / Logistik" }, { value: "andere", label: "Andere" }
+        { value: "produktion", label: "Produktion / Postproduktion" }, { value: "redaktion", label: "Redaktion / Lektorat" },
+        { value: "studio_audio", label: "Studio / Audio" }, { value: "andere", label: "Andere" }
       ],
       description: "(Damit Ihr nächstes KI-Projekt reibungslos startet und zuverlässig Ergebnisse liefert.)" },
     { key: "geschaeftsmodell_evolution", label: "Haben Sie Ideen, wie KI Ihr Geschäftsmodell verändern oder ergänzen könnte?", type: "textarea",
@@ -597,7 +608,10 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "crm", label: "CRM-Systeme (HubSpot, Salesforce)" }, { value: "erp", label: "ERP-Systeme (SAP, Odoo)" },
         { value: "projektmanagement", label: "Projektmanagement (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing Automation" },
-        { value: "buchhaltung", label: "Buchhaltungssoftware" }, { value: "keine", label: "Keine / andere" }
+        { value: "buchhaltung", label: "Buchhaltungssoftware" },
+        { value: "schnitt_grading", label: "Schnitt / Grading (Premiere, DaVinci, Avid)" }, { value: "audio_daw", label: "Audio (Pro Tools, Logic)" },
+        { value: "redaktion_satz", label: "Redaktion / Satz (InDesign, CMS)" }, { value: "engine", label: "Engine (Unreal, Unity)" },
+        { value: "review_mam", label: "Review / MAM (Frame.io, iconik)" }, { value: "keine", label: "Keine / andere" }
       ],
       description: "(Damit Integrationen genutzt und unnötige Tool-Dopplungen konsequent vermieden werden.)" },
     { key: "regulierte_branche", label: "Regulierte Branche", type: "checkbox",
@@ -612,7 +626,9 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "prompt_engineering", label: "Prompt Engineering" }, { value: "llm_basics", label: "LLM-Grundlagen" },
         { value: "datenqualitaet_governance", label: "Datenqualität & Governance" }, { value: "automatisierung", label: "Automatisierung & Skripte" },
-        { value: "ethik_recht", label: "Ethische & rechtliche Grundlagen" }, { value: "keine", label: "Keine / noch unklar" }
+        { value: "ethik_recht", label: "Ethische & rechtliche Grundlagen" },
+        { value: "ki_rechte_kennzeichnung", label: "KI-Rechte & Kennzeichnung" }, { value: "stimme_gesicht_einwilligung", label: "Stimme & Gesicht: Einwilligung" },
+        { value: "keine", label: "Keine / noch unklar" }
       ],
       description: "(Damit Trainings passgenau geplant und Lernziele schnell erreicht werden.)" },
     { key: "vision_prioritaet", label: "Wichtigster strategischer Hebel", type: "select",

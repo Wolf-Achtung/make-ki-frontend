@@ -453,7 +453,10 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "kundendaten", label: "Customer data (CRM, Service)" }, { value: "verkaufsdaten", label: "Sales/Order data" },
         { value: "produktionsdaten", label: "Production/Operations data" }, { value: "personaldaten", label: "Personnel/HR data" },
-        { value: "marketingdaten", label: "Marketing/Campaign data" }, { value: "sonstige", label: "Other data sources" }
+        { value: "marketingdaten", label: "Marketing/Campaign data" },
+        { value: "rohmaterial_archiv", label: "Raw footage / archive" }, { value: "rechte_lizenzen", label: "Rights and licence data" },
+        { value: "manuskripte_texte", label: "Manuscripts / texts" }, { value: "nutzungsdaten", label: "Usage data (streaming, store)" },
+        { value: "sonstige", label: "Other data sources" }
       ],
       description: "(So we can find meaningful, data-driven use cases without complex preliminary projects.)"
     },
@@ -474,7 +477,8 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "chatbots", label: "Chatbots / Customer service" }, { value: "marketing", label: "Marketing & Content" },
         { value: "vertrieb", label: "Sales & CRM" }, { value: "datenanalyse", label: "Data analysis" },
-        { value: "produktion", label: "Production / Logistics" }, { value: "hr", label: "HR Management" },
+        { value: "produktion", label: "Production / Post-production" }, { value: "redaktion", label: "Editorial / proofreading" },
+        { value: "studio_audio", label: "Studio / audio" }, { value: "hr", label: "HR Management" },
         { value: "andere", label: "Other areas" }, { value: "noch_keine", label: "Not yet in use" }
       ],
       description: "(So existing solutions are considered and duplicate work is consistently avoided.)" },
@@ -500,6 +504,9 @@ function _collectLabelFor(fieldKey, value){
         { value: "chatbots", label: "Chatbots / FAQ automation" }, { value: "content_generation", label: "Content generation" },
         { value: "datenanalyse", label: "Data analysis & Reporting" }, { value: "dokumentation", label: "Documentation & Knowledge" },
         { value: "prozess_automation", label: "Process automation" }, { value: "personalisierung", label: "Personalization" },
+        { value: "transkription_untertitel", label: "Transcription / subtitles" }, { value: "archiv_verschlagwortung", label: "Archive tagging" },
+        { value: "synchron_dubbing", label: "Dubbing / voice-over" }, { value: "lokalisierung", label: "Localisation" },
+        { value: "vorlektorat", label: "AI pre-editing" },
         { value: "andere", label: "Other" }, { value: "keine_angabe", label: "Still unclear" }
       ],
       description: "(So we can choose suitable entry points with high benefit and low complexity.)" },
@@ -513,7 +520,8 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "kundenservice", label: "Customer service" }, { value: "marketing", label: "Marketing / Content" },
         { value: "vertrieb", label: "Sales" }, { value: "verwaltung", label: "Administration / Back office" },
-        { value: "produktion", label: "Production / Logistics" }, { value: "andere", label: "Other" }
+        { value: "produktion", label: "Production / Post-production" }, { value: "redaktion", label: "Editorial / proofreading" },
+        { value: "studio_audio", label: "Studio / audio" }, { value: "andere", label: "Other" }
       ],
       description: "(So the first pilot project starts smoothly and reliably delivers results.)" },
     { key: "geschaeftsmodell_evolution", label: "Do you have ideas how AI could change or complement your business model?", type: "textarea",
@@ -549,7 +557,10 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "crm", label: "CRM systems (HubSpot, Salesforce)" }, { value: "erp", label: "ERP systems (SAP, Odoo)" },
         { value: "projektmanagement", label: "Project management (Asana, Trello)" }, { value: "marketing_automation", label: "Marketing Automation" },
-        { value: "buchhaltung", label: "Accounting software" }, { value: "keine", label: "None / other" }
+        { value: "buchhaltung", label: "Accounting software" },
+        { value: "schnitt_grading", label: "Editing / grading (Premiere, DaVinci, Avid)" }, { value: "audio_daw", label: "Audio (Pro Tools, Logic)" },
+        { value: "redaktion_satz", label: "Editorial / layout (InDesign, CMS)" }, { value: "engine", label: "Engine (Unreal, Unity)" },
+        { value: "review_mam", label: "Review / MAM (Frame.io, iconik)" }, { value: "keine", label: "None / other" }
       ],
       description: "(So integrations are used and unnecessary tool duplications are consistently avoided.)" },
     { key: "regulierte_branche", label: "Regulated industry", type: "checkbox",
@@ -564,7 +575,9 @@ function _collectLabelFor(fieldKey, value){
       options: [
         { value: "prompt_engineering", label: "Prompt Engineering" }, { value: "llm_basics", label: "LLM Basics" },
         { value: "datenqualitaet_governance", label: "Data Quality & Governance" }, { value: "automatisierung", label: "Automation & Scripts" },
-        { value: "ethik_recht", label: "Ethical & Legal Basics" }, { value: "keine", label: "None / still unclear" }
+        { value: "ethik_recht", label: "Ethical & Legal Basics" },
+        { value: "ki_rechte_kennzeichnung", label: "AI rights & labelling" }, { value: "stimme_gesicht_einwilligung", label: "Voice & face: consent" },
+        { value: "keine", label: "None / still unclear" }
       ],
       description: "(So training is planned precisely and learning goals are achieved quickly.)" },
     { key: "vision_prioritaet", label: "Most important strategic lever", type: "select",
