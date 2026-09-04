@@ -904,7 +904,10 @@ function _collectLabelFor(fieldKey, value){
       "zeitbudget":1,"vorhandene_tools":1,"regulierte_branche":1,"trainings_interessen":1,
       "vision_prioritaet":1,"selbststaendig":1,"hauptleistung":0,
       "ki_projekte":0,"geschaeftsmodell_evolution":1,"vision_3_jahre":0,"ki_guardrails":0,
-      "medien_sparte":1
+      "medien_sparte":1,
+      // KIS-1290: Beide stehen in OPTIONAL_FIELDS (kein Sternchen), fehlten
+      // aber hier — leer blockierten sie den "Weiter"-Knopf ohne Hinweis.
+      "projekte_pro_monat":1,"top_zeitfresser":1
     };
     // Felder die für die Report-Qualität besonders wichtig sind
     var wichtig = {"hauptleistung":1,"ki_projekte":1,"zeitersparnis_prioritaet":1,"vision_3_jahre":1,"ki_guardrails":1,"strategische_ziele":1};
