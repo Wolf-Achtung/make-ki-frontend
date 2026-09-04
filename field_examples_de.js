@@ -554,6 +554,51 @@ var FIELD_EXAMPLES = {
   }
 },
 
+"medien/games": {
+  "default": {
+    "hauptleistung": { "example": "Wir entwickeln Mobile- und PC-Spiele mit einem kleinen Team: Konzept, Art, Code und Live-Betrieb nach dem Launch. Unser Unterschied: Wir bringen Spiele in mehreren Sprachen gleichzeitig raus." },
+    "ki_projekte": { "example": "Konzeptkunst und erste Asset-Varianten lassen wir per Bildmodell entwerfen, den Feinschliff macht das Art-Team. Für Dialoge und Item-Texte nutzen wir ChatGPT als Entwurf; die Lokalisierung läuft noch von Hand." },
+    "zeitersparnis_prioritaet": { "example": "Lokalisierung und QA fressen am meisten: Jeder Text-Patch muss in acht Sprachen, und Playtests decken Fehler erst spät auf." },
+    "pilot_bereich": { "hint": "Bei Games bringt KI zuerst bei Lokalisierung, Asset-Varianten und Test-Automatisierung etwas — da spart jeder Patch sofort Zeit." },
+    "s5_vision": { "example": "Lokalisierung und Regressionstests laufen automatisch durch, das Team kümmert sich um Spielgefühl und Community. Neue Sprachen kosten Tage, nicht Wochen." },
+  }
+},
+"medien/verlag_publishing": {
+  "default": {
+    "hauptleistung": { "example": "Wir sind ein Fachverlag mit Zeitschriften und Sachbüchern, Print und Digital. Unser Unterschied: enge Nähe zu den Autorinnen und Autoren und eine Redaktion, die Fachthemen verständlich macht." },
+    "ki_projekte": { "example": "Manuskripte lassen wir zur Vorprüfung durch ein Sprachmodell laufen — Rechtschreibung, Struktur, offensichtliche Lücken. Das Lektorat entscheidet, was bleibt. Metadaten für den Katalog schreiben wir noch von Hand." },
+    "zeitersparnis_prioritaet": { "example": "Die erste Korrekturschleife und die Katalog-Metadaten kosten am meisten: Jedes Manuskript wandert zwei-, dreimal zwischen Lektorat und Autor, und jeder Titel braucht Klappentext, Schlagworte und Kurzfassungen für drei Kanäle." },
+    "pilot_bereich": { "hint": "Im Verlag bringt KI zuerst beim Vorlektorat und bei Katalog-Metadaten etwas — dort merkt die Redaktion den Unterschied sofort." },
+    "s5_vision": { "example": "Vorlektorat und Metadaten laufen maschinell vor, das Lektorat konzentriert sich auf Inhalt und Ton. Jeder Titel ist am Erscheinungstag in allen Kanälen vollständig beschrieben." },
+  }
+},
+"medien/musik_audio": {
+  "default": {
+    "hauptleistung": { "example": "Wir betreiben ein Tonstudio: Synchron, Hörbuch, Podcast-Produktion und Mischung für Film und Werbung. Unser Unterschied: feste Sprecherinnen und Sprecher und ein Schnitt, der am Ende so klingt, als wäre nichts geschnitten." },
+    "ki_projekte": { "example": "Rohaufnahmen lassen wir automatisch transkribieren, um Takes schneller zu finden. Stimmsynthese haben wir für Layouts getestet — für die Endfassung nur mit ausdrücklicher Einwilligung der Sprecherin." },
+    "zeitersparnis_prioritaet": { "example": "Das Sichten der Takes und die Podcast-Nachbearbeitung fressen am meisten: Bei einer Stunde Rohmaterial sitzen wir zwei Stunden am Aufräumen, bevor die eigentliche Mischung beginnt." },
+    "pilot_bereich": { "hint": "Im Studio bringt KI zuerst bei Transkription, Take-Suche und Rauschentfernung etwas — die Mischung bleibt Handarbeit." },
+    "s5_vision": { "example": "Transkription, Take-Suche und Vorreinigung laufen automatisch, die Mischung und die Arbeit mit den Sprechern bleiben bei uns. Stimmsynthese nur, wo alle Rechte geklärt sind." },
+  }
+},
+"medien/agentur_design": {
+  "default": {
+    "hauptleistung": { "example": "Wir sind eine Agentur für Werbung, PR und Webdesign mit einem kleinen Kreativteam. Unser Unterschied: Konzept, Text, Gestaltung und Kampagne aus einer Hand." },
+    "ki_projekte": { "example": "Erste Textentwürfe und Moodboards entstehen mit KI, das Team schärft und entscheidet. Bildgenerierung nutzen wir für Pitches, nie für finale Kundenmotive ohne geklärte Rechte." },
+    "zeitersparnis_prioritaet": { "example": "Pitches und Freigabeschleifen kosten am meisten: Für jede Ausschreibung entstehen drei Konzeptrichtungen, und jede Kundenrunde bringt neue Varianten." },
+    "pilot_bereich": { "hint": "In der Agentur bringt KI zuerst bei Pitch-Entwürfen, Textvarianten und Freigabe-Dokumentation etwas — das merken Sie beim nächsten Pitch." },
+    "s5_vision": { "example": "Pitch-Bausteine, Textvarianten und Freigabeprotokolle laufen mit KI vor, das Team hat mehr Zeit für die Idee und den Kunden." },
+  }
+},
+"medien/content_creation": {
+  "default": {
+    "hauptleistung": { "example": "Wir produzieren Content für Social Media und eigene Kanäle: kurze Videos, Podcasts, Newsletter. Unser Unterschied: eine feste Handschrift über alle Formate und ein Rhythmus, den die Community kennt." },
+    "ki_projekte": { "example": "Aus einem langen Video schneiden wir mit KI mehrere Kurzformate; Untertitel und Beschreibungen entstehen automatisch. Die Auswahl, was rausgeht, treffen wir." },
+    "zeitersparnis_prioritaet": { "example": "Das Zerlegen in Formate und die Beschreibungstexte fressen am meisten: Aus einem Dreh werden zehn Posts, und jeder braucht Titel, Text, Untertitel und Kennzeichnung." },
+    "pilot_bereich": { "hint": "Bei Content Creation bringt KI zuerst bei Untertiteln, Format-Varianten und Beschreibungstexten etwas — die Kennzeichnung synthetischer Inhalte gehört von Anfang an dazu." },
+    "s5_vision": { "example": "Untertitel, Varianten und Beschreibungen laufen automatisch, die Handschrift und die Auswahl bleiben bei uns. Jeder Post ist korrekt gekennzeichnet, bevor er rausgeht." },
+  }
+},
 "default": {
   "default": {
     "hauptleistung": { "example": "Beschreiben Sie einfach, was Sie machen: Was verkaufen oder bieten Sie an? Wer kauft bei Ihnen oder bucht Sie? Und was unterscheidet Sie von anderen in Ihrer Branche?", "hint": "Stichworte reichen völlig — wir machen daraus eine strukturierte Analyse." },

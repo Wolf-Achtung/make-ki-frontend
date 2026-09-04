@@ -362,9 +362,15 @@
   document.head.appendChild(css);
 
   // ── Lookup function ──
-  function getFieldExample(branche, size, fieldName) {
+  function getFieldExample(branche, size, fieldName, sparte) {
     if (!window.FIELD_EXAMPLES) return null;
     var ex = FIELD_EXAMPLES;
+    // KIS-1291: Sparte zuerst — ein Tonstudio bekam bisher das Beispiel der Cutterin.
+    if (sparte && ex[branche + "/" + sparte]) {
+      var sp = ex[branche + "/" + sparte];
+      if (sp[size] && sp[size][fieldName]) return sp[size][fieldName];
+      if (sp["default"] && sp["default"][fieldName]) return sp["default"][fieldName];
+    }
     if (ex[branche] && ex[branche][size] && ex[branche][size][fieldName])
       return ex[branche][size][fieldName];
     if (ex[branche] && ex[branche]["default"] && ex[branche]["default"][fieldName])
@@ -398,12 +404,15 @@
   // Cache branche/size because Block 1 fields are removed from DOM on later blocks
   var _cachedBranche = "";
   var _cachedSize = "";
+  var _cachedSparte = "";
 
   function getContext() {
     // Try live DOM first (when on Block 1)
     var brancheEl = document.querySelector('[name="branche"]');
     var sizeEl = document.querySelector('[name="unternehmensgroesse"]');
     if (brancheEl && brancheEl.value) _cachedBranche = brancheEl.value;
+    var sparteEl = document.querySelector('[name="medien_sparte"]');
+    if (sparteEl) _cachedSparte = sparteEl.value || "";
     if (sizeEl && sizeEl.value) _cachedSize = mapSize(sizeEl.value);
 
     // Fallback: read from formbuilder autosave in localStorage
@@ -411,12 +420,13 @@
       try {
         var saved = JSON.parse(localStorage.getItem("autosave_form_data") || "{}");
         if (saved.branche && !_cachedBranche) _cachedBranche = saved.branche;
+        if (saved.medien_sparte && !_cachedSparte) _cachedSparte = saved.medien_sparte;
         if (saved.unternehmensgroesse && !_cachedSize) _cachedSize = mapSize(saved.unternehmensgroesse);
       } catch(_) {}
     }
 
     if (!_cachedBranche || !_cachedSize) return null;
-    return { branche: _cachedBranche, size: _cachedSize };
+    return { branche: _cachedBranche, size: _cachedSize, sparte: _cachedSparte };
   }
 
   // ── Inject examples into current view ──
@@ -432,7 +442,7 @@
     TEXTAREA_FIELDS.forEach(function(fieldName) {
       var group = document.querySelector("[data-key='" + fieldName + "']");
       if (!group) return;
-      var data = getFieldExample(ctx.branche, ctx.size, fieldName);
+      var data = getFieldExample(ctx.branche, ctx.size, fieldName, ctx.sparte);
       if (!data) return;
       var textarea = group.querySelector("textarea");
       if (!textarea) return;
@@ -487,7 +497,7 @@
     SELECT_HINT_FIELDS.forEach(function(fieldName) {
       var group = document.querySelector("[data-key='" + fieldName + "']");
       if (!group) return;
-      var data = getFieldExample(ctx.branche, ctx.size, fieldName);
+      var data = getFieldExample(ctx.branche, ctx.size, fieldName, ctx.sparte);
       if (!data || !data.hint) return;
       var selectEl = group.querySelector("select");
       if (!selectEl) return;

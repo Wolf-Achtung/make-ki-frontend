@@ -51,6 +51,51 @@ var FIELD_EXAMPLES = {
   }
 },
 
+"medien/games": {
+  "default": {
+    "hauptleistung": { "example": "We develop mobile and PC games with a small team: concept, art, code and live operations after launch. What sets us apart: we release games in several languages at once." },
+    "ki_projekte": { "example": "Concept art and first asset variants are drafted with an image model; the art team does the finishing. For dialogue and item texts we use ChatGPT as a draft; localisation is still done by hand." },
+    "zeitersparnis_prioritaet": { "example": "Localisation and QA eat the most time: every text patch has to go into eight languages, and playtests catch bugs late." },
+    "pilot_bereich": { "hint": "In games, AI helps first with localisation, asset variants and test automation — every patch saves time right away." },
+    "s5_vision": { "example": "Localisation and regression tests run automatically; the team focuses on game feel and community. New languages take days, not weeks." },
+  }
+},
+"medien/verlag_publishing": {
+  "default": {
+    "hauptleistung": { "example": "We are a specialist publisher with journals and non-fiction, print and digital. What sets us apart: close contact with our authors and an editorial team that makes expert topics readable." },
+    "ki_projekte": { "example": "Manuscripts go through a language model for a first check — spelling, structure, obvious gaps. The editors decide what stays. Catalogue metadata is still written by hand." },
+    "zeitersparnis_prioritaet": { "example": "The first correction loop and the catalogue metadata cost the most: every manuscript goes back and forth two or three times, and every title needs a blurb, keywords and summaries for three channels." },
+    "pilot_bereich": { "hint": "In publishing, AI helps first with pre-editing and catalogue metadata — that is where the editorial team notices the difference immediately." },
+    "s5_vision": { "example": "Pre-editing and metadata run ahead automatically; the editors concentrate on content and tone. Every title is fully described in all channels on publication day." },
+  }
+},
+"medien/musik_audio": {
+  "default": {
+    "hauptleistung": { "example": "We run a recording studio: dubbing, audiobooks, podcast production and mixing for film and advertising. What sets us apart: a fixed pool of voice actors and an edit that sounds as if nothing was cut." },
+    "ki_projekte": { "example": "Raw recordings are transcribed automatically so we find takes faster. We tested voice synthesis for layouts — for the final version only with the speaker's explicit consent." },
+    "zeitersparnis_prioritaet": { "example": "Reviewing takes and podcast clean-up eat the most time: for one hour of raw audio we spend two hours tidying before the actual mix begins." },
+    "pilot_bereich": { "hint": "In the studio, AI helps first with transcription, take search and noise removal — the mix stays handmade." },
+    "s5_vision": { "example": "Transcription, take search and pre-cleaning run automatically; the mix and the work with the speakers stay with us. Voice synthesis only where all rights are cleared." },
+  }
+},
+"medien/agentur_design": {
+  "default": {
+    "hauptleistung": { "example": "We are an agency for advertising, PR and web design with a small creative team. What sets us apart: concept, copy, design and campaign from one source." },
+    "ki_projekte": { "example": "First copy drafts and moodboards are created with AI; the team sharpens and decides. We use image generation for pitches, never for final client visuals without cleared rights." },
+    "zeitersparnis_prioritaet": { "example": "Pitches and approval loops cost the most: every tender produces three concept directions, and every client round brings new variants." },
+    "pilot_bereich": { "hint": "In an agency, AI helps first with pitch drafts, copy variants and approval documentation — you will notice it at the next pitch." },
+    "s5_vision": { "example": "Pitch modules, copy variants and approval records run ahead with AI; the team has more time for the idea and the client." },
+  }
+},
+"medien/content_creation": {
+  "default": {
+    "hauptleistung": { "example": "We produce content for social media and our own channels: short videos, podcasts, newsletters. What sets us apart: one recognisable style across all formats and a rhythm the community knows." },
+    "ki_projekte": { "example": "From one long video we cut several short formats with AI; subtitles and descriptions are generated automatically. We decide what goes out." },
+    "zeitersparnis_prioritaet": { "example": "Splitting into formats and writing descriptions eat the most time: one shoot becomes ten posts, and each needs a title, copy, subtitles and labelling." },
+    "pilot_bereich": { "hint": "In content creation, AI helps first with subtitles, format variants and descriptions — labelling synthetic content is part of it from day one." },
+    "s5_vision": { "example": "Subtitles, variants and descriptions run automatically; the style and the selection stay with us. Every post is correctly labelled before it goes out." },
+  }
+},
 "default": {
   "default": {
     "hauptleistung": { "example": "Simply describe what you do: What do you sell or offer? Who buys from you or books you? And what sets you apart from others in your industry?", "hint": "Keywords are perfectly fine — we turn them into a structured analysis." },
