@@ -112,6 +112,24 @@
       </div>
     </div>
 
+    <!-- KIS-1281 stage 4: which recommendation actually stuck?
+         Free text on purpose — a pick list would limit answers to what
+         the report proposed. The tools someone chose INSTEAD of our
+         recommendation are the interesting ones. Both optional: a
+         required question lowers the response rate of the whole survey. -->
+    <div class="row">
+      <div class="card">
+        <label for="tools_adopted"><b>Which tools have you adopted since? (optional)</b></label>
+        <textarea id="tools_adopted" name="tools_adopted" maxlength="500"
+          placeholder="Including ones the report did not mention — those interest us most."></textarea>
+      </div>
+      <div class="card">
+        <label for="funding_applied"><b>Did you apply for a funding programme? (optional)</b></label>
+        <textarea id="funding_applied" name="funding_applied" maxlength="500"
+          placeholder="Programme name — or: checked and ruled out."></textarea>
+      </div>
+    </div>
+
     <div class="actions">
       <button type="submit">Send feedback</button>
       <button type="button" id="save" class="ghost">Save as CSV</button>
